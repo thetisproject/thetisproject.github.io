@@ -28,4 +28,5 @@ and in particular the following grants:
 EPSRC grant `EP/M011054/1 <http://gow.epsrc.ac.uk/NGBOViewGrant.aspx?GrantRef=EP/M011054/1>`_:
 A new simulation and optimisation platform for marine technology.
 
-
+The National Science Foundation partially supported this research through
+cooperative agreement `OCE-0424602 <http://www.nsf.gov/awardsearch/showAward?AWD_ID=0424602>`_.
