@@ -1,0 +1,367 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>thetis.callback &mdash; Thetis 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/fenics.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Thetis 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<link rel="stylesheet" href="../../_static/featured.css">
+
+
+<link rel="shortcut icon" href="../../_static/icon.ico" />
+
+
+  </head>
+  <body role="document">
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.png" height="200px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Documentation for Firedrake">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Obtain the firedrake code">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="The guilty parties">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://travis-ci.org/thetisproject/thetis" title="Travis">Travis</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/thetis/callback">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for thetis.callback</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Callback functions used to compute metrics at runtime.</span>
+
+<span class="sd">Tuomas Karna 2016-01-28</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractproperty</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">.log</span> <span class="k">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="CallbackManager"><a class="viewcode-back" href="../../thetis.html#thetis.callback.CallbackManager">[docs]</a><span class="k">class</span> <span class="nc">CallbackManager</span><span class="p">(</span><span class="n">defaultdict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stores callbacks in different categories and provides methods for</span>
+<span class="sd">    evaluating them.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CallbackManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CallbackManager.add"><a class="viewcode-back" href="../../thetis.html#thetis.callback.CallbackManager.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback</span></div>
+
+<div class="viewcode-block" id="CallbackManager.evaluate"><a class="viewcode-back" href="../../thetis.html#thetis.callback.CallbackManager.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="n">mode</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="DiagnosticHDF5"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticHDF5">[docs]</a><span class="k">class</span> <span class="nc">DiagnosticHDF5</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates hdf5 files for diagnostic time series arrays.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">varnames</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">COMM_WORLD</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="o">=</span> <span class="n">comm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varnames</span> <span class="o">=</span> <span class="n">varnames</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nvars</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">varnames</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># create empty file with correct datasets</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdf5file</span><span class="p">:</span>
+                <span class="n">hdf5file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                                        <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">varnames</span><span class="p">:</span>
+                    <span class="n">hdf5file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                                            <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hdf5file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Expands data arrays by 1 entry&quot;&quot;&quot;</span>
+        <span class="c1"># TODO is there an easier way for doing this?</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">varnames</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">hdf5file</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
+            <span class="n">arr</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+<div class="viewcode-block" id="DiagnosticHDF5.export"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticHDF5.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">variables</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Appends a new entry of (time, variables) to the file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdf5file</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_expand</span><span class="p">(</span><span class="n">hdf5file</span><span class="p">)</span>
+                <span class="n">ix</span> <span class="o">=</span> <span class="n">hdf5file</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">hdf5file</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvars</span><span class="p">):</span>
+                    <span class="n">hdf5file</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varnames</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">hdf5file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="DiagnosticCallback"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticCallback">[docs]</a><span class="k">class</span> <span class="nc">DiagnosticCallback</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A base class for all Callback classes</span>
+
+<span class="sd">    :arg outputdir: Custom directory where hdf5 files will be stored. By</span>
+<span class="sd">        default solver&#39;s output directory is used.</span>
+<span class="sd">    :arg export_to_hdf5: If True, diagnostics will be stored in hdf5 format</span>
+<span class="sd">    :arg append_to_log: If True, diagnostic will be printed in log</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span> <span class="o">=</span> <span class="n">solver_obj</span>
+        <span class="k">if</span> <span class="n">outputdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">outputdir</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="n">outputdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append_to_hdf5</span> <span class="o">=</span> <span class="n">export_to_hdf5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append_to_log</span> <span class="o">=</span> <span class="n">append_to_log</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hdf5_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_create_hdf5_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an empty hdf5 file with correct datasets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">append_to_hdf5</span><span class="p">:</span>
+            <span class="n">comm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">comm</span>
+            <span class="n">create_directory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">comm</span><span class="p">)</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;diagnostic_</span><span class="si">{:}</span><span class="s1">.hdf5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">))</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hdf_exporter</span> <span class="o">=</span> <span class="n">DiagnosticHDF5</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_names</span><span class="p">,</span>
+                                               <span class="n">comm</span><span class="o">=</span><span class="n">comm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hdf5_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@abstractproperty</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The name of the diagnostic&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractproperty</span>
+    <span class="k">def</span> <span class="nf">variable_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Names of all scalar values&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluate the diagnostic value.</span>
+
+<span class="sd">        :arg solver_obj: The solver object.</span>
+
+<span class="sd">        NOTE: This method must implement all MPI reduction operations (if any).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="DiagnosticCallback.message_str"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticCallback.message_str">[docs]</a>    <span class="k">def</span> <span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A string representation.</span>
+
+<span class="sd">        :arg args: If provided, these will be the return value from :meth:`__call__`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> diagnostic&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DiagnosticCallback.push_to_log"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticCallback.push_to_log">[docs]</a>    <span class="k">def</span> <span class="nf">push_to_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print diagnostic status message to log&quot;&quot;&quot;</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message_str</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DiagnosticCallback.push_to_hdf5"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticCallback.push_to_hdf5">[docs]</a>    <span class="k">def</span> <span class="nf">push_to_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Append values to export file.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hdf5_initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_hdf5_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hdf_exporter</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DiagnosticCallback.evaluate"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticCallback.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluates callback and pushes values to log and hdf stream&quot;&quot;&quot;</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__call__</span><span class="p">()</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">simulation_time</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">append_to_log</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">push_to_log</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">append_to_hdf5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">push_to_hdf5</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ScalarConservationCallback"><a class="viewcode-back" href="../../thetis.html#thetis.callback.ScalarConservationCallback">[docs]</a><span class="k">class</span> <span class="nc">ScalarConservationCallback</span><span class="p">(</span><span class="n">DiagnosticCallback</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for callbacks that check conservation of a scalar quantity&quot;&quot;&quot;</span>
+    <span class="n">variable_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;integral&#39;</span><span class="p">,</span> <span class="s1">&#39;relative_difference&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar_callback</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates scalar conservation check callback object</span>
+
+<span class="sd">        name : str</span>
+<span class="sd">            human readable name of the quantity</span>
+<span class="sd">        scalar_callback : function</span>
+<span class="sd">            function that takes the FlowSolver object as an argument and</span>
+<span class="sd">            returns the scalar quantity of interest</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ScalarConservationCallback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">solver_obj</span><span class="p">,</span>
+                                                         <span class="n">outputdir</span><span class="p">,</span>
+                                                         <span class="n">export_to_hdf5</span><span class="p">,</span>
+                                                         <span class="n">append_to_log</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scalar_callback</span> <span class="o">=</span> <span class="n">scalar_callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_value</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalar_callback</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">rel_diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_value</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_value</span>
+        <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">rel_diff</span>
+
+<div class="viewcode-block" id="ScalarConservationCallback.message_str"><a class="viewcode-back" href="../../thetis.html#thetis.callback.ScalarConservationCallback.message_str">[docs]</a>    <span class="k">def</span> <span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1"> rel. error </span><span class="si">{1:11.4e}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">line</span></div></div>
+
+
+<div class="viewcode-block" id="VolumeConservation3DCallback"><a class="viewcode-back" href="../../thetis.html#thetis.callback.VolumeConservation3DCallback">[docs]</a><span class="k">class</span> <span class="nc">VolumeConservation3DCallback</span><span class="p">(</span><span class="n">ScalarConservationCallback</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Checks conservation of 3D volume (volume of 3D mesh)&quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;volume3d&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">vol3d</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">comp_volume_3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VolumeConservation3DCallback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">vol3d</span><span class="p">,</span>
+                                                           <span class="n">solver_obj</span><span class="p">,</span>
+                                                           <span class="n">outputdir</span><span class="p">,</span>
+                                                           <span class="n">export_to_hdf5</span><span class="p">,</span>
+                                                           <span class="n">append_to_log</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VolumeConservation2DCallback"><a class="viewcode-back" href="../../thetis.html#thetis.callback.VolumeConservation2DCallback">[docs]</a><span class="k">class</span> <span class="nc">VolumeConservation2DCallback</span><span class="p">(</span><span class="n">ScalarConservationCallback</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Checks conservation of 3D volume (volume of 3D mesh)&quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;volume2d&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">vol2d</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">comp_volume_2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_2d</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VolumeConservation2DCallback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">vol2d</span><span class="p">,</span>
+                                                           <span class="n">solver_obj</span><span class="p">,</span>
+                                                           <span class="n">outputdir</span><span class="p">,</span>
+                                                           <span class="n">export_to_hdf5</span><span class="p">,</span>
+                                                           <span class="n">append_to_log</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TracerMassConservationCallback"><a class="viewcode-back" href="../../thetis.html#thetis.callback.TracerMassConservationCallback">[docs]</a><span class="k">class</span> <span class="nc">TracerMassConservationCallback</span><span class="p">(</span><span class="n">ScalarConservationCallback</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Checks conservation of total tracer mass&quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;tracer mass&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tracer_name</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># override name for given tracer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">tracer_name</span> <span class="o">+</span> <span class="s1">&#39; mass&#39;</span>
+
+        <span class="k">def</span> <span class="nf">mass</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">comp_tracer_mass_3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">tracer_name</span><span class="p">])</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TracerMassConservationCallback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span>
+                                                             <span class="n">solver_obj</span><span class="p">,</span>
+                                                             <span class="n">outputdir</span><span class="p">,</span>
+                                                             <span class="n">export_to_hdf5</span><span class="p">,</span>
+                                                             <span class="n">append_to_log</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MinMaxConservationCallback"><a class="viewcode-back" href="../../thetis.html#thetis.callback.MinMaxConservationCallback">[docs]</a><span class="k">class</span> <span class="nc">MinMaxConservationCallback</span><span class="p">(</span><span class="n">DiagnosticCallback</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for callbacks that check conservation of a minimum/maximum&quot;&quot;&quot;</span>
+    <span class="n">variable_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;min_value&#39;</span><span class="p">,</span> <span class="s1">&#39;max_value&#39;</span><span class="p">,</span> <span class="s1">&#39;undershoot&#39;</span><span class="p">,</span> <span class="s1">&#39;overshoot&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minmax_callback</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates scalar conservation check callback object</span>
+
+<span class="sd">        :arg varname: human readable name of the quantity</span>
+<span class="sd">        :arg minmax_callback: function that takes the FlowSolver object as</span>
+<span class="sd">            an argument and returns the minimum and maximum values as a tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MinMaxConservationCallback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">solver_obj</span><span class="p">,</span>
+                                                         <span class="n">outputdir</span><span class="p">,</span>
+                                                         <span class="n">export_to_hdf5</span><span class="p">,</span>
+                                                         <span class="n">append_to_log</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minmax_callback</span> <span class="o">=</span> <span class="n">minmax_callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_value</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minmax_callback</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">overshoot</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_value</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">undershoot</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">undershoot</span><span class="p">,</span> <span class="n">overshoot</span>
+
+<div class="viewcode-block" id="MinMaxConservationCallback.message_str"><a class="viewcode-back" href="../../thetis.html#thetis.callback.MinMaxConservationCallback.message_str">[docs]</a>    <span class="k">def</span> <span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1"> </span><span class="si">{1:g}</span><span class="s1"> </span><span class="si">{2:g}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">l</span></div></div>
+
+
+<div class="viewcode-block" id="TracerOvershootCallBack"><a class="viewcode-back" href="../../thetis.html#thetis.callback.TracerOvershootCallBack">[docs]</a><span class="k">class</span> <span class="nc">TracerOvershootCallBack</span><span class="p">(</span><span class="n">MinMaxConservationCallback</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Checks overshoots of the given tracer field.&quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;tracer overshoot&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tracer_name</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">tracer_name</span> <span class="o">+</span> <span class="s1">&#39; overshoot&#39;</span>
+
+        <span class="k">def</span> <span class="nf">minmax</span><span class="p">():</span>
+            <span class="n">tracer_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">tracer_name</span><span class="p">]</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="n">tracer_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">tracer_name</span><span class="p">]</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="n">tracer_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">tracer_min</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">MPI</span><span class="o">.</span><span class="n">MIN</span><span class="p">)</span>
+            <span class="n">tracer_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">tracer_max</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">MPI</span><span class="o">.</span><span class="n">MAX</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">tracer_min</span><span class="p">,</span> <span class="n">tracer_max</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TracerOvershootCallBack</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">minmax</span><span class="p">,</span>
+                                                      <span class="n">solver_obj</span><span class="p">,</span>
+                                                      <span class="n">outputdir</span><span class="p">,</span>
+                                                      <span class="n">export_to_hdf5</span><span class="p">,</span>
+                                                      <span class="n">append_to_log</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
+    </div>
+  </body>
+</html>

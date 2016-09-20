@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>thetis.limiter &mdash; Thetis 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/fenics.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Thetis 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<link rel="stylesheet" href="../../_static/featured.css">
+
+
+<link rel="shortcut icon" href="../../_static/icon.ico" />
+
+
+  </head>
+  <body role="document">
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.png" height="200px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Documentation for Firedrake">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Obtain the firedrake code">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="The guilty parties">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://travis-ci.org/thetisproject/thetis" title="Travis">Travis</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/thetis/limiter">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for thetis.limiter</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Slope limiter implementation.</span>
+
+<span class="sd">Tuomas Karna 2015-08-26</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.firedrake</span> <span class="k">import</span> <span class="n">VertexBasedLimiter</span>
+<span class="kn">import</span> <span class="nn">ufl</span>
+<span class="kn">from</span> <span class="nn">pyop2.profiling</span> <span class="k">import</span> <span class="n">timed_region</span><span class="p">,</span> <span class="n">timed_function</span><span class="p">,</span> <span class="n">timed_stage</span>  <span class="c1"># NOQA</span>
+
+
+<div class="viewcode-block" id="assert_function_space"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.assert_function_space">[docs]</a><span class="k">def</span> <span class="nf">assert_function_space</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks the family and degree of function space.</span>
+
+<span class="sd">    Raises AssertionError if function space differs.</span>
+<span class="sd">    If the function space lies on an extruded mesh, checks both spaces of the</span>
+<span class="sd">    outer product.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ufl_elem</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_elem</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">):</span>
+        <span class="n">ufl_elem</span> <span class="o">=</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;TensorProductElement&#39;</span><span class="p">:</span>
+        <span class="c1"># extruded mesh</span>
+        <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">==</span> <span class="n">family</span><span class="p">,</span>\
+            <span class="s1">&#39;horizontal space must be </span><span class="si">{0:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">B</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">==</span> <span class="n">family</span><span class="p">,</span>\
+            <span class="s1">&#39;vertical space must be </span><span class="si">{0:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">==</span> <span class="n">degree</span><span class="p">,</span>\
+            <span class="s1">&#39;degree of horizontal space must be </span><span class="si">{0:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">degree</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">B</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">==</span> <span class="n">degree</span><span class="p">,</span>\
+            <span class="s1">&#39;degree of vertical space must be </span><span class="si">{0:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">degree</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># assume 2D mesh</span>
+        <span class="k">assert</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">==</span> <span class="n">family</span><span class="p">,</span>\
+            <span class="s1">&#39;function space must be </span><span class="si">{0:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">==</span> <span class="n">degree</span><span class="p">,</span>\
+            <span class="s1">&#39;degree of function space must be </span><span class="si">{0:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">degree</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VertexBasedP1DGLimiter"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter">[docs]</a><span class="k">class</span> <span class="nc">VertexBasedP1DGLimiter</span><span class="p">(</span><span class="n">VertexBasedLimiter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vertex based limiter for P1DG tracer fields.</span>
+
+<span class="sd">    Based on firedrake implementation by Andrew McRae.</span>
+
+<span class="sd">    [1] Kuzmin Dmitri (2010). A vertex-based hierarchical slope limiter</span>
+<span class="sd">    for p-adaptive discontinuous Galerkin methods. Journal of Computational</span>
+<span class="sd">    and Applied Mathematics, 233(12):3077-3085.</span>
+<span class="sd">    http://dx.doi.org/10.1016/j.cam.2009.05.028</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1dg_space</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize limiter.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        p1dg_space : FunctionSpace instance</span>
+<span class="sd">            P1DG function space where the scalar field belongs to</span>
+<span class="sd">        p1cg_space : FunctionSpace instance</span>
+<span class="sd">            Corresponding continuous function space (for min/max limits)</span>
+<span class="sd">        p0_space : FunctionSpace instance</span>
+<span class="sd">            Corresponding P0 function space (for centroids)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">assert_function_space</span><span class="p">(</span><span class="n">p1dg_space</span><span class="p">,</span> <span class="s1">&#39;Discontinuous Lagrange&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">p1dg_space</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
+
+<div class="viewcode-block" id="VertexBasedP1DGLimiter.compute_bounds"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.compute_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">compute_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Re-compute min/max values of all neighbouring centroids</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Call general-purpose bound computation.</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">compute_bounds</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+        <span class="c1"># NOTE This does not limit solution at lateral boundaries at all</span>
+        <span class="c1"># NOTE Omit for now</span>
+        <span class="c1"># # Add nodal values from lateral boundaries</span>
+        <span class="c1"># par_loop(&quot;&quot;&quot;</span>
+        <span class="c1">#     for (int i=0; i&lt;qmax.dofs; i++) {</span>
+        <span class="c1">#         qmax[i][0] = fmax(qmax[i][0], field[i][0]);</span>
+        <span class="c1">#         qmin[i][0] = fmin(qmin[i][0], field[i][0]);</span>
+        <span class="c1">#     }&quot;&quot;&quot;,</span>
+        <span class="c1">#          ds,</span>
+        <span class="c1">#          {&#39;qmax&#39;: (self.max_field, RW),</span>
+        <span class="c1">#           &#39;qmin&#39;: (self.min_field, RW),</span>
+        <span class="c1">#           &#39;field&#39;: (field, READ)})</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span><span class="p">:</span>
+            <span class="c1"># Add nodal values from surface/bottom boundaries</span>
+            <span class="c1"># NOTE calling firedrake par_loop with measure=ds_t raises an error</span>
+            <span class="n">bottom_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P1CG</span><span class="o">.</span><span class="n">bt_masks</span><span class="p">[</span><span class="s1">&#39;geometric&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">top_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P1CG</span><span class="o">.</span><span class="n">bt_masks</span><span class="p">[</span><span class="s1">&#39;geometric&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">bottom_idx</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bottom_nodes</span><span class="p">),</span> <span class="n">bottom_nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;node_idx&#39;</span><span class="p">)</span>
+            <span class="n">top_idx</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">top_nodes</span><span class="p">),</span> <span class="n">top_nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;node_idx&#39;</span><span class="p">)</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                void my_kernel(double **qmax, double **qmin, double **centroids, int *idx) {</span>
+<span class="s2">                    double face_mean = 0;</span>
+<span class="s2">                    for (int i=0; i&lt;</span><span class="si">%(nnodes)d</span><span class="s2">; i++) {</span>
+<span class="s2">                        face_mean += centroids[idx[i]][0];</span>
+<span class="s2">                    }</span>
+<span class="s2">                    face_mean /= </span><span class="si">%(nnodes)d</span><span class="s2">;</span>
+<span class="s2">                    for (int i=0; i&lt;</span><span class="si">%(nnodes)d</span><span class="s2">; i++) {</span>
+<span class="s2">                        qmax[idx[i]][0] = fmax(qmax[idx[i]][0], face_mean);</span>
+<span class="s2">                        qmin[idx[i]][0] = fmin(qmin[idx[i]][0], face_mean);</span>
+<span class="s2">                    }</span>
+<span class="s2">                }&quot;&quot;&quot;</span>
+            <span class="n">kernel</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Kernel</span><span class="p">(</span><span class="n">code</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;nnodes&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">bottom_nodes</span><span class="p">)},</span> <span class="s1">&#39;my_kernel&#39;</span><span class="p">)</span>
+
+            <span class="n">op2</span><span class="o">.</span><span class="n">par_loop</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">cell_set</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">max_field</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">WRITE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_field</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()),</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">min_field</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">WRITE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_field</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()),</span>
+                         <span class="n">field</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()),</span>
+                         <span class="n">bottom_idx</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">),</span>
+                         <span class="n">iterate</span><span class="o">=</span><span class="n">op2</span><span class="o">.</span><span class="n">ON_BOTTOM</span><span class="p">)</span>
+
+            <span class="n">op2</span><span class="o">.</span><span class="n">par_loop</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">cell_set</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">max_field</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">WRITE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_field</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()),</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">min_field</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">WRITE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_field</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()),</span>
+                         <span class="n">field</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()),</span>
+                         <span class="n">top_idx</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">),</span>
+                         <span class="n">iterate</span><span class="o">=</span><span class="n">op2</span><span class="o">.</span><span class="n">ON_TOP</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VertexBasedP1DGLimiter.apply"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;limiter&#39;</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">field</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
+    </div>
+  </body>
+</html>

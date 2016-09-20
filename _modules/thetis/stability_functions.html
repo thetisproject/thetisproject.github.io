@@ -1,0 +1,421 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>thetis.stability_functions &mdash; Thetis 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/fenics.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Thetis 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<link rel="stylesheet" href="../../_static/featured.css">
+
+
+<link rel="shortcut icon" href="../../_static/icon.ico" />
+
+
+  </head>
+  <body role="document">
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.png" height="200px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Documentation for Firedrake">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Obtain the firedrake code">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="The guilty parties">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://travis-ci.org/thetisproject/thetis" title="Travis">Travis</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/thetis/stability_functions">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for thetis.stability_functions</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Implements turbulence closure model stability functions.</span>
+
+<span class="sd">References:</span>
+
+<span class="sd">[1] Umlauf, L. and Burchard, H. (2005). Second-order turbulence closure models</span>
+<span class="sd">    for geophysical boundary layers. A review of recent work. Continental Shelf</span>
+<span class="sd">    Research, 25(7-8):795--827.</span>
+<span class="sd">    http://dx.doi.org/10.1016/j.csr.2004.08.004</span>
+
+<span class="sd">[2] Burchard, H. and Bolding, K. (2001). Comparative Analysis of Four Second-Moment</span>
+<span class="sd">    Turbulence Closure Models for the Oceanic Mixed Layer. Journal of Physical</span>
+<span class="sd">    Oceanography, 31(8):1943--1968.</span>
+<span class="sd">    http://dx.doi.org/10.1175/1520-0485(2001)031</span>
+
+<span class="sd">[3] Umlauf, L. and Burchard, H. (2003). A generic length-scale equation for</span>
+<span class="sd">    geophysical turbulence models. Journal of Marine Research, 61:235--265(31).</span>
+<span class="sd">    http://dx.doi.org/10.1357/002224003322005087</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;StabilityFunctionCanutoA&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;StabilityFunctionCanutoB&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;StabilityFunctionKanthaClayson&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;StabilityFunctionCheng&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">compute_normalized_frequencies</span><span class="p">(</span><span class="n">shear2</span><span class="p">,</span> <span class="n">buoy2</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes normalized buoyancy and shear frequency squared.</span>
+<span class="sd">    Follows Burchard and Bolding JPO (2001).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">alpha_buoy</span> <span class="o">=</span> <span class="n">k</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">eps</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">buoy2</span>
+    <span class="n">alpha_shear</span> <span class="o">=</span> <span class="n">k</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">eps</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">shear2</span>
+    <span class="c1"># print_output(&#39;{:8s} {:8.3e} {:8.3e}&#39;.format(&#39;M2&#39;, shear2.min(), shear2.max()))</span>
+    <span class="c1"># print_output(&#39;{:8s} {:8.3e} {:8.3e}&#39;.format(&#39;N2&#39;, buoy2.min(), buoy2.max()))</span>
+    <span class="c1"># print_output(&#39;{:8s} {:10.3e} {:10.3e}&#39;.format(&#39;a_buoy&#39;, alpha_buoy.min(), alpha_buoy.max()))</span>
+    <span class="c1"># print_output(&#39;{:8s} {:10.3e} {:10.3e}&#39;.format(&#39;a_shear&#39;, alpha_shear.min(), alpha_shear.max()))</span>
+    <span class="k">return</span> <span class="n">alpha_buoy</span><span class="p">,</span> <span class="n">alpha_shear</span>
+
+
+<span class="k">class</span> <span class="nc">StabilityFunction</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for all stability functions&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lim_alpha_shear</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">smooth_alpha_buoy_lim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="o">=-</span><span class="mf">1.2</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lim_alpha_shear</span> <span class="o">=</span> <span class="n">lim_alpha_shear</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lim_alpha_buoy</span> <span class="o">=</span> <span class="n">lim_alpha_buoy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smooth_alpha_buoy_lim</span> <span class="o">=</span> <span class="n">smooth_alpha_buoy_lim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha_buoy_crit</span> <span class="o">=</span> <span class="n">alpha_buoy_crit</span>
+        <span class="c1"># for plotting and such</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lim_alpha_shear</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;lim&#39;</span><span class="p">,</span> <span class="s1">&#39;shear&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lim_alpha_buoy</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;lim&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">smooth_alpha_buoy_lim</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;smooth&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;ac&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_buoy_crit</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+
+        <span class="c1"># Umlauf and Buchard (2005) eq A.10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a1</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">/</span><span class="mf">3.0</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cc2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a2</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cc3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a3</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cc4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a4</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cc5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a5</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cc6</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ab1</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">cb2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ab2</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">cb3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ab3</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">cb4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ab4</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">cb5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ab5</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cbb</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">cb5</span><span class="p">)</span>
+
+        <span class="c1"># Umlauf and Buchard (2005) eq A.12</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nn</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cc1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cb1</span>
+
+        <span class="c1"># Umlauf and Buchard (2005) eq A.9</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d0</span> <span class="o">=</span> <span class="mf">36.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nb</span><span class="o">**</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d1</span> <span class="o">=</span> <span class="mf">84.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nb</span> <span class="o">+</span> <span class="mf">36.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d2</span> <span class="o">=</span> <span class="mf">9.0</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ab2</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ab1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="mf">12.0</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a2</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">3.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a3</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nb</span><span class="o">**</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d3</span> <span class="o">=</span> <span class="mf">12.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab3</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab1</span> <span class="o">-</span> <span class="mf">3.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span> <span class="o">+</span>\
+            <span class="mf">12.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab3</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a3</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">a2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nb</span> <span class="o">+</span>\
+            <span class="mf">12.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab5</span><span class="o">*</span><span class="p">(</span><span class="mf">3.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a3</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">a2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d4</span> <span class="o">=</span> <span class="mf">48.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a5</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab3</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span> <span class="o">+</span> <span class="mf">36.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">**</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d5</span> <span class="o">=</span> <span class="mf">3.0</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a2</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">3.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a3</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ab1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ab2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n0</span> <span class="o">=</span> <span class="mf">36.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nb</span><span class="o">**</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n1</span> <span class="o">=</span> <span class="o">-</span><span class="mf">12.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab3</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ab1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ab2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>\
+            <span class="mf">8.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab3</span><span class="o">*</span><span class="p">(</span><span class="mf">6.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">a2</span> <span class="o">-</span> <span class="mf">3.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a3</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nb</span> <span class="o">+</span>\
+            <span class="mf">36.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n2</span> <span class="o">=</span> <span class="mf">9.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a1</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ab2</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ab1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">**</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb0</span> <span class="o">=</span> <span class="mf">12.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nb</span>  <span class="c1"># NOTE ab3 is not squared!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb1</span> <span class="o">=</span> <span class="mf">12.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab3</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">**</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb2</span> <span class="o">=</span> <span class="mf">9.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab3</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ab1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ab2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>\
+            <span class="p">(</span><span class="mf">6.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a1</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a2</span> <span class="o">-</span> <span class="mf">3.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a3</span><span class="p">)</span> <span class="o">-</span> <span class="mf">4.0</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a2</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">3.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a3</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ab3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nb</span>
+
+    <span class="k">def</span> <span class="nf">compute_c3_minus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">ri_st</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute c3_minus parameter from c1, c2 and stability functions.</span>
+
+<span class="sd">        c3_minus is solved from equation</span>
+
+<span class="sd">        ri_st = s_m/s_h*(c2 - c1)/(c2 - c3_minus)   [1]</span>
+
+<span class="sd">        where ri_st is the steady state gradient Richardson number.</span>
+<span class="sd">        (Burchard and Bolding, 2001, eq 32)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># A) solve numerically</span>
+        <span class="c1"># use equilibrium equation (Umlauf and Buchard, 2005, eq A.15)</span>
+        <span class="c1"># s_m*a_shear - s_h*a_shear*ri_st = 1.0</span>
+        <span class="c1"># to solve a_shear at equilibrium</span>
+        <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="k">import</span> <span class="n">minimize</span>
+
+        <span class="k">def</span> <span class="nf">cost</span><span class="p">(</span><span class="n">a_shear</span><span class="p">):</span>
+            <span class="n">a_buoy</span> <span class="o">=</span> <span class="n">ri_st</span><span class="o">*</span><span class="n">a_shear</span>
+            <span class="n">s_m</span><span class="p">,</span> <span class="n">s_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_funcs</span><span class="p">(</span><span class="n">a_buoy</span><span class="p">,</span> <span class="n">a_shear</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">s_m</span><span class="o">*</span><span class="n">a_shear</span> <span class="o">-</span> <span class="n">s_h</span><span class="o">*</span><span class="n">a_shear</span><span class="o">*</span><span class="n">ri_st</span> <span class="o">-</span> <span class="mf">1.0</span>
+            <span class="k">return</span> <span class="n">res</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">p</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="s1">&#39;solving alpha_shear failed&#39;</span>
+        <span class="n">a_shear</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># # B) solve analytically</span>
+        <span class="c1"># # compute alpha_shear for equilibrium condition (Umlauf and Buchard, 2005, eq A.19)</span>
+        <span class="c1"># # aM^2 (-d5 + n2 - (d3 - n1 + nb2 )Ri - (d4 + nb1)Ri^2) + aM (-d2 + n0 - (d1 + nb0)Ri) - d0 = 0</span>
+        <span class="c1"># a = -self.d5 + self.n2 - (self.d3 - self.n1 + self.nb2)*ri_st - (self.d4 + self.nb1)*ri_st**2</span>
+        <span class="c1"># b = -self.d2 + self.n0 - (self.d1 + self.nb0)*ri_st</span>
+        <span class="c1"># c = -self.d0</span>
+        <span class="c1"># a_shear = (-b + np.sqrt(b**2 - 4*a*c))/2/a</span>
+
+        <span class="c1"># compute aN from Ri_st and aM, Ri_st = aN/aM</span>
+        <span class="n">a_buoy</span> <span class="o">=</span> <span class="n">ri_st</span><span class="o">*</span><span class="n">a_shear</span>
+        <span class="c1"># evaluate stability functions for equilibrium conditions</span>
+        <span class="n">s_m</span><span class="p">,</span> <span class="n">s_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_funcs</span><span class="p">(</span><span class="n">a_buoy</span><span class="p">,</span> <span class="n">a_shear</span><span class="p">)</span>
+
+        <span class="c1"># compute c3 minus from [1]</span>
+        <span class="n">c3_minus</span> <span class="o">=</span> <span class="n">c2</span> <span class="o">-</span> <span class="p">(</span><span class="n">c2</span> <span class="o">-</span> <span class="n">c1</span><span class="p">)</span><span class="o">*</span><span class="n">s_m</span><span class="o">/</span><span class="n">s_h</span><span class="o">/</span><span class="n">ri_st</span>
+
+        <span class="c1"># check error in ri_st</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">s_m</span><span class="o">/</span><span class="n">s_h</span><span class="o">*</span><span class="p">(</span><span class="n">c2</span> <span class="o">-</span> <span class="n">c1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">c2</span> <span class="o">-</span> <span class="n">c3_minus</span><span class="p">)</span> <span class="o">-</span> <span class="n">ri_st</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;steady state gradient Richardson number does not match&#39;</span>
+
+        <span class="k">return</span> <span class="n">c3_minus</span>
+
+    <span class="k">def</span> <span class="nf">compute_cmu0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the paramenter c_mu_0 from stability function parameters</span>
+
+<span class="sd">        Umlauf and Buchard (2005) eq A.22</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cm0</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">a2</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a3</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">**</span><span class="mf">0.25</span>
+        <span class="k">return</span> <span class="n">cm0</span>
+
+    <span class="k">def</span> <span class="nf">compute_kappa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigma_psi</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes von Karman constant from the Psi Schmidt number.</span>
+
+<span class="sd">        n, c1, c2 are GLS model parameters.</span>
+<span class="sd">s</span>
+<span class="sd">        from Umlauf and Burchard (2003) eq (14)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">kappa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sigma_psi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_cmu0</span><span class="p">()</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">c2</span> <span class="o">-</span> <span class="n">c1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">kappa</span>
+
+    <span class="k">def</span> <span class="nf">get_alpha_buoy_min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute minimum alpha buoy</span>
+
+<span class="sd">        from Umlauf and Buchard (2005) table 3</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># G = epsilon case, this is used in GOTM</span>
+        <span class="n">an_min</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">d1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb0</span><span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="o">-</span> <span class="mf">4.</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">d0</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d4</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb1</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb0</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d4</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb1</span><span class="p">)</span>
+        <span class="c1"># eq. (47)</span>
+        <span class="c1"># an_min = self.alpha_buoy_min</span>
+        <span class="k">return</span> <span class="n">an_min</span>
+
+    <span class="k">def</span> <span class="nf">get_alpha_shear_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha_buoy</span><span class="p">,</span> <span class="n">alpha_shear</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute maximum alpha shear</span>
+
+<span class="sd">        from Umlauf and Buchard (2005) eq (44)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">as_max_n</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span> <span class="o">+</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span><span class="p">)</span><span class="o">*</span><span class="n">alpha_buoy</span> <span class="o">+</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d4</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span><span class="p">)</span><span class="o">*</span><span class="n">alpha_buoy</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">d4</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n1</span><span class="o">*</span><span class="n">alpha_buoy</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">as_max_d</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span> <span class="o">+</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span><span class="p">)</span><span class="o">*</span><span class="n">alpha_buoy</span> <span class="o">+</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">d3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n1</span><span class="o">*</span><span class="n">alpha_buoy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">as_max_n</span><span class="o">/</span><span class="n">as_max_d</span>
+
+    <span class="k">def</span> <span class="nf">get_alpha_buoy_smooth_min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha_buoy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute smoothed alpha_buoy minimum</span>
+
+<span class="sd">        from Burchard and Petersen (1999) eq (19)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">alpha_buoy</span> <span class="o">-</span> <span class="p">(</span><span class="n">alpha_buoy</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_buoy_crit</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">alpha_buoy</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_alpha_buoy_min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_buoy_crit</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">eval_funcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha_buoy</span><span class="p">,</span> <span class="n">alpha_shear</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate (unlimited) stability functions</span>
+
+<span class="sd">        from Burchard and Petersen (1999) eqns (30) and (31)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">den</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d1</span><span class="o">*</span><span class="n">alpha_buoy</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d2</span><span class="o">*</span><span class="n">alpha_shear</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d3</span><span class="o">*</span><span class="n">alpha_buoy</span><span class="o">*</span><span class="n">alpha_shear</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d4</span><span class="o">*</span><span class="n">alpha_buoy</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d5</span><span class="o">*</span><span class="n">alpha_shear</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">c_mu</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n1</span><span class="o">*</span><span class="n">alpha_buoy</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">*</span><span class="n">alpha_shear</span><span class="p">)</span> <span class="o">/</span> <span class="n">den</span>
+        <span class="n">c_mu_p</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb1</span><span class="o">*</span><span class="n">alpha_buoy</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb2</span><span class="o">*</span><span class="n">alpha_shear</span><span class="p">)</span> <span class="o">/</span> <span class="n">den</span>
+        <span class="k">return</span> <span class="n">c_mu</span><span class="p">,</span> <span class="n">c_mu_p</span>
+
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shear2</span><span class="p">,</span> <span class="n">buoy2</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates stability functions. Applies limiters on alpha_buoy and alpha_shear.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">alpha_buoy</span><span class="p">,</span> <span class="n">alpha_shear</span> <span class="o">=</span> <span class="n">compute_normalized_frequencies</span><span class="p">(</span><span class="n">shear2</span><span class="p">,</span> <span class="n">buoy2</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lim_alpha_buoy</span><span class="p">:</span>
+            <span class="c1"># limit min (negative) alpha_buoy (Umlauf and Burchard, 2005)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">smooth_alpha_buoy_lim</span><span class="p">:</span>
+                <span class="c1"># crop at minimum value</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">alpha_buoy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_alpha_buoy_min</span><span class="p">(),</span> <span class="n">alpha_buoy</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># do smooth limiting instead (Buchard and Petersen, 1999, eq 19)</span>
+                <span class="n">ab_smooth_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_alpha_buoy_smooth_min</span><span class="p">(</span><span class="n">alpha_buoy</span><span class="p">)</span>
+                <span class="c1"># NOTE this must be applied to values alpha_buoy &lt; ab_crit only!</span>
+                <span class="n">ix</span> <span class="o">=</span> <span class="n">alpha_buoy</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_buoy_crit</span>
+                <span class="n">alpha_buoy</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">ab_smooth_min</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lim_alpha_shear</span><span class="p">:</span>
+            <span class="c1"># limit max alpha_shear (Umlauf and Burchard, 2005, eq 44)</span>
+            <span class="n">as_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_alpha_shear_max</span><span class="p">(</span><span class="n">alpha_buoy</span><span class="p">,</span> <span class="n">alpha_shear</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">alpha_shear</span><span class="p">,</span> <span class="n">as_max</span><span class="p">,</span> <span class="n">alpha_shear</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_funcs</span><span class="p">(</span><span class="n">alpha_buoy</span><span class="p">,</span> <span class="n">alpha_shear</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="StabilityFunctionCanutoA"><a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionCanutoA">[docs]</a><span class="k">class</span> <span class="nc">StabilityFunctionCanutoA</span><span class="p">(</span><span class="n">StabilityFunction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Canuto et al. (2001) version A stability functions&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lim_alpha_shear</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">smooth_alpha_buoy_lim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="o">=-</span><span class="mf">1.2</span><span class="p">):</span>
+        <span class="c1"># parameters from Umlauf and Buchard (2005), Table 1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc1</span> <span class="o">=</span> <span class="mf">5.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc2</span> <span class="o">=</span> <span class="mf">0.8000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc3</span> <span class="o">=</span> <span class="mf">1.9680</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc4</span> <span class="o">=</span> <span class="mf">1.1360</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc5</span> <span class="o">=</span> <span class="mf">0.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc6</span> <span class="o">=</span> <span class="mf">0.4000</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb1</span> <span class="o">=</span> <span class="mf">5.9500</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb2</span> <span class="o">=</span> <span class="mf">0.6000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb3</span> <span class="o">=</span> <span class="mf">1.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb4</span> <span class="o">=</span> <span class="mf">0.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb5</span> <span class="o">=</span> <span class="mf">0.3333</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbb</span> <span class="o">=</span> <span class="mf">0.7200</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha_buoy_min</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.324</span>    <span class="c1"># (table 3 in Umlauf and Burchard, 2005)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Canuto A&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">StabilityFunctionCanutoA</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">lim_alpha_shear</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="p">,</span>
+                                                       <span class="n">smooth_alpha_buoy_lim</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StabilityFunctionCanutoB"><a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionCanutoB">[docs]</a><span class="k">class</span> <span class="nc">StabilityFunctionCanutoB</span><span class="p">(</span><span class="n">StabilityFunction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Canuto et al. (2001) version B stability functions&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lim_alpha_shear</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">smooth_alpha_buoy_lim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="o">=-</span><span class="mf">1.2</span><span class="p">):</span>
+        <span class="c1"># parameters from Umlauf and Buchard (2005), Table 1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc1</span> <span class="o">=</span> <span class="mf">5.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc2</span> <span class="o">=</span> <span class="mf">0.6983</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc3</span> <span class="o">=</span> <span class="mf">1.9664</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc4</span> <span class="o">=</span> <span class="mf">1.0940</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc5</span> <span class="o">=</span> <span class="mf">0.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc6</span> <span class="o">=</span> <span class="mf">0.4950</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb1</span> <span class="o">=</span> <span class="mf">5.6000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb2</span> <span class="o">=</span> <span class="mf">0.6000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb3</span> <span class="o">=</span> <span class="mf">1.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb4</span> <span class="o">=</span> <span class="mf">0.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb5</span> <span class="o">=</span> <span class="mf">0.3333</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbb</span> <span class="o">=</span> <span class="mf">0.4770</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha_buoy_min</span> <span class="o">=</span> <span class="o">-</span><span class="mf">3.093</span>    <span class="c1"># (table 3 in Umlauf and Burchard, 2005)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Canuto B&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">StabilityFunctionCanutoB</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">lim_alpha_shear</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="p">,</span>
+                                                       <span class="n">smooth_alpha_buoy_lim</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StabilityFunctionKanthaClayson"><a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionKanthaClayson">[docs]</a><span class="k">class</span> <span class="nc">StabilityFunctionKanthaClayson</span><span class="p">(</span><span class="n">StabilityFunction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Kantha and Clayson (1994) quasi-equilibrium stability functions&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lim_alpha_shear</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">smooth_alpha_buoy_lim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="o">=-</span><span class="mf">1.2</span><span class="p">):</span>
+        <span class="c1"># parameters from Umlauf and Buchard (2005), Table 1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc1</span> <span class="o">=</span> <span class="mf">6.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc2</span> <span class="o">=</span> <span class="mf">0.3200</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc3</span> <span class="o">=</span> <span class="mf">0.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc4</span> <span class="o">=</span> <span class="mf">0.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc5</span> <span class="o">=</span> <span class="mf">0.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc6</span> <span class="o">=</span> <span class="mf">0.0000</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb1</span> <span class="o">=</span> <span class="mf">3.7280</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb2</span> <span class="o">=</span> <span class="mf">0.7000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb3</span> <span class="o">=</span> <span class="mf">0.7000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb4</span> <span class="o">=</span> <span class="mf">0.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb5</span> <span class="o">=</span> <span class="mf">0.2000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbb</span> <span class="o">=</span> <span class="mf">0.6102</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha_buoy_min</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.312</span>  <span class="c1"># (table 3 in Umlauf and Burchard, 2005)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Kantha Clayson&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">StabilityFunctionKanthaClayson</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">lim_alpha_shear</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="p">,</span>
+                                                             <span class="n">smooth_alpha_buoy_lim</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StabilityFunctionCheng"><a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionCheng">[docs]</a><span class="k">class</span> <span class="nc">StabilityFunctionCheng</span><span class="p">(</span><span class="n">StabilityFunction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Cheng et al. (2002) quasi-equilibrium stability functions&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lim_alpha_shear</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">smooth_alpha_buoy_lim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="o">=-</span><span class="mf">1.2</span><span class="p">):</span>
+        <span class="c1"># parameters from Umlauf and Buchard (2005), Table 1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc1</span> <span class="o">=</span> <span class="mf">5.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc2</span> <span class="o">=</span> <span class="mf">0.7983</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc3</span> <span class="o">=</span> <span class="mf">1.9680</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc4</span> <span class="o">=</span> <span class="mf">1.1360</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc5</span> <span class="o">=</span> <span class="mf">0.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc6</span> <span class="o">=</span> <span class="mf">0.5000</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb1</span> <span class="o">=</span> <span class="mf">5.5200</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb2</span> <span class="o">=</span> <span class="mf">0.2134</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb3</span> <span class="o">=</span> <span class="mf">0.3570</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb4</span> <span class="o">=</span> <span class="mf">0.0000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb5</span> <span class="o">=</span> <span class="mf">0.3333</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbb</span> <span class="o">=</span> <span class="mf">0.8200</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha_buoy_min</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.029</span>  <span class="c1"># (table 3 in Umlauf and Burchard, 2005)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Cheng&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">StabilityFunctionCheng</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">lim_alpha_shear</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="p">,</span>
+                                                     <span class="n">smooth_alpha_buoy_lim</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
+    </div>
+  </body>
+</html>

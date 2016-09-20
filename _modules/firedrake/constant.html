@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>firedrake.constant &mdash; Thetis 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/fenics.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Thetis 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<link rel="stylesheet" href="../../_static/featured.css">
+
+
+<link rel="shortcut icon" href="../../_static/icon.ico" />
+
+
+  </head>
+  <body role="document">
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.png" height="200px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Documentation for Firedrake">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Obtain the firedrake code">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="The guilty parties">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://travis-ci.org/thetisproject/thetis" title="Travis">Travis</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/firedrake/constant">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for firedrake.constant</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">ufl</span>
+
+<span class="kn">from</span> <span class="nn">pyop2</span> <span class="k">import</span> <span class="n">op2</span>
+<span class="kn">from</span> <span class="nn">pyop2.exceptions</span> <span class="k">import</span> <span class="n">DataTypeError</span><span class="p">,</span> <span class="n">DataValueError</span>
+
+<span class="kn">import</span> <span class="nn">firedrake.utils</span> <span class="k">as</span> <span class="nn">utils</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Constant&#39;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_globalify</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Don&#39;t know how to make Constant from data with rank </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rank</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="p">,</span> <span class="n">rank</span><span class="p">,</span> <span class="n">shape</span>
+
+
+<span class="k">class</span> <span class="nc">Constant</span><span class="p">(</span><span class="n">ufl</span><span class="o">.</span><span class="n">Coefficient</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;A &quot;constant&quot; coefficient</span>
+
+<span class="sd">    A :class:`Constant` takes one value over the whole</span>
+<span class="sd">    :func:`~.Mesh`. The advantage of using a :class:`Constant` in a</span>
+<span class="sd">    form rather than a literal value is that the constant will be</span>
+<span class="sd">    passed as an argument to the generated kernel which avoids the</span>
+<span class="sd">    need to recompile the kernel if the form is assembled for a</span>
+<span class="sd">    different value of the constant.</span>
+
+<span class="sd">    :arg value: the value of the constant.  May either be a scalar, an</span>
+<span class="sd">         iterable of values (for a vector-valued constant), or an iterable</span>
+<span class="sd">         of iterables (or numpy array with 2-dimensional shape) for a</span>
+<span class="sd">         tensor-valued constant.</span>
+
+<span class="sd">    :arg domain: an optional :func:`~.Mesh` on which the constant is defined.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">       If you intend to use this :class:`Constant` in a</span>
+<span class="sd">       :class:`~ufl.form.Form` on its own you need to pass a</span>
+<span class="sd">       :func:`~.Mesh` as the domain argument.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Init also called in mesh constructor, but constant can be built without mesh</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="p">,</span> <span class="n">rank</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">_globalify</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="n">cell</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">domain</span> <span class="o">=</span> <span class="n">ufl</span><span class="o">.</span><span class="n">as_domain</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">ufl</span><span class="o">.</span><span class="n">FiniteElement</span><span class="p">(</span><span class="s2">&quot;Real&quot;</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">ufl</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">(</span><span class="s2">&quot;Real&quot;</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">ufl</span><span class="o">.</span><span class="n">TensorElement</span><span class="p">(</span><span class="s2">&quot;Real&quot;</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="n">fs</span> <span class="o">=</span> <span class="n">ufl</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Constant</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_repr</span> <span class="o">=</span> <span class="s1">&#39;Constant(</span><span class="si">%r</span><span class="s1">, </span><span class="si">%r</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mapping</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">index_values</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the evaluation of this :class:`Constant`.</span>
+
+<span class="sd">        :arg x: The coordinate to evaluate at (ignored).</span>
+<span class="sd">        :arg mapping: A mapping (ignored).</span>
+<span class="sd">        :arg component: The requested component of the constant (may</span>
+<span class="sd">             be ``None`` or ``()`` to obtain all components).</span>
+<span class="sd">        :arg index_values: ignored.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">component</span> <span class="ow">in</span> <span class="p">((),</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ufl_shape</span> <span class="ow">is</span> <span class="p">():</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_ro</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_ro</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_ro</span><span class="p">[</span><span class="n">component</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">function_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a null function space.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="p">,)</span>
+
+    <span class="k">def</span> <span class="nf">cell_node_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bcs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a null cell to node map.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">bcs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t apply boundary conditions to a Constant&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">interior_facet_node_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bcs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a null interior facet to node map.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">bcs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t apply boundary conditions to a Constant&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">exterior_facet_node_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bcs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a null exterior facet to node map.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">bcs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t apply boundary conditions to a Constant&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">assign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the value of this constant.</span>
+
+<span class="sd">        :arg value: A value of the appropriate shape&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">DataTypeError</span><span class="p">,</span> <span class="n">DataValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Augmented assignment to Constant not implemented&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__isub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Augmented assignment to Constant not implemented&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__imul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Augmented assignment to Constant not implemented&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__idiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Augmented assignment to Constant not implemented&quot;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
+    </div>
+  </body>
+</html>

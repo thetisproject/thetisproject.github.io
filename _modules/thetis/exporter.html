@@ -1,0 +1,514 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>thetis.exporter &mdash; Thetis 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/fenics.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Thetis 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<link rel="stylesheet" href="../../_static/featured.css">
+
+
+<link rel="shortcut icon" href="../../_static/icon.ico" />
+
+
+  </head>
+  <body role="document">
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.png" height="200px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Documentation for Firedrake">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Obtain the firedrake code">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="The guilty parties">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://travis-ci.org/thetisproject/thetis" title="Travis">Travis</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/thetis/exporter">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for thetis.exporter</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Routines for handling file exports.</span>
+
+<span class="sd">Tuomas Karna 2015-07-06</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">ufl</span>
+<span class="kn">from</span> <span class="nn">firedrake.output</span> <span class="k">import</span> <span class="n">is_cg</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+
+<div class="viewcode-block" id="is_2d"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.is_2d">[docs]</a><span class="k">def</span> <span class="nf">is_2d</span><span class="p">(</span><span class="n">fs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tests wether a function space is 2d or 3d&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="get_visu_space"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.get_visu_space">[docs]</a><span class="k">def</span> <span class="nf">get_visu_space</span><span class="p">(</span><span class="n">fs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Figure out the appropriate linear visualization space for fs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">is_vector</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">value_shape</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
+    <span class="n">family</span> <span class="o">=</span> <span class="s1">&#39;Lagrange&#39;</span> <span class="k">if</span> <span class="n">is_cg</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;Discontinuous Lagrange&#39;</span>
+    <span class="k">if</span> <span class="n">is_vector</span><span class="p">:</span>
+        <span class="n">visu_fs</span> <span class="o">=</span> <span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vfamily</span><span class="o">=</span><span class="n">family</span><span class="p">,</span> <span class="n">vdegree</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">visu_fs</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vfamily</span><span class="o">=</span><span class="n">family</span><span class="p">,</span> <span class="n">vdegree</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># make sure that you always get the same temp work function</span>
+    <span class="n">visu_fs</span><span class="o">.</span><span class="n">max_work_functions</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">visu_fs</span></div>
+
+
+<div class="viewcode-block" id="ExporterBase"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExporterBase">[docs]</a><span class="k">class</span> <span class="nc">ExporterBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for exporter objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="n">create_directory</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="c1"># keeps track of export numbers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span> <span class="o">=</span> <span class="n">next_export_ix</span>
+
+<div class="viewcode-block" id="ExporterBase.set_next_export_ix"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExporterBase.set_next_export_ix">[docs]</a>    <span class="k">def</span> <span class="nf">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the index of next export&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span> <span class="o">=</span> <span class="n">next_export_ix</span></div>
+
+<div class="viewcode-block" id="ExporterBase.export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExporterBase.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;This method must be implemented in the derived class&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="VTKExporter"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter">[docs]</a><span class="k">class</span> <span class="nc">VTKExporter</span><span class="p">(</span><span class="n">ExporterBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class that handles Paraview file exports.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fs_visu</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span>
+                 <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">project_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">coords_dg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates VTK exporter object.</span>
+
+<span class="sd">        :arg fs_visu: function space where input function will be cast</span>
+<span class="sd">            before exporting</span>
+<span class="sd">        :arg func_name: name of the function</span>
+<span class="sd">        :arg outputdir: output directory</span>
+<span class="sd">        :arg filename: name of the pvd file</span>
+<span class="sd">        :kwarg next_export_ix: index for next export (default 0)</span>
+<span class="sd">        :kwarg project_output: project function to output space instead of</span>
+<span class="sd">            interpolating</span>
+<span class="sd">        :kwarg varbose: print debug info to stdout</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VTKExporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">,</span>
+                                          <span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs_visu</span> <span class="o">=</span> <span class="n">fs_visu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func_name</span> <span class="o">=</span> <span class="n">func_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_output</span> <span class="o">=</span> <span class="n">project_output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coords_dg</span> <span class="o">=</span> <span class="n">coords_dg</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;.pvd&#39;</span>
+        <span class="c1"># append suffix if missing</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">filename</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">suffix</span><span class="p">)]</span> <span class="o">!=</span> <span class="n">suffix</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">+=</span> <span class="n">suffix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cast_operators</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="VTKExporter.set_next_export_ix"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter.set_next_export_ix">[docs]</a>    <span class="k">def</span> <span class="nf">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the index of next export&quot;&quot;&quot;</span>
+        <span class="c1"># NOTE vtk io objects store current export index not next</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VTKExporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_next_export_ix</span><span class="p">(</span><span class="n">next_export_ix</span><span class="p">)</span>
+        <span class="c1"># FIXME hack to change correct output file count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VTKExporter.export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Exports given function to disk.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_visu</span><span class="o">.</span><span class="n">max_work_functions</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="n">tmp_proj_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_visu</span><span class="o">.</span><span class="n">get_work_function</span><span class="p">()</span>
+        <span class="c1"># NOTE tmp function must be invariant as the projector is built only once</span>
+        <span class="n">op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cast_operators</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_output</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">op</span> <span class="o">=</span> <span class="n">Projector</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">tmp_proj_func</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cast_operators</span><span class="p">[</span><span class="n">function</span><span class="p">]</span> <span class="o">=</span> <span class="n">op</span>
+            <span class="n">op</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">op</span> <span class="o">=</span> <span class="n">Interpolator</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">tmp_proj_func</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cast_operators</span><span class="p">[</span><span class="n">function</span><span class="p">]</span> <span class="o">=</span> <span class="n">op</span>
+            <span class="n">op</span><span class="o">.</span><span class="n">interpolate</span><span class="p">()</span>
+        <span class="n">coordfunc</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">coordinates</span>
+        <span class="k">if</span> <span class="n">coordfunc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">_output_functions</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords_dg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># hacky workaround to avoid allocating dg coord function in each File object</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">_output_functions</span><span class="p">[</span><span class="n">coordfunc</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords_dg</span>
+        <span class="c1"># ensure correct output function name</span>
+        <span class="n">old_name</span> <span class="o">=</span> <span class="n">tmp_proj_func</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+        <span class="n">tmp_proj_func</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">func_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">tmp_proj_func</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># restore old name</span>
+        <span class="n">tmp_proj_func</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">old_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs_visu</span><span class="o">.</span><span class="n">restore_work_function</span><span class="p">(</span><span class="n">tmp_proj_func</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NaiveFieldExporter"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.NaiveFieldExporter">[docs]</a><span class="k">class</span> <span class="nc">NaiveFieldExporter</span><span class="p">(</span><span class="n">ExporterBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exports function nodal values to disk in numpy binary format.</span>
+
+<span class="sd">    Works for simple Pn and PnDG fields.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">filename_prefix</span><span class="p">,</span>
+                 <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create exporter object for given function.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        function_space : FunctionSpace</span>
+<span class="sd">            function space where the exported functions belong</span>
+<span class="sd">        outputdir : string</span>
+<span class="sd">            directory where outputs will be stored</span>
+<span class="sd">        filename : string</span>
+<span class="sd">            prefix of output filename. Filename is prefix_nnnnn.npy</span>
+<span class="sd">            where nnnn is the export number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NaiveFieldExporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">filename_prefix</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span>
+                                                 <span class="n">next_export_ix</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span> <span class="o">=</span> <span class="n">function_space</span>
+
+        <span class="c1"># create mappings between local/global node indices</span>
+        <span class="c1"># construct global node ordering based on (x,y) coords</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">dim</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span>
+        <span class="n">x_func</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">Expression</span><span class="p">([</span><span class="s1">&#39;x[0]&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">dim</span><span class="p">))</span>
+        <span class="n">y_func</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">Expression</span><span class="p">([</span><span class="s1">&#39;x[1]&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">dim</span><span class="p">))</span>
+        <span class="n">z_func</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">Expression</span><span class="p">([</span><span class="s1">&#39;x[2]&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">dim</span><span class="p">))</span>
+        <span class="n">comm</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">comm</span>
+        <span class="k">if</span> <span class="n">dim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">rank_node_x</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">x_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">rank_node_y</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">y_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">rank_node_z</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">z_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rank_node_x</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">x_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">rank_node_y</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">y_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">rank_node_z</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">z_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># mapping of local dof to global array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_to_global</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_to_local</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># construct a single array for all the nodes</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rank_node_x</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rank_node_y</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rank_node_z</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># round coordinates to avoid noise affecting sort</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_global_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="c1"># construct global invariant node ordering</span>
+            <span class="c1"># nodes are sorted first by z then y then x</span>
+            <span class="n">sorted_ix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">lexsort</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+            <span class="c1"># construct inverse map global_ix -&gt; sorted_ix</span>
+            <span class="n">sorted_ix_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">sorted_ix</span><span class="p">)</span>
+            <span class="n">sorted_ix_inv</span><span class="p">[</span><span class="n">sorted_ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sorted_ix</span><span class="p">))</span>
+            <span class="c1"># store global coordinates</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))[:,</span> <span class="n">sorted_ix</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+            <span class="c1"># construct maps between local node numbering and global</span>
+            <span class="c1"># invariant numbering</span>
+            <span class="c1"># global_to_local[i_rank][global_ix] - returns local node index</span>
+            <span class="c1">#                                  for process i_rank</span>
+            <span class="c1"># local_to_global[i_rank[local_ix]   - returns global node index</span>
+            <span class="c1">#                                  for process i_rank</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">comm</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                <span class="n">n_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rank_node_x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">ix</span> <span class="o">=</span> <span class="n">sorted_ix</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">offset</span><span class="o">+</span><span class="n">n_nodes</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">global_to_local</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span>
+                <span class="n">ix_inv</span> <span class="o">=</span> <span class="n">sorted_ix_inv</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">offset</span><span class="o">+</span><span class="n">n_nodes</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">local_to_global</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ix_inv</span><span class="p">)</span>
+                <span class="n">offset</span> <span class="o">+=</span> <span class="n">n_nodes</span>
+
+        <span class="c1"># construct local element connectivity array</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">extruded</span><span class="p">:</span>
+            <span class="n">ufl_elem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;TensorProductElement&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Only TensorProductElement is supported&#39;</span><span class="p">)</span>
+            <span class="c1"># extruded mesh generate connectivity for all layers</span>
+            <span class="n">n_layers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">layers</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># element layers</span>
+            <span class="c1"># connectivity for first layer</span>
+            <span class="n">surf_conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">n_surf_elem</span><span class="p">,</span> <span class="n">n_elem_node</span> <span class="o">=</span> <span class="n">surf_conn</span><span class="o">.</span><span class="n">shape</span>
+
+            <span class="k">if</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">num_sub_elements</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># VectorElement case</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_elem</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">)</span>
+                <span class="n">ufl_elem</span> <span class="o">=</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">_B</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Lagrange&#39;</span><span class="p">:</span>
+                <span class="n">layer_node_offset</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">_B</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Discontinuous Lagrange&#39;</span><span class="p">:</span>
+                <span class="n">layer_node_offset</span> <span class="o">=</span> <span class="n">n_elem_node</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Unsupported vertical space&#39;</span><span class="p">)</span>
+            <span class="c1"># construct element table for all layers</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_layers</span><span class="o">*</span><span class="n">n_surf_elem</span><span class="p">,</span> <span class="n">n_elem_node</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_layers</span><span class="p">):</span>
+                <span class="n">o</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">layer_node_offset</span>
+                <span class="n">conn</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">n_surf_elem</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">n_surf_elem</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">surf_conn</span> <span class="o">+</span> <span class="n">o</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 2D mesh</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+        <span class="c1"># construct global connectivity array</span>
+        <span class="c1"># NOTE connectivity table is not unique</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connectivity</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">rank_conn</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">comm</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                <span class="c1"># convert each connectivity array to global index</span>
+                <span class="n">rank_conn</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_to_global</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">rank_conn</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+            <span class="c1"># concatenate to single array</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connectivity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rank_conn</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NaiveFieldExporter.gen_filename"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.NaiveFieldExporter.gen_filename">[docs]</a>    <span class="k">def</span> <span class="nf">gen_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1">_</span><span class="si">{1:05d}</span><span class="s1">.npz&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">iexport</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NaiveFieldExporter.export_as_index"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.NaiveFieldExporter.export_as_index">[docs]</a>    <span class="k">def</span> <span class="nf">export_as_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exports the given function to disk using the specified export</span>
+<span class="sd">        index number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">function</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span>\
+            <span class="s1">&#39;Function space does not match&#39;</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">dim</span>
+        <span class="n">comm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">comm</span>
+        <span class="n">local_data</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">global_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_global_nodes</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">comm</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">dim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">global_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">local_to_global</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">local_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">global_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">local_to_global</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">local_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_filename</span><span class="p">(</span><span class="n">iexport</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;saving state to </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="n">connectivity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connectivity</span><span class="p">,</span>
+                     <span class="n">data</span><span class="o">=</span><span class="n">global_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span> <span class="o">=</span> <span class="n">iexport</span><span class="o">+</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="NaiveFieldExporter.export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.NaiveFieldExporter.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exports the given function to disk.</span>
+<span class="sd">        Increments previous export index by 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">export_as_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span><span class="p">,</span> <span class="n">function</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NaiveFieldExporter.load"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.NaiveFieldExporter.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads nodal values from disk and assigns to the given function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">function</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span>\
+            <span class="s1">&#39;Function space does not match&#39;</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">dim</span>
+        <span class="n">comm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">comm</span>
+        <span class="k">if</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_filename</span><span class="p">(</span><span class="n">iexport</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;loading state from </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="n">npzfile</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">global_data</span> <span class="o">=</span> <span class="n">npzfile</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+            <span class="k">assert</span> <span class="n">global_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_global_nodes</span><span class="p">,</span>\
+                <span class="s1">&#39;Number of nodes does not match: </span><span class="si">{0:d}</span><span class="s1"> != </span><span class="si">{1:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">n_global_nodes</span><span class="p">,</span> <span class="n">global_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">local_data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">comm</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                <span class="n">local_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">global_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">local_to_global</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">:])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">local_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">local_data</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">function</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">data</span></div></div>
+
+
+<div class="viewcode-block" id="HDF5Exporter"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter">[docs]</a><span class="k">class</span> <span class="nc">HDF5Exporter</span><span class="p">(</span><span class="n">ExporterBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Stores fields in disk in native discretization using HDF5 containers&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">filename_prefix</span><span class="p">,</span>
+                 <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create exporter object for given function.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        function_space : FunctionSpace</span>
+<span class="sd">            function space where the exported functions belong</span>
+<span class="sd">        outputdir : string</span>
+<span class="sd">            directory where outputs will be stored</span>
+<span class="sd">        filename : string</span>
+<span class="sd">            prefix of output filename. Filename is prefix_nnnnn.h5</span>
+<span class="sd">            where nnnnn is the export number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HDF5Exporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">filename_prefix</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span>
+                                           <span class="n">next_export_ix</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span> <span class="o">=</span> <span class="n">function_space</span>
+
+<div class="viewcode-block" id="HDF5Exporter.gen_filename"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.gen_filename">[docs]</a>    <span class="k">def</span> <span class="nf">gen_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1">_</span><span class="si">{1:05d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">iexport</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HDF5Exporter.export_as_index"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.export_as_index">[docs]</a>    <span class="k">def</span> <span class="nf">export_as_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exports the given function to disk using the specified export</span>
+<span class="sd">        index number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">function</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span>\
+            <span class="s1">&#39;Function space does not match&#39;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_filename</span><span class="p">(</span><span class="n">iexport</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;saving </span><span class="si">{:}</span><span class="s1"> state to </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span> <span class="n">filename</span><span class="p">))</span>
+        <span class="k">with</span> <span class="n">DumbCheckpoint</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">FILE_CREATE</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">comm</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span> <span class="o">=</span> <span class="n">iexport</span> <span class="o">+</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="HDF5Exporter.export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exports the given function to disk.</span>
+<span class="sd">        Increments previous export index by 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">export_as_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span><span class="p">,</span> <span class="n">function</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HDF5Exporter.load"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads nodal values from disk and assigns to the given function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">function</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span>\
+            <span class="s1">&#39;Function space does not match&#39;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_filename</span><span class="p">(</span><span class="n">iexport</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;loading </span><span class="si">{:}</span><span class="s1"> state from </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span> <span class="n">filename</span><span class="p">))</span>
+        <span class="k">with</span> <span class="n">DumbCheckpoint</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">FILE_READ</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">comm</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">function</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ExportManager"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager">[docs]</a><span class="k">class</span> <span class="nc">ExportManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Handles a list of file exporter objects&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">fields_to_export</span><span class="p">,</span> <span class="n">functions</span><span class="p">,</span> <span class="n">field_metadata</span><span class="p">,</span>
+                 <span class="n">export_type</span><span class="o">=</span><span class="s1">&#39;vtk&#39;</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="n">outputdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="n">fields_to_export</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">functions</span> <span class="o">=</span> <span class="n">functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_metadata</span> <span class="o">=</span> <span class="n">field_metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="c1"># allocate dg coord field to avoid creating one in File</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coords_dg_2d</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coords_dg_3d</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># for each field create an exporter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">fields_to_export</span><span class="p">:</span>
+            <span class="n">shortname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_metadata</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;shortname&#39;</span><span class="p">]</span>
+            <span class="n">fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_metadata</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">FiredrakeFunction</span><span class="p">):</span>
+                <span class="n">native_space</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
+                <span class="n">visu_space</span> <span class="o">=</span> <span class="n">get_visu_space</span><span class="p">(</span><span class="n">native_space</span><span class="p">)</span>
+                <span class="n">coords_dg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dg_coordinates</span><span class="p">(</span><span class="n">visu_space</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">export_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;vtk&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">VTKExporter</span><span class="p">(</span><span class="n">visu_space</span><span class="p">,</span> <span class="n">shortname</span><span class="p">,</span>
+                                                      <span class="n">outputdir</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span>
+                                                      <span class="n">coords_dg</span><span class="o">=</span><span class="n">coords_dg</span><span class="p">,</span>
+                                                      <span class="n">next_export_ix</span><span class="o">=</span><span class="n">next_export_ix</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">export_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;numpy&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">NaiveFieldExporter</span><span class="p">(</span><span class="n">native_space</span><span class="p">,</span>
+                                                             <span class="n">outputdir</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span>
+                                                             <span class="n">next_export_ix</span><span class="o">=</span><span class="n">next_export_ix</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">export_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">HDF5Exporter</span><span class="p">(</span><span class="n">native_space</span><span class="p">,</span>
+                                                       <span class="n">outputdir</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span>
+                                                       <span class="n">next_export_ix</span><span class="o">=</span><span class="n">next_export_ix</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_dg_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a cached dg function to be used as dg coordinate field in VTK output objects.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">is_2d</span><span class="p">(</span><span class="n">fs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords_dg_2d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">coord_fs</span> <span class="o">=</span> <span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">(),</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;P1DGv_2d&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coords_dg_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">coord_fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;coordinates 2d dg&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords_dg_2d</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords_dg_3d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">coord_fs</span> <span class="o">=</span> <span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">(),</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+                                           <span class="n">vfamily</span><span class="o">=</span><span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="n">vdegree</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;P1DGv&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coords_dg_3d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">coord_fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;coords 3d dg&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords_dg_3d</span>
+
+<div class="viewcode-block" id="ExportManager.set_next_export_ix"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.set_next_export_ix">[docs]</a>    <span class="k">def</span> <span class="nf">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the correct export index to all child exporters&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_next_export_ix</span><span class="p">(</span><span class="n">next_export_ix</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExportManager.export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Exporting: &#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">:</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ExportManager.export_bathymetry"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.export_bathymetry">[docs]</a>    <span class="k">def</span> <span class="nf">export_bathymetry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">):</span>
+        <span class="n">bathfile</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="s1">&#39;bath.pvd&#39;</span><span class="p">))</span>
+        <span class="n">bathfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bathymetry_2d</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
+    </div>
+  </body>
+</html>
