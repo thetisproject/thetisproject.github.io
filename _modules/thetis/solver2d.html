@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.solver2d &mdash; Thetis 1.0 documentation</title>
+    <title>thetis.solver2d &#8212; Thetis 1.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/fenics.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -255,25 +255,6 @@
                                                           <span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                                                           <span class="n">bnd_conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">],</span>
                                                           <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_sw</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;pressureprojectionpicard&#39;</span><span class="p">:</span>
-
-            <span class="n">u_test</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U_2d</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">eq_mom</span> <span class="o">=</span> <span class="n">shallowwater_eq</span><span class="o">.</span><span class="n">ShallowWaterMomentumEquation</span><span class="p">(</span>
-                <span class="n">u_test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">H_2d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U_2d</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="p">,</span>
-                <span class="n">nonlin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nonlin</span><span class="p">,</span>
-                <span class="n">include_grad_div_viscosity_term</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">include_grad_div_viscosity_term</span><span class="p">,</span>
-                <span class="n">include_grad_depth_viscosity_term</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">include_grad_depth_viscosity_term</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">eq_mom</span><span class="o">.</span><span class="n">bnd_functions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">timeintegrator</span><span class="o">.</span><span class="n">PressureProjectionPicard</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eq_sw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eq_mom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">,</span>
-                                                                       <span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
-                                                                       <span class="n">bnd_conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">],</span>
-                                                                       <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_sw</span><span class="p">,</span>
-                                                                       <span class="n">solver_parameters_mom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_sw_momentum</span><span class="p">,</span>
-                                                                       <span class="n">semi_implicit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_linearized_semi_implicit_2d</span><span class="p">,</span>
-                                                                       <span class="n">theta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">shallow_water_theta</span><span class="p">)</span>
-
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;sspimex&#39;</span><span class="p">:</span>
             <span class="c1"># TODO meaningful solver params</span>
             <span class="n">sp_impl</span> <span class="o">=</span> <span class="p">{</span>
@@ -481,8 +462,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
+        &#169; Copyright 2016, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
     </div>
   </body>
 </html>

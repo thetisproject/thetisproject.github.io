@@ -2,7 +2,7 @@
  Obtaining Thetis
 ==================
 
-Gusto requires installation of `Firedrake
+Thetis requires installation of `Firedrake
 <http://firedrakeproject.org>`_ (available for Ubuntu, Mac, and in
 principle other Linux and Linux-like systems) and must be run from
 within the Firedrake virtual environment.

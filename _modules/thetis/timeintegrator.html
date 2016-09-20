@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.timeintegrator &mdash; Thetis 1.0 documentation</title>
+    <title>thetis.timeintegrator &#8212; Thetis 1.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/fenics.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -633,135 +633,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="PressureProjectionPicard"><a class="viewcode-back" href="../../thetis.html#thetis.timeintegrator.PressureProjectionPicard">[docs]</a><span class="k">class</span> <span class="nc">PressureProjectionPicard</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Pressure projection scheme with Picard iteration.&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">equation_mom</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">solver_parameters_mom</span><span class="o">=</span><span class="p">{},</span>
-                 <span class="n">theta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">semi_implicit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Creates forms for the time integrator&quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">PressureProjectionPicard</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">equation_mom</span> <span class="o">=</span> <span class="n">equation_mom</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters_mom</span> <span class="o">=</span> <span class="n">solver_parameters_mom</span>
-        <span class="k">if</span> <span class="n">semi_implicit</span><span class="p">:</span>
-            <span class="c1"># solve a preliminary linearized momentum equation before</span>
-            <span class="c1"># solving the linearized wave equation terms in a coupled system</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters_mom</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># not sure this combination makes much sense: keep both systems nonlinear</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;newtonls&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters_mom</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;newtonls&#39;</span><span class="p">)</span>
-        <span class="c1"># number of picard iterations</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">solution</span> <span class="o">=</span> <span class="n">solution</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">function_space</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">iterations</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solution_lagged</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">function_space</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solution_lagged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span>
-        <span class="n">uv_lagged</span><span class="p">,</span> <span class="n">eta_lagged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_lagged</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-        <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">fields</span>
-        <span class="c1"># create functions to hold the values of previous time step</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">Function</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">function_space</span><span class="p">())</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">Constant</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
-        <span class="c1"># for the mom. eqn. the &#39;eta&#39; field is just one of the &#39;other&#39; fields</span>
-        <span class="n">fields_mom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">fields_mom_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">fields_mom</span><span class="p">[</span><span class="s1">&#39;eta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eta_lagged</span>
-        <span class="n">fields_mom_old</span><span class="p">[</span><span class="s1">&#39;eta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eta_old</span>
-
-        <span class="c1"># the velocity solved for in the preliminary mom. solve:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">uv_star</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation_mom</span><span class="o">.</span><span class="n">function_space</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">semi_implicit</span><span class="p">:</span>
-            <span class="n">uv_star_nl</span> <span class="o">=</span> <span class="n">uv_lagged</span>
-            <span class="n">solution_nl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_lagged</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">uv_star_nl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uv_star</span>
-            <span class="n">solution_nl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span>
-
-        <span class="c1"># form for mom. eqn.:</span>
-        <span class="n">theta_const</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">F_mom</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">equation_mom</span><span class="o">.</span><span class="n">mass_term</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uv_star</span><span class="p">)</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">equation_mom</span><span class="o">.</span><span class="n">mass_term</span><span class="p">(</span><span class="n">uv_old</span><span class="p">)</span> <span class="o">-</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span><span class="o">*</span><span class="p">(</span>
-                <span class="n">theta_const</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">equation_mom</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">uv_star</span><span class="p">,</span> <span class="n">uv_star_nl</span><span class="p">,</span> <span class="n">fields_mom</span><span class="p">,</span> <span class="n">fields_mom</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
-                <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">theta_const</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">equation_mom</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">fields_mom_old</span><span class="p">,</span> <span class="n">fields_mom_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-
-        <span class="c1"># form for wave eqn. system:</span>
-        <span class="c1"># M (u^n+1 - u^*) + G (eta^n+theta - eta_lagged) = 0</span>
-        <span class="c1"># M (eta^n+1 - eta^n) + C (u^n+theta) = 0</span>
-        <span class="c1"># the &#39;implicit&#39; terms are the gradient (G) and divergence term (C) in the mom. and continuity eqn. resp.</span>
-        <span class="c1"># where u^* is the velocity solved for in the mom. eqn., and G eta_lagged the gradient term in that eqn.</span>
-        <span class="n">uv_test</span><span class="p">,</span> <span class="n">eta_test</span> <span class="o">=</span> <span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">test</span><span class="p">)</span>
-        <span class="n">mass_term_star</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">uv_test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">uv_star</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span> <span class="o">+</span> <span class="n">inner</span><span class="p">(</span><span class="n">eta_test</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">F</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">mass_term</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span> <span class="o">-</span> <span class="n">mass_term_star</span> <span class="o">-</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span><span class="o">*</span><span class="p">(</span>
-                <span class="n">theta_const</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="s1">&#39;implicit&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="n">solution_nl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
-                <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">theta_const</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="s1">&#39;implicit&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="c1"># subtract G eta_lagged: G is the implicit term in the mom. eqn.</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation_mom</span><span class="o">.</span><span class="n">terms</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation_mom</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;implicit&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">F</span> <span class="o">+=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span><span class="o">*</span><span class="p">(</span>
-                    <span class="o">-</span> <span class="n">theta_const</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">terms</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uv_star</span><span class="p">,</span> <span class="n">eta_lagged</span><span class="p">,</span> <span class="n">uv_star_nl</span><span class="p">,</span> <span class="n">eta_lagged</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
-                    <span class="o">-</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">theta_const</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">terms</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
-                <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_solver</span><span class="p">()</span>
-
-<div class="viewcode-block" id="PressureProjectionPicard.update_solver"><a class="viewcode-back" href="../../thetis.html#thetis.timeintegrator.PressureProjectionPicard.update_solver">[docs]</a>    <span class="k">def</span> <span class="nf">update_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">prob</span> <span class="o">=</span> <span class="n">NonlinearVariationalProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F_mom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">uv_star</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_mom</span> <span class="o">=</span> <span class="n">NonlinearVariationalSolver</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span>
-                                                     <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters_mom</span><span class="p">,</span>
-                                                     <span class="n">options_prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;_mom&#39;</span><span class="p">)</span>
-        <span class="c1"># Ensure LU assembles monolithic matrices</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pc_type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;lu&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">[</span><span class="s1">&#39;mat_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;aij&#39;</span>
-        <span class="n">prob</span> <span class="o">=</span> <span class="n">NonlinearVariationalProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">NonlinearVariationalSolver</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span>
-                                                 <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">,</span>
-                                                 <span class="n">options_prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="PressureProjectionPicard.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.timeintegrator.PressureProjectionPicard.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Assigns initial conditions to all required fields.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solution_lagged</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
-        <span class="c1"># assign values to old functions</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">k</span><span class="p">])</span></div>
-
-<div class="viewcode-block" id="PressureProjectionPicard.advance"><a class="viewcode-back" href="../../thetis.html#thetis.timeintegrator.PressureProjectionPicard.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">updateForcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Advances equations for one time step.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">updateForcings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">updateForcings</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="n">dt</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterations</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">solution_lagged</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver_mom</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-
-        <span class="c1"># shift time</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">k</span><span class="p">])</span></div></div>
-
-
 <div class="viewcode-block" id="SSPIMEX"><a class="viewcode-back" href="../../thetis.html#thetis.timeintegrator.SSPIMEX">[docs]</a><span class="k">class</span> <span class="nc">SSPIMEX</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    SSP-IMEX time integration scheme based on [1], method (17).</span>
@@ -1110,8 +981,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
+        &#169; Copyright 2016, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
     </div>
   </body>
 </html>
