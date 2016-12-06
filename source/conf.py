@@ -348,3 +348,6 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+# Generate docstrings for both class and its __init__
+autoclass_content = 'both'

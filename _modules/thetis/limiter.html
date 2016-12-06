@@ -24,6 +24,8 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="top" title="Thetis 1.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" />
 <!--[if lte IE 6]>
@@ -140,6 +142,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
 
+    <span class="k">def</span> <span class="nf">_update_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Re-compute element centroid values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tri</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="p">)</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="p">)</span>
+
+        <span class="n">a</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">tri</span><span class="o">*</span><span class="n">test</span><span class="o">*</span><span class="n">dx</span><span class="p">)</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">field</span><span class="o">*</span><span class="n">test</span><span class="o">*</span><span class="n">dx</span><span class="p">)</span>
+        <span class="n">solve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroids</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+
 <div class="viewcode-block" id="VertexBasedP1DGLimiter.compute_bounds"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.compute_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">compute_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-compute min/max values of all neighbouring centroids</span>
@@ -207,7 +220,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.9.
     </div>
   </body>
 </html>

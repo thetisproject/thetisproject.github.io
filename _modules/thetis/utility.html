@@ -24,6 +24,8 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="top" title="Thetis 1.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" />
 <!--[if lte IE 6]>
@@ -67,8 +69,6 @@
   <h1>Source code for thetis.utility</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Utility functions and classes for 3D hydrostatic ocean model</span>
-
-<span class="sd">Tuomas Karna 2015-02-21</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.firedrake</span> <span class="k">import</span> <span class="o">*</span>
@@ -87,9 +87,8 @@
 
 <span class="n">ds_surf</span> <span class="o">=</span> <span class="n">ds_t</span>
 <span class="n">ds_bottom</span> <span class="o">=</span> <span class="n">ds_b</span>
-<span class="c1"># NOTE some functions now depend on FlowSolver object</span>
-<span class="c1"># TODO move those functions in the solver class</span>
 
+<span class="c1"># TODO move 3d model classes to separate module</span>
 
 <div class="viewcode-block" id="FrozenClass"><a class="viewcode-back" href="../../thetis.html#thetis.utility.FrozenClass">[docs]</a><span class="k">class</span> <span class="nc">FrozenClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A class where creating a new attribute will raise an exception if _isfrozen == True&quot;&quot;&quot;</span>
@@ -119,9 +118,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">coeff</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="c1"># classes = (Function, Constant, ufl.algebra.Sum, ufl.algebra.Product)</span>
-        <span class="c1"># assert not isinstance(coeff, classes), \</span>
-            <span class="c1"># (&#39;bad argument type: &#39; + str(type(coeff)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coeff_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coeff</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SumFunction.get_sum"><a class="viewcode-back" href="../../thetis.html#thetis.utility.SumFunction.get_sum">[docs]</a>    <span class="k">def</span> <span class="nf">get_sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -216,10 +212,15 @@
 
 
 <div class="viewcode-block" id="create_directory"><a class="viewcode-back" href="../../thetis.html#thetis.utility.create_directory">[docs]</a><span class="k">def</span> <span class="nf">create_directory</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">COMM_WORLD</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a directory on disk</span>
+
+<span class="sd">    Raises IOError if a file with the same name already exists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;file with same name exists&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;file with same name exists&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="n">comm</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
@@ -227,7 +228,16 @@
 
 
 <div class="viewcode-block" id="extrude_mesh_sigma"><a class="viewcode-back" href="../../thetis.html#thetis.utility.extrude_mesh_sigma">[docs]</a><span class="k">def</span> <span class="nf">extrude_mesh_sigma</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Extrudes 2d surface mesh with bathymetry data defined in a 2d field.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extrudes a 2d surface mesh with bathymetry data defined in a 2d field.</span>
+
+<span class="sd">    Generates a uniform terrain following mesh.</span>
+
+<span class="sd">    :param mesh2d: 2D mesh</span>
+<span class="sd">    :param n_layers: number of vertical layers</span>
+<span class="sd">    :param bathymetry: 2D :class:`Function` of the bathymetry</span>
+<span class="sd">        (the depth of the domain; positive downwards)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mesh</span> <span class="o">=</span> <span class="n">ExtrudedMesh</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">layers</span><span class="o">=</span><span class="n">n_layers</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="n">n_layers</span><span class="p">)</span>
 
     <span class="n">coordinates</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">coordinates</span>
@@ -266,23 +276,35 @@
 
 
 <div class="viewcode-block" id="comp_volume_2d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.comp_volume_2d">[docs]</a><span class="k">def</span> <span class="nf">comp_volume_2d</span><span class="p">(</span><span class="n">eta</span><span class="p">,</span> <span class="n">bath</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes volume of the 2D domain as an integral of the elevation field&quot;&quot;&quot;</span>
     <span class="n">val</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">((</span><span class="n">eta</span><span class="o">+</span><span class="n">bath</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">val</span></div>
 
 
 <div class="viewcode-block" id="comp_volume_3d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.comp_volume_3d">[docs]</a><span class="k">def</span> <span class="nf">comp_volume_3d</span><span class="p">(</span><span class="n">mesh</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes volume of the 3D domain as an integral&quot;&quot;&quot;</span>
     <span class="n">one</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">mesh</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">ufl_domain</span><span class="p">())</span>
     <span class="n">val</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">one</span><span class="o">*</span><span class="n">dx</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">val</span></div>
 
 
 <div class="viewcode-block" id="comp_tracer_mass_3d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.comp_tracer_mass_3d">[docs]</a><span class="k">def</span> <span class="nf">comp_tracer_mass_3d</span><span class="p">(</span><span class="n">scalar_func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes total tracer mass in the 3D domain</span>
+
+<span class="sd">    :param scalar_func: scalar :class:`Function` to integrate</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">val</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">scalar_func</span><span class="o">*</span><span class="n">dx</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">val</span></div>
 
 
 <div class="viewcode-block" id="get_zcoord_from_mesh"><a class="viewcode-back" href="../../thetis.html#thetis.utility.get_zcoord_from_mesh">[docs]</a><span class="k">def</span> <span class="nf">get_zcoord_from_mesh</span><span class="p">(</span><span class="n">zcoord</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot;Evaluates z coordinates from the 3D mesh&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluates z coordinates from the 3D mesh</span>
+
+<span class="sd">    :param zcoord: scalar :class:`Function` where coordinates will be stored</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO coordinates should probably be interpolated instead</span>
     <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_atol&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
     <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_rtol&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">16</span><span class="p">)</span>
     <span class="n">fs</span> <span class="o">=</span> <span class="n">zcoord</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
@@ -295,9 +317,46 @@
 
 
 <div class="viewcode-block" id="VerticalVelocitySolver"><a class="viewcode-back" href="../../thetis.html#thetis.utility.VerticalVelocitySolver">[docs]</a><span class="k">class</span> <span class="nc">VerticalVelocitySolver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computes vertical velocity from continuity equation&quot;&quot;&quot;</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Computes vertical velocity diagnostically from the continuity equation</span>
+
+<span class="sd">    Vertical velocity is obtained from the continuity equation</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \frac{\partial w}{\partial z} = \nabla_h \cdot \textbf{u}</span>
+
+<span class="sd">    and the bottom impermeability condition (:math:`h` denotes the bathymetry)</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \textbf{n}_h \cdot \textbf{u} + w n_z &amp;= 0 \quad \forall \mathbf{x} \in \Gamma_{b} \\</span>
+<span class="sd">        \Leftrightarrow w &amp;= -\nabla_h h \cdot \mathbf{u} \quad \forall \mathbf{x} \in \Gamma_{b}</span>
+
+<span class="sd">    :math:`w` can be solved with the weak form</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_{\Gamma_s} w n_z \varphi dS</span>
+<span class="sd">        + \int_{\mathcal{I}_h} \text{mean}(w) \text{jump}(\varphi n_z) dS</span>
+<span class="sd">        - \int_{\Omega} w \frac{\partial \varphi}{\partial z} dx</span>
+<span class="sd">        = \\</span>
+<span class="sd">        \int_{\Omega} \mathbf{u} \cdot \nabla_h \varphi dx</span>
+<span class="sd">        - \int_{\mathcal{I}_h \cup \mathcal{I}_v} \text{mean}(\mathbf{u}) \cdot \text{jump}(\varphi \mathbf{n}_h) dS</span>
+<span class="sd">        - \int_{\Gamma_s} \mathbf{u} \cdot \varphi \mathbf{n}_h dS</span>
+
+<span class="sd">    where the :math:`\Gamma_b` terms vanish due to the bottom impermeability</span>
+<span class="sd">    condition.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span> <span class="n">boundary_funcs</span><span class="o">=</span><span class="p">{},</span>
                  <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param solution: w :class:`Function`</span>
+<span class="sd">        :param uv: horizontal velocity :class:`Function`</span>
+<span class="sd">        :param bathymetry: bathymetry :class:`Function`</span>
+<span class="sd">        :param boundary_funcs: boundary conditions used in the 3D momentum</span>
+<span class="sd">        equation. Provides external values of uv (if any).</span>
+<span class="sd">        :type boundary_funcs: dict</span>
+<span class="sd">        :param solver_parameters: PETSc solver options</span>
+<span class="sd">        :type solver_parameters: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">)</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_type&#39;</span><span class="p">,</span> <span class="s1">&#39;preonly&#39;</span><span class="p">)</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;pc_type&#39;</span><span class="p">,</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">)</span>
@@ -348,30 +407,45 @@
                 <span class="c1"># use symmetry condition</span>
                 <span class="n">l</span> <span class="o">+=</span> <span class="o">-</span><span class="p">(</span><span class="n">uv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">uv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">test</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">ds_bnd</span>
 
-        <span class="c1"># TODO needs machinery to recompute jacobian after mesh update</span>
+        <span class="c1"># NOTE For ALE mesh constant_jacobian should be False</span>
+        <span class="c1"># however the difference is very small as A is nearly independent of</span>
+        <span class="c1"># mesh stretching: only the normals vary in time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">=</span> <span class="n">LinearVariationalProblem</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span>
                                              <span class="n">constant_jacobian</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">LinearVariationalSolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">,</span>
                                               <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
 
 <div class="viewcode-block" id="VerticalVelocitySolver.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility.VerticalVelocitySolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute w&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="VerticalIntegrator"><a class="viewcode-back" href="../../thetis.html#thetis.utility.VerticalIntegrator">[docs]</a><span class="k">class</span> <span class="nc">VerticalIntegrator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes vertical integral of the scalar field in the output</span>
-<span class="sd">    function space.</span>
+<span class="sd">    Computes vertical integral (or average) of a field.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">bottom_to_top</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">bnd_value</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
+                 <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elevation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param input: 3D field to integrate</span>
+<span class="sd">        :param output: 3D field where the integral is stored</span>
+<span class="sd">        :param bottom_to_top: Defines the integration direction: If True integration is performed along the z axis, from bottom surface to top surface.</span>
+<span class="sd">        :param bnd_value: Value of the integral at the bottom (top) boundary if bottom_to_top is True (False)</span>
+<span class="sd">        :param average: If True computes the vertical average instead. Requires bathymetry and elevation fields</span>
+<span class="sd">        :param bathymetry: 3D field defining the bathymetry</span>
+<span class="sd">        :param elevation: 3D field defining the free surface elevation</span>
+<span class="sd">        :param solver_parameters: PETSc solver options</span>
+<span class="sd">        :type solver_parameters: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">)</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_type&#39;</span><span class="p">,</span> <span class="s1">&#39;preonly&#39;</span><span class="p">)</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;pc_type&#39;</span><span class="p">,</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">)</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">,</span> <span class="s1">&#39;preonly&#39;</span><span class="p">)</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;sub_pc_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ilu&#39;</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
         <span class="n">space</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
         <span class="n">mesh</span> <span class="o">=</span> <span class="n">space</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
         <span class="n">vertical_is_dg</span> <span class="o">=</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">space</span><span class="o">.</span><span class="n">fiat_element</span><span class="p">)</span><span class="o">.</span><span class="n">vertical_dg</span>
@@ -394,7 +468,7 @@
             <span class="n">bnd_term</span> <span class="o">=</span> <span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="n">bnd_value</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ds_surf</span>
             <span class="n">mass_bnd_term</span> <span class="o">=</span> <span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="n">tri</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ds_bottom</span>
 
-        <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="n">inner</span><span class="p">(</span><span class="n">Dx</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">tri</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">+</span> <span class="n">mass_bnd_term</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="n">inner</span><span class="p">(</span><span class="n">Dx</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">tri</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">+</span> <span class="n">mass_bnd_term</span>
         <span class="n">gamma</span> <span class="o">=</span> <span class="p">(</span><span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
         <span class="k">if</span> <span class="n">bottom_to_top</span><span class="p">:</span>
             <span class="n">up_value</span> <span class="o">=</span> <span class="n">avg</span><span class="p">(</span><span class="n">tri</span><span class="o">*</span><span class="n">gamma</span><span class="p">)</span>
@@ -404,31 +478,49 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">ufl_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">dim</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">ufl_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
-                    <span class="n">a</span> <span class="o">+=</span> <span class="n">up_value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="n">phi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS_h</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">+=</span> <span class="n">up_value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="n">phi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS_h</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">a</span> <span class="o">+=</span> <span class="n">up_value</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS_h</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">+=</span> <span class="n">up_value</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS_h</span>
         <span class="n">source</span> <span class="o">=</span> <span class="nb">input</span>
         <span class="k">if</span> <span class="n">average</span><span class="p">:</span>
-            <span class="c1"># FIXME this should be H not h in case of a moving mesh</span>
-            <span class="n">source</span> <span class="o">=</span> <span class="nb">input</span><span class="o">/</span><span class="n">bathymetry</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">+</span> <span class="n">bnd_term</span>
-        <span class="c1"># TODO needs machinery to recompute jacobian after mesh update</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">=</span> <span class="n">LinearVariationalProblem</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">constant_jacobian</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="nb">input</span><span class="o">/</span><span class="p">(</span><span class="n">elevation</span> <span class="o">+</span> <span class="n">bathymetry</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="nb">input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">+</span> <span class="n">bnd_term</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">=</span> <span class="n">LinearVariationalProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">constant_jacobian</span><span class="o">=</span><span class="n">average</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">LinearVariationalSolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
 
 <div class="viewcode-block" id="VerticalIntegrator.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility.VerticalIntegrator.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;vert_integral&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the integral and stores it in the :arg:`output` field.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="DensitySolver"><a class="viewcode-back" href="../../thetis.html#thetis.utility.DensitySolver">[docs]</a><span class="k">class</span> <span class="nc">DensitySolver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
 <span class="sd">    Computes density from salinity and temperature using the equation of state.</span>
 
-<span class="sd">    Density is computed point-wise assuming that T,S and rho are in the same</span>
-<span class="sd">    function space.</span>
+<span class="sd">    Water density is defined as</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \rho = \rho&#39;(T, S, p) + \rho_0</span>
+
+<span class="sd">    This method computes the density anomaly :math:`\rho&#39;`.</span>
+<span class="sd">    Density is computed point-wise assuming that temperature, salinity and</span>
+<span class="sd">    density are in the same function space.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">salinity</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">eos_class</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param salinity: water salinity field</span>
+<span class="sd">        :type salinity: :class:`Function`</span>
+<span class="sd">        :param temperature: water temperature field</span>
+<span class="sd">        :type temperature: :class:`Function`</span>
+<span class="sd">        :param density: water density field</span>
+<span class="sd">        :type density: :class:`Function`</span>
+<span class="sd">        :param eos_class: equation of state that defines water density</span>
+<span class="sd">        :type eos_class: :class:`EquationOfState`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">density</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eos</span> <span class="o">=</span> <span class="n">eos_class</span>
 
@@ -442,6 +534,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="n">density</span>
 
     <span class="k">def</span> <span class="nf">_get_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns numpy data array from a :class:`Function`&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">FiredrakeFunction</span><span class="p">):</span>
             <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">==</span> <span class="n">function</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">function</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
@@ -451,6 +544,7 @@
         <span class="k">return</span> <span class="n">function</span>
 
 <div class="viewcode-block" id="DensitySolver.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility.DensitySolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute density&quot;&quot;&quot;</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
         <span class="n">th</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
         <span class="n">p</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># NOTE ignore pressure for now</span>
@@ -459,16 +553,25 @@
 
 
 <div class="viewcode-block" id="compute_baroclinic_head"><a class="viewcode-back" href="../../thetis.html#thetis.utility.compute_baroclinic_head">[docs]</a><span class="k">def</span> <span class="nf">compute_baroclinic_head</span><span class="p">(</span><span class="n">solver</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes baroclinic head from density field</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Computes the baroclinic head :math:`r` from the density field</span>
 
-<span class="sd">    r = 1/rho_0 int_{z=-h}^{\eta} rho&#39; dz</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        r = \frac{1}{\rho_0} \int_{z}^\eta  \rho&#39; d\zeta.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">solver</span><span class="o">.</span><span class="n">density_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-    <span class="n">solver</span><span class="o">.</span><span class="n">rho_integrator</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-    <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">baroc_head_3d</span> <span class="o">*=</span> <span class="o">-</span><span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;rho0_inv&#39;</span><span class="p">]</span>
-    <span class="n">solver</span><span class="o">.</span><span class="n">baro_head_averager</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-    <span class="n">solver</span><span class="o">.</span><span class="n">extract_surf_baro_head</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div>
+    <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;density_solve&#39;</span><span class="p">):</span>
+        <span class="n">solver</span><span class="o">.</span><span class="n">density_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;rho_integral&#39;</span><span class="p">):</span>
+        <span class="n">solver</span><span class="o">.</span><span class="n">rho_integrator</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+        <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">baroc_head_3d</span> <span class="o">*=</span> <span class="o">-</span><span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;rho0_inv&#39;</span><span class="p">]</span>
+    <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;extr_bot_bhead&#39;</span><span class="p">):</span>
+        <span class="n">solver</span><span class="o">.</span><span class="n">extract_bot_baro_head</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;average_bhead&#39;</span><span class="p">):</span>
+        <span class="n">solver</span><span class="o">.</span><span class="n">baro_head_averager</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;extr_top_bhead&#39;</span><span class="p">):</span>
+        <span class="n">solver</span><span class="o">.</span><span class="n">extract_surf_baro_head</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;copy_bhead_3d&#39;</span><span class="p">):</span>
+        <span class="n">solver</span><span class="o">.</span><span class="n">copy_mean_baroc_head_to_3d</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="VelocityMagnitudeSolver"><a class="viewcode-back" href="../../thetis.html#thetis.utility.VelocityMagnitudeSolver">[docs]</a><span class="k">class</span> <span class="nc">VelocityMagnitudeSolver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -477,6 +580,24 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_val</span><span class="o">=</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span>
                  <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param solution: scalar field for velocity magnitude scalar :class:`Function`</span>
+<span class="sd">        :type solution: :class:`Function`</span>
+<span class="sd">        :param u: horizontal velocity</span>
+<span class="sd">        :type u: :class:`Function`</span>
+<span class="sd">        :param w: horizontal velocity</span>
+<span class="sd">        :type w: :class:`Function`</span>
+<span class="sd">        :param min_val: minimum value of magnitude. Minimum value of solution</span>
+<span class="sd">            will be clipped to this value</span>
+<span class="sd">        :type min_val: float</span>
+<span class="sd">        :param solver_parameters: PETSc solver options</span>
+<span class="sd">        :type solver_parameters: dict</span>
+
+
+<span class="sd">        If :arg:`u` is None computes magnitude of (0,0,w).</span>
+
+<span class="sd">        If :arg:`w` is None computes magnitude of (u[0],u[1],0).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solution</span> <span class="o">=</span> <span class="n">solution</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_val</span> <span class="o">=</span> <span class="n">min_val</span>
         <span class="n">function_space</span> <span class="o">=</span> <span class="n">solution</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
@@ -494,12 +615,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">LinearVariationalSolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
 
 <div class="viewcode-block" id="VelocityMagnitudeSolver.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility.VelocityMagnitudeSolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the magnitude&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
         <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="HorizontalJumpDiffusivity"><a class="viewcode-back" href="../../thetis.html#thetis.utility.HorizontalJumpDiffusivity">[docs]</a><span class="k">class</span> <span class="nc">HorizontalJumpDiffusivity</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Computes tracer jump diffusivity for horizontal advection.&quot;&quot;&quot;</span>
+    <span class="c1"># TODO OBSOLETE should be shipped to oblivion</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">tracer</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="p">,</span> <span class="n">umag</span><span class="p">,</span>
                  <span class="n">tracer_mag</span><span class="p">,</span> <span class="n">max_val</span><span class="p">,</span> <span class="n">min_val</span><span class="o">=</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_atol&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">6</span><span class="p">)</span>
@@ -530,10 +653,28 @@
 
 <div class="viewcode-block" id="ExpandFunctionTo3d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.ExpandFunctionTo3d">[docs]</a><span class="k">class</span> <span class="nc">ExpandFunctionTo3d</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Copies a field from 2d mesh to 3d mesh, assigning the same value over the</span>
-<span class="sd">    vertical dimension. Horizontal function space must be the same.</span>
+<span class="sd">    Copy a 2D field to 3D</span>
+
+<span class="sd">    Copies a field from 2D mesh to 3D mesh, assigning the same value over the</span>
+<span class="sd">    vertical dimension. Horizontal function spaces must be the same.</span>
+
+<span class="sd">        &gt;&gt;&gt; U = FunctionSpace(mesh, &#39;DG&#39;, 1)</span>
+<span class="sd">        &gt;&gt;&gt; U_2d = FunctionSpace(mesh2d, &#39;DG&#39;, 1)</span>
+<span class="sd">        &gt;&gt;&gt; func2d = Function(U_2d)</span>
+<span class="sd">        &gt;&gt;&gt; func3d = Function(U)</span>
+<span class="sd">        &gt;&gt;&gt; ex = ExpandFunctionTo3d(func2d, func3d)</span>
+<span class="sd">        &gt;&gt;&gt; ex.solve()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_2d</span><span class="p">,</span> <span class="n">output_3d</span><span class="p">,</span> <span class="n">elem_height</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param input_2d: 2D source field</span>
+<span class="sd">        :type input_2d: :class:`Function`</span>
+<span class="sd">        :param output_3d: 3D target field</span>
+<span class="sd">        :type output_3d: :class:`Function`</span>
+<span class="sd">        :param elem_height: scalar :class:`Function` in 3D mesh that defines</span>
+<span class="sd">            the vertical element size. Needed only in the case of HDiv function</span>
+<span class="sd">            spaces.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_2d</span> <span class="o">=</span> <span class="n">input_2d</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_3d</span> <span class="o">=</span> <span class="n">output_3d</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fs_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_2d</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
@@ -605,22 +746,52 @@
 
 <div class="viewcode-block" id="SubFunctionExtractor"><a class="viewcode-back" href="../../thetis.html#thetis.utility.SubFunctionExtractor">[docs]</a><span class="k">class</span> <span class="nc">SubFunctionExtractor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Extract a 2D subfunction from a 3D extruded mesh.</span>
+<span class="sd">    Extract a 2D sub-function from a 3D function in an extruded mesh</span>
 
-<span class="sd">    input_3d: Function in 3d mesh</span>
-<span class="sd">    output_2d: Function in 2d mesh</span>
-<span class="sd">    boundary: &#39;top&#39;|&#39;bottom&#39;</span>
-<span class="sd">        Defines whether to extract from the surface or bottom 3D elements</span>
-<span class="sd">    elem_facet: &#39;top&#39;|&#39;bottom&#39;|&#39;average&#39;</span>
-<span class="sd">        Defines which facet of the 3D element is extracted. The &#39;average&#39;</span>
-<span class="sd">        computes mean of the top and bottom facets of the 3D element.</span>
-<span class="sd">    elem_height: Function in 2d mesh</span>
-<span class="sd">        Function that defines the element heights</span>
-<span class="sd">        (required for Raviart-Thomas spaces only)</span>
+<span class="sd">    Given 2D and 3D functions,</span>
+
+<span class="sd">        &gt;&gt;&gt; U = FunctionSpace(mesh, &#39;DG&#39;, 1)</span>
+<span class="sd">        &gt;&gt;&gt; U_2d = FunctionSpace(mesh2d, &#39;DG&#39;, 1)</span>
+<span class="sd">        &gt;&gt;&gt; func2d = Function(U_2d)</span>
+<span class="sd">        &gt;&gt;&gt; func3d = Function(U)</span>
+
+<span class="sd">    Get surface value:</span>
+
+<span class="sd">        &gt;&gt;&gt; ex = SubFunctionExtractor(func3d, func2d,</span>
+<span class="sd">                boundary=&#39;top&#39;, elem_facet=&#39;top&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; ex.solve()</span>
+
+<span class="sd">    Get bottom value:</span>
+
+<span class="sd">        &gt;&gt;&gt; ex = SubFunctionExtractor(func3d, func2d,</span>
+<span class="sd">                boundary=&#39;bottom&#39;, elem_facet=&#39;bottom&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; ex.solve()</span>
+
+<span class="sd">    Get value at the top of bottom element:</span>
+
+<span class="sd">        &gt;&gt;&gt; ex = SubFunctionExtractor(func3d, func2d,</span>
+<span class="sd">                boundary=&#39;bottom&#39;, elem_facet=&#39;top&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; ex.solve()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_3d</span><span class="p">,</span> <span class="n">output_2d</span><span class="p">,</span>
                  <span class="n">boundary</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">elem_facet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">elem_height</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param input_3d: 3D source field</span>
+<span class="sd">        :type input_3d: :class:`Function`</span>
+<span class="sd">        :param output_2d: 2D target field</span>
+<span class="sd">        :type output_2d: :class:`Function`</span>
+<span class="sd">        :param boundary: &#39;top&#39;|&#39;bottom&#39;</span>
+<span class="sd">            Defines whether to extract from the surface or bottom 3D elements</span>
+<span class="sd">        :type boundary: string</span>
+<span class="sd">        :param elem_facet: &#39;top&#39;|&#39;bottom&#39;|&#39;average&#39;</span>
+<span class="sd">            Defines which facet of the 3D element is extracted. The &#39;average&#39;</span>
+<span class="sd">            computes mean of the top and bottom facets of the 3D element.</span>
+<span class="sd">        :type elem_facet: string</span>
+<span class="sd">        :param elem_height: scalar :class:`Function` in 2D mesh that defines</span>
+<span class="sd">            the vertical element size. Needed only in the case of HDiv function</span>
+<span class="sd">            spaces.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_3d</span> <span class="o">=</span> <span class="n">input_3d</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_2d</span> <span class="o">=</span> <span class="n">output_2d</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fs_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_3d</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
@@ -720,9 +891,12 @@
 
 <div class="viewcode-block" id="compute_elem_height"><a class="viewcode-back" href="../../thetis.html#thetis.utility.compute_elem_height">[docs]</a><span class="k">def</span> <span class="nf">compute_elem_height</span><span class="p">(</span><span class="n">zcoord</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute element heights on an extruded mesh.</span>
-<span class="sd">    zcoord (P1CG) contains zcoordinates of the mesh</span>
-<span class="sd">    element height is stored in output function (typ. P1DG).</span>
+<span class="sd">    Computes the element height on an extruded mesh.</span>
+
+<span class="sd">    :param zcoord: field that contains the z coordinates of the mesh</span>
+<span class="sd">    :type zcoord: :class:`Function`</span>
+<span class="sd">    :param output: field where element height is stored</span>
+<span class="sd">    :type output: :class:`Function`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fs_in</span> <span class="o">=</span> <span class="n">zcoord</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
     <span class="n">fs_out</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
@@ -751,17 +925,33 @@
     <span class="k">return</span> <span class="n">output</span></div>
 
 
-<div class="viewcode-block" id="compute_bottom_drag"><a class="viewcode-back" href="../../thetis.html#thetis.utility.compute_bottom_drag">[docs]</a><span class="k">def</span> <span class="nf">compute_bottom_drag</span><span class="p">(</span><span class="n">z_bottom</span><span class="p">,</span> <span class="n">drag</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computes bottom drag coefficient (Cd) from boundary log layer.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="compute_bottom_drag"><a class="viewcode-back" href="../../thetis.html#thetis.utility.compute_bottom_drag">[docs]</a><span class="k">def</span> <span class="nf">compute_bottom_drag</span><span class="p">(</span><span class="n">h_b</span><span class="p">,</span> <span class="n">drag</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Computes bottom drag coefficient (Cd) from the law-of-the wall</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        C_D = \left( \frac{\kappa}{\ln (h_b + z_0)/z_0} \right)^2</span>
+
+<span class="sd">    :param h_b: the height above bed where the bottom velocity is evaluated in</span>
+<span class="sd">        the law-of-the-wall fit</span>
+<span class="sd">    :type h_b: :class:`Function`</span>
+<span class="sd">    :param drag: field where C_D is stored</span>
+<span class="sd">    :type drag: :class:`Function`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># FIXME z0 should be a field, i.e. an argument to this function</span>
     <span class="n">von_karman</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;von_karman&#39;</span><span class="p">]</span>
     <span class="n">z0_friction</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;z0_friction&#39;</span><span class="p">]</span>
-    <span class="n">drag</span><span class="o">.</span><span class="n">assign</span><span class="p">((</span><span class="n">von_karman</span> <span class="o">/</span> <span class="n">ln</span><span class="p">((</span><span class="n">z_bottom</span> <span class="o">+</span> <span class="n">z0_friction</span><span class="p">)</span><span class="o">/</span><span class="n">z0_friction</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">drag</span><span class="o">.</span><span class="n">assign</span><span class="p">((</span><span class="n">von_karman</span> <span class="o">/</span> <span class="n">ln</span><span class="p">((</span><span class="n">h_b</span> <span class="o">+</span> <span class="n">z0_friction</span><span class="p">)</span><span class="o">/</span><span class="n">z0_friction</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">drag</span></div>
 
 
 <div class="viewcode-block" id="compute_bottom_friction"><a class="viewcode-back" href="../../thetis.html#thetis.utility.compute_bottom_friction">[docs]</a><span class="k">def</span> <span class="nf">compute_bottom_friction</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">uv_3d</span><span class="p">,</span> <span class="n">uv_bottom_2d</span><span class="p">,</span>
                             <span class="n">z_bottom_2d</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">,</span>
                             <span class="n">bottom_drag_2d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Updates bottom friction related fields for the 3D model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO expand docs</span>
     <span class="c1"># compute velocity at middle of bottom element</span>
     <span class="n">solver</span><span class="o">.</span><span class="n">extract_uv_bottom</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
     <span class="n">solver</span><span class="o">.</span><span class="n">extract_z_bottom</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
@@ -796,81 +986,82 @@
     <span class="n">ExpandFunctionTo3d</span><span class="p">(</span><span class="n">sol2d</span><span class="p">,</span> <span class="n">sol3d</span><span class="p">)</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="ALEMeshCoordinateUpdater"><a class="viewcode-back" href="../../thetis.html#thetis.utility.ALEMeshCoordinateUpdater">[docs]</a><span class="k">class</span> <span class="nc">ALEMeshCoordinateUpdater</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Updates extrusion so that free surface mathces eta3d value&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span> <span class="n">z_coord</span><span class="p">,</span> <span class="n">z_coord_ref</span><span class="p">,</span>
-                 <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_atol&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_rtol&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">16</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coords</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">coordinates</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">z_coord</span> <span class="o">=</span> <span class="n">z_coord</span>
+<div class="viewcode-block" id="ALEMeshUpdater"><a class="viewcode-back" href="../../thetis.html#thetis.utility.ALEMeshUpdater">[docs]</a><span class="k">class</span> <span class="nc">ALEMeshUpdater</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes mesh velocity from changes in (continuous) 2D elevation field</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">solver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span><span class="p">:</span>
+            <span class="c1"># continous elevation</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elev_cg_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1_2d</span><span class="p">,</span>
+                                       <span class="n">name</span><span class="o">=</span><span class="s1">&#39;elev cg 2d&#39;</span><span class="p">)</span>
+            <span class="c1"># elevation in coordinate space</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proj_elev_to_cg_2d</span> <span class="o">=</span> <span class="n">Projector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_2d</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">elev_cg_2d</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proj_elev_cg_to_coords_2d</span> <span class="o">=</span> <span class="n">Projector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elev_cg_2d</span><span class="p">,</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_cg_2d</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cp_elev_2d_to_3d</span> <span class="o">=</span> <span class="n">ExpandFunctionTo3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_cg_2d</span><span class="p">,</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_cg_3d</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cp_w_mesh_surf_2d_to_3d</span> <span class="o">=</span> <span class="n">ExpandFunctionTo3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_mesh_surf_2d</span><span class="p">,</span>
+                                                              <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_mesh_surf_3d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cp_v_elem_size_to_2d</span> <span class="o">=</span> <span class="n">SubFunctionExtractor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">v_elem_size_3d</span><span class="p">,</span>
+                                                         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">v_elem_size_2d</span><span class="p">,</span>
+                                                         <span class="n">boundary</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">elem_facet</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
 
-        <span class="n">fs</span> <span class="o">=</span> <span class="n">z_coord</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
-        <span class="c1"># sigma stretch function</span>
-        <span class="n">new_z</span> <span class="o">=</span> <span class="n">eta</span><span class="o">*</span><span class="p">(</span><span class="n">z_coord_ref</span> <span class="o">+</span> <span class="n">bathymetry</span><span class="p">)</span><span class="o">/</span><span class="n">bathymetry</span> <span class="o">+</span> <span class="n">z_coord_ref</span>
-        <span class="c1"># update z_coord</span>
-        <span class="n">tri</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
-        <span class="n">test</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">tri</span><span class="o">*</span><span class="n">test</span><span class="o">*</span><span class="n">dx</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="n">new_z</span><span class="o">*</span><span class="n">test</span><span class="o">*</span><span class="n">dx</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">=</span> <span class="n">LinearVariationalProblem</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">z_coord</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">LinearVariationalSolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
+<div class="viewcode-block" id="ALEMeshUpdater.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.utility.ALEMeshUpdater.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set values for initial mesh (elevation at rest)&quot;&quot;&quot;</span>
+        <span class="n">get_zcoord_from_mesh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_coord_ref_3d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_coord_3d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_coord_ref_3d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_elem_height</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ALEMeshCoordinateUpdater.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility.ALEMeshCoordinateUpdater.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-        <span class="c1"># assign to mesh</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_coord</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span></div></div>
+<div class="viewcode-block" id="ALEMeshUpdater.update_elem_height"><a class="viewcode-back" href="../../thetis.html#thetis.utility.ALEMeshUpdater.update_elem_height">[docs]</a>    <span class="k">def</span> <span class="nf">update_elem_height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates vertical element size fields&quot;&quot;&quot;</span>
+        <span class="n">compute_elem_height</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_coord_3d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">v_elem_size_3d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cp_v_elem_size_to_2d</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="ALEMeshUpdater.compute_mesh_velocity_begin"><a class="viewcode-back" href="../../thetis.html#thetis.utility.ALEMeshUpdater.compute_mesh_velocity_begin">[docs]</a>    <span class="k">def</span> <span class="nf">compute_mesh_velocity_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stores the current 2D elevation state as the &quot;old&quot; field&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proj_elev_to_cg_2d</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proj_elev_cg_to_coords_2d</span><span class="o">.</span><span class="n">project</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="MeshVelocitySolver"><a class="viewcode-back" href="../../thetis.html#thetis.utility.MeshVelocitySolver">[docs]</a><span class="k">class</span> <span class="nc">MeshVelocitySolver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computes vertical mesh velocity for moving sigma mesh&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">w_mesh</span><span class="p">,</span> <span class="n">w_mesh_surf</span><span class="p">,</span>
-                 <span class="n">w_mesh_surf_2d</span><span class="p">,</span> <span class="n">w_mesh_ddz_3d</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span>
-                 <span class="n">z_coord_ref</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_atol&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_rtol&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">16</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span> <span class="o">=</span> <span class="n">solver</span>
+<div class="viewcode-block" id="ALEMeshUpdater.compute_mesh_velocity_finalize"><a class="viewcode-back" href="../../thetis.html#thetis.utility.ALEMeshUpdater.compute_mesh_velocity_finalize">[docs]</a>    <span class="k">def</span> <span class="nf">compute_mesh_velocity_finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stores the current 2D elevation state as the &quot;new&quot; fields,</span>
+<span class="sd">        and compute w_mesh using the given time step factor.&quot;&quot;&quot;</span>
+        <span class="c1"># compute w_mesh_surf = (elev_new - elev_old)/dt/c</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_mesh_surf_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_cg_2d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proj_elev_to_cg_2d</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proj_elev_cg_to_coords_2d</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_mesh_surf_2d</span> <span class="o">+=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_cg_2d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_mesh_surf_2d</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.0</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="o">/</span><span class="n">c</span>
+        <span class="c1"># use that to compute w_mesh in whole domain</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cp_w_mesh_surf_2d_to_3d</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+        <span class="c1"># solve w_mesh at nodes</span>
+        <span class="n">w_mesh_surf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_mesh_surf_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
+        <span class="n">z_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_coord_ref_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_mesh_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">w_mesh_surf</span> <span class="o">*</span> <span class="p">(</span><span class="n">z_ref</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span><span class="o">/</span><span class="n">h</span></div>
 
-        <span class="c1"># compute w_mesh at the free surface (constant over vertical!)</span>
-        <span class="c1"># w_mesh_surf = w - eta_grad[0]*uv[0] + eta_grad[1]*uv[1]</span>
-        <span class="n">fs</span> <span class="o">=</span> <span class="n">w_mesh</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="n">tri</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
-        <span class="n">test</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">tri</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span>
-        <span class="n">eta_grad</span> <span class="o">=</span> <span class="n">nabla_grad</span><span class="p">(</span><span class="n">eta</span><span class="p">)</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">eta_grad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">uv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">eta_grad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">uv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">test</span><span class="o">*</span><span class="n">dx</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prob_w_mesh_surf</span> <span class="o">=</span> <span class="n">LinearVariationalProblem</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">w_mesh_surf</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_w_mesh_surf</span> <span class="o">=</span> <span class="n">LinearVariationalSolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prob_w_mesh_surf</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
+<div class="viewcode-block" id="ALEMeshUpdater.update_mesh_coordinates"><a class="viewcode-back" href="../../thetis.html#thetis.utility.ALEMeshUpdater.update_mesh_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">update_mesh_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates 3D mesh coordinates to match current elev_2d field</span>
 
-        <span class="c1"># compute w in the whole water column (0 at bed)</span>
-        <span class="c1"># w_mesh = w_mesh_surf * (z+h)/(eta+h)</span>
-        <span class="n">fs</span> <span class="o">=</span> <span class="n">w_mesh</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="n">tri</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
-        <span class="n">test</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">tri</span><span class="o">*</span><span class="n">test</span><span class="o">*</span><span class="n">dx</span>
-        <span class="n">tot_depth</span> <span class="o">=</span> <span class="n">eta</span> <span class="o">+</span> <span class="n">bathymetry</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="p">(</span><span class="n">w_mesh_surf</span><span class="o">*</span><span class="p">(</span><span class="n">z</span><span class="o">+</span><span class="n">bathymetry</span><span class="p">)</span><span class="o">/</span><span class="n">tot_depth</span><span class="p">)</span><span class="o">*</span><span class="n">test</span><span class="o">*</span><span class="n">dx</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prob_w_mesh</span> <span class="o">=</span> <span class="n">LinearVariationalProblem</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">w_mesh</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_w_mesh</span> <span class="o">=</span> <span class="n">LinearVariationalSolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prob_w_mesh</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
+<span class="sd">        elev_2d is first projected to continous space&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proj_elev_to_cg_2d</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proj_elev_cg_to_coords_2d</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cp_elev_2d_to_3d</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 
-        <span class="c1"># compute dw_mesh/dz in the whole water column</span>
-        <span class="n">fs</span> <span class="o">=</span> <span class="n">w_mesh</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="n">tri</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
-        <span class="n">test</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">tri</span><span class="o">*</span><span class="n">test</span><span class="o">*</span><span class="n">dx</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="p">(</span><span class="n">w_mesh_surf</span><span class="o">/</span><span class="n">tot_depth</span><span class="p">)</span><span class="o">*</span><span class="n">test</span><span class="o">*</span><span class="n">dx</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prob_dw_mesh_dz</span> <span class="o">=</span> <span class="n">LinearVariationalProblem</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">w_mesh_ddz_3d</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_dw_mesh_dz</span> <span class="o">=</span> <span class="n">LinearVariationalSolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prob_dw_mesh_dz</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
-
-<div class="viewcode-block" id="MeshVelocitySolver.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility.MeshVelocitySolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_w_mesh_surf</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">extract_surf_w</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">copy_surf_w_mesh_to_3d</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_w_mesh</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_dw_mesh_dz</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
+        <span class="n">eta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_cg_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
+        <span class="n">z_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_coord_ref_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
+        <span class="n">bath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
+        <span class="n">new_z</span> <span class="o">=</span> <span class="n">eta</span><span class="o">*</span><span class="p">(</span><span class="n">z_ref</span> <span class="o">+</span> <span class="n">bath</span><span class="p">)</span><span class="o">/</span><span class="n">bath</span> <span class="o">+</span> <span class="n">z_ref</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_z</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_coord_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">new_z</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_elem_height</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="ParabolicViscosity"><a class="viewcode-back" href="../../thetis.html#thetis.utility.ParabolicViscosity">[docs]</a><span class="k">class</span> <span class="nc">ParabolicViscosity</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -1132,7 +1323,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.9.
     </div>
   </body>
 </html>

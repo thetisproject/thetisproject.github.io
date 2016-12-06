@@ -24,6 +24,8 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="top" title="Thetis 1.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" />
 <!--[if lte IE 6]>
@@ -106,12 +108,11 @@
         <span class="sd">&quot;&quot;&quot;bool: Include grad(H) term in the depth-averaged viscosity&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="sd">&quot;&quot;&quot;bool: 3D mesh tracks free surface&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_mode_split</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="sd">&quot;&quot;&quot;bool: Solve 2D/3D modes with different dt&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_semi_implicit_2d</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="sd">&quot;&quot;&quot;bool: Implicit 2D waves (only w. mode split)&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_imex</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="sd">&quot;&quot;&quot;bool: Use IMEX time integrator (only with mode split)&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;ssprk33&#39;</span>
+        <span class="sd">&quot;&quot;&quot;str: time integrator option.</span>
+<span class="sd">        For 2D solver: &#39;forwardeuler&#39;|&#39;backwardeuler&#39;|&#39;ssprk33&#39;|&#39;ssprk33semi&#39;|</span>
+<span class="sd">                       &#39;cranknicolson&#39;|&#39;sspimex&#39;|&#39;steadystate&#39;</span>
+<span class="sd">        For 3D solver: &#39;ssprk33&#39;|&#39;erkale&#39;|&#39;leapfrog&#39;|&#39;imexale&#39;&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_linearized_semi_implicit_2d</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="sd">&quot;&quot;&quot;bool: Use linearized semi-implicit time integration for the horizontal mode&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shallow_water_theta</span> <span class="o">=</span> <span class="mf">0.5</span>
@@ -152,6 +153,8 @@
         <span class="sd">&quot;&quot;&quot;bool: Print deviation from initial temp mass&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_temp_overshoot</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="sd">&quot;&quot;&quot;bool: Print overshoots that exceed initial range&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_output</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="sd">&quot;&quot;&quot;bool: Redirect all output to log file in output directory&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot;float: Time step. If set overrides automatically computed stable dt&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dt_2d</span> <span class="o">=</span> <span class="kc">None</span>
@@ -164,8 +167,12 @@
         <span class="sd">&quot;&quot;&quot;float: Export interval in seconds. All fields in fields_to_export list will be stored to disk and diagnostics will be computed.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="mf">1000.0</span>
         <span class="sd">&quot;&quot;&quot;float: Simulation duration in seconds&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">u_advection</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u_advection</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;Constant: Max. horizontal velocity magnitude for computing max stable advection time step.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w_advection</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span>
+        <span class="sd">&quot;&quot;&quot;Constant: Max. vertical velocity magnitude for computing max stable advection time step.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nu_viscosity</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="sd">&quot;&quot;&quot;Constant: Max. horizontal viscosity magnitude for computing max stable diffusion time step.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="s1">&#39;outputs&#39;</span>
         <span class="sd">&quot;&quot;&quot;str: Directory where model output files are stored&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">no_exports</span> <span class="o">=</span> <span class="kc">False</span>
@@ -282,7 +289,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.9.
     </div>
   </body>
 </html>

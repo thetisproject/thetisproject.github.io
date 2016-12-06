@@ -8,3 +8,9 @@ The Thetis project
 
 Thetis is an unstructured grid ocean modelling framework built using
 `Firedrake <http://www.firedrakeproject.org/>`__.
+
+
+.. only:: html
+
+  .. include:: animationgrid.rst
+
