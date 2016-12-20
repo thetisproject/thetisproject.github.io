@@ -6,18 +6,19 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.timeintegrator &#8212; Thetis 1.0 documentation</title>
+    <title>thetis.timeintegrator &#8212; Thetis 0.0.5+663.gebbf1d6 documentation</title>
     
-    <link rel="stylesheet" href="../../_static/fenics.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.0',
+        VERSION:     '0.0.5+663.gebbf1d6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
@@ -26,13 +27,11 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="top" title="Thetis 1.0 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" />
 <!--[if lte IE 6]>
 <link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
 <![endif]-->
 
-<link rel="stylesheet" href="../../_static/featured.css">
+<!-- <link rel="stylesheet" href="../../_static/featured.css"> -->
 
 
 <link rel="shortcut icon" href="../../_static/icon_thetis.ico" />
@@ -69,6 +68,8 @@
   <h1>Source code for thetis.timeintegrator</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Generic time integration schemes to advance equations in time.</span>
+
+<span class="sd">Tuomas Karna 2015-03-27</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
@@ -76,50 +77,22 @@
 
 
 <div class="viewcode-block" id="TimeIntegratorBase"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.TimeIntegratorBase">[docs]</a><span class="k">class</span> <span class="nc">TimeIntegratorBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Abstract class that defines the API for all time integrators</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
 
     <span class="nd">@abstractproperty</span>
     <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Advances equations for one time step</span>
-
-<span class="sd">        :param t: simulation time</span>
-<span class="sd">        :type t: float</span>
-<span class="sd">        :param update_forcings: user-defined function that takes the simulation</span>
-<span class="sd">            time and updates any time-dependent boundary conditions</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Advances equations for one time step.&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractproperty</span>
     <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solution</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize the time integrator</span>
-
-<span class="sd">        :param init_solution: initial solution</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Initializes the time integrator&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="TimeIntegrator"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.TimeIntegrator">[docs]</a><span class="k">class</span> <span class="nc">TimeIntegrator</span><span class="p">(</span><span class="n">TimeIntegratorBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Base class for all time integrator objects that march a single equation</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO add abstract property cfl_coeff</span>
+    <span class="sd">&quot;&quot;&quot;Base class for all time integrator objects.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param equation: the equation to solve</span>
-<span class="sd">        :type equation: :class:`Equation` object</span>
-<span class="sd">        :param solution: :class:`Function` where solution will be stored</span>
-<span class="sd">        :param fields: Dictionary of fields that are passed to the equation</span>
-<span class="sd">        :type fields: dict of :class:`Function` or :class:`Constant` objects</span>
-<span class="sd">        :param dt: time step in seconds</span>
-<span class="sd">        :type dt: float</span>
-<span class="sd">        :param solver_parameters: PETSc solver options</span>
-<span class="sd">        :type solver_parameters: dict</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">equation</span> <span class="o">=</span> <span class="n">equation</span>
@@ -135,7 +108,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">solver_parameters</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TimeIntegrator.set_dt"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.TimeIntegrator.set_dt">[docs]</a>    <span class="k">def</span> <span class="nf">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update time step&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Updates time step&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span></div></div>
 
@@ -143,19 +116,7 @@
 <div class="viewcode-block" id="ForwardEuler"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ForwardEuler">[docs]</a><span class="k">class</span> <span class="nc">ForwardEuler</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Standard forward Euler time integration scheme.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param equation: the equation to solve</span>
-<span class="sd">        :type equation: :class:`Equation` object</span>
-<span class="sd">        :param solution: :class:`Function` where solution will be stored</span>
-<span class="sd">        :param fields: Dictionary of fields that are passed to the equation</span>
-<span class="sd">        :type fields: dict of :class:`Function` or :class:`Constant` objects</span>
-<span class="sd">        :param dt: time step in seconds</span>
-<span class="sd">        :type dt: float</span>
-<span class="sd">        :param bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
-<span class="sd">        :type bnd_conditions: dict</span>
-<span class="sd">        :param solver_parameters: PETSc solver options</span>
-<span class="sd">        :type solver_parameters: dict</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Creates forms for the time integrator&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ForwardEuler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">function_space</span><span class="p">)</span>
 
@@ -205,23 +166,7 @@
 <div class="viewcode-block" id="CrankNicolson"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CrankNicolson">[docs]</a><span class="k">class</span> <span class="nc">CrankNicolson</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Standard Crank-Nicolson time integration scheme.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">semi_implicit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param equation: the equation to solve</span>
-<span class="sd">        :type equation: :class:`Equation` object</span>
-<span class="sd">        :param solution: :class:`Function` where solution will be stored</span>
-<span class="sd">        :param fields: Dictionary of fields that are passed to the equation</span>
-<span class="sd">        :type fields: dict of :class:`Function` or :class:`Constant` objects</span>
-<span class="sd">        :param dt: time step in seconds</span>
-<span class="sd">        :type dt: float</span>
-<span class="sd">        :param bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
-<span class="sd">        :type bnd_conditions: dict</span>
-<span class="sd">        :param solver_parameters: PETSc solver options</span>
-<span class="sd">        :type solver_parameters: dict</span>
-<span class="sd">        :param theta: Implicitness parameter, default 0.5</span>
-<span class="sd">        :type theta: float</span>
-<span class="sd">        :param semi_implicit: If True use a linearized semi-implicit scheme</span>
-<span class="sd">        :type semi_implicit: bool</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Creates forms for the time integrator&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CrankNicolson</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_monitor&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">semi_implicit</span><span class="p">:</span>
@@ -243,8 +188,8 @@
         <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span>
         <span class="n">u_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span>
         <span class="k">if</span> <span class="n">semi_implicit</span><span class="p">:</span>
-            <span class="c1"># linearize around last timestep using the fact that all terms are</span>
-            <span class="c1"># written in the form A(u_nl) u</span>
+            <span class="c1"># linearize around last timestep using the fact that all terms are written in the form A(u_nl) u</span>
+            <span class="c1"># (currently only true for the SWE)</span>
             <span class="n">u_nl</span> <span class="o">=</span> <span class="n">u_old</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># solve the full nonlinear residual form</span>
@@ -255,6 +200,7 @@
 
         <span class="c1"># Crank-Nicolson</span>
         <span class="n">theta_const</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="c1"># FIXME this is consistent with previous implementation but time levels are incorrect</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">F</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">mass_term</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">mass_term</span><span class="p">(</span><span class="n">u_old</span><span class="p">)</span> <span class="o">-</span>
                   <span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span><span class="o">*</span><span class="p">(</span><span class="n">theta_const</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">u_nl</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">bnd</span><span class="p">)</span> <span class="o">+</span>
                                  <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">theta_const</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">u_old</span><span class="p">,</span> <span class="n">u_old</span><span class="p">,</span> <span class="n">f_old</span><span class="p">,</span> <span class="n">f_old</span><span class="p">,</span> <span class="n">bnd</span><span class="p">)</span>
@@ -264,7 +210,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update_solver</span><span class="p">()</span>
 
 <div class="viewcode-block" id="CrankNicolson.update_solver"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CrankNicolson.update_solver">[docs]</a>    <span class="k">def</span> <span class="nf">update_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create solver objects&quot;&quot;&quot;</span>
         <span class="c1"># Ensure LU assembles monolithic matrices</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pc_type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;lu&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">[</span><span class="s1">&#39;mat_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;aij&#39;</span>
@@ -292,24 +237,9 @@
 
 
 <div class="viewcode-block" id="SteadyState"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.SteadyState">[docs]</a><span class="k">class</span> <span class="nc">SteadyState</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Time integrator that solves the steady state equations, leaving out the</span>
-<span class="sd">    mass terms</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Time integrator that solves the steady state equations, leaving out the mass terms&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param equation: the equation to solve</span>
-<span class="sd">        :type equation: :class:`Equation` object</span>
-<span class="sd">        :param solution: :class:`Function` where solution will be stored</span>
-<span class="sd">        :param fields: Dictionary of fields that are passed to the equation</span>
-<span class="sd">        :type fields: dict of :class:`Function` or :class:`Constant` objects</span>
-<span class="sd">        :param dt: time step in seconds</span>
-<span class="sd">        :type dt: float</span>
-<span class="sd">        :param bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
-<span class="sd">        :type bnd_conditions: dict</span>
-<span class="sd">        :param solver_parameters: PETSc solver options</span>
-<span class="sd">        :type solver_parameters: dict</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Creates forms for the time integrator&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SteadyState</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_monitor&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;newtonls&#39;</span><span class="p">)</span>
@@ -317,7 +247,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update_solver</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SteadyState.update_solver"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.SteadyState.update_solver">[docs]</a>    <span class="k">def</span> <span class="nf">update_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create solver objects&quot;&quot;&quot;</span>
         <span class="c1"># Ensure LU assembles monolithic matrices</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pc_type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;lu&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">[</span><span class="s1">&#39;mat_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;aij&#39;</span>
@@ -339,39 +268,10 @@
 
 
 <div class="viewcode-block" id="PressureProjectionPicard"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.PressureProjectionPicard">[docs]</a><span class="k">class</span> <span class="nc">PressureProjectionPicard</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Pressure projection scheme with Picard iteration for shallow water</span>
-<span class="sd">    equations</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO add more documentation</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">equation_mom</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
-                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span>
-                 <span class="n">solver_parameters_mom</span><span class="o">=</span><span class="p">{},</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">semi_implicit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param equation: free surface equation</span>
-<span class="sd">        :type equation: :class:`Equation` object</span>
-<span class="sd">        :param equation_mom: momentum equation</span>
-<span class="sd">        :type equation_mom: :class:`Equation` object</span>
-<span class="sd">        :param solution: :class:`Function` where solution will be stored</span>
-<span class="sd">        :param fields: Dictionary of fields that are passed to the equation</span>
-<span class="sd">        :type fields: dict of :class:`Function` or :class:`Constant` objects</span>
-<span class="sd">        :param dt: time step in seconds</span>
-<span class="sd">        :type dt: float</span>
-<span class="sd">        :param bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
-<span class="sd">        :type bnd_conditions: dict</span>
-<span class="sd">        :param solver_parameters: PETSc solver options for pressure solver</span>
-<span class="sd">        :type solver_parameters: dict</span>
-<span class="sd">        :param solver_parameters_mom: PETSc solver options for velocity solver</span>
-<span class="sd">        :type solver_parameters_mom: dict</span>
-<span class="sd">        :param theta: Implicitness parameter, default 0.5</span>
-<span class="sd">        :type theta: float</span>
-<span class="sd">        :param semi_implicit: If True use a linearized semi-implicit scheme</span>
-<span class="sd">        :type semi_implicit: bool</span>
-<span class="sd">        :param iterations: Number of Picard iterations</span>
-<span class="sd">        :type iterations: int</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Pressure projection scheme with Picard iteration.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">equation_mom</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">solver_parameters_mom</span><span class="o">=</span><span class="p">{},</span>
+                 <span class="n">theta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">semi_implicit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates forms for the time integrator&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PressureProjectionPicard</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">equation_mom</span> <span class="o">=</span> <span class="n">equation_mom</span>
@@ -385,6 +285,7 @@
             <span class="c1"># not sure this combination makes much sense: keep both systems nonlinear</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;newtonls&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters_mom</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;newtonls&#39;</span><span class="p">)</span>
+        <span class="c1"># number of picard iterations</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">function_space</span><span class="p">)</span>
@@ -454,7 +355,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update_solver</span><span class="p">()</span>
 
 <div class="viewcode-block" id="PressureProjectionPicard.update_solver"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.PressureProjectionPicard.update_solver">[docs]</a>    <span class="k">def</span> <span class="nf">update_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create solver objects&quot;&quot;&quot;</span>
         <span class="n">prob</span> <span class="o">=</span> <span class="n">NonlinearVariationalProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F_mom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">uv_star</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_mom</span> <span class="o">=</span> <span class="n">NonlinearVariationalSolver</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span>
                                                      <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters_mom</span><span class="p">,</span>
@@ -499,32 +399,15 @@
 <span class="sd">    Defined in (2.27)-(2.30) in [1]; (2.21)-(2.22) in [2]</span>
 
 <span class="sd">    [1] Shchepetkin and McWilliams (2005). The regional oceanic modeling system</span>
-<span class="sd">    (ROMS): a split-explicit, free-surface, topography-following-coordinate</span>
-<span class="sd">    oceanic model. Ocean Modelling, 9(4):347-404.</span>
-<span class="sd">    http://dx.doi.org/10.1016/j.ocemod.2013.04.010</span>
-
+<span class="sd">        (ROMS): a split-explicit, free-surface, topography-following-coordinate</span>
+<span class="sd">        oceanic model. Ocean Modelling, 9(4):347-404.</span>
+<span class="sd">        http://dx.doi.org/10.1016/j.ocemod.2013.04.010</span>
 <span class="sd">    [2] Shchepetkin and McWilliams (2009). Computational Kernel Algorithms for</span>
-<span class="sd">    Fine-Scale, Multiprocess, Longtime Oceanic Simulations, 14:121-183.</span>
-<span class="sd">    http://dx.doi.org/10.1016/S1570-8659(08)01202-0</span>
+<span class="sd">        Fine-Scale, Multiprocess, Longtime Oceanic Simulations, 14:121-183.</span>
+<span class="sd">        http://dx.doi.org/10.1016/S1570-8659(08)01202-0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param equation: equation to solve</span>
-<span class="sd">        :type equation: :class:`Equation` object</span>
-<span class="sd">        :param solution: :class:`Function` where solution will be stored</span>
-<span class="sd">        :param fields: Dictionary of fields that are passed to the equation</span>
-<span class="sd">        :type fields: dict of :class:`Function` or :class:`Constant` objects</span>
-<span class="sd">        :param dt: time step in seconds</span>
-<span class="sd">        :type dt: float</span>
-<span class="sd">        :param bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
-<span class="sd">        :type bnd_conditions: dict</span>
-<span class="sd">        :param solver_parameters: PETSc solver options</span>
-<span class="sd">        :type solver_parameters: dict</span>
-<span class="sd">        :param terms_to_add: Defines which terms of the equation are to be</span>
-<span class="sd">            added to this solver. Default &#39;all&#39; implies [&#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;].</span>
-<span class="sd">        :type terms_to_add: &#39;all&#39; or list of &#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+                 <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">solver_parameters_dirk</span><span class="o">=</span><span class="p">{},</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">LeapFrogAM3</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="mf">12.</span>
@@ -582,18 +465,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">lin_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_func</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LeapFrogAM3.predict"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.LeapFrogAM3.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">r&quot;&quot;&quot;</span>
-<span class="sd">        Prediction step from :math:`t_{n-1/2}` to :math:`t_{n+1/2}`</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prediction step from t_{n-1/2} to t_{n+1/2}</span>
 
-<span class="sd">        Let :math:`M_n` denote the mass matrix at time :math:`t_{n}`.</span>
-<span class="sd">        The prediction step is</span>
+<span class="sd">        T_{n-1/2} = (0.5 - 2*gamma)*T_{n-1} + (0.5 + 2*gamma)*T_{n}</span>
+<span class="sd">        T_{n+1/2} = T_{n-1/2} + dt*(1 - 2*gamma)*L_{n}</span>
 
-<span class="sd">        .. math::</span>
-<span class="sd">            T_{n-1/2} &amp;= (1/2 - 2\gamma) T_{n-1} + (1/2 + 2 \gamma) T_{n} \\</span>
-<span class="sd">            M_n T_{n+1/2} &amp;= M_n T_{n-1/2} + \Delta t (1 - 2\gamma) M_n L_{n}</span>
-
-<span class="sd">        This is computed in a fixed mesh: all terms are evaluated in</span>
-<span class="sd">        :math:`\Omega_n`.</span>
+<span class="sd">        This is computed in fixed mesh: all terms are evaluated in Omega_n</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nontrivial</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;lf_pre_asmb_sol&#39;</span><span class="p">):</span>
@@ -611,17 +489,12 @@
                 <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_func</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LeapFrogAM3.correct"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.LeapFrogAM3.correct">[docs]</a>    <span class="k">def</span> <span class="nf">correct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">r&quot;&quot;&quot;</span>
-<span class="sd">        Correction step from :math:`t_{n}` to :math:`t_{n+1}`</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Correction step from t_{n} to t_{n+1}</span>
 
-<span class="sd">        Let :math:`M_n` denote the mass matrix at time :math:`t_{n}`.</span>
-<span class="sd">        The correction step is</span>
+<span class="sd">        (MT)_{n+1} = (MT)_{n} + dt*L_{n+1/2}</span>
 
-<span class="sd">        .. math::</span>
-<span class="sd">            M_{n+1} T_{n+1} = M_{n} T_{n} + \Delta t L_{n+1/2}</span>
-
-<span class="sd">        This is Euler ALE step: LHS is evaluated in :math:`\Omega_{n+1}`,</span>
-<span class="sd">        RHS in :math:`\Omega_n`.</span>
+<span class="sd">        This is Euler ALE step: LHS is evaluated in Omega_{n+1}, RHS in Omega_n</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nontrivial</span><span class="p">:</span>
             <span class="c1"># NOTE must call eval_rhs in the old mesh first</span>
@@ -641,253 +514,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">eval_rhs</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">correct</span><span class="p">()</span></div></div>
-
-
-<div class="viewcode-block" id="SSPRK22ALE"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.SSPRK22ALE">[docs]</a><span class="k">class</span> <span class="nc">SSPRK22ALE</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">):</span>
-    <span class="sd">r&quot;&quot;&quot;</span>
-<span class="sd">    SSPRK(2,2) ALE time integrator</span>
-
-<span class="sd">    ALE version of the SSPRK(2,2) scheme</span>
-
-<span class="sd">    .. math::</span>
-<span class="sd">        u^{(1)} &amp;= u^n + \Delta t F(u^n) \\</span>
-<span class="sd">        u^{n+1} &amp;= u^n + \frac{1}{2}\Delta t [F(u^n) + F(u^{(1)})]</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param equation: equation to solve</span>
-<span class="sd">        :type equation: :class:`Equation` object</span>
-<span class="sd">        :param solution: :class:`Function` where solution will be stored</span>
-<span class="sd">        :param fields: Dictionary of fields that are passed to the equation</span>
-<span class="sd">        :type fields: dict of :class:`Function` or :class:`Constant` objects</span>
-<span class="sd">        :param dt: time step in seconds</span>
-<span class="sd">        :type dt: float</span>
-<span class="sd">        :param bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
-<span class="sd">        :type bnd_conditions: dict</span>
-<span class="sd">        :param solver_parameters: PETSc solver options</span>
-<span class="sd">        :type solver_parameters: dict</span>
-<span class="sd">        :param terms_to_add: Defines which terms of the equation are to be</span>
-<span class="sd">            added to this solver. Default &#39;all&#39; implies [&#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;].</span>
-<span class="sd">        :type terms_to_add: &#39;all&#39; or list of &#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">SSPRK22ALE</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
-
-        <span class="n">fs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">function_space</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dual solution&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mu_old</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dual solution&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tendency</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;tendency&#39;</span><span class="p">)</span>
-
-        <span class="c1"># fully explicit evaluation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">mass_term</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">trial</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">terms_to_add</span><span class="p">,</span>
-                                                      <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span>
-                                                      <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span>
-                                                      <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span>
-                                                      <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span>
-                                                      <span class="n">bnd_conditions</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mu_form</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">test</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nontrivial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="o">!=</span> <span class="mi">0</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">cfl_coeff</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span> <span class="o">=</span> <span class="mi">2</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-
-<div class="viewcode-block" id="SSPRK22ALE.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.SSPRK22ALE.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Assigns initial conditions to all required fields.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
-
-        <span class="n">mass_matrix</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lin_solver</span> <span class="o">=</span> <span class="n">LinearSolver</span><span class="p">(</span><span class="n">mass_matrix</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SSPRK22ALE.stage_one_prep"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.SSPRK22ALE.stage_one_prep">[docs]</a>    <span class="k">def</span> <span class="nf">stage_one_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Preprocess first stage: compute all forms on the old geometry</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nontrivial</span><span class="p">:</span>
-            <span class="c1"># Compute $Mu$ and assign $q_{old} = Mu$</span>
-            <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;pre1_asseble_mu&#39;</span><span class="p">):</span>
-                <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu_form</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_old</span><span class="p">)</span>
-            <span class="c1"># Evaluate $k = \Delta t F(u)$</span>
-            <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;pre1_asseble_f&#39;</span><span class="p">):</span>
-                <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tendency</span><span class="p">)</span>
-            <span class="c1"># $q = q_{old} + k$</span>
-            <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;pre1_incr_rhs&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu_old</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tendency</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SSPRK22ALE.stage_one_solve"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.SSPRK22ALE.stage_one_solve">[docs]</a>    <span class="k">def</span> <span class="nf">stage_one_solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">r&quot;&quot;&quot;</span>
-<span class="sd">        First stage: solve :math:`u^{(1)}` given previous solution :math:`u^n`.</span>
-
-<span class="sd">        This is a forward Euler ALE step between domains :math:`\Omega^n` and :math:`\Omega^{(1)}`:</span>
-
-<span class="sd">        .. math::</span>
-
-<span class="sd">            \int_{\Omega^{(1)}} u^{(1)} \psi dx = \int_{\Omega^n} u^n \psi dx + \Delta t \int_{\Omega^n} F(u^n) \psi dx</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nontrivial</span><span class="p">:</span>
-            <span class="c1"># Solve $u = M^{-1}q$</span>
-            <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;sol1_assemble_A&#39;</span><span class="p">):</span>
-                <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin_solver</span><span class="o">.</span><span class="n">A</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lin_solver</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">force_evaluation</span><span class="p">()</span>
-            <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;sol1_solve&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lin_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SSPRK22ALE.stage_two_prep"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.SSPRK22ALE.stage_two_prep">[docs]</a>    <span class="k">def</span> <span class="nf">stage_two_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Preprocess 2nd stage: compute all forms on the old geometry</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nontrivial</span><span class="p">:</span>
-            <span class="c1"># Evaluate $k = \Delta t F(u)$</span>
-            <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;pre2_asseble_f&#39;</span><span class="p">):</span>
-                <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tendency</span><span class="p">)</span>
-            <span class="c1"># $q = \frac{1}{2}q + \frac{1}{2}q_{old} + \frac{1}{2}k$</span>
-            <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;pre2_incr_rhs&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">mu_old</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">tendency</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SSPRK22ALE.stage_two_solve"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.SSPRK22ALE.stage_two_solve">[docs]</a>    <span class="k">def</span> <span class="nf">stage_two_solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">r&quot;&quot;&quot;</span>
-<span class="sd">        2nd stage: solve :math:`u^{n+1}` given previous solutions :math:`u^n, u^{(1)}`.</span>
-
-<span class="sd">        This is an ALE step:</span>
-
-<span class="sd">        .. math::</span>
-
-<span class="sd">            \int_{\Omega^{n+1}} u^{n+1} \psi dx &amp;= \int_{\Omega^n} u^n \psi dx \\</span>
-<span class="sd">                &amp;+ \frac{\Delta t}{2} \int_{\Omega^n} F(u^n) \psi dx \\</span>
-<span class="sd">                &amp;+ \frac{\Delta t}{2} \int_{\Omega^{(1)}} F(u^{(1)}) \psi dx</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nontrivial</span><span class="p">:</span>
-            <span class="c1"># Solve $u = M^{-1}q$</span>
-            <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;sol2_assemble_A&#39;</span><span class="p">):</span>
-                <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin_solver</span><span class="o">.</span><span class="n">A</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lin_solver</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">force_evaluation</span><span class="p">()</span>
-            <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;sol2_solve&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lin_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SSPRK22ALE.solve_stage"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.SSPRK22ALE.solve_stage">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Solves i-th stage&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">i_stage</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stage_one_solve</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stage_two_solve</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="SSPRK22ALE.prepare_stage"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.SSPRK22ALE.prepare_stage">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Preprocess stage i_stage.</span>
-
-<span class="sd">        This must be called prior to updating mesh geometry.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">update_forcings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">update_forcings</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">i_stage</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">i_stage</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stage_one_prep</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stage_two_prep</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="SSPRK22ALE.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.SSPRK22ALE.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Advances equations for one time step.&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">i_stage</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">prepare_stage</span><span class="p">(</span><span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solve_stage</span><span class="p">(</span><span class="n">i_stage</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="TwoStageTrapezoid"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.TwoStageTrapezoid">[docs]</a><span class="k">class</span> <span class="nc">TwoStageTrapezoid</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">):</span>
-    <span class="sd">r&quot;&quot;&quot;</span>
-<span class="sd">    Implicit two-stage time integrator to accompany SSPRK(2,2) ALE scheme.</span>
-
-<span class="sd">    .. math::</span>
-<span class="sd">        u^{(1)} &amp;= u^n + \Delta t F(u^n) \\</span>
-<span class="sd">        u^{n+1} &amp;= u^n + \frac{1}{2}\Delta t [F(u^{n+1}) + F(u^{(1)})]</span>
-
-<span class="sd">    This scheme is used to advance the 2D equations in the coupled SSPRK(2,2)</span>
-<span class="sd">    method.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param equation: equation to solve</span>
-<span class="sd">        :type equation: :class:`Equation` object</span>
-<span class="sd">        :param solution: :class:`Function` where solution will be stored</span>
-<span class="sd">        :param fields: Dictionary of fields that are passed to the equation</span>
-<span class="sd">        :type fields: dict of :class:`Function` or :class:`Constant` objects</span>
-<span class="sd">        :param dt: time step in seconds</span>
-<span class="sd">        :type dt: float</span>
-<span class="sd">        :param bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
-<span class="sd">        :type bnd_conditions: dict</span>
-<span class="sd">        :param solver_parameters: PETSc solver options</span>
-<span class="sd">        :type solver_parameters: dict</span>
-<span class="sd">        :param terms_to_add: Defines which terms of the equation are to be</span>
-<span class="sd">            added to this solver. Default &#39;all&#39; implies [&#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;].</span>
-<span class="sd">        :type terms_to_add: &#39;all&#39; or list of &#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">TwoStageTrapezoid</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
-
-        <span class="n">test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">test</span>
-        <span class="n">trial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">trial</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;old solution&#39;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">cfl_coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span> <span class="o">=</span> <span class="mi">2</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">rhs_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">terms_to_add</span><span class="p">,</span>
-                                                            <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="p">,</span>
-                                                            <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="p">,</span>
-                                                            <span class="n">fields</span><span class="p">,</span>
-                                                            <span class="n">fields</span><span class="p">,</span>
-                                                            <span class="n">bnd_conditions</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rhs_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">terms_to_add</span><span class="p">,</span>
-                                                            <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span>
-                                                            <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="p">,</span>
-                                                            <span class="n">fields</span><span class="p">,</span>
-                                                            <span class="n">fields</span><span class="p">,</span>
-                                                            <span class="n">bnd_conditions</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nontrivial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_new</span> <span class="o">!=</span> <span class="mi">0</span>
-
-        <span class="c1"># stage 0: forward Euler</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_old</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">LinearVariationalProblem</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="n">constant_jacobian</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">sname</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:}</span><span class="s1">_stage</span><span class="si">{:}</span><span class="s1">_&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_0</span> <span class="o">=</span> <span class="n">LinearVariationalSolver</span><span class="p">(</span><span class="n">p</span><span class="p">,</span>
-                                                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">,</span>
-                                                <span class="n">options_prefix</span><span class="o">=</span><span class="n">sname</span><span class="p">)</span>
-
-        <span class="c1"># stage 1: trapezoid</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span> <span class="o">-</span> <span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs_new</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_old</span><span class="p">)</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">NonlinearVariationalProblem</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span>
-        <span class="n">sname</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:}</span><span class="s1">_stage</span><span class="si">{:}</span><span class="s1">_&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_1</span> <span class="o">=</span> <span class="n">NonlinearVariationalSolver</span><span class="p">(</span><span class="n">p</span><span class="p">,</span>
-                                                   <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">,</span>
-                                                   <span class="n">options_prefix</span><span class="o">=</span><span class="n">sname</span><span class="p">)</span>
-
-<div class="viewcode-block" id="TwoStageTrapezoid.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.TwoStageTrapezoid.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Assigns initial conditions to all required fields.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="TwoStageTrapezoid.solve_stage"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.TwoStageTrapezoid.solve_stage">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Solves i-th stage&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nontrivial</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">update_forcings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">update_forcings</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">i_stage</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">i_stage</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">solver_0</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">solver_1</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-                <span class="c1"># shift time index</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="TwoStageTrapezoid.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.TwoStageTrapezoid.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Advances equations for one time step.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nontrivial</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">solve_stage</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -898,7 +524,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.9.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.
     </div>
   </body>
 </html>

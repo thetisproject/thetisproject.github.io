@@ -6,18 +6,19 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.callback &#8212; Thetis 1.0 documentation</title>
+    <title>thetis.callback &#8212; Thetis 0.0.5+663.gebbf1d6 documentation</title>
     
-    <link rel="stylesheet" href="../../_static/fenics.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.0',
+        VERSION:     '0.0.5+663.gebbf1d6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
@@ -26,13 +27,11 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="top" title="Thetis 1.0 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" />
 <!--[if lte IE 6]>
 <link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
 <![endif]-->
 
-<link rel="stylesheet" href="../../_static/featured.css">
+<!-- <link rel="stylesheet" href="../../_static/featured.css"> -->
 
 
 <link rel="shortcut icon" href="../../_static/icon_thetis.ico" />
@@ -68,8 +67,9 @@
             
   <h1>Source code for thetis.callback</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Defines custom callback functions used to compute various metrics at runtime.</span>
+<span class="sd">Callback functions used to compute metrics at runtime.</span>
 
+<span class="sd">Tuomas Karna 2016-01-28</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
@@ -83,55 +83,22 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stores callbacks in different categories and provides methods for</span>
 <span class="sd">    evaluating them.</span>
-
-<span class="sd">    Create callbacks and register them under ``&#39;export&#39;`` mode</span>
-
-<span class="sd">    &gt;&gt;&gt; cb1 = VolumeConservation3DCallback(...)</span>
-<span class="sd">    &gt;&gt;&gt; cb2 = TracerMassConservationCallback(...)</span>
-<span class="sd">    &gt;&gt;&gt; cm = CallbackManager()</span>
-<span class="sd">    &gt;&gt;&gt; cm.add(cb1, &#39;export&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; cm.add(cb2, &#39;export&#39;)</span>
-
-<span class="sd">    Evaluate callbacks, calls :func:`evaluate` method of all callbacks registered</span>
-<span class="sd">    in the given mode.</span>
-
-<span class="sd">    &gt;&gt;&gt; cm.evaluate(&#39;export&#39;)</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CallbackManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CallbackManager.add"><a class="viewcode-back" href="../../thetis.html#thetis.callback.CallbackManager.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add a callback under the given mode</span>
-
-<span class="sd">        :param callback: a :class:`.DiagnosticCallback` object</span>
-<span class="sd">        :param mode: register callback under this mode</span>
-<span class="sd">        :type mode: string</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="n">name</span>
         <span class="bp">self</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback</span></div>
 
 <div class="viewcode-block" id="CallbackManager.evaluate"><a class="viewcode-back" href="../../thetis.html#thetis.callback.CallbackManager.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Evaluate all callbacks registered under the given mode</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="n">mode</span><span class="p">]:</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="DiagnosticHDF5"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticHDF5">[docs]</a><span class="k">class</span> <span class="nc">DiagnosticHDF5</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A HDF5 file for storing diagnostic time series arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Creates hdf5 files for diagnostic time series arrays.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">varnames</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">COMM_WORLD</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param filename: Full filename of the HDF5 file.</span>
-<span class="sd">        :type filename: string</span>
-<span class="sd">        :param varnames: List of variable names that the diagnostic callback</span>
-<span class="sd">            provides</span>
-<span class="sd">        :param comm: MPI communicator</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="o">=</span> <span class="n">comm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">varnames</span> <span class="o">=</span> <span class="n">varnames</span>
@@ -155,14 +122,7 @@
 
 <div class="viewcode-block" id="DiagnosticHDF5.export"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticHDF5.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">variables</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Appends a new entry of (time, variables) to the file.</span>
-
-<span class="sd">        The HDF5 is updated immediately.</span>
-
-<span class="sd">        :param time: time stamp of entry</span>
-<span class="sd">        :type time: float</span>
-<span class="sd">        :param variables: values of entry</span>
-<span class="sd">        :type variables: tuple of float</span>
+<span class="sd">        Appends a new entry of (time, variables) to the file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdf5file</span><span class="p">:</span>
@@ -177,23 +137,16 @@
 <div class="viewcode-block" id="DiagnosticCallback"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticCallback">[docs]</a><span class="k">class</span> <span class="nc">DiagnosticCallback</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A base class for all Callback classes</span>
+
+<span class="sd">    :arg outputdir: Custom directory where hdf5 files will be stored. By</span>
+<span class="sd">        default solver&#39;s output directory is used.</span>
+<span class="sd">    :arg export_to_hdf5: If True, diagnostics will be stored in hdf5 format</span>
+<span class="sd">    :arg append_to_log: If True, diagnostic will be printed in log</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param solver_obj: Thetis solver object</span>
-<span class="sd">        :param outputdir: Custom directory where hdf5 files will be stored. By</span>
-<span class="sd">            default solver&#39;s output directory is used.</span>
-<span class="sd">        :type outputdir: string</span>
-<span class="sd">        :param export_to_hdf5: If True, diagnostics will be stored in hdf5</span>
-<span class="sd">            format</span>
-<span class="sd">        :type export_to_hdf5: bool</span>
-<span class="sd">        :param append_to_log: If True, callback output messages will be printed</span>
-<span class="sd">            in log</span>
-<span class="sd">        :type append_to_log: bool</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span> <span class="o">=</span> <span class="n">solver_obj</span>
         <span class="k">if</span> <span class="n">outputdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">outputdir</span>
@@ -228,45 +181,34 @@
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Evaluate the diagnostic value.</span>
+        <span class="sd">&quot;&quot;&quot;Evaluate the diagnostic value.</span>
 
-<span class="sd">        .. note::</span>
-<span class="sd">            This method must implement all MPI reduction operations (if any).</span>
+<span class="sd">        :arg solver_obj: The solver object.</span>
+
+<span class="sd">        NOTE: This method must implement all MPI reduction operations (if any).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractmethod</span>
 <div class="viewcode-block" id="DiagnosticCallback.message_str"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticCallback.message_str">[docs]</a>    <span class="k">def</span> <span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A string representation.</span>
+        <span class="sd">&quot;&quot;&quot;A string representation.</span>
 
-<span class="sd">        :param args: If provided, these will be the return value from :meth:`__call__`.</span>
+<span class="sd">        :arg args: If provided, these will be the return value from :meth:`__call__`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> diagnostic&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiagnosticCallback.push_to_log"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticCallback.push_to_log">[docs]</a>    <span class="k">def</span> <span class="nf">push_to_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Push callback status message to log</span>
-
-<span class="sd">        :param time: time stamp of entry</span>
-<span class="sd">        :param args: the return value from :meth:`__call__`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Print diagnostic status message to log&quot;&quot;&quot;</span>
         <span class="n">print_output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message_str</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="DiagnosticCallback.push_to_hdf5"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticCallback.push_to_hdf5">[docs]</a>    <span class="k">def</span> <span class="nf">push_to_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Append values to HDF5 file.</span>
-
-<span class="sd">        :param time: time stamp of entry</span>
-<span class="sd">        :param args: the return value from :meth:`__call__`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Append values to export file.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hdf5_initialized</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_hdf5_file</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hdf_exporter</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiagnosticCallback.evaluate"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticCallback.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Evaluates callback and pushes values to log and hdf file (if enabled)&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Evaluates callback and pushes values to log and hdf stream&quot;&quot;&quot;</span>
         <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__call__</span><span class="p">()</span>
         <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">simulation_time</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">append_to_log</span><span class="p">:</span>
@@ -284,18 +226,11 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates scalar conservation check callback object</span>
 
-<span class="sd">        :param scalar_callback: Python function that takes the solver object as an argument and</span>
-<span class="sd">            returns a scalar quantity of interest</span>
-<span class="sd">        :param solver_obj: Thetis solver object</span>
-<span class="sd">        :param outputdir: Custom directory where hdf5 files will be stored. By</span>
-<span class="sd">            default solver&#39;s output directory is used.</span>
-<span class="sd">        :type outputdir: string</span>
-<span class="sd">        :param export_to_hdf5: If True, diagnostics will be stored in hdf5</span>
-<span class="sd">            format</span>
-<span class="sd">        :type export_to_hdf5: bool</span>
-<span class="sd">        :param append_to_log: If True, callback output messages will be printed</span>
-<span class="sd">            in log</span>
-<span class="sd">        :type append_to_log: bool</span>
+<span class="sd">        name : str</span>
+<span class="sd">            human readable name of the quantity</span>
+<span class="sd">        scalar_callback : function</span>
+<span class="sd">            function that takes the FlowSolver object as an argument and</span>
+<span class="sd">            returns the scalar quantity of interest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ScalarConservationCallback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">solver_obj</span><span class="p">,</span>
                                                          <span class="n">outputdir</span><span class="p">,</span>
@@ -322,18 +257,6 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param solver_obj: Thetis solver object</span>
-<span class="sd">        :param outputdir: Custom directory where hdf5 files will be stored. By</span>
-<span class="sd">            default solver&#39;s output directory is used.</span>
-<span class="sd">        :type outputdir: string</span>
-<span class="sd">        :param export_to_hdf5: If True, diagnostics will be stored in hdf5</span>
-<span class="sd">            format</span>
-<span class="sd">        :type export_to_hdf5: bool</span>
-<span class="sd">        :param append_to_log: If True, callback output messages will be printed</span>
-<span class="sd">            in log</span>
-<span class="sd">        :type append_to_log: bool</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">vol3d</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">comp_volume_3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">VolumeConservation3DCallback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">vol3d</span><span class="p">,</span>
@@ -344,23 +267,11 @@
 
 
 <div class="viewcode-block" id="VolumeConservation2DCallback"><a class="viewcode-back" href="../../thetis.html#thetis.callback.VolumeConservation2DCallback">[docs]</a><span class="k">class</span> <span class="nc">VolumeConservation2DCallback</span><span class="p">(</span><span class="n">ScalarConservationCallback</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Checks conservation of 2D volume (integral of water elevation field)&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Checks conservation of 3D volume (volume of 3D mesh)&quot;&quot;&quot;</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;volume2d&#39;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param solver_obj: Thetis solver object</span>
-<span class="sd">        :param outputdir: Custom directory where hdf5 files will be stored. By</span>
-<span class="sd">            default solver&#39;s output directory is used.</span>
-<span class="sd">        :type outputdir: string</span>
-<span class="sd">        :param export_to_hdf5: If True, diagnostics will be stored in hdf5</span>
-<span class="sd">            format</span>
-<span class="sd">        :type export_to_hdf5: bool</span>
-<span class="sd">        :param append_to_log: If True, callback output messages will be printed</span>
-<span class="sd">            in log</span>
-<span class="sd">        :type append_to_log: bool</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">vol2d</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">comp_volume_2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_2d</span><span class="p">,</span>
                                   <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="p">)</span>
@@ -377,20 +288,8 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tracer_name</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param tracer_name: Name of the tracer. Use canonical field names as in :class:`.FieldDict`.</span>
-<span class="sd">        :param solver_obj: Thetis solver object</span>
-<span class="sd">        :param outputdir: Custom directory where hdf5 files will be stored. By</span>
-<span class="sd">            default solver&#39;s output directory is used.</span>
-<span class="sd">        :type outputdir: string</span>
-<span class="sd">        :param export_to_hdf5: If True, diagnostics will be stored in hdf5</span>
-<span class="sd">            format</span>
-<span class="sd">        :type export_to_hdf5: bool</span>
-<span class="sd">        :param append_to_log: If True, callback output messages will be printed</span>
-<span class="sd">            in log</span>
-<span class="sd">        :type append_to_log: bool</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">tracer_name</span> <span class="o">+</span> <span class="s1">&#39; mass&#39;</span>  <span class="c1"># override name for given tracer</span>
+        <span class="c1"># override name for given tracer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">tracer_name</span> <span class="o">+</span> <span class="s1">&#39; mass&#39;</span>
 
         <span class="k">def</span> <span class="nf">mass</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">comp_tracer_mass_3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">tracer_name</span><span class="p">])</span>
@@ -408,18 +307,11 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minmax_callback</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param minmax_callback: Python function that takes the solver object as</span>
-<span class="sd">            an argument and returns a (min, max) value tuple</span>
-<span class="sd">        :param solver_obj: Thetis solver object</span>
-<span class="sd">        :param outputdir: Custom directory where hdf5 files will be stored. By</span>
-<span class="sd">            default solver&#39;s output directory is used.</span>
-<span class="sd">        :type outputdir: string</span>
-<span class="sd">        :param export_to_hdf5: If True, diagnostics will be stored in hdf5</span>
-<span class="sd">            format</span>
-<span class="sd">        :type export_to_hdf5: bool</span>
-<span class="sd">        :param append_to_log: If True, callback output messages will be printed</span>
-<span class="sd">            in log</span>
-<span class="sd">        :type append_to_log: bool</span>
+<span class="sd">        Creates scalar conservation check callback object</span>
+
+<span class="sd">        :arg varname: human readable name of the quantity</span>
+<span class="sd">        :arg minmax_callback: function that takes the FlowSolver object as</span>
+<span class="sd">            an argument and returns the minimum and maximum values as a tuple</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MinMaxConservationCallback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">solver_obj</span><span class="p">,</span>
                                                          <span class="n">outputdir</span><span class="p">,</span>
@@ -447,19 +339,6 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tracer_name</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param tracer_name: Name of the tracer. Use canonical field names as in :class:`.FieldDict`.</span>
-<span class="sd">        :param solver_obj: Thetis solver object</span>
-<span class="sd">        :param outputdir: Custom directory where hdf5 files will be stored. By</span>
-<span class="sd">            default solver&#39;s output directory is used.</span>
-<span class="sd">        :type outputdir: string</span>
-<span class="sd">        :param export_to_hdf5: If True, diagnostics will be stored in hdf5</span>
-<span class="sd">            format</span>
-<span class="sd">        :type export_to_hdf5: bool</span>
-<span class="sd">        :param append_to_log: If True, callback output messages will be printed</span>
-<span class="sd">            in log</span>
-<span class="sd">        :type append_to_log: bool</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">tracer_name</span> <span class="o">+</span> <span class="s1">&#39; overshoot&#39;</span>
 
         <span class="k">def</span> <span class="nf">minmax</span><span class="p">():</span>
@@ -483,7 +362,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.9.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.
     </div>
   </body>
 </html>
