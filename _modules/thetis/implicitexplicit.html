@@ -6,18 +6,19 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.implicitexplicit &#8212; Thetis 1.0 documentation</title>
+    <title>thetis.implicitexplicit &#8212; Thetis 0.0.5+663.gebbf1d6 documentation</title>
     
-    <link rel="stylesheet" href="../../_static/fenics.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.0',
+        VERSION:     '0.0.5+663.gebbf1d6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
@@ -26,13 +27,11 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="top" title="Thetis 1.0 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" />
 <!--[if lte IE 6]>
 <link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
 <![endif]-->
 
-<link rel="stylesheet" href="../../_static/featured.css">
+<!-- <link rel="stylesheet" href="../../_static/featured.css"> -->
 
 
 <link rel="shortcut icon" href="../../_static/icon_thetis.ico" />
@@ -87,7 +86,6 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">solver_parameters_dirk</span><span class="o">=</span><span class="p">{}):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SSPIMEX</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
-        <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;This method is OBSOLETE: use IMEXGeneric based methods instead&#39;</span><span class="p">)</span>
 
         <span class="c1"># implicit scheme</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dirk</span> <span class="o">=</span> <span class="n">DIRKLSPUM2</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span>
@@ -125,26 +123,16 @@
 
 <div class="viewcode-block" id="IMEXGeneric"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXGeneric">[docs]</a><span class="k">class</span> <span class="nc">IMEXGeneric</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generic implementation of Runge-Kutta Implicit-Explicit schemes</span>
-
-<span class="sd">    Derived classes must define the implicit :attr:`dirk_class` and explicit</span>
-<span class="sd">    :attr:`erk_class` Runge-Kutta time integrator classes.</span>
-
-<span class="sd">    This method solves the linearized equations: All implicit terms are fed to</span>
-<span class="sd">    the implicit solver, while all the other terms are fed to the implicit</span>
-<span class="sd">    solver. In case of non-linear terms proper linearization must defined in the</span>
-<span class="sd">    equation using the two solution functions (solution, solution_old)</span>
+<span class="sd">    Generic implementation of Runge-Kutta Impicit-Explicit schemes</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
 
     <span class="nd">@abstractproperty</span>
     <span class="k">def</span> <span class="nf">dirk_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implicit DIRK class&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractproperty</span>
     <span class="k">def</span> <span class="nf">erk_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Explicit Runge-Kutta class&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -181,7 +169,7 @@
 
 <div class="viewcode-block" id="IMEXGeneric.solve_stage"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXGeneric.solve_stage">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Solves i-th stage</span>
+<span class="sd">        Solves one sub-stage.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># set solution to u_n + dt*sum(a*k_erk)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">update_solution</span><span class="p">(</span><span class="n">i_stage</span><span class="p">,</span> <span class="n">additive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -211,13 +199,13 @@
 
 <div class="viewcode-block" id="IMEXLPUM2"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXLPUM2">[docs]</a><span class="k">class</span> <span class="nc">IMEXLPUM2</span><span class="p">(</span><span class="n">IMEXGeneric</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    SSP-IMEX RK scheme (20) in Higureras et al. (2014)</span>
+<span class="sd">    SSP-IMEX RK scheme (20) in Higureras et al. (2014).</span>
+
+<span class="sd">    [1] Higueras et al (2014). Optimized strong stability preserving IMEX</span>
+<span class="sd">        Runge-Kutta methods. Journal of Computational and Applied</span>
+<span class="sd">        Mathematics 272(2014) 116-140.</span>
 
 <span class="sd">    CFL coefficient is 2.0</span>
-
-<span class="sd">    Higueras et al (2014). Optimized strong stability preserving IMEX</span>
-<span class="sd">    Runge-Kutta methods. Journal of Computational and Applied Mathematics</span>
-<span class="sd">    272(2014) 116-140. http://dx.doi.org/10.1016/j.cam.2014.05.011</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">erk_class</span> <span class="o">=</span> <span class="n">ERKLPUM2</span>
     <span class="n">dirk_class</span> <span class="o">=</span> <span class="n">DIRKLPUM2</span></div>
@@ -225,13 +213,13 @@
 
 <div class="viewcode-block" id="IMEXLSPUM2"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXLSPUM2">[docs]</a><span class="k">class</span> <span class="nc">IMEXLSPUM2</span><span class="p">(</span><span class="n">IMEXGeneric</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    SSP-IMEX RK scheme (17) in Higureras et al. (2014)</span>
+<span class="sd">    SSP-IMEX RK scheme (17) in Higureras et al. (2014).</span>
+
+<span class="sd">    [1] Higueras et al (2014). Optimized strong stability preserving IMEX</span>
+<span class="sd">        Runge-Kutta methods. Journal of Computational and Applied</span>
+<span class="sd">        Mathematics 272(2014) 116-140.</span>
 
 <span class="sd">    CFL coefficient is 2.0</span>
-
-<span class="sd">    Higueras et al (2014). Optimized strong stability preserving IMEX</span>
-<span class="sd">    Runge-Kutta methods. Journal of Computational and Applied Mathematics</span>
-<span class="sd">    272(2014) 116-140. http://dx.doi.org/10.1016/j.cam.2014.05.011</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">erk_class</span> <span class="o">=</span> <span class="n">ERKLSPUM2</span>
     <span class="n">dirk_class</span> <span class="o">=</span> <span class="n">DIRKLSPUM2</span></div>
@@ -239,11 +227,9 @@
 
 <div class="viewcode-block" id="IMEXMidpoint"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXMidpoint">[docs]</a><span class="k">class</span> <span class="nc">IMEXMidpoint</span><span class="p">(</span><span class="n">IMEXGeneric</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Implicit-explicit midpoint scheme (1, 2, 2) from Ascher et al. (1997)</span>
+<span class="sd">    Implicit-explicit midpoint scheme (1, 2, 2)</span>
 
-<span class="sd">    Ascher et al. (1997). Implicit-explicit Runge-Kutta methods for</span>
-<span class="sd">    time-dependent partial differential equations. Applied Numerical</span>
-<span class="sd">    Mathematics, 25:151-167. http://dx.doi.org/10.1137/0732037</span>
+<span class="sd">    From Ascher (1997)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">erk_class</span> <span class="o">=</span> <span class="n">ERKMidpoint</span>
     <span class="n">dirk_class</span> <span class="o">=</span> <span class="n">ESDIRKMidpoint</span></div>
@@ -265,7 +251,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.9.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.
     </div>
   </body>
 </html>
