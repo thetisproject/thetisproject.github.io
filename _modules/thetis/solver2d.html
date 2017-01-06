@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.solver2d &#8212; Thetis 0+untagged.771.gd639bf8 documentation</title>
+    <title>thetis.solver2d &#8212; Thetis 0+untagged.820.g6820076 documentation</title>
     
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0+untagged.771.gd639bf8',
+        VERSION:     '0+untagged.820.g6820076',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -67,9 +67,7 @@
             
   <h1>Source code for thetis.solver2d</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Module for 2D solver class.</span>
-
-<span class="sd">Tuomas Karna 2015-10-17</span>
+<span class="sd">Module for 2D depth averaged solver</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
@@ -87,20 +85,81 @@
 
 
 <div class="viewcode-block" id="FlowSolver2d"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d">[docs]</a><span class="k">class</span> <span class="nc">FlowSolver2d</span><span class="p">(</span><span class="n">FrozenClass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates and solves 2D depth averaged equations with RT1-P1DG elements&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh2d</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main object for 2D depth averaged solver</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    Create mesh</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from thetis import *</span>
+<span class="sd">        mesh2d = RectangleMesh(20, 20, 10e3, 10e3)</span>
+
+<span class="sd">    Create bathymetry function, set a constant value</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        fs_p1 = FunctionSpace(mesh2d, &#39;CG&#39;, 1)</span>
+<span class="sd">        bathymetry_2d = Function(fs_p1, name=&#39;Bathymetry&#39;).assign(10.0)</span>
+
+<span class="sd">    Create solver object and set some options</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        solver_obj = solver2d.FlowSolver2d(mesh2d, bathymetry_2d)</span>
+<span class="sd">        options = solver_obj.options</span>
+<span class="sd">        options.element_family = &#39;dg-dg&#39;</span>
+<span class="sd">        options.order = 1</span>
+<span class="sd">        options.timestepper_type = &#39;cranknicolson&#39;</span>
+<span class="sd">        options.t_export = 50.0</span>
+<span class="sd">        options.t_end = 3600.</span>
+<span class="sd">        options.dt = 25.0</span>
+
+<span class="sd">    Assign initial condition for water elevation</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        solver_obj.create_function_spaces()</span>
+<span class="sd">        init_elev = Function(solver_obj.function_spaces.H_2d)</span>
+<span class="sd">        coords = SpatialCoordinate(mesh2d)</span>
+<span class="sd">        init_elev.project(exp(-((coords[0] - 4e3)**2 + (coords[1] - 4.5e3)**2)/2.2e3**2))</span>
+<span class="sd">        solver_obj.assign_initial_conditions(elev=init_elev)</span>
+
+<span class="sd">    Run simulation</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        solver_obj.iterate()</span>
+
+<span class="sd">    See the manual for more complex examples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh2d</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg mesh2d: :class:`Mesh` object of the 2D mesh</span>
+<span class="sd">        :arg bathymetry_2d: Bathymetry of the domain. Bathymetry stands for</span>
+<span class="sd">            the mean water depth (positive downwards).</span>
+<span class="sd">        :type bathymetry_2d: :class:`Function`</span>
+<span class="sd">        :kwarg options: Model options (optional). Model options can also be</span>
+<span class="sd">            changed directly via the :attr:`.options` class property.</span>
+<span class="sd">        :type options: :class:`.ModelOptions` instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span> <span class="o">=</span> <span class="n">mesh2d</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="o">=</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">comm</span>
+
         <span class="c1"># add boundary length info</span>
         <span class="n">bnd_len</span> <span class="o">=</span> <span class="n">compute_boundary_length</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">boundary_len</span> <span class="o">=</span> <span class="n">bnd_len</span>
 
-        <span class="c1"># Time integrator setup</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="sd">&quot;&quot;&quot;Time step&quot;&quot;&quot;</span>
 
-        <span class="c1"># 2d model specific default options</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">ModelOptions</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary of all options. A :class:`.ModelOptions` object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
 
@@ -111,27 +170,42 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">next_export_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">t_export</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="n">CallbackManager</span><span class="p">()</span>
-        <span class="sd">&quot;&quot;&quot;Callback manager object&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :class:`.CallbackManager` object that stores all callbacks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">FieldDict</span><span class="p">()</span>
-        <span class="sd">&quot;&quot;&quot;Holds all functions needed by the solver object.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :class:`.FieldDict` that holds all functions needed by the solver</span>
+<span class="sd">        object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
-        <span class="sd">&quot;&quot;&quot;Holds all function spaces needed by the solver object.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :class:`.AttrDict` that holds all function spaces needed by the</span>
+<span class="sd">        solver object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span> <span class="o">=</span> <span class="n">bathymetry_2d</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">export_initial_state</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="sd">&quot;&quot;&quot;Do export initial state. False if continuing a simulation&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">:</span> <span class="p">{}}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># disallow creating new attributes</span>
 
-<div class="viewcode-block" id="FlowSolver2d.compute_time_step"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.compute_time_step">[docs]</a>    <span class="k">def</span> <span class="nf">compute_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_mag</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="FlowSolver2d.compute_time_step"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.compute_time_step">[docs]</a>    <span class="k">def</span> <span class="nf">compute_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_scale</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
 <span class="sd">        Computes maximum explicit time step from CFL condition.</span>
 
-<span class="sd">        dt = CellSize/U</span>
+<span class="sd">        .. math :: \Delta t = \frac{\Delta x}{U}</span>
 
-<span class="sd">        Assumes velocity scale U = sqrt(g*H) + u_mag</span>
-<span class="sd">        where u_mag is estimated advective velocity</span>
+<span class="sd">        Assumes velocity scale :math:`U = \sqrt{g H} + U_{scale}` where</span>
+<span class="sd">        :math:`U_{scale}` is estimated advective velocity.</span>
+
+<span class="sd">        :kwarg u_scale: User provided maximum advective velocity scale</span>
+<span class="sd">        :type u_scale: float or :class:`Constant`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">csize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">h_elem_size_2d</span>
         <span class="n">bath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span>
@@ -144,16 +218,25 @@
         <span class="n">trial</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
         <span class="n">solution</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
         <span class="n">g</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;g_grav&#39;</span><span class="p">]</span>
-        <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">g</span> <span class="o">*</span> <span class="n">bath_pos</span><span class="p">)</span> <span class="o">+</span> <span class="n">u_mag</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">g</span> <span class="o">*</span> <span class="n">bath_pos</span><span class="p">)</span> <span class="o">+</span> <span class="n">u_scale</span><span class="p">)</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">trial</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span>
         <span class="n">l</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">csize</span> <span class="o">/</span> <span class="n">u</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span>
         <span class="n">solve</span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">l</span><span class="p">,</span> <span class="n">solution</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">solution</span></div>
 
 <div class="viewcode-block" id="FlowSolver2d.set_time_step"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.set_time_step">[docs]</a>    <span class="k">def</span> <span class="nf">set_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the model the model time step</span>
+
+<span class="sd">        Uses ``options.dt`` if set, otherwise sets the maximum time step</span>
+<span class="sd">        allowed by the CFL condition (see :meth:`.compute_time_step`).</span>
+
+<span class="sd">        :kwarg float alpha: CFL number scaling factor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO revisit math alpha is OBSOLETE</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">dt</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">mesh2d_dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_time_step</span><span class="p">(</span><span class="n">u_mag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">u_advection</span><span class="p">)</span>
+            <span class="n">mesh2d_dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_time_step</span><span class="p">(</span><span class="n">u_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">u_advection</span><span class="p">)</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">cfl_2d</span><span class="o">*</span><span class="n">alpha</span><span class="o">*</span><span class="nb">float</span><span class="p">(</span><span class="n">mesh2d_dt</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">MPI</span><span class="o">.</span><span class="n">MIN</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
@@ -162,7 +245,12 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="FlowSolver2d.create_function_spaces"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_function_spaces">[docs]</a>    <span class="k">def</span> <span class="nf">create_function_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Creates function spaces&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates function spaces</span>
+
+<span class="sd">        Function spaces are accessible via :attr:`.function_spaces`</span>
+<span class="sd">        object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># ----- function spaces: elev in H, uv in U, mixed is W</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P0_2d</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -187,7 +275,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="FlowSolver2d.create_equations"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_equations">[docs]</a>    <span class="k">def</span> <span class="nf">create_equations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Creates functions, equations and time steppers.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates shallow water equations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;U_2d&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">create_function_spaces</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
@@ -208,6 +298,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># disallow creating new attributes</span></div>
 
 <div class="viewcode-block" id="FlowSolver2d.create_timestepper"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_timestepper">[docs]</a>    <span class="k">def</span> <span class="nf">create_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates time stepper instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;eq_sw&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_equations</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">log_output</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">no_exports</span><span class="p">:</span>
@@ -304,16 +400,21 @@
                 <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;fieldsplit&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;pc_fieldsplit_type&#39;</span><span class="p">:</span> <span class="s1">&#39;multiplicative&#39;</span><span class="p">,</span>
             <span class="p">}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">implicitexplicit</span><span class="o">.</span><span class="n">SSPIMEX</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eq_sw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
-                                                        <span class="n">bnd_conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">],</span>
-                                                        <span class="n">solver_parameters</span><span class="o">=</span><span class="n">sp_expl</span><span class="p">,</span>
-                                                        <span class="n">solver_parameters_dirk</span><span class="o">=</span><span class="n">sp_impl</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">implicitexplicit</span><span class="o">.</span><span class="n">IMEXLPUM2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eq_sw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                                                          <span class="n">bnd_conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">],</span>
+                                                          <span class="n">solver_parameters</span><span class="o">=</span><span class="n">sp_expl</span><span class="p">,</span>
+                                                          <span class="n">solver_parameters_dirk</span><span class="o">=</span><span class="n">sp_impl</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unknown time integrator type: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span><span class="p">))</span>
         <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Using time integrator: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># disallow creating new attributes</span></div>
 
 <div class="viewcode-block" id="FlowSolver2d.create_exporters"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_exporters">[docs]</a>    <span class="k">def</span> <span class="nf">create_exporters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates file exporters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;timestepper&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_timestepper</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># correct treatment of the split 2d functions</span>
         <span class="n">uv_2d</span><span class="p">,</span> <span class="n">elev_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -328,14 +429,6 @@
                                        <span class="n">export_type</span><span class="o">=</span><span class="s1">&#39;vtk&#39;</span><span class="p">,</span>
                                        <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;vtk&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
-            <span class="n">numpy_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-            <span class="n">e</span> <span class="o">=</span> <span class="n">exporter</span><span class="o">.</span><span class="n">ExportManager</span><span class="p">(</span><span class="n">numpy_dir</span><span class="p">,</span>
-                                       <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">fields_to_export_numpy</span><span class="p">,</span>
-                                       <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span>
-                                       <span class="n">field_metadata</span><span class="p">,</span>
-                                       <span class="n">export_type</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">,</span>
-                                       <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;numpy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
             <span class="n">hdf5_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">)</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">exporter</span><span class="o">.</span><span class="n">ExportManager</span><span class="p">(</span><span class="n">hdf5_dir</span><span class="p">,</span>
                                        <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">fields_to_export_hdf5</span><span class="p">,</span>
@@ -348,6 +441,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># disallow creating new attributes</span></div>
 
 <div class="viewcode-block" id="FlowSolver2d.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates function spaces, equations, time stepper and exporters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;U_2d&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">create_function_spaces</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;eq_sw&#39;</span><span class="p">):</span>
@@ -358,26 +454,42 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">create_exporters</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="FlowSolver2d.assign_initial_conditions"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.assign_initial_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">assign_initial_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uv_init</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowSolver2d.assign_initial_conditions"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.assign_initial_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">assign_initial_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns initial conditions</span>
+
+<span class="sd">        :kwarg elev: Initial condition for water elevation</span>
+<span class="sd">        :type elev: scalar :class:`Function`, :class:`Constant`, or an expression</span>
+<span class="sd">        :kwarg uv: Initial condition for depth averaged velocity</span>
+<span class="sd">        :type uv: vector valued :class:`Function`, :class:`Constant`, or an expression</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
         <span class="n">uv_2d</span><span class="p">,</span> <span class="n">elev_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">elev</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">elev_2d</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">elev</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">uv_init</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">uv_2d</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">uv_init</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">uv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">uv_2d</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">uv</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FlowSolver2d.add_callback"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.add_callback">[docs]</a>    <span class="k">def</span> <span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">eval_interval</span><span class="o">=</span><span class="s1">&#39;export&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Adds callback to solver object</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds callback to solver object</span>
 
-<span class="sd">        :arg callback: DiagnosticCallback instance</span>
-<span class="sd">        &quot;arg eval_interval: &#39;export&#39;|&#39;timestep&#39; Determines when callback will be evaluated.</span>
+<span class="sd">        :arg callback: :class:`.DiagnosticCallback` instance</span>
+<span class="sd">        :kwarg string eval_interval: Determines when callback will be evaluated,</span>
+<span class="sd">            either &#39;export&#39; or &#39;timestep&#39; for evaluating after each export or</span>
+<span class="sd">            time step.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">eval_interval</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FlowSolver2d.export"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export all fields to disk</span>
+
+<span class="sd">        Also evaluates all callbacks set to &#39;export&#39; interval.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;export&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">export</span><span class="p">()</span></div>
@@ -386,7 +498,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads simulation state from hdf5 outputs.</span>
 
-<span class="sd">        This replaces assign_initial_conditions in model initilization.</span>
+<span class="sd">        This replaces :meth:`.assign_initial_conditions` in model initilization.</span>
 
 <span class="sd">        This assumes that model setup is kept the same (e.g. time step) and</span>
 <span class="sd">        all pronostic state variables are exported in hdf5 format. The required</span>
@@ -394,6 +506,13 @@
 
 <span class="sd">        Currently hdf5 field import only works for the same number of MPI</span>
 <span class="sd">        processes.</span>
+
+<span class="sd">        :arg int i_export: export index to load</span>
+<span class="sd">        :kwarg string outputdir: (optional) directory where files are read from.</span>
+<span class="sd">            By default ``options.outputdir``.</span>
+<span class="sd">        :kwarg float t: simulation time. Overrides the time stamp stored in the</span>
+<span class="sd">            hdf5 files.</span>
+<span class="sd">        :kwarg int iteration: Overrides the iteration count in the hdf5 files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
@@ -433,6 +552,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i_export</span> <span class="o">+</span> <span class="n">offset</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FlowSolver2d.print_state"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.print_state">[docs]</a>    <span class="k">def</span> <span class="nf">print_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cputime</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print a summary of the model state on stdout</span>
+
+<span class="sd">        :arg float cputime: Measured CPU time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">norm_h</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">norm_u</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
 
@@ -445,6 +569,19 @@
 
 <div class="viewcode-block" id="FlowSolver2d.iterate"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.iterate">[docs]</a>    <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">export_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the simulation</span>
+
+<span class="sd">        Iterates over the time loop until time ``options.t_end`` is reached.</span>
+<span class="sd">        Exports fields to disk on ``options.t_export`` intervals.</span>
+
+<span class="sd">        :kwarg update_forcings: User-defined function that takes simulation</span>
+<span class="sd">            time as an argument and updates time-dependent boundary conditions</span>
+<span class="sd">            (if any).</span>
+<span class="sd">        :kwarg export_func: User-defined function (with no arguments) that will</span>
+<span class="sd">            be called on every export.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO I think export function is obsolete as callbacks are in place</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
 

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.momentum_eq &#8212; Thetis 0+untagged.771.gd639bf8 documentation</title>
+    <title>thetis.momentum_eq &#8212; Thetis 0+untagged.820.g6820076 documentation</title>
     
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0+untagged.771.gd639bf8',
+        VERSION:     '0+untagged.820.g6820076',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -66,14 +66,76 @@
           <div class="body" role="main">
             
   <h1>Source code for thetis.momentum_eq</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">3D momentum and tracer equations for hydrostatic Boussinesq flow.</span>
+<span></span><span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">3D momentum equation for hydrostatic Boussinesq flow.</span>
 
-<span class="sd">Tuomas Karna 2015-02-23</span>
+<span class="sd">The three dimensional momentum equation reads</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    \frac{\partial \textbf{u}}{\partial t}</span>
+<span class="sd">        + \nabla_h \cdot (\textbf{u} \textbf{u})</span>
+<span class="sd">        + \frac{\partial \left(w\textbf{u} \right)}{\partial z}</span>
+<span class="sd">        + f\textbf{e}_z\wedge\textbf{u} + g\nabla_h \eta + g\nabla_h r</span>
+<span class="sd">        = \nabla_h \cdot \left( \nu_h \nabla_h \textbf{u} \right)</span>
+<span class="sd">        + \frac{\partial }{\partial z}\left( \nu \frac{\partial \textbf{u}}{\partial z}\right)</span>
+<span class="sd">    :label: mom_eq</span>
+
+<span class="sd">where :math:`\textbf{u}` and :math:`w` denote horizontal and vertical velocity,</span>
+<span class="sd">:math:`\nabla_h` is the horizontal gradient,</span>
+<span class="sd">:math:`\wedge` denotes the cross product,</span>
+<span class="sd">:math:`g` is the gravitational acceleration, :math:`f` is the Coriolis</span>
+<span class="sd">frequency, :math:`\textbf{e}_z` is a vertical unit vector, and</span>
+<span class="sd">:math:`\nu_h, \nu` stand for horizontal and vertical viscosity.</span>
+<span class="sd">Water density is given by :math:`\rho = \rho&#39;(T, S, p) + \rho_0`,</span>
+<span class="sd">where :math:`\rho_0` is a constant reference density.</span>
+<span class="sd">Above :math:`r` denotes the baroclinic head</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    r = \frac{1}{\rho_0} \int_{z}^\eta  \rho&#39; d\zeta.</span>
+<span class="sd">    :label: baroc_head</span>
+
+<span class="sd">In the case of purely barotropic problems the :math:`r` and the internal pressure</span>
+<span class="sd">gradient are omitted.</span>
+
+<span class="sd">When using mode splitting we split the velocity field into a depth average and</span>
+<span class="sd">a deviation, :math:`\textbf{u} = \bar{\textbf{u}} + \textbf{u}&#39;`.</span>
+<span class="sd">Following Higdon and de Szoeke (1997) we write an equation for the deviation</span>
+<span class="sd">:math:`\textbf{u}&#39;`:</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    \frac{\partial \textbf{u}&#39;}{\partial t} =</span>
+<span class="sd">        + \nabla_h \cdot (\textbf{u} \textbf{u})</span>
+<span class="sd">        + \frac{\partial \left(w\textbf{u} \right)}{\partial z}</span>
+<span class="sd">        + f\textbf{e}_z\wedge\textbf{u}&#39; + g\nabla_h r</span>
+<span class="sd">        = \nabla_h \cdot \left( \nu_h \nabla_h \textbf{u} \right)</span>
+<span class="sd">        + \frac{\partial }{\partial z}\left( \nu  \frac{\partial \textbf{u}}{\partial z}\right)</span>
+<span class="sd">    :label: mom_eq_split</span>
+
+<span class="sd">In :eq:`mom_eq_split` the external pressure gradient :math:`g\nabla_h \eta` vanishes and the</span>
+<span class="sd">Coriolis term only contains the deviation :math:`\textbf{u}&#39;`.</span>
+<span class="sd">Advection and diffusion terms are not changed.</span>
+
+<span class="sd">Higdon and de Szoeke (1997). Barotropic-Baroclinic Time Splitting for Ocean</span>
+<span class="sd">Circulation Modeling. Journal of Computational Physics, 135(1):30-53.</span>
+<span class="sd">http://dx.doi.org/10.1006/jcph.1997.5733</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.equation</span> <span class="k">import</span> <span class="n">Term</span><span class="p">,</span> <span class="n">Equation</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;MomentumEquation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MomentumTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;HorizontalAdvectionTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;VerticalAdvectionTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;HorizontalViscosityTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;VerticalViscosityTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PressureGradientTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CoriolisTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BottomFrictionTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;LinearDragTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SourceTerm&#39;</span><span class="p">,</span>
+<span class="p">]</span>
 
 <span class="n">g_grav</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;g_grav&#39;</span><span class="p">]</span>
 <span class="n">rho_0</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;rho0&#39;</span><span class="p">]</span>
@@ -86,8 +148,18 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">nonlin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_bottom_friction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">use_elevation_gradient</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                 <span class="n">nonlin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_bottom_friction</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
+<span class="sd">        :kwarg bathymetry: bathymetry of the domain</span>
+<span class="sd">        :type bathymetry: 3D :class:`Function` or :class:`Constant`</span>
+<span class="sd">        :kwarg v_elem_size: scalar :class:`Function` that defines the vertical</span>
+<span class="sd">            element size</span>
+<span class="sd">        :kwarg h_elem_size: scalar :class:`Function` that defines the horizontal</span>
+<span class="sd">            element size</span>
+<span class="sd">        :kwarg bool nonlin: If False defines the linear shallow water equations</span>
+<span class="sd">        :kwarg bool use_bottom_friction: If True includes bottom friction term</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MomentumTerm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bathymetry</span> <span class="o">=</span> <span class="n">bathymetry</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">h_elem_size</span> <span class="o">=</span> <span class="n">h_elem_size</span>
@@ -97,7 +169,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">vertical_dg</span> <span class="o">=</span> <span class="n">continuity</span><span class="o">.</span><span class="n">vertical_dg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nonlin</span> <span class="o">=</span> <span class="n">nonlin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_bottom_friction</span> <span class="o">=</span> <span class="n">use_bottom_friction</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_elevation_gradient</span> <span class="o">=</span> <span class="n">use_elevation_gradient</span>
 
         <span class="c1"># define measures with a reasonable quadrature degree</span>
         <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
@@ -112,6 +183,29 @@
 
 
 <div class="viewcode-block" id="PressureGradientTerm"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.PressureGradientTerm">[docs]</a><span class="k">class</span> <span class="nc">PressureGradientTerm</span><span class="p">(</span><span class="n">MomentumTerm</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Internal pressure gradient term, :math:`g\nabla_h r`</span>
+
+<span class="sd">    where :math:`r` is the baroclinic head :eq:`baroc_head`. Let :math:`s`</span>
+<span class="sd">    denote :math:`r/H`. We can then write</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        F_{IPG} = g\nabla_h((s -\bar{s}) H)</span>
+<span class="sd">            + g\nabla_h\left(\frac{1}{H}\right) H^2\bar{s}</span>
+<span class="sd">            + g s_{bot}\nabla_h h</span>
+
+<span class="sd">    where :math:`\bar{s},s_{bot}` are the depth average and bottom value of</span>
+<span class="sd">    :math:`s`.</span>
+
+<span class="sd">    If :math:`s` belongs to a discontinuous function space, the first term is</span>
+<span class="sd">    integrated by parts. Its weak form reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_\Omega g\nabla_h((s -\bar{s}) H) \cdot \boldsymbol{\psi} dx</span>
+<span class="sd">            = - \int_\Omega g (s -\bar{s}) H \nabla_h \cdot \boldsymbol{\psi} dx</span>
+<span class="sd">            + \int_{\mathcal{I}_h \cup \mathcal{I}_v} g (s -\bar{s}) H \boldsymbol{\psi}  \cdot \textbf{n}_h dx</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO revise</span>
 <div class="viewcode-block" id="PressureGradientTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.PressureGradientTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonlin</span><span class="p">:</span>
@@ -120,24 +214,18 @@
             <span class="n">total_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bathymetry</span>
 
         <span class="c1"># TODO include additional 2D pressure gradient terms ...</span>
+        <span class="c1"># TODO update naming convention: baroc_head is actually s not r</span>
         <span class="n">baroc_head</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;baroc_head&#39;</span><span class="p">)</span>
         <span class="n">mean_baroc_head</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mean_baroc_head&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">baroc_head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">mean_baroc_head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;mean_baroc_head must be provided&#39;</span>
             <span class="n">baroc_head</span> <span class="o">=</span> <span class="p">(</span><span class="n">baroc_head</span> <span class="o">-</span> <span class="n">mean_baroc_head</span><span class="p">)</span><span class="o">*</span><span class="n">total_h</span>
-        <span class="n">eta</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;eta&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_elevation_gradient</span> <span class="k">else</span> <span class="kc">None</span>
 
-        <span class="k">if</span> <span class="n">eta</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">baroc_head</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">baroc_head</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="n">eta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">by_parts</span> <span class="o">=</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;baroc_head&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">fiat_element</span><span class="p">)</span><span class="o">.</span><span class="n">dg</span>
-            <span class="n">head</span> <span class="o">=</span> <span class="n">baroc_head</span>
-        <span class="k">elif</span> <span class="n">baroc_head</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">by_parts</span> <span class="o">=</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">eta</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">fiat_element</span><span class="p">)</span><span class="o">.</span><span class="n">dg</span>
-            <span class="n">head</span> <span class="o">=</span> <span class="n">eta</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">by_parts</span> <span class="o">=</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">eta</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">fiat_element</span><span class="p">)</span><span class="o">.</span><span class="n">dg</span>
-            <span class="n">head</span> <span class="o">=</span> <span class="n">eta</span> <span class="o">+</span> <span class="n">baroc_head</span>
+
+        <span class="n">by_parts</span> <span class="o">=</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;baroc_head&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">fiat_element</span><span class="p">)</span><span class="o">.</span><span class="n">dg</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="n">baroc_head</span>
 
         <span class="n">use_lin_stab</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -156,25 +244,10 @@
                           <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="n">f</span> <span class="o">+=</span> <span class="n">g_grav</span><span class="o">*</span><span class="n">head</span><span class="o">*</span><span class="n">n_dot_test</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds_bottom</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds_surf</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">bnd_marker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_markers</span><span class="p">:</span>
-                <span class="n">funcs</span> <span class="o">=</span> <span class="n">bnd_conditions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bnd_marker</span><span class="p">)</span>
                 <span class="n">ds_bnd</span> <span class="o">=</span> <span class="n">ds_v</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bnd_marker</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">baroc_head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">f</span> <span class="o">+=</span> <span class="n">g_grav</span><span class="o">*</span><span class="n">baroc_head</span><span class="o">*</span><span class="n">n_dot_test</span><span class="o">*</span><span class="n">ds_bnd</span>
-                <span class="k">if</span> <span class="n">eta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">special_eta_flux</span> <span class="o">=</span> <span class="n">funcs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;elev&#39;</span> <span class="ow">in</span> <span class="n">funcs</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">special_eta_flux</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">use_lin_stab</span><span class="p">:</span>
-                            <span class="n">un_jump</span> <span class="o">=</span> <span class="p">(</span><span class="n">solution_old</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span>
-                                       <span class="n">solution_old</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                            <span class="n">eta_star</span> <span class="o">=</span> <span class="n">eta</span> <span class="o">+</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">total_h</span><span class="o">/</span><span class="n">g_grav</span><span class="p">)</span><span class="o">*</span><span class="n">un_jump</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">eta_star</span> <span class="o">=</span> <span class="n">eta</span>
-                        <span class="n">f</span> <span class="o">+=</span> <span class="n">g_grav</span><span class="o">*</span><span class="n">eta_star</span><span class="o">*</span><span class="n">n_dot_test</span><span class="o">*</span><span class="n">ds_bnd</span>
-                    <span class="k">if</span> <span class="n">funcs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="s1">&#39;elev&#39;</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
-                            <span class="c1"># prescribe elevation only</span>
-                            <span class="n">h_ext</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="s1">&#39;elev&#39;</span><span class="p">]</span>
-                            <span class="n">f</span> <span class="o">+=</span> <span class="n">g_grav</span><span class="o">*</span><span class="p">(</span><span class="n">eta</span> <span class="o">+</span> <span class="n">h_ext</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">)</span><span class="o">*</span><span class="n">ds_bnd</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="n">grad_head_dot_test</span> <span class="o">=</span> <span class="p">(</span><span class="n">Dx</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span>
                                   <span class="n">Dx</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -183,6 +256,23 @@
 
 
 <div class="viewcode-block" id="HorizontalAdvectionTerm"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.HorizontalAdvectionTerm">[docs]</a><span class="k">class</span> <span class="nc">HorizontalAdvectionTerm</span><span class="p">(</span><span class="n">MomentumTerm</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Horizontal advection term, :math:`\nabla_h \cdot (\textbf{u} \textbf{u})`</span>
+
+<span class="sd">    The weak form reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_\Omega \nabla_h \cdot (\textbf{u} \textbf{u}) \cdot \boldsymbol{\psi} dx</span>
+<span class="sd">        = - \int_\Omega \nabla_h \boldsymbol{\psi} : (\textbf{u} \textbf{u}) dx</span>
+<span class="sd">        + \int_{\mathcal{I}_h \cup \mathcal{I}_v} \textbf{u}^{\text{up}} \cdot</span>
+<span class="sd">        \text{jump}(\boldsymbol{\psi} \textbf{n}_h) \cdot \text{avg}(\textbf{u}) dS</span>
+
+<span class="sd">    where the right hand side has been integrated by parts; :math:`:` stand for</span>
+<span class="sd">    the Frobenius inner product, :math:`\textbf{n}_h` is the horizontal</span>
+<span class="sd">    projection of the normal vector, :math:`\textbf{u}^{\text{up}}` is the</span>
+<span class="sd">    upwind value, and :math:`\text{jump}` and :math:`\text{avg}` denote the</span>
+<span class="sd">    jump and average operators across the interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="HorizontalAdvectionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.HorizontalAdvectionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonlin</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
@@ -277,6 +367,16 @@
 
 
 <div class="viewcode-block" id="VerticalAdvectionTerm"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.VerticalAdvectionTerm">[docs]</a><span class="k">class</span> <span class="nc">VerticalAdvectionTerm</span><span class="p">(</span><span class="n">MomentumTerm</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Vertical advection term, :math:`\partial \left(w\textbf{u} \right)/(\partial z)`</span>
+
+<span class="sd">    The weak form reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_\Omega \frac{\partial \left(w\textbf{u} \right)}{\partial z} \cdot \boldsymbol{\psi} dx</span>
+<span class="sd">        = - \int_\Omega \left( w \textbf{u} \right) \cdot \frac{\partial \boldsymbol{\psi}}{\partial z} dx</span>
+<span class="sd">        + \int_{\mathcal{I}_{h}} \textbf{u}^{\text{up}} \cdot \text{jump}(\boldsymbol{\psi} n_z) \text{avg}(w) dS</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="VerticalAdvectionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.VerticalAdvectionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">w</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="n">w_mesh</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;w_mesh&#39;</span><span class="p">)</span>
@@ -314,18 +414,29 @@
         <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
 
 
-<div class="viewcode-block" id="ALESourceTerm"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.ALESourceTerm">[docs]</a><span class="k">class</span> <span class="nc">ALESourceTerm</span><span class="p">(</span><span class="n">MomentumTerm</span><span class="p">):</span>
-<div class="viewcode-block" id="ALESourceTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.ALESourceTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">dw_mesh_dz</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dw_mesh_dz&#39;</span><span class="p">)</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="c1"># Non-conservative ALE source term</span>
-        <span class="k">if</span> <span class="n">dw_mesh_dz</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">+=</span> <span class="n">dw_mesh_dz</span><span class="o">*</span><span class="p">(</span><span class="n">solution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span>
-                             <span class="n">solution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
-        <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
-
-
 <div class="viewcode-block" id="HorizontalViscosityTerm"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.HorizontalViscosityTerm">[docs]</a><span class="k">class</span> <span class="nc">HorizontalViscosityTerm</span><span class="p">(</span><span class="n">MomentumTerm</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Horizontal viscosity term, :math:`- \nabla_h \cdot \left( \nu_h \nabla_h \textbf{u} \right)`</span>
+
+<span class="sd">    Using the symmetric interior penalty method the weak form becomes</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        - \int_\Omega \nabla_h \cdot \left( \nu_h \nabla_h \textbf{u} \right) \cdot \boldsymbol{\psi} dx</span>
+<span class="sd">        =&amp; \int_\Omega \nu_h (\nabla_h \boldsymbol{\psi}) : (\nabla_h \textbf{u})^T dx \\</span>
+<span class="sd">        &amp;- \int_{\mathcal{I}_h \cup \mathcal{I}_v} \text{jump}(\boldsymbol{\psi} \textbf{n}_h) \cdot \text{avg}( \nu_h \nabla_h \textbf{u}) dS</span>
+<span class="sd">        - \int_{\mathcal{I}_h \cup \mathcal{I}_v} \text{jump}(\textbf{u} \textbf{n}_h) \cdot \text{avg}( \nu_h \nabla_h \boldsymbol{\psi}) dS \\</span>
+<span class="sd">        &amp;+ \int_{\mathcal{I}_h \cup \mathcal{I}_v} \sigma \text{avg}(\nu_h) \text{jump}(\textbf{u} \textbf{n}_h) \cdot \text{jump}(\boldsymbol{\psi} \textbf{n}_h) dS</span>
+
+<span class="sd">    where :math:`\sigma` is a penalty parameter,</span>
+<span class="sd">    see Epshteyn and Riviere (2007).</span>
+
+<span class="sd">    Epshteyn and Riviere (2007). Estimation of penalty parameters for symmetric</span>
+<span class="sd">    interior penalty Galerkin methods. Journal of Computational and Applied</span>
+<span class="sd">    Mathematics, 206(2):843-872. http://dx.doi.org/10.1016/j.cam.2006.08.029</span>
+
+<span class="sd">    .. note ::</span>
+<span class="sd">        Note the minus sign due to :class:`.equation.Term` sign convention</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="HorizontalViscosityTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.HorizontalViscosityTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">viscosity_h</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;viscosity_h&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">viscosity_h</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -368,7 +479,7 @@
             <span class="n">elemsize</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_elem_size</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
                                           <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">v_elem_size</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-            <span class="n">sigma</span> <span class="o">=</span> <span class="mf">2.5</span><span class="o">*</span><span class="n">degree_h</span><span class="o">*</span><span class="p">(</span><span class="n">degree_h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">elemsize</span>
+            <span class="n">sigma</span> <span class="o">=</span> <span class="mf">5.0</span><span class="o">*</span><span class="n">degree_h</span><span class="o">*</span><span class="p">(</span><span class="n">degree_h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">elemsize</span>
             <span class="k">if</span> <span class="n">degree_h</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">sigma</span> <span class="o">=</span> <span class="mf">1.5</span><span class="o">/</span><span class="n">elemsize</span>
             <span class="n">alpha</span> <span class="o">=</span> <span class="n">avg</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
@@ -391,6 +502,28 @@
 
 
 <div class="viewcode-block" id="VerticalViscosityTerm"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.VerticalViscosityTerm">[docs]</a><span class="k">class</span> <span class="nc">VerticalViscosityTerm</span><span class="p">(</span><span class="n">MomentumTerm</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Vertical viscosity term, :math:`- \frac{\partial }{\partial z}\left( \nu \frac{\partial \textbf{u}}{\partial z}\right)`</span>
+
+<span class="sd">    Using the symmetric interior penalty method the weak form becomes</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        - \int_\Omega \frac{\partial }{\partial z}\left( \nu \frac{\partial \textbf{u}}{\partial z}\right) \cdot \boldsymbol{\psi} dx</span>
+<span class="sd">        =&amp; \int_\Omega \nu \frac{\partial \boldsymbol{\psi}}{\partial z} \cdot \frac{\partial \textbf{u}}{\partial z} dx \\</span>
+<span class="sd">        &amp;- \int_{\mathcal{I}_h} \text{jump}(\boldsymbol{\psi} n_z) \cdot \text{avg}\left(\nu \frac{\partial \textbf{u}}{\partial z}\right) dS</span>
+<span class="sd">        - \int_{\mathcal{I}_h} \text{jump}(\textbf{u} n_z) \cdot \text{avg}\left(\nu \frac{\partial \boldsymbol{\psi}}{\partial z}\right) dS \\</span>
+<span class="sd">        &amp;+ \int_{\mathcal{I}_h} \sigma \text{avg}(\nu) \text{jump}(\textbf{u} n_z) \cdot \text{jump}(\boldsymbol{\psi} n_z) dS</span>
+
+<span class="sd">    where :math:`\sigma` is a penalty parameter,</span>
+<span class="sd">    see Epshteyn and Riviere (2007).</span>
+
+<span class="sd">    Epshteyn and Riviere (2007). Estimation of penalty parameters for symmetric</span>
+<span class="sd">    interior penalty Galerkin methods. Journal of Computational and Applied</span>
+<span class="sd">    Mathematics, 206(2):843-872. http://dx.doi.org/10.1016/j.cam.2006.08.029</span>
+
+<span class="sd">    .. note ::</span>
+<span class="sd">        Note the minus sign due to :class:`.equation.Term` sign convention</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="VerticalViscosityTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.VerticalViscosityTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">viscosity_v</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;viscosity_v&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">viscosity_v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -426,6 +559,36 @@
 
 
 <div class="viewcode-block" id="BottomFrictionTerm"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.BottomFrictionTerm">[docs]</a><span class="k">class</span> <span class="nc">BottomFrictionTerm</span><span class="p">(</span><span class="n">MomentumTerm</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Quadratic bottom friction term, :math:`\tau_b = C_D \| \textbf{u}_b \| \textbf{u}_b`</span>
+
+<span class="sd">    The weak formulation reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_{\Gamma_{bot}} \tau_b \cdot \boldsymbol{\psi} dx = \int_{\Gamma_{bot}} C_D \| \textbf{u}_b \| \textbf{u}_b \cdot \boldsymbol{\psi} dx</span>
+
+<span class="sd">    where :math:`\textbf{u}_b` is reconstructed velocity in the middle of the</span>
+<span class="sd">    bottom element:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \textbf{u}_b = \textbf{u}\Big|_{\Gamma_{bot}} + \frac{\partial \textbf{u}}{\partial z}\Big|_{\Gamma_{bot}} h_b,</span>
+
+<span class="sd">    :math:`h_b` being half of the element height.</span>
+<span class="sd">    For implicit solvers we linearize the stress as</span>
+<span class="sd">    :math:`\tau_b = C_D \| \textbf{u}_b^{n} \| \textbf{u}_b^{n+1}`</span>
+
+<span class="sd">    The drag is computed from the law-of-the wall</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        C_D = \left( \frac{\kappa}{\ln (h_b + z_0)/z_0} \right)^2</span>
+
+<span class="sd">    where :math:`z_0` is the bottom roughness length, read from ``z0_friction``</span>
+<span class="sd">    field.</span>
+<span class="sd">    The user can override the :math:`C_D` value by providing ``quadratic_drag``</span>
+<span class="sd">    field.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO z_0 should be a field in the options dict, remove from physical_constants</span>
 <div class="viewcode-block" id="BottomFrictionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.BottomFrictionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bottom_friction</span><span class="p">:</span>
@@ -455,6 +618,11 @@
 
 
 <div class="viewcode-block" id="LinearDragTerm"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.LinearDragTerm">[docs]</a><span class="k">class</span> <span class="nc">LinearDragTerm</span><span class="p">(</span><span class="n">MomentumTerm</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Linear drag term, :math:`\tau_b = D \textbf{u}_b`</span>
+
+<span class="sd">    where :math:`D` is the drag coefficient, read from ``linear_drag`` field.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="LinearDragTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.LinearDragTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">linear_drag</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;linear_drag&#39;</span><span class="p">)</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
@@ -466,6 +634,9 @@
 
 
 <div class="viewcode-block" id="CoriolisTerm"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.CoriolisTerm">[docs]</a><span class="k">class</span> <span class="nc">CoriolisTerm</span><span class="p">(</span><span class="n">MomentumTerm</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Coriolis term, :math:`f\textbf{e}_z\wedge \bar{\textbf{u}}`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="CoriolisTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.CoriolisTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">coriolis</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;coriolis&#39;</span><span class="p">)</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
@@ -476,9 +647,29 @@
 
 
 <div class="viewcode-block" id="SourceTerm"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.SourceTerm">[docs]</a><span class="k">class</span> <span class="nc">SourceTerm</span><span class="p">(</span><span class="n">MomentumTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generic source term</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Generic momentum source term</span>
+
+<span class="sd">    The weak form reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        F_s = \int_\Omega \sigma \cdot \boldsymbol{\psi} dx</span>
+
+<span class="sd">    where :math:`\sigma` is a user defined vector valued :class:`Function`.</span>
+
+<span class="sd">    This term also implements the wind stress, :math:`-\tau_w/(H \rho_0)`.</span>
+<span class="sd">    :math:`\tau_w` is a user-defined wind stress :class:`Function`</span>
+<span class="sd">    ``wind_stress``. The weak form is</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        F_w = \int_{\Gamma_s} \frac{1}{\rho_0} \tau_w \cdot \boldsymbol{\psi} dx</span>
+
+<span class="sd">    Wind stress is only included if vertical viscosity is provided.</span>
+
+<span class="sd">    .. note ::</span>
+<span class="sd">        Due to the sign convention of :class:`.equation.Term`, this term is assembled to the left hand side of the equation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO implement wind stress as a separate term</span>
 <div class="viewcode-block" id="SourceTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.SourceTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">source</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;source&#39;</span><span class="p">)</span>
@@ -496,21 +687,30 @@
 
 <div class="viewcode-block" id="MomentumEquation"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.MomentumEquation">[docs]</a><span class="k">class</span> <span class="nc">MomentumEquation</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    3D momentum equation for hydrostatic Boussinesq flow.</span>
+<span class="sd">    Hydrostatic 3D momentum equation :eq:`mom_eq_split` for mode split models</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">nonlin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_bottom_friction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">use_elevation_gradient</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                 <span class="n">nonlin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_bottom_friction</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
+<span class="sd">        :kwarg bathymetry: bathymetry of the domain</span>
+<span class="sd">        :type bathymetry: 3D :class:`Function` or :class:`Constant`</span>
+<span class="sd">        :kwarg v_elem_size: scalar :class:`Function` that defines the vertical</span>
+<span class="sd">            element size</span>
+<span class="sd">        :kwarg h_elem_size: scalar :class:`Function` that defines the horizontal</span>
+<span class="sd">            element size</span>
+<span class="sd">        :kwarg bool nonlin: If False defines the linear shallow water equations</span>
+<span class="sd">        :kwarg bool use_bottom_friction: If True includes bottom friction term</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO rename for reflect the fact that this is eq for the split eqns</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MomentumEquation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
 
         <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span>
-                <span class="n">v_elem_size</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="p">,</span> <span class="n">nonlin</span><span class="p">,</span> <span class="n">use_bottom_friction</span><span class="p">,</span>
-                <span class="n">use_elevation_gradient</span><span class="p">)</span>
+                <span class="n">v_elem_size</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="p">,</span> <span class="n">nonlin</span><span class="p">,</span> <span class="n">use_bottom_friction</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">PressureGradientTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">VerticalAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
-        <span class="c1"># self.add_term(ALESourceTerm(*args), &#39;explicit&#39;)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalViscosityTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">VerticalViscosityTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">BottomFrictionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>

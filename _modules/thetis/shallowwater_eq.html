@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.shallowwater_eq &#8212; Thetis 0+untagged.771.gd639bf8 documentation</title>
+    <title>thetis.shallowwater_eq &#8212; Thetis 0+untagged.820.g6820076 documentation</title>
     
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0+untagged.771.gd639bf8',
+        VERSION:     '0+untagged.820.g6820076',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -66,31 +66,157 @@
           <div class="body" role="main">
             
   <h1>Source code for thetis.shallowwater_eq</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">r&quot;&quot;&quot;</span>
 <span class="sd">Depth averaged shallow water equations</span>
 
-<span class="sd">TODO: add documentation</span>
+<span class="sd">---------</span>
+<span class="sd">Equations</span>
+<span class="sd">---------</span>
 
-<span class="sd">Boundary conditions are set with ShallowWaterEquations.bnd_functions dict.</span>
-<span class="sd">For example to assign elevation and volume flux for boundary 1:</span>
-<span class="sd">sw.bnd_functions[1] = {&#39;elev&#39;:myfunc1, &#39;flux&#39;:myfunc2}</span>
-<span class="sd">where myfunc1 and myfunc2 are Functions in the appropriate function space.</span>
+<span class="sd">The state variables are water elevation, :math:`\eta`, and depth averaged</span>
+<span class="sd">velocity :math:`\bar{\textbf{u}}`.</span>
 
-<span class="sd">Supported boundary conditions are:</span>
+<span class="sd">Denoting the total water depth by :math:`H=\eta + h`, the non-conservative form of</span>
+<span class="sd">the free surface equation is</span>
 
-<span class="sd"> - &#39;elev&#39;: elevation only (usually unstable)</span>
-<span class="sd"> - &#39;uv&#39;: 2d velocity vector (in model coordinates)</span>
-<span class="sd"> - &#39;un&#39;: normal velocity (scalar, positive out of domain)</span>
-<span class="sd"> - &#39;flux&#39;: normal volume flux (scalar, positive out of domain)</span>
-<span class="sd"> - &#39;elev&#39; and &#39;uv&#39;: water elevation and uv vector</span>
-<span class="sd"> - &#39;elev&#39; and &#39;un&#39;: water elevation and normal velocity (scalar)</span>
-<span class="sd"> - &#39;elev&#39; and &#39;flux&#39;: water elevation and normal flux (scalar)</span>
+<span class="sd">.. math::</span>
+<span class="sd">   \frac{\partial \eta}{\partial t} + \nabla \cdot (H \bar{\textbf{u}}) = 0</span>
+<span class="sd">   :label: swe_freesurf</span>
 
-<span class="sd">Tuomas Karna 2015-02-23</span>
+<span class="sd">The non-conservative momentum equation reads</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">   \frac{\partial \bar{\textbf{u}}}{\partial t} +</span>
+<span class="sd">   \bar{\textbf{u}} \cdot \nabla\bar{\textbf{u}} +</span>
+<span class="sd">   f\textbf{e}_z\wedge \bar{\textbf{u}} +</span>
+<span class="sd">   g \nabla \eta +</span>
+<span class="sd">   g \frac{1}{H}\int_{-h}^\eta \nabla r dz</span>
+<span class="sd">   = \nabla \cdot \big( \nu_h ( \nabla \bar{\textbf{u}} + (\nabla \bar{\textbf{u}})^T )\big) +</span>
+<span class="sd">   \frac{\nu_h \nabla(H)}{H} \cdot ( \nabla \bar{\textbf{u}} + (\nabla \bar{\textbf{u}})^T ),</span>
+<span class="sd">   :label: swe_momentum</span>
+
+<span class="sd">where :math:`g` is the gravitational acceleration, :math:`f` is the Coriolis</span>
+<span class="sd">frequency, :math:`\wedge` is the cross product,</span>
+<span class="sd">:math:`\textbf{e}_z` is a vertical unit vector, and :math:`\nu_h`</span>
+<span class="sd">is viscosity. Water density is given by :math:`\rho = \rho&#39;(T, S, p) + \rho_0`,</span>
+<span class="sd">where :math:`\rho_0` is a constant reference density.</span>
+
+<span class="sd">Above :math:`r` denotes the baroclinic head</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">  r = \frac{1}{\rho_0} \int_{z}^\eta  \rho&#39; d\zeta.</span>
+
+<span class="sd">In the case of purely barotropic problems the :math:`r` and the internal pressure</span>
+<span class="sd">gradient are omitted.</span>
+
+<span class="sd">If the option :attr:`.ModelOptions.nonlin` is ``False``, we solve the linear shallow water</span>
+<span class="sd">equations (i.e. wave equation):</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">   \frac{\partial \eta}{\partial t} + \nabla \cdot (h \bar{\textbf{u}}) = 0</span>
+<span class="sd">   :label: swe_freesurf_linear</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">   \frac{\partial \bar{\textbf{u}}}{\partial t} +</span>
+<span class="sd">   f\textbf{e}_z\wedge \bar{\textbf{u}} +</span>
+<span class="sd">   g \nabla \eta</span>
+<span class="sd">   = \nabla \cdot \big( \nu_h ( \nabla \bar{\textbf{u}} + (\nabla \bar{\textbf{u}})^T )\big) +</span>
+<span class="sd">   \frac{\nu_h \nabla(H)}{H} \cdot ( \nabla \bar{\textbf{u}} + (\nabla \bar{\textbf{u}})^T ).</span>
+<span class="sd">   :label: swe_momentum_linear</span>
+
+<span class="sd">In case of a 3D problem with mode splitting, we use a simplified 2D</span>
+<span class="sd">system that contains nothing but the rotational external gravity waves:</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    \frac{\partial \eta}{\partial t} + \nabla \cdot (H \bar{\textbf{u}}) = 0</span>
+<span class="sd">    :label: swe_freesurf_modesplit</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    \frac{\partial \bar{\textbf{u}}}{\partial t} +</span>
+<span class="sd">    f\textbf{e}_z\wedge \bar{\textbf{u}} +</span>
+<span class="sd">    g \nabla \eta + g \frac{1}{H}\int_{-h}^\eta \nabla r dz</span>
+<span class="sd">    = \textbf{G},</span>
+<span class="sd">    :label: swe_momentum_modesplit</span>
+
+<span class="sd">where :math:`\textbf{G}` is a source term used to couple the 2D and 3D momentum</span>
+<span class="sd">equations.</span>
+
+<span class="sd">-------------------</span>
+<span class="sd">Boundary Conditions</span>
+<span class="sd">-------------------</span>
+
+<span class="sd">All boundary conditions are imposed weakly by providing external values for</span>
+<span class="sd">:math:`\eta` and :math:`\bar{\textbf{u}}`.</span>
+
+<span class="sd">Boundary conditions are set with a dictionary that defines all prescribed</span>
+<span class="sd">variables at each open boundary.</span>
+<span class="sd">For example, to assign elevation and volume flux on boundary ``1`` we set</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    swe_bnd_funcs = {}</span>
+<span class="sd">    swe_bnd_funcs[1] = {&#39;elev&#39;:myfunc1, &#39;flux&#39;:myfunc2}</span>
+
+<span class="sd">where ``myfunc1`` and ``myfunc2`` are :class:`Constant` or :class:`Function`</span>
+<span class="sd">objects.</span>
+
+<span class="sd">The user can provide :math:`\eta` and/or :math:`\bar{\textbf{u}}` values.</span>
+<span class="sd">Supported combinations are:</span>
+
+<span class="sd">- *unspecified* : impermeable (land) boundary, implies symmetric :math:`\eta` condition and zero normal velocity</span>
+<span class="sd">- ``&#39;elev&#39;``: elevation only, symmetric velocity (usually unstable)</span>
+<span class="sd">- ``&#39;uv&#39;``: 2d velocity vector :math:`\bar{\textbf{u}}=(u, v)` (in mesh coordinates), symmetric elevation</span>
+<span class="sd">- ``&#39;un&#39;``: normal velocity (scalar, positive out of domain), symmetric elevation</span>
+<span class="sd">- ``&#39;flux&#39;``: normal volume flux (scalar, positive out of domain), symmetric elevation</span>
+<span class="sd">- ``&#39;elev&#39;`` and ``&#39;uv&#39;``: water elevation and 2d velocity vector</span>
+<span class="sd">- ``&#39;elev&#39;`` and ``&#39;un&#39;``: water elevation and normal velocity</span>
+<span class="sd">- ``&#39;elev&#39;`` and ``&#39;flux&#39;``: water elevation and normal flux</span>
+
+<span class="sd">The boundary conditions are assigned to the :class:`.FlowSolver2d` or</span>
+<span class="sd">:class:`.FlowSolver` objects:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    solver_obj = solver2d.FlowSolver2d(...)</span>
+<span class="sd">    ...</span>
+<span class="sd">    solver_obj.bnd_functions[&#39;shallow_water&#39;] = swe_bnd_funcs</span>
+
+<span class="sd">Internally the boundary conditions passed to the :meth:`.Term.residual` method</span>
+<span class="sd">of each term:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    adv_term = shallowwater_eq.HorizontalAdvectionTerm(...)</span>
+<span class="sd">    adv_form = adv_term.residual(..., bnd_conditions=swe_bnd_funcs)</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.equation</span> <span class="k">import</span> <span class="n">Term</span><span class="p">,</span> <span class="n">Equation</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;BaseShallowWaterEquation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ShallowWaterEquations&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ModeSplit2DEquations&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ShallowWaterMomentumEquation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;FreeSurfaceEquation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ShallowWaterTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ShallowWaterMomentumTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ShallowWaterContinuityTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;HUDivTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ContinuitySourceTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;HorizontalAdvectionTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;HorizontalViscosityTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ExternalPressureGradientTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;InternalPressureGradientTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CoriolisTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;LinearDragTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;QuadraticDragTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BottomDrag3DTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MomentumSourceTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WindStressTerm&#39;</span><span class="p">,</span>
+<span class="p">]</span>
 
 <span class="n">g_grav</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;g_grav&#39;</span><span class="p">]</span>
 <span class="n">rho_0</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;rho0&#39;</span><span class="p">]</span>
@@ -125,7 +251,7 @@
 <span class="sd">        Returns external values of elev and uv for all supported</span>
 <span class="sd">        boundary conditions.</span>
 
-<span class="sd">        volume flux (flux) and normal velocity (un) are defined positive out of</span>
+<span class="sd">        Volume flux (flux) and normal velocity (un) are defined positive out of</span>
 <span class="sd">        the domain.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bathymetry</span>
@@ -218,8 +344,22 @@
 
 
 <div class="viewcode-block" id="ExternalPressureGradientTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ExternalPressureGradientTerm">[docs]</a><span class="k">class</span> <span class="nc">ExternalPressureGradientTerm</span><span class="p">(</span><span class="n">ShallowWaterMomentumTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    External pressure gradient term</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    External pressure gradient term, :math:`g \nabla \eta`</span>
+
+<span class="sd">    The weak form reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_\Omega g \nabla \eta \cdot \boldsymbol{\psi} dx</span>
+<span class="sd">        = \int_\Gamma g \eta^* \text{jump}(\boldsymbol{\psi} \cdot \textbf{n}) dS</span>
+<span class="sd">        - \int_\Omega g \eta \nabla \cdot \boldsymbol{\psi} dx</span>
+
+<span class="sd">    where the right hand side has been integrated by parts; :math:`\textbf{n}`</span>
+<span class="sd">    denotes the unit normal of the element interfaces, :math:`n^*` is value at</span>
+<span class="sd">    the interface obtained from an approximate Riemann solver.</span>
+
+<span class="sd">    If :math:`\eta` belongs to a discontinuous function space, the form on the</span>
+<span class="sd">    right hand side is used.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="ExternalPressureGradientTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ExternalPressureGradientTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">total_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">eta_old</span><span class="p">)</span>
@@ -266,8 +406,24 @@
 
 
 <div class="viewcode-block" id="HUDivTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.HUDivTerm">[docs]</a><span class="k">class</span> <span class="nc">HUDivTerm</span><span class="p">(</span><span class="n">ShallowWaterContinuityTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Divergence of Hu</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Divergence term, :math:`\nabla \cdot (H \bar{\textbf{u}})`</span>
+
+<span class="sd">    The weak form reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_\Omega \nabla \cdot (H \bar{\textbf{u}}) \phi dx</span>
+<span class="sd">        = \int_\Gamma (H^* \bar{\textbf{u}}^*) \cdot \text{jump}(\phi \textbf{n}) dS</span>
+<span class="sd">        - \int_\Omega H (\bar{\textbf{u}}\cdot\nabla \phi) dx</span>
+
+<span class="sd">    where the right hand side has been integrated by parts; :math:`\textbf{n}`</span>
+<span class="sd">    denotes the unit normal of the element interfaces, and :math:`\text{jump}`</span>
+<span class="sd">    and :math:`\text{avg}` denote the jump and average operators across the</span>
+<span class="sd">    interface. :math:`H^*, \bar{\textbf{u}}^*` are values at the interface</span>
+<span class="sd">    obtained from an approximate Riemann solver.</span>
+
+<span class="sd">    If :math:`\bar{\textbf{u}}` belongs to a discontinuous function space,</span>
+<span class="sd">    the form on the right hand side is used.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="HUDivTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.HUDivTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">total_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">eta_old</span><span class="p">)</span>
@@ -306,8 +462,21 @@
 
 
 <div class="viewcode-block" id="HorizontalAdvectionTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.HorizontalAdvectionTerm">[docs]</a><span class="k">class</span> <span class="nc">HorizontalAdvectionTerm</span><span class="p">(</span><span class="n">ShallowWaterMomentumTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Horizontal advection of momentum</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Advection of momentum term, :math:`\bar{\textbf{u}} \cdot \nabla\bar{\textbf{u}}`</span>
+
+<span class="sd">    The weak form is</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_\Omega \bar{\textbf{u}} \cdot \nabla\bar{\textbf{u}} \cdot \boldsymbol{\psi} dx</span>
+<span class="sd">        = - \int_\Omega \nabla_h \cdot (\bar{\textbf{u}} \boldsymbol{\psi}) \cdot \bar{\textbf{u}} dx</span>
+<span class="sd">        + \int_\Gamma \text{avg}(\bar{\textbf{u}}) \cdot \text{jump}(\boldsymbol{\psi}</span>
+<span class="sd">        (\bar{\textbf{u}}\cdot\textbf{n})) dS</span>
+
+<span class="sd">    where the right hand side has been integrated by parts;</span>
+<span class="sd">    :math:`\textbf{n}` is the unit normal of</span>
+<span class="sd">    the element interfaces, and :math:`\text{jump}` and :math:`\text{avg}` denote the</span>
+<span class="sd">    jump and average operators across the interface.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="HorizontalAdvectionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.HorizontalAdvectionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">uv_lax_friedrichs</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_lax_friedrichs&#39;</span><span class="p">)</span>
@@ -365,8 +534,48 @@
 
 
 <div class="viewcode-block" id="HorizontalViscosityTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.HorizontalViscosityTerm">[docs]</a><span class="k">class</span> <span class="nc">HorizontalViscosityTerm</span><span class="p">(</span><span class="n">ShallowWaterMomentumTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Viscosity of momentum</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Viscosity of momentum term</span>
+
+<span class="sd">    If option :attr:`.ModelOptions.include_grad_div_viscosity_term` is ``True``, we</span>
+<span class="sd">    use the symmetric viscous stress :math:`\boldsymbol{\tau}_\nu = \nu_h ( \nabla \bar{\textbf{u}} + (\nabla \bar{\textbf{u}})^T )`.</span>
+<span class="sd">    Using the symmetric interior penalty method the weak form then reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_\Omega -\nabla \cdot \boldsymbol{\tau}_\nu \cdot \boldsymbol{\psi} dx</span>
+<span class="sd">        =&amp; \int_\Omega (\nabla \boldsymbol{\psi}) : \boldsymbol{\tau}_\nu dx \\</span>
+<span class="sd">        &amp;- \int_\Gamma \text{jump}(\boldsymbol{\psi} \textbf{n}) \cdot \text{avg}(\boldsymbol{\tau}_\nu) dS</span>
+<span class="sd">        - \int_\Gamma \text{avg}(\nu_h)\big(\text{jump}(\bar{\textbf{u}} \textbf{n}) + \text{jump}(\bar{\textbf{u}} \textbf{n})^T\big) \cdot \text{avg}(\nabla \boldsymbol{\psi}) dS \\</span>
+<span class="sd">        &amp;+ \int_\Gamma \sigma \text{avg}(\nu_h) \big(\text{jump}(\bar{\textbf{u}} \textbf{n}) + \text{jump}(\bar{\textbf{u}} \textbf{n})^T\big) \cdot \text{jump}(\boldsymbol{\psi} \textbf{n}) dS</span>
+
+<span class="sd">    where :math:`\sigma` is a penalty parameter,</span>
+<span class="sd">    see Epshteyn and Riviere (2007).</span>
+
+<span class="sd">    If option :attr:`.ModelOptions.include_grad_div_viscosity_term` is ``False``,</span>
+<span class="sd">    we use viscous stress :math:`\boldsymbol{\tau}_\nu = \nu_h \nabla \bar{\textbf{u}}`.</span>
+<span class="sd">    In this case the weak form is</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_\Omega -\nabla \cdot \boldsymbol{\tau}_\nu \cdot \boldsymbol{\psi} dx</span>
+<span class="sd">        =&amp; \int_\Omega (\nabla \boldsymbol{\psi}) : \boldsymbol{\tau}_\nu dx \\</span>
+<span class="sd">        &amp;- \int_\Gamma \text{jump}(\boldsymbol{\psi} \textbf{n}) \cdot \text{avg}(\boldsymbol{\tau}_\nu) dS</span>
+<span class="sd">        - \int_\Gamma \text{avg}(\nu_h)\text{jump}(\bar{\textbf{u}} \textbf{n}) \cdot \text{avg}(\nabla \boldsymbol{\psi}) dS \\</span>
+<span class="sd">        &amp;+ \int_\Gamma \sigma \text{avg}(\nu_h) \text{jump}(\bar{\textbf{u}} \textbf{n}) \cdot \text{jump}(\boldsymbol{\psi} \textbf{n}) dS</span>
+
+<span class="sd">    If option :attr:`.ModelOptions.include_grad_depth_viscosity_term` is ``True``, we also include</span>
+<span class="sd">    the term</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \boldsymbol{\tau}_{\nabla H} = - \frac{\nu_h \nabla(H)}{H} \cdot ( \nabla \bar{\textbf{u}} + (\nabla \bar{\textbf{u}})^T )</span>
+
+<span class="sd">    as a source term.</span>
+
+<span class="sd">    Epshteyn and Riviere (2007). Estimation of penalty parameters for symmetric</span>
+<span class="sd">    interior penalty Galerkin methods. Journal of Computational and Applied</span>
+<span class="sd">    Mathematics, 206(2):843-872. http://dx.doi.org/10.1016/j.cam.2006.08.029</span>
+
+<span class="sd">    .. note ::</span>
+<span class="sd">        Note the minus sign due to :class:`.equation.Term` sign convention</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="HorizontalViscosityTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.HorizontalViscosityTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">total_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">eta_old</span><span class="p">)</span>
@@ -433,8 +642,8 @@
 
 
 <div class="viewcode-block" id="CoriolisTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.CoriolisTerm">[docs]</a><span class="k">class</span> <span class="nc">CoriolisTerm</span><span class="p">(</span><span class="n">ShallowWaterMomentumTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Coriolis term</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Coriolis term, :math:`f\textbf{e}_z\wedge \bar{\textbf{u}}`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="CoriolisTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.CoriolisTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">coriolis</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;coriolis&#39;</span><span class="p">)</span>
@@ -445,8 +654,10 @@
 
 
 <div class="viewcode-block" id="WindStressTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.WindStressTerm">[docs]</a><span class="k">class</span> <span class="nc">WindStressTerm</span><span class="p">(</span><span class="n">ShallowWaterMomentumTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Wind stress</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Wind stress term, :math:`-\tau_w/(H \rho_0)`</span>
+
+<span class="sd">    Here :math:`\tau_w` is a user-defined wind stress :class:`Function`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="WindStressTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.WindStressTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">wind_stress</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;wind_stress&#39;</span><span class="p">)</span>
@@ -458,8 +669,17 @@
 
 
 <div class="viewcode-block" id="QuadraticDragTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.QuadraticDragTerm">[docs]</a><span class="k">class</span> <span class="nc">QuadraticDragTerm</span><span class="p">(</span><span class="n">ShallowWaterMomentumTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
 <span class="sd">    Quadratic Manning bottom friction term</span>
+<span class="sd">    :math:`C_D \| \bar{\textbf{u}} \| \bar{\textbf{u}}`</span>
+
+<span class="sd">    where the drag term is computed with the Manning formula</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        C_D = g \frac{\mu^2}{H^{1/3}}</span>
+
+<span class="sd">    if the Manning coefficient :math:`\mu` is defined (see field :attr:`mu_manning`).</span>
+<span class="sd">    Otherwise :math:`C_D` is taken as a constant (see field :attr:`quadratic_drag`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="QuadraticDragTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.QuadraticDragTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">total_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">eta_old</span><span class="p">)</span>
@@ -477,8 +697,10 @@
 
 
 <div class="viewcode-block" id="LinearDragTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.LinearDragTerm">[docs]</a><span class="k">class</span> <span class="nc">LinearDragTerm</span><span class="p">(</span><span class="n">ShallowWaterMomentumTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Linear bottom friction term</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Linear friction term, :math:`C \bar{\textbf{u}}`</span>
+
+<span class="sd">    Here :math:`C` is a user-defined drag coefficient.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="LinearDragTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.LinearDragTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">linear_drag</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;linear_drag&#39;</span><span class="p">)</span>
@@ -490,8 +712,13 @@
 
 
 <div class="viewcode-block" id="BottomDrag3DTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.BottomDrag3DTerm">[docs]</a><span class="k">class</span> <span class="nc">BottomDrag3DTerm</span><span class="p">(</span><span class="n">ShallowWaterMomentumTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Bottom drag term consistent with 3D model</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Bottom drag term consistent with the 3D mode,</span>
+<span class="sd">    :math:`C_D \| \textbf{u}_b \| \textbf{u}_b`</span>
+
+<span class="sd">    Here :math:`\textbf{u}_b` is the bottom velocity used in the 3D mode, and</span>
+<span class="sd">    :math:`C_D` the corresponding bottom drag.</span>
+<span class="sd">    These fields are computed in the 3D model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="BottomDrag3DTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.BottomDrag3DTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">total_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">eta_old</span><span class="p">)</span>
@@ -507,9 +734,21 @@
 
 
 <div class="viewcode-block" id="InternalPressureGradientTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.InternalPressureGradientTerm">[docs]</a><span class="k">class</span> <span class="nc">InternalPressureGradientTerm</span><span class="p">(</span><span class="n">ShallowWaterMomentumTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
 <span class="sd">    Internal pressure gradient term</span>
 
+<span class="sd">    .. math::</span>
+<span class="sd">        F_{IPG} = \frac{g}{H} \int_{-h}^{\eta} (\nabla r) dz,</span>
+
+<span class="sd">    where :math:`r` is the baroc_head.</span>
+<span class="sd">    Let :math:`s` denote :math:`r/H`. We can then write</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        F_{IPG} = g\nabla(\bar{s} H) - g\nabla \Big(\frac{1}{H} \Big) H^2\bar{s} - g s_{bot}\nabla h</span>
+
+<span class="sd">    where :math:`\bar{s},s_{bot}` are the depth average and bottom value of</span>
+<span class="sd">    :math:`s`. This term is implemented as a source term not integrated by</span>
+<span class="sd">    parts.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="InternalPressureGradientTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.InternalPressureGradientTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">baroc_head</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;baroc_head&#39;</span><span class="p">)</span>
@@ -541,8 +780,18 @@
 
 
 <div class="viewcode-block" id="MomentumSourceTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.MomentumSourceTerm">[docs]</a><span class="k">class</span> <span class="nc">MomentumSourceTerm</span><span class="p">(</span><span class="n">ShallowWaterMomentumTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
 <span class="sd">    Generic source term in the shallow water momentum equation</span>
+
+<span class="sd">    The weak form reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        F_s = \int_\Omega \boldsymbol{\tau} \cdot \boldsymbol{\psi} dx</span>
+
+<span class="sd">    where :math:`\boldsymbol{\tau}` is a user defined vector valued :class:`Function`.</span>
+
+<span class="sd">    .. note ::</span>
+<span class="sd">        Due to the sign convention of :class:`.equation.Term`, this term is assembled to the left hand side of the equation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="MomentumSourceTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.MomentumSourceTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
@@ -554,8 +803,18 @@
 
 
 <div class="viewcode-block" id="ContinuitySourceTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ContinuitySourceTerm">[docs]</a><span class="k">class</span> <span class="nc">ContinuitySourceTerm</span><span class="p">(</span><span class="n">ShallowWaterContinuityTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
 <span class="sd">    Generic source term in the depth-averaged continuity equation</span>
+
+<span class="sd">    The weak form reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        F_s = \int_\Omega S \phi dx</span>
+
+<span class="sd">    where :math:`S` is a user defined scalar :class:`Function`.</span>
+
+<span class="sd">    .. note ::</span>
+<span class="sd">        Due to the sign convention of :class:`.equation.Term`, this term is assembled to the left hand side of the equation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="ContinuitySourceTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ContinuitySourceTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
@@ -568,9 +827,11 @@
 
 <div class="viewcode-block" id="BaseShallowWaterEquation"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.BaseShallowWaterEquation">[docs]</a><span class="k">class</span> <span class="nc">BaseShallowWaterEquation</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Abstract base class for ShallowWaterEquations, ShallowWaterMomentumEquation and FreeSurfaceEquation.</span>
-<span class="sd">    Provides common functionality to compute timesteps and add either momentum or continuity terms.</span>
+<span class="sd">    Abstract base class for ShallowWaterEquations, ShallowWaterMomentumEquation</span>
+<span class="sd">    and FreeSurfaceEquation.</span>
 
+<span class="sd">    Provides common functionality to compute time steps and add either momentum</span>
+<span class="sd">    or continuity terms.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="p">,</span>
@@ -596,22 +857,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">ContinuitySourceTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseShallowWaterEquation.residual_uv_eta"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.BaseShallowWaterEquation.residual_uv_eta">[docs]</a>    <span class="k">def</span> <span class="nf">residual_uv_eta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns an UFL form of the residual by summing up all the terms with the desired label.</span>
-
-<span class="sd">        Sign convention: all terms are assumed to be on the left hand side of the equation A + term = 0.</span>
-
-<span class="sd">        :arg label: string defining the type of terms to sum up. Currently one of</span>
-<span class="sd">            &#39;source&#39;|&#39;explicit&#39;|&#39;implicit&#39;|&#39;nonlinear&#39;. Can be a list of multiple labels, or &#39;all&#39; in which</span>
-<span class="sd">            case all defined terms are summed.</span>
-<span class="sd">        :arg uv:, :arg eta: uv and eta at new time-level, at least one of whom is solved for</span>
-<span class="sd">        :arg uv_old:, :arg eta_old: uv and eta at the old time-level</span>
-<span class="sd">        :arg fields: a dictionary that provides all the remaining fields that the term depends on.</span>
-<span class="sd">            The keys of the dictionary should standard field names in `field_metadata`</span>
-<span class="sd">        :arg fields_old: Time lagged dictionary of fields</span>
-<span class="sd">        :arg bnd_conditions: A dictionary describing boundary conditions.</span>
-<span class="sd">            E.g. {3: {&#39;elev_2d&#39;: Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_terms</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
             <span class="n">f</span> <span class="o">+=</span> <span class="n">term</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
@@ -621,12 +866,25 @@
 <div class="viewcode-block" id="ShallowWaterEquations"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ShallowWaterEquations">[docs]</a><span class="k">class</span> <span class="nc">ShallowWaterEquations</span><span class="p">(</span><span class="n">BaseShallowWaterEquation</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    2D depth-averaged shallow water equations in non-conservative form.</span>
+
+<span class="sd">    This defines the full 2D SWE equations :eq:`swe_freesurf` -</span>
+<span class="sd">    :eq:`swe_momentum`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="p">,</span>
                  <span class="n">nonlin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">include_grad_div_viscosity_term</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">include_grad_depth_viscosity_term</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: Mixed function space where the solution belongs</span>
+<span class="sd">        :arg bathymetry: bathymetry of the domain</span>
+<span class="sd">        :type bathymetry: :class:`Function` or :class:`Constant`</span>
+<span class="sd">        :kwarg bool nonlin: If False defines the linear shallow water equations</span>
+<span class="sd">        :kwarg bool include_grad_div_viscosity_term: If True includes grad(nu div(u))</span>
+<span class="sd">            viscosity term</span>
+<span class="sd">        :kwarg bool include_grad_depth_viscosity_term: If True includes grad(H) term</span>
+<span class="sd">            in viscosity operator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ShallowWaterEquations</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span> <span class="n">nonlin</span><span class="p">)</span>
 
         <span class="n">u_test</span><span class="p">,</span> <span class="n">eta_test</span> <span class="o">=</span> <span class="n">TestFunctions</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
@@ -641,22 +899,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_continuity_terms</span><span class="p">(</span><span class="n">eta_test</span><span class="p">,</span> <span class="n">eta_space</span><span class="p">,</span> <span class="n">u_space</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span> <span class="n">nonlin</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ShallowWaterEquations.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ShallowWaterEquations.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns an UFL form of the residual by summing up all the terms with the desired label.</span>
-
-<span class="sd">        Sign convention: all terms are assumed to be on the left hand side of the equation A + term = 0.</span>
-
-<span class="sd">        :arg label: string defining the type of terms to sum up. Currently one of</span>
-<span class="sd">            &#39;source&#39;|&#39;explicit&#39;|&#39;implicit&#39;|&#39;nonlinear&#39;. Can be a list of multiple labels, or &#39;all&#39; in which</span>
-<span class="sd">            case all defined terms are summed.</span>
-<span class="sd">        :arg solution: solution :class:`.Function` of the corresponding equation</span>
-<span class="sd">        :arg solution_old: a time lagged solution :class:`.Function`</span>
-<span class="sd">        :arg fields: a dictionary that provides all the remaining fields that the term depends on.</span>
-<span class="sd">            The keys of the dictionary should standard field names in `field_metadata`</span>
-<span class="sd">        :arg fields_old: Time lagged dictionary of fields</span>
-<span class="sd">        :arg bnd_conditions: A dictionary describing boundary conditions.</span>
-<span class="sd">            E.g. {3: {&#39;elev_2d&#39;: Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">solution</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span> <span class="o">=</span> <span class="n">solution</span>
         <span class="k">else</span><span class="p">:</span>
@@ -666,14 +908,28 @@
 
 
 <div class="viewcode-block" id="ModeSplit2DEquations"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ModeSplit2DEquations">[docs]</a><span class="k">class</span> <span class="nc">ModeSplit2DEquations</span><span class="p">(</span><span class="n">BaseShallowWaterEquation</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    2D depth-averaged shallow water equations for 2D-3D mode splitting</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    2D depth-averaged shallow water equations for mode splitting schemes.</span>
+
+<span class="sd">    Defines the equations :eq:`swe_freesurf_modesplit` -</span>
+<span class="sd">    :eq:`swe_momentum_modesplit`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="p">,</span>
                  <span class="n">nonlin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">include_grad_div_viscosity_term</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">include_grad_depth_viscosity_term</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: Mixed function space where the solution belongs</span>
+<span class="sd">        :arg bathymetry: bathymetry of the domain</span>
+<span class="sd">        :type bathymetry: :class:`Function` or :class:`Constant`</span>
+<span class="sd">        :kwarg bool nonlin: If False defines the linear shallow water equations</span>
+<span class="sd">        :kwarg bool include_grad_div_viscosity_term: If True includes grad(nu div(u))</span>
+<span class="sd">            viscosity term</span>
+<span class="sd">        :kwarg bool include_grad_depth_viscosity_term: If True includes grad(H) term</span>
+<span class="sd">            in viscosity operator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO remove include_grad_* options as viscosity operator is omitted</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ModeSplit2DEquations</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span> <span class="n">nonlin</span><span class="p">)</span>
 
         <span class="n">u_test</span><span class="p">,</span> <span class="n">eta_test</span> <span class="o">=</span> <span class="n">TestFunctions</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
@@ -689,13 +945,7 @@
 
 <div class="viewcode-block" id="ModeSplit2DEquations.add_momentum_terms"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ModeSplit2DEquations.add_momentum_terms">[docs]</a>    <span class="k">def</span> <span class="nf">add_momentum_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">ExternalPressureGradientTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;implicit&#39;</span><span class="p">)</span>
-        <span class="c1"># self.add_term(HorizontalAdvectionTerm(*args), &#39;explicit&#39;)</span>
-        <span class="c1"># self.add_term(HorizontalViscosityTerm(*args), &#39;explicit&#39;)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">CoriolisTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
-        <span class="c1"># self.add_term(WindStressTerm(*args), &#39;source&#39;)</span>
-        <span class="c1"># self.add_term(QuadraticDragTerm(*args), &#39;explicit&#39;)</span>
-        <span class="c1"># self.add_term(LinearDragTerm(*args), &#39;explicit&#39;)</span>
-        <span class="c1"># self.add_term(BottomDrag3DTerm(*args), &#39;source&#39;)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">InternalPressureGradientTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">MomentumSourceTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span></div>
 
@@ -710,31 +960,24 @@
 
 <div class="viewcode-block" id="FreeSurfaceEquation"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.FreeSurfaceEquation">[docs]</a><span class="k">class</span> <span class="nc">FreeSurfaceEquation</span><span class="p">(</span><span class="n">BaseShallowWaterEquation</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    2D free surface equation.</span>
+<span class="sd">    2D free surface equation :eq:`swe_freesurf` in non-conservative form.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eta_test</span><span class="p">,</span> <span class="n">eta_space</span><span class="p">,</span> <span class="n">u_space</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="p">,</span>
                  <span class="n">nonlin</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg eta_test: test function of the elevation function space</span>
+<span class="sd">        :arg eta_space: elevation function space</span>
+<span class="sd">        :arg u_space: velocity function space</span>
+<span class="sd">        :arg function_space: Mixed function space where the solution belongs</span>
+<span class="sd">        :arg bathymetry: bathymetry of the domain</span>
+<span class="sd">        :type bathymetry: :class:`Function` or :class:`Constant`</span>
+<span class="sd">        :kwarg bool nonlin: If False defines the linear shallow water equations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FreeSurfaceEquation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">eta_space</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span> <span class="n">nonlin</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_continuity_terms</span><span class="p">(</span><span class="n">eta_test</span><span class="p">,</span> <span class="n">eta_space</span><span class="p">,</span> <span class="n">u_space</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span> <span class="n">nonlin</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FreeSurfaceEquation.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.FreeSurfaceEquation.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns an UFL form of the residual by summing up all the terms with the desired label.</span>
-
-<span class="sd">        Sign convention: all terms are assumed to be on the left hand side of the equation A + term = 0.</span>
-
-<span class="sd">        :arg label: string defining the type of terms to sum up. Currently one of</span>
-<span class="sd">            &#39;source&#39;|&#39;explicit&#39;|&#39;implicit&#39;|&#39;nonlinear&#39;. Can be a list of multiple labels, or &#39;all&#39; in which</span>
-<span class="sd">            case all defined terms are summed.</span>
-<span class="sd">        :arg solution: solution :class:`.Function` of the corresponding equation</span>
-<span class="sd">        :arg solution_old: a time lagged solution :class:`.Function`</span>
-<span class="sd">        :arg fields: a dictionary that provides all the remaining fields that the term depends on.</span>
-<span class="sd">            The keys of the dictionary should standard field names in `field_metadata`</span>
-<span class="sd">        :arg fields_old: Time lagged dictionary of fields</span>
-<span class="sd">        :arg bnd_conditions: A dictionary describing boundary conditions.</span>
-<span class="sd">            E.g. {3: {&#39;elev_2d&#39;: Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">uv</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="s1">&#39;uv&#39;</span><span class="p">]</span>
         <span class="n">uv_old</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;uv&#39;</span><span class="p">]</span>
         <span class="n">eta</span> <span class="o">=</span> <span class="n">solution</span>
@@ -744,13 +987,27 @@
 
 <div class="viewcode-block" id="ShallowWaterMomentumEquation"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ShallowWaterMomentumEquation">[docs]</a><span class="k">class</span> <span class="nc">ShallowWaterMomentumEquation</span><span class="p">(</span><span class="n">BaseShallowWaterEquation</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    2D free surface equation.</span>
+<span class="sd">    2D depth averaged momentum equation :eq:`swe_momentum` in non-conservative</span>
+<span class="sd">    form.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eta_test</span><span class="p">,</span> <span class="n">eta_space</span><span class="p">,</span> <span class="n">u_space</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="p">,</span>
                  <span class="n">nonlin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">include_grad_div_viscosity_term</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">include_grad_depth_viscosity_term</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg eta_test: test function of the elevation function space</span>
+<span class="sd">        :arg eta_space: elevation function space</span>
+<span class="sd">        :arg u_space: velocity function space</span>
+<span class="sd">        :arg function_space: Mixed function space where the solution belongs</span>
+<span class="sd">        :arg bathymetry: bathymetry of the domain</span>
+<span class="sd">        :type bathymetry: :class:`Function` or :class:`Constant`</span>
+<span class="sd">        :kwarg bool nonlin: If False defines the linear shallow water equations</span>
+<span class="sd">        :kwarg bool include_grad_div_viscosity_term: If True includes grad(nu div(u))</span>
+<span class="sd">            viscosity term</span>
+<span class="sd">        :kwarg bool include_grad_depth_viscosity_term: If True includes grad(H) term</span>
+<span class="sd">            in viscosity operator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ShallowWaterMomentumEquation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">u_space</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span> <span class="n">nonlin</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_momentum_terms</span><span class="p">(</span><span class="n">eta_test</span><span class="p">,</span> <span class="n">u_space</span><span class="p">,</span> <span class="n">eta_space</span><span class="p">,</span>
                                 <span class="n">bathymetry</span><span class="p">,</span>
@@ -759,22 +1016,6 @@
                                 <span class="n">include_grad_depth_viscosity_term</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ShallowWaterMomentumEquation.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ShallowWaterMomentumEquation.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns an UFL form of the residual by summing up all the terms with the desired label.</span>
-
-<span class="sd">        Sign convention: all terms are assumed to be on the left hand side of the equation A + term = 0.</span>
-
-<span class="sd">        :arg label: string defining the type of terms to sum up. Currently one of</span>
-<span class="sd">            &#39;source&#39;|&#39;explicit&#39;|&#39;implicit&#39;|&#39;nonlinear&#39;. Can be a list of multiple labels, or &#39;all&#39; in which</span>
-<span class="sd">            case all defined terms are summed.</span>
-<span class="sd">        :arg solution: solution :class:`.Function` of the corresponding equation</span>
-<span class="sd">        :arg solution_old: a time lagged solution :class:`.Function`</span>
-<span class="sd">        :arg fields: a dictionary that provides all the remaining fields that the term depends on.</span>
-<span class="sd">            The keys of the dictionary should standard field names in `field_metadata`</span>
-<span class="sd">        :arg fields_old: Time lagged dictionary of fields</span>
-<span class="sd">        :arg bnd_conditions: A dictionary describing boundary conditions.</span>
-<span class="sd">            E.g. {3: {&#39;elev_2d&#39;: Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">uv</span> <span class="o">=</span> <span class="n">solution</span>
         <span class="n">uv_old</span> <span class="o">=</span> <span class="n">solution_old</span>
         <span class="n">eta</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="s1">&#39;eta&#39;</span><span class="p">]</span>

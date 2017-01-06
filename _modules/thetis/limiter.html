@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.limiter &#8212; Thetis 0+untagged.771.gd639bf8 documentation</title>
+    <title>thetis.limiter &#8212; Thetis 0+untagged.820.g6820076 documentation</title>
     
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0+untagged.771.gd639bf8',
+        VERSION:     '0+untagged.820.g6820076',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -67,9 +67,7 @@
             
   <h1>Source code for thetis.limiter</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Slope limiter implementation.</span>
-
-<span class="sd">Tuomas Karna 2015-08-26</span>
+<span class="sd">Slope limiters for discontinuous fields</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
@@ -85,6 +83,10 @@
 <span class="sd">    Raises AssertionError if function space differs.</span>
 <span class="sd">    If the function space lies on an extruded mesh, checks both spaces of the</span>
 <span class="sd">    outer product.</span>
+
+<span class="sd">    :arg fs: function space</span>
+<span class="sd">    :arg string family: name of element family</span>
+<span class="sd">    :arg int degree: polynomial degree of the function space</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ufl_elem</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_elem</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">):</span>
@@ -111,29 +113,19 @@
 
 <div class="viewcode-block" id="VertexBasedP1DGLimiter"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter">[docs]</a><span class="k">class</span> <span class="nc">VertexBasedP1DGLimiter</span><span class="p">(</span><span class="n">VertexBasedLimiter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Vertex based limiter for P1DG tracer fields.</span>
+<span class="sd">    Vertex based limiter for P1DG tracer fields, see Kuzmin (2010)</span>
 
-<span class="sd">    Based on firedrake implementation by Andrew McRae.</span>
+<span class="sd">    .. note::</span>
+<span class="sd">        Currently only scalar fields are supported</span>
 
-<span class="sd">    [1] Kuzmin Dmitri (2010). A vertex-based hierarchical slope limiter</span>
+<span class="sd">    Kuzmin (2010). A vertex-based hierarchical slope limiter</span>
 <span class="sd">    for p-adaptive discontinuous Galerkin methods. Journal of Computational</span>
 <span class="sd">    and Applied Mathematics, 233(12):3077-3085.</span>
 <span class="sd">    http://dx.doi.org/10.1016/j.cam.2009.05.028</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1dg_space</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize limiter.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-
-<span class="sd">        p1dg_space : FunctionSpace instance</span>
-<span class="sd">            P1DG function space where the scalar field belongs to</span>
-<span class="sd">        p1cg_space : FunctionSpace instance</span>
-<span class="sd">            Corresponding continuous function space (for min/max limits)</span>
-<span class="sd">        p0_space : FunctionSpace instance</span>
-<span class="sd">            Corresponding P0 function space (for centroids)</span>
-
+<span class="sd">        :arg p1dg_space: P1DG function space</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">assert_function_space</span><span class="p">(</span><span class="n">p1dg_space</span><span class="p">,</span> <span class="s1">&#39;Discontinuous Lagrange&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -144,6 +136,8 @@
     <span class="k">def</span> <span class="nf">_update_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-compute element centroid values</span>
+
+<span class="sd">        :arg field: :class:`Function` to limit</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tri</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="p">)</span>
         <span class="n">test</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="p">)</span>
@@ -155,6 +149,8 @@
 <div class="viewcode-block" id="VertexBasedP1DGLimiter.compute_bounds"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.compute_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">compute_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-compute min/max values of all neighbouring centroids</span>
+
+<span class="sd">        :arg field: :class:`Function` to limit</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Call general-purpose bound computation.</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">compute_bounds</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
@@ -207,6 +203,11 @@
                          <span class="n">iterate</span><span class="o">=</span><span class="n">op2</span><span class="o">.</span><span class="n">ON_TOP</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="VertexBasedP1DGLimiter.apply"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies the limiter on the given field (in place)</span>
+
+<span class="sd">        :arg field: :class:`Function` to limit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;limiter&#39;</span><span class="p">):</span>
             <span class="nb">super</span><span class="p">(</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">field</span><span class="p">)</span></div></div>
 </pre></div>

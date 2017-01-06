@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.tracer_eq &#8212; Thetis 0+untagged.771.gd639bf8 documentation</title>
+    <title>thetis.tracer_eq &#8212; Thetis 0+untagged.820.g6820076 documentation</title>
     
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0+untagged.771.gd639bf8',
+        VERSION:     '0+untagged.820.g6820076',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -66,14 +66,36 @@
           <div class="body" role="main">
             
   <h1>Source code for thetis.tracer_eq</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">r&quot;&quot;&quot;</span>
 <span class="sd">3D advection diffusion equation for tracers.</span>
 
-<span class="sd">Tuomas Karna 2015-09-08</span>
+<span class="sd">The advection-diffusion equation of tracer :math:`T` in conservative form reads</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">   \frac{\partial T}{\partial t}</span>
+<span class="sd">    + \nabla_h \cdot (\textbf{u} T)</span>
+<span class="sd">    + \frac{\partial (w T)}{\partial z}</span>
+<span class="sd">    = \nabla_h \cdot (\mu_h \nabla_h T)</span>
+<span class="sd">    + \frac{\partial}{\partial z} \Big(\mu \frac{T}{\partial z}\Big)</span>
+<span class="sd">   :label: tracer_eq</span>
+
+<span class="sd">where :math:`\nabla_h` denotes horizontal gradient, :math:`\textbf{u}` and</span>
+<span class="sd">:math:`w` are the horizontal and vertical velocities, respectively, and</span>
+<span class="sd">:math:`\mu_h` and :math:`\mu` denote horizontal and vertical diffusivity.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.equation</span> <span class="k">import</span> <span class="n">Term</span><span class="p">,</span> <span class="n">Equation</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;TracerEquation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;TracerTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;HorizontalAdvectionTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;VerticalAdvectionTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;HorizontalDiffusionTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;VerticalDiffusionTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SourceTerm&#39;</span><span class="p">,</span>
+<span class="p">]</span>
 
 
 <div class="viewcode-block" id="TracerTerm"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.TracerTerm">[docs]</a><span class="k">class</span> <span class="nc">TracerTerm</span><span class="p">(</span><span class="n">Term</span><span class="p">):</span>
@@ -84,6 +106,17 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">use_symmetric_surf_bnd</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
+<span class="sd">        :kwarg bathymetry: bathymetry of the domain</span>
+<span class="sd">        :type bathymetry: 3D :class:`Function` or :class:`Constant`</span>
+<span class="sd">        :kwarg v_elem_size: scalar :class:`Function` that defines the vertical</span>
+<span class="sd">            element size</span>
+<span class="sd">        :kwarg h_elem_size: scalar :class:`Function` that defines the horizontal</span>
+<span class="sd">            element size</span>
+<span class="sd">        :kwarg bool use_symmetric_surf_bnd: If True, use symmetric surface boundary</span>
+<span class="sd">            condition in the horizontal advection term</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bathymetry</span> <span class="o">=</span> <span class="n">bathymetry</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">h_elem_size</span> <span class="o">=</span> <span class="n">h_elem_size</span>
@@ -105,11 +138,19 @@
 
 <div class="viewcode-block" id="TracerTerm.get_bnd_functions"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.TracerTerm.get_bnd_functions">[docs]</a>    <span class="k">def</span> <span class="nf">get_bnd_functions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c_in</span><span class="p">,</span> <span class="n">uv_in</span><span class="p">,</span> <span class="n">elev_in</span><span class="p">,</span> <span class="n">bnd_id</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns external values tracer and uv for all supported</span>
+<span class="sd">        Returns external values of tracer and uv for all supported</span>
 <span class="sd">        boundary conditions.</span>
 
-<span class="sd">        volume flux (flux) and normal velocity (un) are defined positive out of</span>
+<span class="sd">        Volume flux (flux) and normal velocity (un) are defined positive out of</span>
 <span class="sd">        the domain.</span>
+
+<span class="sd">        :arg c_in: Internal value of tracer</span>
+<span class="sd">        :arg uv_in: Internal value of horizontal velocity</span>
+<span class="sd">        :arg elev_in: Internal value of elevation</span>
+<span class="sd">        :arg bnd_id: boundary id</span>
+<span class="sd">        :type bnd_id: int</span>
+<span class="sd">        :arg bnd_conditions: dict of boundary conditions:</span>
+<span class="sd">            ``{bnd_id: {field: value, ...}, ...}``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">funcs</span> <span class="o">=</span> <span class="n">bnd_conditions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bnd_id</span><span class="p">)</span>
 
@@ -137,8 +178,25 @@
 
 
 <div class="viewcode-block" id="HorizontalAdvectionTerm"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.HorizontalAdvectionTerm">[docs]</a><span class="k">class</span> <span class="nc">HorizontalAdvectionTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Horizontal scalar advection term</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Horizontal advection term :math:`\nabla_h \cdot (\textbf{u} T)`</span>
+
+<span class="sd">    The weak formulation reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_\Omega \nabla_h \cdot (\textbf{u} T) \phi dx</span>
+<span class="sd">            = -\int_\Omega T\textbf{u} \cdot \nabla_h \phi dx</span>
+<span class="sd">            + \int_{\mathcal{I}_h\cup\mathcal{I}_v}</span>
+<span class="sd">                T^{\text{up}} \text{avg}(\textbf{u}) \cdot</span>
+<span class="sd">                \text{jump}(\phi \textbf{n}_h) dS</span>
+
+<span class="sd">    where the right hand side has been integrated by parts;</span>
+<span class="sd">    :math:`\mathcal{I}_h,\mathcal{I}_v` denote the set of horizontal and</span>
+<span class="sd">    vertical facets,</span>
+<span class="sd">    :math:`\textbf{n}_h` is the horizontal projection of the unit normal vector,</span>
+<span class="sd">    :math:`T^{\text{up}}` is the upwind value, and :math:`\text{jump}` and</span>
+<span class="sd">    :math:`\text{avg}` denote the jump and average operators across the</span>
+<span class="sd">    interface.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="HorizontalAdvectionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.HorizontalAdvectionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_3d&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -201,11 +259,27 @@
 
 
 <div class="viewcode-block" id="VerticalAdvectionTerm"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.VerticalAdvectionTerm">[docs]</a><span class="k">class</span> <span class="nc">VerticalAdvectionTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Vertical scalar advection term</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Vertical advection term :math:`\partial (w T)/(\partial z)`</span>
+
+<span class="sd">    The weak form reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_\Omega \frac{\partial (w T)}{\partial z} \phi dx</span>
+<span class="sd">        = - \int_\Omega T w \frac{\partial \phi}{\partial z} dx</span>
+<span class="sd">        + \int_{\mathcal{I}_v} T^{\text{up}} \text{avg}(w) \text{jump}(\phi n_z) dS</span>
+
+<span class="sd">    where the right hand side has been integrated by parts;</span>
+<span class="sd">    :math:`\mathcal{I}_v` denotes the set of vertical facets,</span>
+<span class="sd">    :math:`n_z` is the vertical projection of the unit normal vector,</span>
+<span class="sd">    :math:`T^{\text{up}}` is the</span>
+<span class="sd">    upwind value, and :math:`\text{jump}` and :math:`\text{avg}` denote the</span>
+<span class="sd">    jump and average operators across the interface.</span>
+
+<span class="sd">    In the case of ALE moving mesh we substitute :math:`w` with :math:`w - w_m`,</span>
+<span class="sd">    :math:`w_m` being the mesh velocity.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="VerticalAdvectionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.VerticalAdvectionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># TODO linearize, use solution/solution_old correctly</span>
         <span class="n">w</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
@@ -233,19 +307,31 @@
         <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
 
 
-<div class="viewcode-block" id="ALESourceTerm"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.ALESourceTerm">[docs]</a><span class="k">class</span> <span class="nc">ALESourceTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
-<div class="viewcode-block" id="ALESourceTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.ALESourceTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">dw_mesh_dz</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dw_mesh_dz&#39;</span><span class="p">)</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="c1"># Non-conservative ALE source term</span>
-        <span class="k">if</span> <span class="n">dw_mesh_dz</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">+=</span> <span class="n">dw_mesh_dz</span><span class="o">*</span><span class="n">solution</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
-        <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
-
-
 <div class="viewcode-block" id="HorizontalDiffusionTerm"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.HorizontalDiffusionTerm">[docs]</a><span class="k">class</span> <span class="nc">HorizontalDiffusionTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Horizontal scalar diffusion term</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Horizontal diffusion term :math:`-\nabla_h \cdot (\mu_h \nabla_h T)`</span>
+
+<span class="sd">    Using the symmetric interior penalty method the weak form becomes</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        -\int_\Omega \nabla_h \cdot (\mu_h \nabla_h T) \phi dx</span>
+<span class="sd">        =&amp; \int_\Omega \mu_h (\nabla_h \phi) \cdot (\nabla_h T) dx \\</span>
+<span class="sd">        &amp;- \int_{\mathcal{I}_h\cup\mathcal{I}_v} \text{jump}(\phi \textbf{n}_h)</span>
+<span class="sd">        \cdot \text{avg}(\mu_h \nabla_h T) dS</span>
+<span class="sd">        - \int_{\mathcal{I}_h\cup\mathcal{I}_v} \text{jump}(T \textbf{n}_h)</span>
+<span class="sd">        \cdot \text{avg}(\mu_h  \nabla \phi) dS \\</span>
+<span class="sd">        &amp;+ \int_{\mathcal{I}_h\cup\mathcal{I}_v} \sigma \text{avg}(\mu_h) \text{jump}(T \textbf{n}_h) \cdot</span>
+<span class="sd">            \text{jump}(\phi \textbf{n}_h) dS</span>
+
+<span class="sd">    where :math:`\sigma` is a penalty parameter,</span>
+<span class="sd">    see Epshteyn and Riviere (2007).</span>
+
+<span class="sd">    Epshteyn and Riviere (2007). Estimation of penalty parameters for symmetric</span>
+<span class="sd">    interior penalty Galerkin methods. Journal of Computational and Applied</span>
+<span class="sd">    Mathematics, 206(2):843-872. http://dx.doi.org/10.1016/j.cam.2006.08.029</span>
+
+<span class="sd">    .. note ::</span>
+<span class="sd">        Note the minus sign due to :class:`.equation.Term` sign convention</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="HorizontalDiffusionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.HorizontalDiffusionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;diffusivity_h&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -277,7 +363,7 @@
             <span class="n">elemsize</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_elem_size</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
                                           <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">v_elem_size</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-            <span class="n">sigma</span> <span class="o">=</span> <span class="mf">2.5</span><span class="o">*</span><span class="n">degree_h</span><span class="o">*</span><span class="p">(</span><span class="n">degree_h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">elemsize</span>
+            <span class="n">sigma</span> <span class="o">=</span> <span class="mf">5.0</span><span class="o">*</span><span class="n">degree_h</span><span class="o">*</span><span class="p">(</span><span class="n">degree_h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">elemsize</span>
             <span class="k">if</span> <span class="n">degree_h</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">sigma</span> <span class="o">=</span> <span class="mf">1.5</span><span class="o">/</span><span class="n">elemsize</span>
             <span class="n">alpha</span> <span class="o">=</span> <span class="n">avg</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
@@ -298,8 +384,28 @@
 
 
 <div class="viewcode-block" id="VerticalDiffusionTerm"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.VerticalDiffusionTerm">[docs]</a><span class="k">class</span> <span class="nc">VerticalDiffusionTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Vertical scalar diffusion term</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Vertical diffusion term :math:`-\frac{\partial}{\partial z} \Big(\mu \frac{T}{\partial z}\Big)`</span>
+
+<span class="sd">    Using the symmetric interior penalty method the weak form becomes</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        -\int_\Omega \frac{\partial}{\partial z} \Big(\mu \frac{T}{\partial z}\Big) \phi dx</span>
+<span class="sd">        =&amp; \int_\Omega \mu \frac{\partial T}{\partial z} \frac{\partial \phi}{\partial z} dz \\</span>
+<span class="sd">        &amp;- \int_{\mathcal{I}_{h}} \text{jump}(\phi n_z) \text{avg}\Big(\mu \frac{\partial T}{\partial z}\Big) dS</span>
+<span class="sd">        - \int_{\mathcal{I}_{h}} \text{jump}(T n_z) \text{avg}\Big(\mu \frac{\partial \phi}{\partial z}\Big) dS \\</span>
+<span class="sd">        &amp;+ \int_{\mathcal{I}_{h}} \sigma \text{avg}(\mu) \text{jump}(T n_z) \cdot</span>
+<span class="sd">            \text{jump}(\phi n_z) dS</span>
+
+<span class="sd">    where :math:`\sigma` is a penalty parameter,</span>
+<span class="sd">    see Epshteyn and Riviere (2007).</span>
+
+<span class="sd">    Epshteyn and Riviere (2007). Estimation of penalty parameters for symmetric</span>
+<span class="sd">    interior penalty Galerkin methods. Journal of Computational and Applied</span>
+<span class="sd">    Mathematics, 206(2):843-872. http://dx.doi.org/10.1016/j.cam.2006.08.029</span>
+
+<span class="sd">    .. note ::</span>
+<span class="sd">        Note the minus sign due to :class:`.equation.Term` sign convention</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="VerticalDiffusionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.VerticalDiffusionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;diffusivity_v&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -341,7 +447,17 @@
 
 <div class="viewcode-block" id="SourceTerm"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.SourceTerm">[docs]</a><span class="k">class</span> <span class="nc">SourceTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generic tracer source term</span>
+<span class="sd">    Generic source term</span>
+
+<span class="sd">    The weak form reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        F_s = \int_\Omega \sigma \phi dx</span>
+
+<span class="sd">    where :math:`\sigma` is a user defined scalar :class:`Function`.</span>
+
+<span class="sd">    .. note ::</span>
+<span class="sd">        Due to the sign convention of :class:`.equation.Term`, this term is assembled to the left hand side of the equation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="SourceTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.SourceTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
@@ -353,18 +469,28 @@
 
 <div class="viewcode-block" id="TracerEquation"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.TracerEquation">[docs]</a><span class="k">class</span> <span class="nc">TracerEquation</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    3D tracer advection-diffusion equation</span>
+<span class="sd">    3D tracer advection-diffusion equation :eq:`tracer_eq` in conservative form</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">use_symmetric_surf_bnd</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
+<span class="sd">        :kwarg bathymetry: bathymetry of the domain</span>
+<span class="sd">        :type bathymetry: 3D :class:`Function` or :class:`Constant`</span>
+<span class="sd">        :kwarg v_elem_size: scalar :class:`Function` that defines the vertical</span>
+<span class="sd">            element size</span>
+<span class="sd">        :kwarg h_elem_size: scalar :class:`Function` that defines the horizontal</span>
+<span class="sd">            element size</span>
+<span class="sd">        :kwarg bool use_symmetric_surf_bnd: If True, use symmetric surface boundary</span>
+<span class="sd">            condition in the horizontal advection term</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TracerEquation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
 
         <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span>
                 <span class="n">v_elem_size</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="p">,</span> <span class="n">use_symmetric_surf_bnd</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">VerticalAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
-        <span class="c1"># self.add_term(ALESourceTerm(*args), &#39;explicit&#39;)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalDiffusionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">VerticalDiffusionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">SourceTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span></div>

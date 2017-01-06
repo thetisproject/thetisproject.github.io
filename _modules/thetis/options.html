@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.options &#8212; Thetis 0+untagged.771.gd639bf8 documentation</title>
+    <title>thetis.options &#8212; Thetis 0+untagged.820.g6820076 documentation</title>
     
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0+untagged.771.gd639bf8',
+        VERSION:     '0+untagged.820.g6820076',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -69,7 +69,6 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This file defines all options of the 2D/3D models excluding field values.</span>
 
-<span class="sd">Tuomas Karna 2015-10-17</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
@@ -82,13 +81,17 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize with default options</span>
+<span class="sd">        Every instance is initialized with default values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ModelOptions</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="sd">&quot;&quot;&quot;int: Polynomial degree of elements&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">element_family</span> <span class="o">=</span> <span class="s1">&#39;rt-dg&#39;</span>
-        <span class="sd">&quot;&quot;&quot;str: Finite element family. Currently &#39;dg-dg&#39;, &#39;rt-dg&#39;, or &#39;dg-cg&#39; velocity-pressure pairs are supported.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;str: Finite element family.</span>
+
+<span class="sd">        2D solver supports &#39;dg-dg&#39;, &#39;rt-dg&#39;, or &#39;dg-cg&#39; velocity-pressure pairs.</span>
+<span class="sd">        3D solver supports &#39;dg-dg&#39;, or &#39;rt-dg&#39; velocity-pressure pairs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nonlin</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="sd">&quot;&quot;&quot;bool: Use nonlinear shallow water equations&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solve_salt</span> <span class="o">=</span> <span class="kc">True</span>
@@ -96,90 +99,170 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">solve_temp</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="sd">&quot;&quot;&quot;bool: Solve temperature transport&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solve_vert_diffusion</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="sd">&quot;&quot;&quot;bool: Solve implicit vert diffusion&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;bool: Solve implicit vertical diffusion&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_bottom_friction</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="sd">&quot;&quot;&quot;bool: Apply log layer bottom stress&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;bool: Apply log layer bottom stress in the 3D model&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_parabolic_viscosity</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="sd">&quot;&quot;&quot;bool: Compute parabolic eddy viscosity&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        bool: Use idealized parabolic eddy viscosity</span>
+
+<span class="sd">        See :class:`.ParabolicViscosity`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">include_grad_div_viscosity_term</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="sd">&quot;&quot;&quot;bool: Include grad(nu div(u)) term in the depth-averaged viscosity&quot;&quot;&quot;</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        bool: Include :math:`\nabla (\nu_h \nabla \cdot \bar{\textbf{u}})` term in the depth-averaged viscosity</span>
+
+<span class="sd">        See :class:`.shallowwater_eq.HorizontalViscosityTerm` for details.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">include_grad_depth_viscosity_term</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="sd">&quot;&quot;&quot;bool: Include grad(H) term in the depth-averaged viscosity&quot;&quot;&quot;</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        bool: Include :math:`\nabla H` term in the depth-averaged viscosity</span>
+
+<span class="sd">        See :class:`.shallowwater_eq.HorizontalViscosityTerm` for details.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="sd">&quot;&quot;&quot;bool: 3D mesh tracks free surface&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;bool: Use ALE formulation where 3D mesh tracks free surface&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;ssprk33&#39;</span>
-        <span class="sd">&quot;&quot;&quot;str: time integrator option.</span>
-<span class="sd">        For 2D solver: &#39;forwardeuler&#39;|&#39;backwardeuler&#39;|&#39;ssprk33&#39;|&#39;ssprk33semi&#39;|</span>
-<span class="sd">                       &#39;cranknicolson&#39;|&#39;sspimex&#39;|&#39;steadystate&#39;</span>
-<span class="sd">        For 3D solver: &#39;ssprk33&#39;|&#39;erkale&#39;|&#39;leapfrog&#39;|&#39;imexale&#39;&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        str: time integrator option.</span>
+
+<span class="sd">        Valid options for the 2D solver: &#39;forwardeuler&#39;|&#39;backwardeuler&#39;|&#39;ssprk33&#39;|&#39;ssprk33semi&#39;|&#39;cranknicolson&#39;|&#39;sspimex&#39;|&#39;steadystate&#39;</span>
+
+<span class="sd">        Valid options for the 2D solver: &#39;ssprk33&#39;|&#39;erkale&#39;|&#39;leapfrog&#39;|&#39;imexale&#39;|&#39;ssprk22&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_linearized_semi_implicit_2d</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="sd">&quot;&quot;&quot;bool: Use linearized semi-implicit time integration for the horizontal mode&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shallow_water_theta</span> <span class="o">=</span> <span class="mf">0.5</span>
         <span class="sd">&quot;&quot;&quot;float: theta parameter for shallow water semi-implicit scheme&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_turbulence</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="sd">&quot;&quot;&quot;bool: GLS turbulence model&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;bool: Activate GLS turbulence model&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_smooth_eddy_viscosity</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="sd">&quot;&quot;&quot;bool: Cast eddy viscosity to p1 space instead of p0&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">turbulence_model</span> <span class="o">=</span> <span class="s1">&#39;gls&#39;</span>
-        <span class="sd">&quot;&quot;&quot;str: Defines the type of vertical turbulence model. Currently only &#39;gls&#39;&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        str: Defines the type of vertical turbulence model.</span>
+
+<span class="sd">        Currently only &#39;gls&#39; is supported</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gls_options</span> <span class="o">=</span> <span class="n">GLSModelOptions</span><span class="p">()</span>
-        <span class="sd">&quot;&quot;&quot;GLSModelOptions: Dictionary of default GLS model options&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;:class:`.GLSModelOptions`: Dictionary of default GLS model options&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_turbulence_advection</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="sd">&quot;&quot;&quot;bool: Advect tke,psi with velocity&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;bool: Advect TKE and Psi in the GLS turbulence model&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">baroclinic</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="sd">&quot;&quot;&quot;bool: Compute internal pressure gradient in momentum equation&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">smagorinsky_factor</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;Constant or None: Smagorinsky viscosity factor C_S&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">salt_jump_diff_factor</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;Constant or None: Non-linear jump diffusion factor&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">salt_range</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">30.0</span><span class="p">)</span>
-        <span class="sd">&quot;&quot;&quot;Constant or None: Salt max-min range for jump diffusion&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :class:`Constant` or None: Smagorinsky viscosity factor :math:`C_S`</span>
+
+<span class="sd">        See :class:`.SmagorinskyViscosity`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="sd">&quot;&quot;&quot;bool: Apply P1DG limiter for tracer fields&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uv_lax_friedrichs</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
-        <span class="sd">&quot;&quot;&quot;Constant or None: Scaling factor for uv L-F stability term.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;:class:`Constant` or None: Scaling factor for uv L-F stability term.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracer_lax_friedrichs</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
-        <span class="sd">&quot;&quot;&quot;Constant or None: Scaling factor for tracer L-F stability term.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;:class:`Constant` or None: Scaling factor for tracer L-F stability term.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_vol_conservation_2d</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="sd">&quot;&quot;&quot;bool: Print deviation from initial volume for 2D mode (eta)&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        bool: Compute volume of the 2D mode at every export</span>
+
+<span class="sd">        2D volume is defined as the integral of the water elevation field.</span>
+<span class="sd">        Prints deviation from the initial volume to stdout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_vol_conservation_3d</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="sd">&quot;&quot;&quot;bool: Print deviation from initial volume for 3D mode (domain volume)&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        bool: Compute volume of the 2D domain at every export</span>
+
+<span class="sd">        Prints deviation from the initial volume to stdout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_salt_conservation</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="sd">&quot;&quot;&quot;bool: Print deviation from initial salt mass&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        bool: Compute total salinity mass at every export</span>
+
+<span class="sd">        Prints deviation from the initial mass to stdout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_salt_overshoot</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="sd">&quot;&quot;&quot;bool: Print overshoots that exceed initial range&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        bool: Compute salinity overshoots at every export</span>
+
+<span class="sd">        Prints overshoot values that exceed the initial range to stdout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_temp_conservation</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="sd">&quot;&quot;&quot;bool: Print deviation from initial temp mass&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        bool: Compute total temperature mass at every export</span>
+
+<span class="sd">        Prints deviation from the initial mass to stdout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_temp_overshoot</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="sd">&quot;&quot;&quot;bool: Print overshoots that exceed initial range&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        bool: Compute temperature overshoots at every export</span>
+
+<span class="sd">        Prints overshoot values that exceed the initial range to stdout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_output</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="sd">&quot;&quot;&quot;bool: Redirect all output to log file in output directory&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;float: Time step. If set overrides automatically computed stable dt&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        float: Time step.</span>
+
+<span class="sd">        If set, overrides automatically computed stable dt</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dt_2d</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;float: Time step for 2d mode. If set overrides automatically computed stable dt&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        float: Time step of the 2d mode</span>
+
+<span class="sd">        If set overrides automatically computed stable dt</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfl_2d</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="sd">&quot;&quot;&quot;float: Factor to scale the 2d time step&quot;&quot;&quot;</span>
+        <span class="c1"># TODO OBSOLETE</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfl_3d</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="sd">&quot;&quot;&quot;float: Factor to scale the 2d time step&quot;&quot;&quot;</span>
+        <span class="c1"># TODO OBSOLETE</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t_export</span> <span class="o">=</span> <span class="mf">100.0</span>
-        <span class="sd">&quot;&quot;&quot;float: Export interval in seconds. All fields in fields_to_export list will be stored to disk and diagnostics will be computed.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        float: Export interval in seconds</span>
+
+<span class="sd">        All fields in fields_to_export list will be stored to disk and</span>
+<span class="sd">        diagnostics will be computed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="mf">1000.0</span>
         <span class="sd">&quot;&quot;&quot;float: Simulation duration in seconds&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">u_advection</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-        <span class="sd">&quot;&quot;&quot;Constant: Max. horizontal velocity magnitude for computing max stable advection time step.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :class:`Constant`: Maximum horizontal velocity magnitude</span>
+
+<span class="sd">        Used to compute max stable advection time step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">w_advection</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span>
-        <span class="sd">&quot;&quot;&quot;Constant: Max. vertical velocity magnitude for computing max stable advection time step.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :class:`Constant`: Maximum vertical velocity magnitude</span>
+
+<span class="sd">        Used to compute max stable advection time step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nu_viscosity</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
-        <span class="sd">&quot;&quot;&quot;Constant: Max. horizontal viscosity magnitude for computing max stable diffusion time step.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :class:`Constant`: Maximum horizontal viscosity</span>
+
+<span class="sd">        Used to compute max stable diffusion time step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="s1">&#39;outputs&#39;</span>
         <span class="sd">&quot;&quot;&quot;str: Directory where model output files are stored&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">no_exports</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="sd">&quot;&quot;&quot;bool: Do not store any outputs to disk, used in CI test suite. Disables vtk and hdf5 field outputs and hdf5 diagnostic outputs.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        bool: Do not store any outputs to disk</span>
+
+<span class="sd">        Disables VTK and HDF5 field outputs. and HDF5 diagnostic outputs.</span>
+<span class="sd">        Used in CI test suite.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_diagnostics</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="sd">&quot;&quot;&quot;bool: Store diagnostic variables to disk in hdf5 format&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;bool: Store diagnostic variables to disk in HDF5 format&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">equation_of_state</span> <span class="o">=</span> <span class="s1">&#39;full&#39;</span>
-        <span class="sd">&quot;&quot;&quot;str: type of equation of state, either &#39;full&#39; or &#39;linear&#39;&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;str: type of equation of state that defines water density</span>
+
+<span class="sd">        Either &#39;full&#39; or &#39;linear&#39;. See :class:`.EquationOfState` and</span>
+<span class="sd">        :class:`.LinearEquationOfState`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lin_equation_of_state_params</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;rho_ref&#39;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>
             <span class="s1">&#39;s_ref&#39;</span><span class="p">:</span> <span class="mf">35.0</span><span class="p">,</span>
@@ -187,40 +270,48 @@
             <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
             <span class="s1">&#39;beta&#39;</span><span class="p">:</span> <span class="mf">0.77</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="sd">&quot;&quot;&quot;dict: definition of linear equation of state&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;dict: Parameters for linear equation of state&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;elev_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;uv_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;uv_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;w_3d&#39;</span><span class="p">]</span>
         <span class="sd">&quot;&quot;&quot;list of str: Fields to export in VTK format&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fields_to_export_numpy</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="sd">&quot;&quot;&quot;list of str: Fields to export in HDF5 format&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields_to_export_hdf5</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="sd">&quot;&quot;&quot;list of str: Fields to export in numpy format&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;list of str: Fields to export in HDF5 format&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="sd">&quot;&quot;&quot;int: Verbosity level&quot;&quot;&quot;</span>
         <span class="c1"># NOTE these are fields, potentially Functions: move out of this class?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">linear_drag</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;Coefficient or None: 2D linear drag parameter tau/rho_0 = -drag*u*H&quot;&quot;&quot;</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Coefficient or None: 2D linear drag parameter :math:`L`</span>
+
+<span class="sd">        Bottom stress is :math:`\tau_b/\rho_0 = -L \mathbf{u} H`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quadratic_drag</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;Coefficient or None: dimensionless 2D quadratic drag parameter tau/rho_0 = -drag*|u|*u&quot;&quot;&quot;</span>
+        <span class="sd">r&quot;&quot;&quot;Coefficient or None: dimensionless 2D quadratic drag parameter :math:`C_D`</span>
+
+<span class="sd">        Bottom stress is :math:`\tau_b/\rho_0 = -C_D |\mathbf{u}|\mathbf{u}`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mu_manning</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;Coefficient or None: Manning-Strickler 2D quadratic drag parameter tau/rho_0 = -g*mu**2*|u|*u/H^(1/3)&quot;&quot;&quot;</span>
+        <span class="sd">r&quot;&quot;&quot;Coefficient or None: Manning-Strickler 2D quadratic drag parameter :math:`\mu`</span>
+
+<span class="sd">        Bottom stress is :math:`\tau_b/\rho_0 = -g \mu^2 |\mathbf{u}|\mathbf{u}/H^{1/3}`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">h_diffusivity</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;Coefficient or None: Background diffusivity&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Coefficient or None: Background horizontal diffusivity for tracers&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">v_diffusivity</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;Coefficient or None: background diffusivity&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Coefficient or None: background vertical diffusivity for tracers&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">h_viscosity</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;Coefficient or None: background viscosity&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Coefficient or None: background horizontal viscosity&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">v_viscosity</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;Coefficient or None: background viscosity&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Coefficient or None: background vertical viscosity&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coriolis</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot;2D Coefficient or None: Coriolis parameter&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot;Coefficient or None: Stress at free surface (2D vector function)&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uv_source_2d</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;Coefficient or None: source term for 2d momentum equation&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Coefficient or None: source term for 2D momentum equation&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uv_source_3d</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;Coefficient or None: source term for 3d momentum equation&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Coefficient or None: source term for 3D momentum equation&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elev_source_2d</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;Coefficient or None: source term for 2d continuity equation&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Coefficient or None: source term for 2D continuity equation&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">salt_source_3d</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot;Coefficient or None: source term for salinity equation&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">temp_source_3d</span> <span class="o">=</span> <span class="kc">None</span>
