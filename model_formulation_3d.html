@@ -1,0 +1,394 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Baroclinic model formulation &#8212; Thetis 0+untagged.833.g086f878 documentation</title>
+    
+    <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0+untagged.833.g086f878',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="_static/icon_thetis.ico" />
+
+
+  </head>
+  <body role="document">
+<div class="wrapper">
+  <a href="index.html"><img src="_static/banner.png" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://travis-ci.org/thetisproject/thetis" title="Thetis on Travis">Travis</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="model_formulation_3d">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="baroclinic-model-formulation">
+<h1>Baroclinic model formulation<a class="headerlink" href="#baroclinic-model-formulation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="governing-equations">
+<h2>Governing equations<a class="headerlink" href="#governing-equations" title="Permalink to this headline">¶</a></h2>
+<p>The three dimensional model solves the Navier-Stokes equations with Boussinesq
+and hydrostatic assumptions.</p>
+<p>The model uses mode-splitting, i.e. the three dimensional horizontal
+velocity <span class="math">\(\mathbf{u}\)</span> is split into a depth average
+<span class="math">\(\bar{\mathbf{u}}\)</span> and a deviation
+<span class="math">\(\mathbf{u}' = \mathbf{u} - \bar{\mathbf{u}}\)</span>.
+We use the 2D shallow water equations <a class="reference internal" href="thetis.html#equation-swe_freesurf_modesplit">(8)</a>-
+<a class="reference internal" href="thetis.html#equation-swe_momentum_modesplit">(9)</a> to solve <span class="math">\(\bar{\mathbf{u}}\)</span>, and the
+3D momentum equation <a class="reference internal" href="thetis.html#equation-mom_eq_split">(3)</a> to solve <span class="math">\(\mathbf{u}'\)</span>.
+See modules
+<a class="reference internal" href="thetis.html#module-thetis.shallowwater_eq" title="thetis.shallowwater_eq"><code class="xref py py-mod docutils literal"><span class="pre">shallowwater_eq</span></code></a> and <a class="reference internal" href="thetis.html#module-thetis.momentum_eq" title="thetis.momentum_eq"><code class="xref py py-mod docutils literal"><span class="pre">momentum_eq</span></code></a> for more information.</p>
+<p>Since the model is hydrostatic, the vertical velocity is solved diagnostically
+from the continuity equation <a class="reference internal" href="thetis.html#equation-continuity_eq_3d">(14)</a>.
+The solver is implemented in <a class="reference internal" href="thetis.html#thetis.utility.VerticalVelocitySolver" title="thetis.utility.VerticalVelocitySolver"><code class="xref py py-class docutils literal"><span class="pre">VerticalVelocitySolver</span></code></a>.</p>
+<p>Water temperature and salinity are modeled as tracers by the means of the
+tracer advection-diffusion equation <a class="reference internal" href="thetis.html#equation-tracer_eq">(10)</a>.
+Options <a class="reference internal" href="thetis.html#thetis.options.ModelOptions.solve_temp" title="thetis.options.ModelOptions.solve_temp"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.solve_temp</span></code></a>, <a class="reference internal" href="thetis.html#thetis.options.ModelOptions.solve_salt" title="thetis.options.ModelOptions.solve_salt"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.solve_salt</span></code></a>
+determine whether the dynamic equations are solved at run time.
+If not, we treat these variables as constants whose value is set with
+<a class="reference internal" href="thetis.html#thetis.options.ModelOptions.constant_temp" title="thetis.options.ModelOptions.constant_temp"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.constant_temp</span></code></a> and
+<a class="reference internal" href="thetis.html#thetis.options.ModelOptions.constant_salt" title="thetis.options.ModelOptions.constant_salt"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.constant_salt</span></code></a> options.</p>
+<p>In baroclinic simulations the water density, <span class="math">\(\rho\)</span>,  depends on the
+temperature and salinity via the equation of state:
+<span class="math">\(\rho = \rho'(T, S, p) + \rho_0\)</span>, where <span class="math">\(\rho_0\)</span>
+is a constant reference density.
+The equation of state is set by the option
+<a class="reference internal" href="thetis.html#thetis.options.ModelOptions.equation_of_state" title="thetis.options.ModelOptions.equation_of_state"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.equation_of_state</span></code></a>, and
+<span class="math">\(\rho_0\)</span> is defined in the <a class="reference internal" href="thetis.html#module-thetis.physical_constants" title="thetis.physical_constants"><code class="xref py py-mod docutils literal"><span class="pre">physical_constants</span></code></a> module.
+Water density affects the internal pressure gradient through the baroclinic
+head, <span class="math">\(r\)</span>, which we can solve diagnostically from <a class="reference internal" href="thetis.html#equation-baroc_head">(2)</a>.</p>
+<p>Setting option <a class="reference internal" href="thetis.html#thetis.options.ModelOptions.baroclinic" title="thetis.options.ModelOptions.baroclinic"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.baroclinic</span></code></a> = <code class="docutils literal"><span class="pre">True</span></code> activates
+baroclinicity, i.e. the computation of water density, baroclinic head and
+(both 2D and 3D) internal pressure gradients.
+If <code class="docutils literal"><span class="pre">baroclinic=False</span></code>, water density is not computed. Temperature and
+salinity may still be simulated, but they are treated as passive tracers.</p>
+<p>The following tables summarize the prognostic and diagnostic variables.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="25%" />
+<col width="31%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Variable</th>
+<th class="head">Symbol</th>
+<th class="head">Dynamic equation</th>
+<th class="head">Thetis field name</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Water elevation</td>
+<td><span class="math">\(\eta\)</span></td>
+<td><a class="reference internal" href="thetis.html#equation-swe_freesurf_modesplit">(8)</a></td>
+<td><code class="docutils literal"><span class="pre">elev_2d</span></code>, <code class="docutils literal"><span class="pre">elev_3d</span></code></td>
+</tr>
+<tr class="row-odd"><td>Depth av. velocity</td>
+<td><span class="math">\(\bar{\mathbf{u}}\)</span></td>
+<td><a class="reference internal" href="thetis.html#equation-swe_momentum_modesplit">(9)</a></td>
+<td><code class="docutils literal"><span class="pre">uv_2d</span></code></td>
+</tr>
+<tr class="row-even"><td>3D velocity</td>
+<td><span class="math">\(\mathbf{u}'\)</span></td>
+<td><a class="reference internal" href="thetis.html#equation-mom_eq_split">(3)</a></td>
+<td><code class="docutils literal"><span class="pre">uv_3d</span></code></td>
+</tr>
+<tr class="row-odd"><td>Water temperature</td>
+<td><span class="math">\(T\)</span></td>
+<td><a class="reference internal" href="thetis.html#equation-tracer_eq">(10)</a></td>
+<td><code class="docutils literal"><span class="pre">temp_3d</span></code></td>
+</tr>
+<tr class="row-even"><td>Water salinity</td>
+<td><span class="math">\(S\)</span></td>
+<td><a class="reference internal" href="thetis.html#equation-tracer_eq">(10)</a></td>
+<td><code class="docutils literal"><span class="pre">salt_3d</span></code></td>
+</tr>
+</tbody>
+</table>
+<p>Table 1. <em>Prognostic variables in the 3D model.</em></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="26%" />
+<col width="31%" />
+<col width="24%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Variable</th>
+<th class="head">Symbol</th>
+<th class="head">Equation</th>
+<th class="head">Thetis field name</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Vertical velocity</td>
+<td><span class="math">\(w\)</span></td>
+<td><a class="reference internal" href="thetis.html#equation-continuity_eq_3d">(14)</a></td>
+<td><code class="docutils literal"><span class="pre">w_3d</span></code></td>
+</tr>
+<tr class="row-odd"><td>Water density</td>
+<td><span class="math">\(\rho\)</span></td>
+<td><a class="reference internal" href="thetis.html#equation-equation_of_state">(13)</a></td>
+<td><code class="docutils literal"><span class="pre">rho_3d</span></code></td>
+</tr>
+<tr class="row-even"><td>Baroclinic head</td>
+<td><span class="math">\(r\)</span></td>
+<td><a class="reference internal" href="thetis.html#equation-baroc_head">(2)</a></td>
+<td><code class="docutils literal"><span class="pre">baroc_head_3d</span></code></td>
+</tr>
+</tbody>
+</table>
+<p>Table 2. <em>Diagnostic variables in the 3D model.</em></p>
+</div>
+<div class="section" id="spatial-discretization">
+<h2>Spatial discretization<a class="headerlink" href="#spatial-discretization" title="Permalink to this headline">¶</a></h2>
+<p>Currently Thetis supports two finite element families:
+Equal order Discontinuous Galerkin (DG)
+(option <code class="docutils literal"><span class="pre">'dg-dg'</span></code>), and mimetic Raviart-Thomas-DG family (<code class="docutils literal"><span class="pre">'rt-dg'</span></code>).
+The element family is set by the <a class="reference internal" href="thetis.html#thetis.options.ModelOptions.element_family" title="thetis.options.ModelOptions.element_family"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.element_family</span></code></a> option.
+Currently only linear elements are supported, i.e.
+<a class="reference internal" href="thetis.html#thetis.options.ModelOptions.order" title="thetis.options.ModelOptions.order"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.order</span></code></a> must be 1.</p>
+<p>The function spaces for both element families are summarized in the following
+tables.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="34%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Variable</th>
+<th class="head">Symbol</th>
+<th class="head">Function space</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Water elevation</td>
+<td><span class="math">\(\eta\)</span></td>
+<td>P1DG</td>
+</tr>
+<tr class="row-odd"><td>Depth av. velocity</td>
+<td><span class="math">\(\bar{\mathbf{u}}\)</span></td>
+<td>P1DG</td>
+</tr>
+<tr class="row-even"><td>3D velocity</td>
+<td><span class="math">\(\mathbf{u}'\)</span></td>
+<td>P1DG x P1DG</td>
+</tr>
+<tr class="row-odd"><td>Water temperature</td>
+<td><span class="math">\(T\)</span></td>
+<td>P1DG x P1DG</td>
+</tr>
+<tr class="row-even"><td>Water salinity</td>
+<td><span class="math">\(S\)</span></td>
+<td>P1DG x P1DG</td>
+</tr>
+<tr class="row-odd"><td>Vertical velocity</td>
+<td><span class="math">\(w\)</span></td>
+<td>P1DG x P1DG</td>
+</tr>
+<tr class="row-even"><td>Water density</td>
+<td><span class="math">\(\rho\)</span></td>
+<td>P1DG x P1DG</td>
+</tr>
+<tr class="row-odd"><td>Baroclinic head</td>
+<td><span class="math">\(r\)</span></td>
+<td>P1DG x P2</td>
+</tr>
+</tbody>
+</table>
+<p>Table 3. <em>Equal order Discontinuous Galerkin function spaces (degree=1).</em></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="34%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Variable</th>
+<th class="head">Symbol</th>
+<th class="head">Function space</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Water elevation</td>
+<td><span class="math">\(\eta\)</span></td>
+<td>P1DG</td>
+</tr>
+<tr class="row-odd"><td>Depth av. velocity</td>
+<td><span class="math">\(\bar{\mathbf{u}}\)</span></td>
+<td>RT2</td>
+</tr>
+<tr class="row-even"><td>3D velocity</td>
+<td><span class="math">\(\mathbf{u}'\)</span></td>
+<td>HDiv(RT2 x P1DG)</td>
+</tr>
+<tr class="row-odd"><td>Water temperature</td>
+<td><span class="math">\(T\)</span></td>
+<td>P1DG x P1DG</td>
+</tr>
+<tr class="row-even"><td>Water salinity</td>
+<td><span class="math">\(S\)</span></td>
+<td>P1DG x P1DG</td>
+</tr>
+<tr class="row-odd"><td>Vertical velocity</td>
+<td><span class="math">\(w\)</span></td>
+<td>HDiv(P1DG x P2)</td>
+</tr>
+<tr class="row-even"><td>Water density</td>
+<td><span class="math">\(\rho\)</span></td>
+<td>P1DG x P1DG</td>
+</tr>
+<tr class="row-odd"><td>Baroclinic head</td>
+<td><span class="math">\(r\)</span></td>
+<td>P1DG x P2</td>
+</tr>
+</tbody>
+</table>
+<p>Table 4. <em>Raviart-Thomas Discontinuous Galerkin function spaces (degree=1).</em></p>
+<p>In both cases the tracers belong to fully discontinuous P1DG x P1DG function
+space. Tracer advection is solved with upwinding method and slope limiters
+(see <a class="reference internal" href="thetis.html#thetis.limiter.VertexBasedP1DGLimiter" title="thetis.limiter.VertexBasedP1DGLimiter"><code class="xref py py-class docutils literal"><span class="pre">VertexBasedP1DGLimiter</span></code></a>).</p>
+</div>
+<div class="section" id="temporal-discretization">
+<h2>Temporal discretization<a class="headerlink" href="#temporal-discretization" title="Permalink to this headline">¶</a></h2>
+<p>The system of coupled equations is marched in time with a
+<a class="reference internal" href="thetis.html#thetis.coupled_timeintegrator.CoupledTimeIntegrator" title="thetis.coupled_timeintegrator.CoupledTimeIntegrator"><code class="xref py py-class docutils literal"><span class="pre">CoupledTimeIntegrator</span></code></a>.
+The time integration method is set by <a class="reference internal" href="thetis.html#thetis.options.ModelOptions.timestepper_type" title="thetis.options.ModelOptions.timestepper_type"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.timestepper_type</span></code></a>
+option. Currently supported time integrators are listed below.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="30%" />
+<col width="6%" />
+<col width="13%" />
+<col width="32%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Time integrator</th>
+<th class="head">Thetis class</th>
+<th class="head">2D mode</th>
+<th class="head">ALE mesh support</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">'ssprk22'</span></code></td>
+<td><a class="reference internal" href="thetis.html#thetis.coupled_timeintegrator.CoupledTwoStageRK" title="thetis.coupled_timeintegrator.CoupledTwoStageRK"><code class="xref py py-class docutils literal"><span class="pre">CoupledTwoStageRK</span></code></a></td>
+<td>implicit</td>
+<td>yes</td>
+<td>Coupled method based on SSPRK(2,2) scheme</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">'ssprk33'</span></code></td>
+<td><a class="reference internal" href="thetis.html#thetis.coupled_timeintegrator.CoupledSSPRKSemiImplicit" title="thetis.coupled_timeintegrator.CoupledSSPRKSemiImplicit"><code class="xref py py-class docutils literal"><span class="pre">CoupledSSPRKSemiImplicit</span></code></a></td>
+<td>implicit</td>
+<td>no</td>
+<td>Coupled method based on SSPRK(3,3) scheme</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">'leapfrog'</span></code></td>
+<td><a class="reference internal" href="thetis.html#thetis.coupled_timeintegrator.CoupledLeapFrogAM3" title="thetis.coupled_timeintegrator.CoupledLeapFrogAM3"><code class="xref py py-class docutils literal"><span class="pre">CoupledLeapFrogAM3</span></code></a></td>
+<td>implicit</td>
+<td>yes</td>
+<td>Leapfrog Adams-Moulton 3 method</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">'erkale'</span></code></td>
+<td><a class="reference internal" href="thetis.html#thetis.coupled_timeintegrator.CoupledERKALE" title="thetis.coupled_timeintegrator.CoupledERKALE"><code class="xref py py-class docutils literal"><span class="pre">CoupledERKALE</span></code></a></td>
+<td>explicit</td>
+<td>yes</td>
+<td>Fully explicit RK scheme</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">'imexale'</span></code></td>
+<td><a class="reference internal" href="thetis.html#thetis.coupled_timeintegrator.CoupledIMEXALE" title="thetis.coupled_timeintegrator.CoupledIMEXALE"><code class="xref py py-class docutils literal"><span class="pre">CoupledIMEXALE</span></code></a></td>
+<td>implicit</td>
+<td>yes</td>
+<td>Coupled IMEX method</td>
+</tr>
+</tbody>
+</table>
+<p>Table 5. <em>Supported 3D time integrators.</em></p>
+<p>The 2D and 3D time steps can be set via <a class="reference internal" href="thetis.html#thetis.options.ModelOptions.dt" title="thetis.options.ModelOptions.dt"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.dt</span></code></a> and
+<a class="reference internal" href="thetis.html#thetis.options.ModelOptions.dt_2d" title="thetis.options.ModelOptions.dt_2d"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.dt_2d</span></code></a> options.
+The 2D mode can be treated either implicitly or explicitly.
+In case of an implicit 2D mode, the 2D time step is equal to the 3D time step
+and <code class="docutils literal"><span class="pre">dt_2d</span></code> option is ignored.</p>
+<p>Thetis can also estimate the maximum stable time step based on the mesh
+resolution, used element family and time integration scheme.
+To use this feature, the user should provide the following estimates:</p>
+<ul class="simple">
+<li><a class="reference internal" href="thetis.html#thetis.options.ModelOptions.u_advection" title="thetis.options.ModelOptions.u_advection"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.u_advection</span></code></a>: Maximal horizontal velocity scale</li>
+<li><a class="reference internal" href="thetis.html#thetis.options.ModelOptions.w_advection" title="thetis.options.ModelOptions.w_advection"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.w_advection</span></code></a>: Maximal vertical velocity scale</li>
+<li><a class="reference internal" href="thetis.html#thetis.options.ModelOptions.nu_viscosity" title="thetis.options.ModelOptions.nu_viscosity"><code class="xref py py-attr docutils literal"><span class="pre">ModelOptions.nu_viscosity</span></code></a>: Maximal horizontal viscosity scale</li>
+</ul>
+<p>When the simulation initializes, Thetis will compute the maximal feasible time
+step:</p>
+<div class="highlight-none"><div class="highlight"><pre><span></span>Coupled time integrator: CoupledTwoStageRK
+2D time integrator: TwoStageTrapezoid
+3D time integrator: SSPRK22ALE
+3D implicit time integrator: BackwardEuler
+- dt 2d swe: 7.34794172415
+- dt h. advection: 213.200697179
+- dt v. advection: 729.166666667
+- dt viscosity: 45454.5372777
+- CFL adjusted dt: 2D: inf 3D: 213.200697179
+- chosen dt: 2D: 213.0 3D: 213.0
+- adjusted dt: 2D: 180.0 3D: 180.0
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.
+    </div>
+  </body>
+</html>

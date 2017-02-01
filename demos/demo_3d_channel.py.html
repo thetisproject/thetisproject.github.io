@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3D tidal channel demo &#8212; Thetis 0+untagged.833.g086f878 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/thetis.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0+untagged.833.g086f878',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="../_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="../_static/icon_thetis.ico" />
+
+
+  </head>
+  <body role="document">
+<div class="wrapper">
+  <a href="../index.html"><img src="../_static/banner.png" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://travis-ci.org/thetisproject/thetis" title="Thetis on Travis">Travis</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="demos/demo_3d_channel.py">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="d-tidal-channel-demo">
+<h1>3D tidal channel demo<a class="headerlink" href="#d-tidal-channel-demo" title="Permalink to this headline">¶</a></h1>
+<p>This example demonstrates a 3D barotropic model in a tidal channel with sloping
+bathymetry. We also add a constant, passive salinity tracer to demonstrate local
+tracer conservation. This simulation uses the ALE moving mesh.</p>
+<p>We begin by defining the 2D mesh as before:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">thetis</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">lx</span> <span class="o">=</span> <span class="mf">100e3</span>
+<span class="n">ly</span> <span class="o">=</span> <span class="mf">6e3</span>
+<span class="n">nx</span> <span class="o">=</span> <span class="mi">33</span>
+<span class="n">ny</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">mesh2d</span> <span class="o">=</span> <span class="n">RectangleMesh</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">lx</span><span class="p">,</span> <span class="n">ly</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case we define a linearly sloping bathymetry in the x-direction.
+The bathymetry function is defined as an
+<a class="reference external" href="http://fenics-ufl.readthedocs.io/en/latest/">UFL</a> expression making use of the
+coordinates of the 2D mesh.
+The expression is interpolated on the P1 bathymetry field:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">P1_2d</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s1">&#39;CG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">bathymetry_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Bathymetry&#39;</span><span class="p">)</span>
+<span class="n">depth_oce</span> <span class="o">=</span> <span class="mf">20.0</span>
+<span class="n">depth_riv</span> <span class="o">=</span> <span class="mf">7.0</span>
+<span class="n">xy</span> <span class="o">=</span> <span class="n">SpatialCoordinate</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">)</span>
+<span class="n">bath_ufl_expr</span> <span class="o">=</span> <span class="n">depth_oce</span> <span class="o">-</span> <span class="p">(</span><span class="n">depth_oce</span><span class="o">-</span><span class="n">depth_riv</span><span class="p">)</span><span class="o">*</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">lx</span>
+<span class="n">bathymetry_2d</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">bath_ufl_expr</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next we create the 3D solver. The 2D mesh will be extruded in the vertical
+direction using a constant number of layers:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">n_layers</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">solver_obj</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">FlowSolver</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We then set some options (see <a class="reference internal" href="../thetis.html#thetis.options.ModelOptions" title="thetis.options.ModelOptions"><code class="xref py py-class docutils literal"><span class="pre">ModelOptions</span></code></a> for more information):</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">options</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span>
+<span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="o">=</span> <span class="s1">&#39;dg-dg&#39;</span>
+<span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;ssprk22&#39;</span>
+<span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">options</span><span class="o">.</span><span class="n">use_bottom_friction</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">options</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">options</span><span class="o">.</span><span class="n">t_export</span> <span class="o">=</span> <span class="mf">900.0</span>
+<span class="n">options</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span>
+<span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;uv_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;elev_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;elev_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;uv_3d&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;w_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;w_mesh_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;salt_3d&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;baroc_head_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;baroc_head_2d&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;uv_dav_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;uv_bottom_2d&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>We set this simulation to be barotropic (i.e. salinity and temperature do not
+affect water density), but we still wish to simulate salinity as a passive
+tracer:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">baroclinic</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span> <span class="o">=</span> <span class="bp">False</span>
+</pre></div>
+</div>
+<p>We also want to see how much the salinity value deviates from its initial
+value:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">check_salt_overshoot</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>In this simulation we do not set the time step manually but instead use the
+automatic time step estimation of Thetis. Time step is estimated based on the
+CFL number, used spatial discretization and time integration
+method. We only need to define maximal horizontal and vertical velocity scales:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">u_max</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">w_max</span> <span class="o">=</span> <span class="mf">2e-4</span>
+<span class="n">options</span><span class="o">.</span><span class="n">u_advection</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">u_max</span><span class="p">)</span>
+<span class="n">options</span><span class="o">.</span><span class="n">w_advection</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">w_max</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next we define the boundary conditions. Note that in a 3D model there are
+multiple coupled equations, and we need to set boundary conditions to all of
+them.</p>
+<p>In this example we impose time dependent normal flux on both the deep (ocean)
+and shallow (river) boundaries. We begin by creating python functions that
+define the time dependent fluxes. Note that we use a linear ramp-up function on
+both boundaries:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ocean_bnd_id</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">river_bnd_id</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">un_amp</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span>  <span class="c1"># tidal normal velocity amplitude (m/s)</span>
+<span class="n">flux_amp</span> <span class="o">=</span> <span class="n">ly</span><span class="o">*</span><span class="n">depth_oce</span><span class="o">*</span><span class="n">un_amp</span>
+<span class="n">t_tide</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="mf">3600.</span>  <span class="c1"># tidal period (s)</span>
+<span class="n">un_river</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.05</span>  <span class="c1"># constant river flow velocity (m/s)</span>
+<span class="n">flux_river</span> <span class="o">=</span> <span class="n">ly</span><span class="o">*</span><span class="n">depth_riv</span><span class="o">*</span><span class="n">un_river</span>
+<span class="n">t_ramp</span> <span class="o">=</span> <span class="mi">6</span><span class="o">*</span><span class="mf">3600.0</span>  <span class="c1"># use linear ramp up for boundary forcings</span>
+
+
+<span class="k">def</span> <span class="nf">ocean_flux_func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">flux_amp</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">t_tide</span><span class="p">)</span> <span class="o">-</span> <span class="n">flux_river</span><span class="p">)</span><span class="o">*</span><span class="nb">min</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">t_ramp</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">river_flux_func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">flux_river</span><span class="o">*</span><span class="nb">min</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">t_ramp</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We then define <a class="reference external" href="http://firedrakeproject.org/firedrake.html#firedrake.constant.Constant" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal"><span class="pre">Constant</span></code></a> objects for the fluxes and
+use them as boundary conditions for the 2D shallow water model:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ocean_flux</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">ocean_flux_func</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">river_flux</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">river_flux_func</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+<span class="n">ocean_funcs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;flux&#39;</span><span class="p">:</span> <span class="n">ocean_flux</span><span class="p">}</span>
+<span class="n">river_funcs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;flux&#39;</span><span class="p">:</span> <span class="n">river_flux</span><span class="p">}</span>
+
+<span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ocean_bnd_id</span><span class="p">:</span> <span class="n">ocean_funcs</span><span class="p">,</span>
+                                             <span class="n">river_bnd_id</span><span class="p">:</span> <span class="n">river_funcs</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The volume fluxes are now defined in the 2D mode, so there&#8217;s no need to impose
+anything in the 3D momentum equation. We therefore only use symmetry condition
+for 3D horizontal velocity:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ocean_funcs_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;symm&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
+<span class="n">river_funcs_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;symm&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
+
+<span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;momentum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ocean_bnd_id</span><span class="p">:</span> <span class="n">ocean_funcs_3d</span><span class="p">,</span>
+                                        <span class="n">river_bnd_id</span><span class="p">:</span> <span class="n">river_funcs_3d</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>For the salinity, we define a constant value and apply as inflow conditions
+at the open boundaries:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">salt_init3d</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">4.5</span><span class="p">)</span>
+<span class="n">ocean_salt_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">salt_init3d</span><span class="p">}</span>
+<span class="n">river_salt_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">salt_init3d</span><span class="p">}</span>
+
+<span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;salt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ocean_bnd_id</span><span class="p">:</span> <span class="n">ocean_salt_3d</span><span class="p">,</span>
+                                    <span class="n">river_bnd_id</span><span class="p">:</span> <span class="n">river_salt_3d</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>As before, all boundaries where boundary conditions are not assigned are
+assumed to be impermeable land boundaries.</p>
+<p>We now need to define the callback functions that update all time dependent
+forcing fields. As the 2D and 3D modes may be treated separately in the time
+integrator we create a different call back for the two modes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">update_forcings_2d</span><span class="p">(</span><span class="n">t_new</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Callback function that updates all time dependent forcing fields</span>
+<span class="sd">    for the 2D mode&quot;&quot;&quot;</span>
+    <span class="n">ocean_flux</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">ocean_flux_func</span><span class="p">(</span><span class="n">t_new</span><span class="p">))</span>
+    <span class="n">river_flux</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">river_flux_func</span><span class="p">(</span><span class="n">t_new</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">update_forcings_3d</span><span class="p">(</span><span class="n">t_new</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Callback function that updates all time dependent forcing fields</span>
+<span class="sd">    for the 3D mode&quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Because the boundary conditions of the 3D equations do not depend on time, the
+3d callback function does nothing (it could be omitted).</p>
+<p>We then assign the constant salinity value as an initial condition:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">assign_initial_conditions</span><span class="p">(</span><span class="n">salt</span><span class="o">=</span><span class="n">salt_init3d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and run the simulation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="n">update_forcings</span><span class="o">=</span><span class="n">update_forcings_2d</span><span class="p">,</span>
+                   <span class="n">update_forcings3d</span><span class="o">=</span><span class="n">update_forcings_3d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As you run the simulation, Thetis prints out the normal simulation statistics
+and also prints out the over/undershoots in the salinity field:</p>
+<div class="highlight-none"><div class="highlight"><pre><span></span>    0     0 T=      0.00 eta norm:     0.0000 u norm:     0.0000  0.00
+salt_3d overshoot 0 0
+    1     5 T=    900.00 eta norm:    15.1764 u norm:     0.0000  1.23
+salt_3d overshoot -1.00586e-11 2.58318e-11
+    2    10 T=   1800.00 eta norm:    83.4282 u norm:     0.0000  0.39
+salt_3d overshoot -3.13083e-11 3.42579e-11
+    3    15 T=   2700.00 eta norm:   229.6974 u norm:     0.0000  0.35
+salt_3d overshoot -6.35199e-11 6.6346e-11
+</pre></div>
+</div>
+<p>Note that here the <code class="docutils literal"><span class="pre">u</span> <span class="pre">norm</span></code> is the norm of <span class="math">\(\mathbf{u}'\)</span>, i.e. the prognostic 3D
+horizontal velocity field (3D velocity minus its vertical average).</p>
+<p>This tutorial can be dowloaded as a Python script <a class="reference external" href="demo_3d_channel.py">here</a>.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.
+    </div>
+  </body>
+</html>
