@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.exporter &#8212; Thetis 0+untagged.833.g086f878 documentation</title>
+    <title>thetis.exporter &#8212; Thetis 0+untagged.863.gb20c529 documentation</title>
     
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0+untagged.833.g086f878',
+        VERSION:     '0+untagged.863.gb20c529',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -91,7 +91,9 @@
     <span class="n">mesh</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
     <span class="n">family</span> <span class="o">=</span> <span class="s1">&#39;Lagrange&#39;</span> <span class="k">if</span> <span class="n">is_cg</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;Discontinuous Lagrange&#39;</span>
     <span class="k">if</span> <span class="n">is_vector</span><span class="p">:</span>
-        <span class="n">visu_fs</span> <span class="o">=</span> <span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vfamily</span><span class="o">=</span><span class="n">family</span><span class="p">,</span> <span class="n">vdegree</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">value_shape</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">visu_fs</span> <span class="o">=</span> <span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+                                      <span class="n">vfamily</span><span class="o">=</span><span class="n">family</span><span class="p">,</span> <span class="n">vdegree</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">visu_fs</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vfamily</span><span class="o">=</span><span class="n">family</span><span class="p">,</span> <span class="n">vdegree</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="c1"># make sure that you always get the same temp work function</span>

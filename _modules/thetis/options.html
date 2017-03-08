@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.options &#8212; Thetis 0+untagged.833.g086f878 documentation</title>
+    <title>thetis.options &#8212; Thetis 0+untagged.863.gb20c529 documentation</title>
     
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0+untagged.833.g086f878',
+        VERSION:     '0+untagged.863.gb20c529',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -260,7 +260,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">equation_of_state</span> <span class="o">=</span> <span class="s1">&#39;full&#39;</span>
         <span class="sd">&quot;&quot;&quot;str: type of equation of state that defines water density</span>
 
-<span class="sd">        Either &#39;full&#39; or &#39;linear&#39;. See :class:`.EquationOfState` and</span>
+<span class="sd">        Either &#39;full&#39; or &#39;linear&#39;. See :class:`.JackettEquationOfState` and</span>
 <span class="sd">        :class:`.LinearEquationOfState`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lin_equation_of_state_params</span> <span class="o">=</span> <span class="p">{</span>
@@ -271,6 +271,25 @@
             <span class="s1">&#39;beta&#39;</span><span class="p">:</span> <span class="mf">0.77</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="sd">&quot;&quot;&quot;dict: Parameters for linear equation of state&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_quadratic_pressure</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        bool: use P2DGxP2 space for baroclinic head.</span>
+
+<span class="sd">        If element_family=&#39;dg-dg&#39;, P2DGxP1DG space is also used for the internal</span>
+<span class="sd">        pressure gradient.</span>
+
+<span class="sd">        This is useful to alleviate bathymetry-induced pressure gradient errors.</span>
+<span class="sd">        If False, the baroclinic head is in the tracer space, and internal</span>
+<span class="sd">        pressure gradient is in the velocity space.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_quadratic_density</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        bool: water density is projected to P2DGxP2 space.</span>
+
+<span class="sd">        This reduces pressure gradient errors associated with nonlinear</span>
+<span class="sd">        equation of state.</span>
+<span class="sd">        If False, density is computed point-wise in the tracer space.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;elev_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;uv_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;uv_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;w_3d&#39;</span><span class="p">]</span>
         <span class="sd">&quot;&quot;&quot;list of str: Fields to export in VTK format&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields_to_export_hdf5</span> <span class="o">=</span> <span class="p">[]</span>

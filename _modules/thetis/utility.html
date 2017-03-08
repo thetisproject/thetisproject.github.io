@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.utility &#8212; Thetis 0+untagged.833.g086f878 documentation</title>
+    <title>thetis.utility &#8212; Thetis 0+untagged.863.gb20c529 documentation</title>
     
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0+untagged.833.g086f878',
+        VERSION:     '0+untagged.863.gb20c529',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -81,8 +81,10 @@
 <span class="kn">import</span> <span class="nn">coffee.base</span> <span class="k">as</span> <span class="nn">ast</span>  <span class="c1"># NOQA</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">namedtuple</span>  <span class="c1"># NOQA</span>
 <span class="kn">from</span> <span class="nn">.field_defs</span> <span class="k">import</span> <span class="n">field_metadata</span>
+<span class="kn">from</span> <span class="nn">.log</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">firedrake</span> <span class="k">import</span> <span class="n">Function</span> <span class="k">as</span> <span class="n">FiredrakeFunction</span>
 <span class="kn">from</span> <span class="nn">firedrake</span> <span class="k">import</span> <span class="n">Constant</span> <span class="k">as</span> <span class="n">FiredrakeConstant</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
 
 <span class="n">ds_surf</span> <span class="o">=</span> <span class="n">ds_t</span>
 <span class="n">ds_bottom</span> <span class="o">=</span> <span class="n">ds_b</span>
@@ -178,37 +180,42 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">FieldDict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
 
-<span class="n">ElementContinuity</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;ElementContinuity&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;dg&quot;</span><span class="p">,</span> <span class="s2">&quot;horizontal_dg&quot;</span><span class="p">,</span> <span class="s2">&quot;vertical_dg&quot;</span><span class="p">])</span>
-<span class="sd">&quot;&quot;&quot;A named tuple describing the continuity of an element.&quot;&quot;&quot;</span>
+<span class="n">ElementContinuity</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;ElementContinuity&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span> <span class="s2">&quot;vertical&quot;</span><span class="p">])</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A named tuple describing the continuity of an element in the horizontal/vertical direction.</span>
+
+<span class="sd">The field value is one of &quot;cg&quot;, &quot;hdiv&quot;, or &quot;dg&quot;.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="element_continuity"><a class="viewcode-back" href="../../thetis.html#thetis.utility.element_continuity">[docs]</a><span class="k">def</span> <span class="nf">element_continuity</span><span class="p">(</span><span class="n">fiat_element</span><span class="p">):</span>
+<div class="viewcode-block" id="element_continuity"><a class="viewcode-back" href="../../thetis.html#thetis.utility.element_continuity">[docs]</a><span class="k">def</span> <span class="nf">element_continuity</span><span class="p">(</span><span class="n">ufl_element</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return an :class:`ElementContinuity` instance with the</span>
 <span class="sd">    continuity of a given element.</span>
 
-<span class="sd">    :arg fiat_element: The fiat element to determine the continuity</span>
+<span class="sd">    :arg ufl_element: The UFL element to determine the continuity</span>
 <span class="sd">        of.</span>
 <span class="sd">    :returns: A new :class:`ElementContinuity` instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">FIAT</span>
-    <span class="n">cell</span> <span class="o">=</span> <span class="n">fiat_element</span><span class="o">.</span><span class="n">get_reference_element</span><span class="p">()</span>
+    <span class="n">elem</span> <span class="o">=</span> <span class="n">ufl_element</span>
+    <span class="n">elem_types</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Discontinuous Lagrange&#39;</span><span class="p">:</span> <span class="s1">&#39;dg&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Lagrange&#39;</span><span class="p">:</span> <span class="s1">&#39;cg&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Raviart-Thomas&#39;</span><span class="p">:</span> <span class="s1">&#39;hdiv&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">FIAT</span><span class="o">.</span><span class="n">reference_element</span><span class="o">.</span><span class="n">TensorProductCell</span><span class="p">):</span>
-        <span class="c1"># Pull apart</span>
-        <span class="n">horiz</span> <span class="o">=</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">fiat_element</span><span class="o">.</span><span class="n">A</span><span class="p">)</span><span class="o">.</span><span class="n">dg</span>
-        <span class="n">vert</span> <span class="o">=</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">fiat_element</span><span class="o">.</span><span class="n">B</span><span class="p">)</span><span class="o">.</span><span class="n">dg</span>
-        <span class="k">return</span> <span class="n">ElementContinuity</span><span class="p">(</span><span class="n">dg</span><span class="o">=</span><span class="n">horiz</span> <span class="ow">and</span> <span class="n">vert</span><span class="p">,</span>
-                                 <span class="n">horizontal_dg</span><span class="o">=</span><span class="n">horiz</span><span class="p">,</span>
-                                 <span class="n">vertical_dg</span><span class="o">=</span><span class="n">vert</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">finiteelement</span><span class="o">.</span><span class="n">mixedelement</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">):</span>
+        <span class="n">elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># take the elem of first component</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">finiteelement</span><span class="o">.</span><span class="n">tensorproductelement</span><span class="o">.</span><span class="n">TensorProductElement</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()</span>
+        <span class="n">horiz_type</span> <span class="o">=</span> <span class="n">elem_types</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">family</span><span class="p">()]</span>
+        <span class="n">vert_type</span> <span class="o">=</span> <span class="n">elem_types</span><span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">family</span><span class="p">()]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">finiteelement</span><span class="o">.</span><span class="n">hdivcurl</span><span class="o">.</span><span class="n">HDivElement</span><span class="p">):</span>
+        <span class="n">horiz_type</span> <span class="o">=</span> <span class="s1">&#39;hdiv&#39;</span>
+        <span class="n">vert_type</span> <span class="o">=</span> <span class="s1">&#39;hdiv&#39;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">edofs</span> <span class="o">=</span> <span class="n">fiat_element</span><span class="o">.</span><span class="n">entity_dofs</span><span class="p">()</span>
-        <span class="n">dim</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_spatial_dimension</span><span class="p">()</span>
-        <span class="n">dg</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">edofs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-                <span class="n">dg</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">break</span>
-        <span class="k">return</span> <span class="n">ElementContinuity</span><span class="p">(</span><span class="n">dg</span><span class="p">,</span> <span class="n">dg</span><span class="p">,</span> <span class="n">dg</span><span class="p">)</span></div>
+        <span class="n">horiz_type</span> <span class="o">=</span> <span class="n">elem_types</span><span class="p">[</span><span class="n">elem</span><span class="o">.</span><span class="n">family</span><span class="p">()]</span>
+        <span class="n">vert_type</span> <span class="o">=</span> <span class="n">horiz_type</span>
+    <span class="k">return</span> <span class="n">ElementContinuity</span><span class="p">(</span><span class="n">horiz_type</span><span class="p">,</span> <span class="n">vert_type</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="create_directory"><a class="viewcode-back" href="../../thetis.html#thetis.utility.create_directory">[docs]</a><span class="k">def</span> <span class="nf">create_directory</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">COMM_WORLD</span><span class="p">):</span>
@@ -246,7 +253,7 @@
     <span class="n">new_coordinates</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">fs_3d</span><span class="p">)</span>
 
     <span class="c1"># number of nodes in vertical direction</span>
-    <span class="n">n_vert_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fs_3d</span><span class="o">.</span><span class="n">fiat_element</span><span class="o">.</span><span class="n">B</span><span class="o">.</span><span class="n">entity_closure_dofs</span><span class="p">()[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">n_vert_nodes</span> <span class="o">=</span> <span class="n">fs_3d</span><span class="o">.</span><span class="n">finat_element</span><span class="o">.</span><span class="n">space_dimension</span><span class="p">()</span> <span class="o">/</span> <span class="n">fs_2d</span><span class="o">.</span><span class="n">finat_element</span><span class="o">.</span><span class="n">space_dimension</span><span class="p">()</span>
 
     <span class="n">nodes</span> <span class="o">=</span> <span class="n">fs_3d</span><span class="o">.</span><span class="n">bt_masks</span><span class="p">[</span><span class="s1">&#39;geometric&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">idx</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;node_idx&#39;</span><span class="p">)</span>
@@ -259,7 +266,7 @@
 <span class="s2">                    new_coords[idx[d]+e][2] = -bath2d[d][0] * (1.0 - old_coords[idx[d]+e][2]);</span>
 <span class="s2">                }</span>
 <span class="s2">            }</span>
-<span class="s2">        }&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="n">bathymetry_2d</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()</span><span class="o">.</span><span class="n">arity</span><span class="p">,</span>
+<span class="s2">        }&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="n">fs_2d</span><span class="o">.</span><span class="n">finat_element</span><span class="o">.</span><span class="n">space_dimension</span><span class="p">(),</span>
                 <span class="s1">&#39;v_nodes&#39;</span><span class="p">:</span> <span class="n">n_vert_nodes</span><span class="p">},</span>
         <span class="s1">&#39;my_kernel&#39;</span><span class="p">)</span>
 
@@ -446,14 +453,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
         <span class="n">space</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
         <span class="n">mesh</span> <span class="o">=</span> <span class="n">space</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
-        <span class="n">vertical_is_dg</span> <span class="o">=</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">space</span><span class="o">.</span><span class="n">fiat_element</span><span class="p">)</span><span class="o">.</span><span class="n">vertical_dg</span>
+        <span class="n">vertical_is_dg</span> <span class="o">=</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span><span class="o">.</span><span class="n">vertical</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;dg&#39;</span><span class="p">,</span> <span class="s1">&#39;hdiv&#39;</span><span class="p">]</span>
         <span class="n">tri</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">space</span><span class="p">)</span>
         <span class="n">phi</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">space</span><span class="p">)</span>
         <span class="n">normal</span> <span class="o">=</span> <span class="n">FacetNormal</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
 
         <span class="c1"># define measures with a reasonable quadrature degree</span>
         <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">q</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">p_in</span><span class="p">,</span> <span class="n">q_in</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">+</span><span class="n">p_in</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">q</span><span class="o">+</span><span class="n">q_in</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">=</span> <span class="n">dx</span><span class="p">(</span><span class="n">degree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dS_h</span> <span class="o">=</span> <span class="n">dS_h</span><span class="p">(</span><span class="n">degree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ds_surf</span> <span class="o">=</span> <span class="n">ds_surf</span><span class="p">(</span><span class="n">degree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span><span class="p">)</span>
@@ -467,11 +475,10 @@
             <span class="n">mass_bnd_term</span> <span class="o">=</span> <span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="n">tri</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ds_bottom</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="n">inner</span><span class="p">(</span><span class="n">Dx</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">tri</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">+</span> <span class="n">mass_bnd_term</span>
-        <span class="n">gamma</span> <span class="o">=</span> <span class="p">(</span><span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
         <span class="k">if</span> <span class="n">bottom_to_top</span><span class="p">:</span>
-            <span class="n">up_value</span> <span class="o">=</span> <span class="n">avg</span><span class="p">(</span><span class="n">tri</span><span class="o">*</span><span class="n">gamma</span><span class="p">)</span>
+            <span class="n">up_value</span> <span class="o">=</span> <span class="n">tri</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">up_value</span> <span class="o">=</span> <span class="n">avg</span><span class="p">(</span><span class="n">tri</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">gamma</span><span class="p">))</span>
+            <span class="n">up_value</span> <span class="o">=</span> <span class="n">tri</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">vertical_is_dg</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">ufl_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">dim</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">ufl_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -479,7 +486,6 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">+=</span> <span class="n">up_value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="n">phi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS_h</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">+=</span> <span class="n">up_value</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS_h</span>
-        <span class="n">source</span> <span class="o">=</span> <span class="nb">input</span>
         <span class="k">if</span> <span class="n">average</span><span class="p">:</span>
             <span class="n">source</span> <span class="o">=</span> <span class="nb">input</span><span class="o">/</span><span class="p">(</span><span class="n">elevation</span> <span class="o">+</span> <span class="n">bathymetry</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -505,6 +511,7 @@
 <span class="sd">        \rho = \rho&#39;(T, S, p) + \rho_0</span>
 
 <span class="sd">    This method computes the density anomaly :math:`\rho&#39;`.</span>
+
 <span class="sd">    Density is computed point-wise assuming that temperature, salinity and</span>
 <span class="sd">    density are in the same function space.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -550,6 +557,63 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos</span><span class="o">.</span><span class="n">compute_rho</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="p">)</span></div></div>
 
 
+<div class="viewcode-block" id="DensitySolverWeak"><a class="viewcode-back" href="../../thetis.html#thetis.utility.DensitySolverWeak">[docs]</a><span class="k">class</span> <span class="nc">DensitySolverWeak</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Computes density from salinity and temperature using the equation of state.</span>
+
+<span class="sd">    Water density is defined as</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \rho = \rho&#39;(T, S, p) + \rho_0</span>
+
+<span class="sd">    This method computes the density anomaly :math:`\rho&#39;`.</span>
+
+<span class="sd">    Density is computed in a weak sense by projecting the analytical expression</span>
+<span class="sd">    on the density field.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">salinity</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">eos_class</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg salinity: water salinity field</span>
+<span class="sd">        :type salinity: :class:`Function`</span>
+<span class="sd">        :arg temperature: water temperature field</span>
+<span class="sd">        :type temperature: :class:`Function`</span>
+<span class="sd">        :arg density: water density field</span>
+<span class="sd">        :type density: :class:`Function`</span>
+<span class="sd">        :arg eos_class: equation of state that defines water density</span>
+<span class="sd">        :type eos_class: :class:`EquationOfState`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">density</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eos</span> <span class="o">=</span> <span class="n">eos_class</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">salinity</span><span class="p">,</span> <span class="p">(</span><span class="n">FiredrakeFunction</span><span class="p">,</span> <span class="n">FiredrakeConstant</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">temperature</span><span class="p">,</span> <span class="p">(</span><span class="n">FiredrakeFunction</span><span class="p">,</span> <span class="n">FiredrakeConstant</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">salinity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">temperature</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">density</span> <span class="o">=</span> <span class="n">density</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+        <span class="n">rho0</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;rho0&#39;</span><span class="p">]</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projector</span> <span class="o">=</span> <span class="n">Projector</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">density</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DensitySolverWeak.ensure_positive_salinity"><a class="viewcode-back" href="../../thetis.html#thetis.utility.DensitySolverWeak.ensure_positive_salinity">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_positive_salinity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        make sure salinity is not negative</span>
+
+<span class="sd">        some EOS depend on sqrt(salt).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># FIXME this is really hacky and modifies the state variable</span>
+        <span class="c1"># NOTE if salt field is P2 checking nodal values is not enough ..</span>
+        <span class="n">ix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span></div>
+
+<div class="viewcode-block" id="DensitySolverWeak.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility.DensitySolverWeak.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute density&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensure_positive_salinity</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projector</span><span class="o">.</span><span class="n">project</span><span class="p">()</span></div></div>
+
+
 <div class="viewcode-block" id="compute_baroclinic_head"><a class="viewcode-back" href="../../thetis.html#thetis.utility.compute_baroclinic_head">[docs]</a><span class="k">def</span> <span class="nf">compute_baroclinic_head</span><span class="p">(</span><span class="n">solver</span><span class="p">):</span>
     <span class="sd">r&quot;&quot;&quot;</span>
 <span class="sd">    Computes the baroclinic head :math:`r` from the density field</span>
@@ -557,19 +621,13 @@
 <span class="sd">    .. math::</span>
 <span class="sd">        r = \frac{1}{\rho_0} \int_{z}^\eta  \rho&#39; d\zeta.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;density_solve&#39;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;density_solve&#39;</span><span class="p">):</span>
         <span class="n">solver</span><span class="o">.</span><span class="n">density_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-    <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;rho_integral&#39;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;rho_integral&#39;</span><span class="p">):</span>
         <span class="n">solver</span><span class="o">.</span><span class="n">rho_integrator</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
         <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">baroc_head_3d</span> <span class="o">*=</span> <span class="o">-</span><span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;rho0_inv&#39;</span><span class="p">]</span>
-    <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;extr_bot_bhead&#39;</span><span class="p">):</span>
-        <span class="n">solver</span><span class="o">.</span><span class="n">extract_bot_baro_head</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-    <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;average_bhead&#39;</span><span class="p">):</span>
-        <span class="n">solver</span><span class="o">.</span><span class="n">baro_head_averager</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-    <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;extr_top_bhead&#39;</span><span class="p">):</span>
-        <span class="n">solver</span><span class="o">.</span><span class="n">extract_surf_baro_head</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-    <span class="k">with</span> <span class="n">timed_region</span><span class="p">(</span><span class="s1">&#39;copy_bhead_3d&#39;</span><span class="p">):</span>
-        <span class="n">solver</span><span class="o">.</span><span class="n">copy_mean_baroc_head_to_3d</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div>
+    <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;int_pg_solve&#39;</span><span class="p">):</span>
+        <span class="n">solver</span><span class="o">.</span><span class="n">int_pg_calculator</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="VelocityMagnitudeSolver"><a class="viewcode-back" href="../../thetis.html#thetis.utility.VelocityMagnitudeSolver">[docs]</a><span class="k">class</span> <span class="nc">VelocityMagnitudeSolver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -614,6 +672,90 @@
         <span class="sd">&quot;&quot;&quot;Compute the magnitude&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
         <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Mesh3DConsistencyCalculator"><a class="viewcode-back" href="../../thetis.html#thetis.utility.Mesh3DConsistencyCalculator">[docs]</a><span class="k">class</span> <span class="nc">Mesh3DConsistencyCalculator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Computes a hydrostatic consistency criterion metric on the 3D mesh.</span>
+
+<span class="sd">    Loosely speaking, the hydrostatic consistency criterion means that 3D</span>
+<span class="sd">    elements cannot be too skewed due to bathymetry: the highest bottom node of</span>
+<span class="sd">    an element cannot be higher than the lowest top node.</span>
+
+<span class="sd">    Violating the hydrostatic consistency criterion leads to internal pressure</span>
+<span class="sd">    gradient errors. Mesh consistency can be improved by coarsening the vertical</span>
+<span class="sd">    mesh, refining the horizontal mesh, or smoothing the bathymetry.</span>
+
+<span class="sd">    For a 3D prism, let :math:`z_t` denote the z coordinate of the surface node,</span>
+<span class="sd">    :math:`z_b` the z coordinate of the bottom node (in the same vertical line),</span>
+<span class="sd">    and :math:`z_0` the z coordinate of the center of mass of the 3D element.</span>
+<span class="sd">    We then define the hydrostatic consistency metric as</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \delta_t &amp;= 2 \frac{z_t - z_0}{z_t - z_b} \\</span>
+<span class="sd">        \delta_b &amp;= 2\frac{z_0 - z_b}{z_t - z_b} \\</span>
+<span class="sd">        \delta &amp;= \text{min}(\delta_t, \delta_b)</span>
+
+<span class="sd">    For a straight prism we get :math:`\delta = 1`, and :math:`\delta = 0` in</span>
+<span class="sd">    the case where the highest bottom node is at the same level as the lowest</span>
+<span class="sd">    surface node. In general a good criterion is :math:`\delta &gt; 0.2`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DELTA_MIN_THRESHOLD</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg solver_obj: :class:`FlowSolver` object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span> <span class="o">=</span> <span class="n">solver_obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">hcc_metric_3d</span>
+
+        <span class="c1"># create par loop for computing delta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1DG</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1DG_2d</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_coord</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_coord_3d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_p0_coord</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;P0 z coordinate&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coord_projector</span> <span class="o">=</span> <span class="n">Projector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z_coord</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_p0_coord</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_coords</span><span class="p">()</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_3d</span><span class="o">.</span><span class="n">bt_masks</span><span class="p">[</span><span class="s1">&#39;geometric&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;node_idx&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Kernel</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            void my_kernel(double **delta, double **z_field, double **z_field_p0, int *idx) {</span>
+<span class="s2">                for ( int d = 0; d &lt; </span><span class="si">%(nodes)d</span><span class="s2">; d++ ) {</span>
+<span class="s2">                    double z0 = z_field_p0[0][0];</span>
+<span class="s2">                    int i_top = 1;</span>
+<span class="s2">                    int i_bot = 0;</span>
+<span class="s2">                    double z_top = z_field[idx[d] + i_top][0];</span>
+<span class="s2">                    double z_bot = z_field[idx[d] + i_bot][0];</span>
+<span class="s2">                    double h = z_top - z_bot;</span>
+<span class="s2">                    double delta_t = 2*(z_field_p0[0][0] - z_bot)/h;</span>
+<span class="s2">                    double delta_b = 2*(z_top - z_field_p0[0][0])/h;</span>
+<span class="s2">                    double delta_min = fmin(delta_t, delta_b);</span>
+<span class="s2">                    delta[idx[d] + i_bot][0] = delta_min;</span>
+<span class="s2">                    delta[idx[d] + i_top][0] = delta_min;</span>
+<span class="s2">                }</span>
+<span class="s2">            }&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_2d</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()</span><span class="o">.</span><span class="n">arity</span><span class="p">},</span>
+            <span class="s1">&#39;my_kernel&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates all mesh coordinate related fields after mesh update&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coord_projector</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Mesh3DConsistencyCalculator.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility.Mesh3DConsistencyCalculator.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">op2</span><span class="o">.</span><span class="n">par_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">cell_set</span><span class="p">,</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">WRITE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()),</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">z_coord</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_coord</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()),</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">z_p0_coord</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_p0_coord</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()),</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">),</span>
+                     <span class="n">iterate</span><span class="o">=</span><span class="n">op2</span><span class="o">.</span><span class="n">ALL</span><span class="p">)</span>
+        <span class="n">min_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">min_val</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">DELTA_MIN_THRESHOLD</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;3D mesh violates hydrostatic consistency criterion: d_min = </span><span class="si">{:.2f}</span><span class="s1">&#39;</span>
+            <span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_val</span><span class="p">))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;HCC: </span><span class="si">{:}</span><span class="s1"> .. </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span></div></div>
 
 
 <div class="viewcode-block" id="ExpandFunctionTo3d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.ExpandFunctionTo3d">[docs]</a><span class="k">class</span> <span class="nc">ExpandFunctionTo3d</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -667,7 +809,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">iter_domain</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">ALL</span>
 
         <span class="c1"># number of nodes in vertical direction</span>
-        <span class="n">n_vert_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs_3d</span><span class="o">.</span><span class="n">fiat_element</span><span class="o">.</span><span class="n">B</span><span class="o">.</span><span class="n">entity_closure_dofs</span><span class="p">()[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">n_vert_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_3d</span><span class="o">.</span><span class="n">finat_element</span><span class="o">.</span><span class="n">space_dimension</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_2d</span><span class="o">.</span><span class="n">finat_element</span><span class="o">.</span><span class="n">space_dimension</span><span class="p">()</span>
 
         <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_3d</span><span class="o">.</span><span class="n">bt_masks</span><span class="p">[</span><span class="s1">&#39;geometric&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;node_idx&#39;</span><span class="p">)</span>
@@ -680,7 +822,7 @@
 <span class="s2">                        }</span>
 <span class="s2">                    }</span>
 <span class="s2">                }</span>
-<span class="s2">            }&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_2d</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()</span><span class="o">.</span><span class="n">arity</span><span class="p">,</span>
+<span class="s2">            }&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_2d</span><span class="o">.</span><span class="n">finat_element</span><span class="o">.</span><span class="n">space_dimension</span><span class="p">(),</span>
                     <span class="s1">&#39;func_dim&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_2d</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">dim</span><span class="p">,</span>
                     <span class="s1">&#39;v_nodes&#39;</span><span class="p">:</span> <span class="n">n_vert_nodes</span><span class="p">},</span>
             <span class="s1">&#39;my_kernel&#39;</span><span class="p">)</span>
@@ -803,7 +945,7 @@
         <span class="k">elif</span> <span class="n">boundary</span> <span class="o">==</span> <span class="s1">&#39;bottom&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">iter_domain</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">ON_BOTTOM</span>
 
-        <span class="n">out_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_2d</span><span class="o">.</span><span class="n">fiat_element</span><span class="o">.</span><span class="n">space_dimension</span><span class="p">()</span>
+        <span class="n">out_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_2d</span><span class="o">.</span><span class="n">finat_element</span><span class="o">.</span><span class="n">space_dimension</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">elem_facet</span> <span class="o">==</span> <span class="s1">&#39;average&#39;</span><span class="p">:</span>
             <span class="k">assert</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="o">*</span><span class="n">out_nodes</span><span class="p">)</span>
@@ -1281,6 +1423,42 @@
 
 
 <div class="viewcode-block" id="EquationOfState"><a class="viewcode-back" href="../../thetis.html#thetis.utility.EquationOfState">[docs]</a><span class="k">class</span> <span class="nc">EquationOfState</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class of all equation of state objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
+
+    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="EquationOfState.compute_rho"><a class="viewcode-back" href="../../thetis.html#thetis.utility.EquationOfState.compute_rho">[docs]</a>    <span class="k">def</span> <span class="nf">compute_rho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Compute sea water density.</span>
+
+<span class="sd">        :arg s: Salinity expressed on the Practical Salinity Scale 1978</span>
+<span class="sd">        :type s: float or numpy.array</span>
+<span class="sd">        :arg th: Potential temperature in Celsius, referenced to pressure</span>
+<span class="sd">            p_r = 0 dbar.</span>
+<span class="sd">        :type th: float or numpy.array</span>
+<span class="sd">        :arg p: Pressure in decibars (1 dbar = 1e4 Pa)</span>
+<span class="sd">        :type p: float or numpy.array</span>
+<span class="sd">        :kwarg float rho0: Optional reference density. If provided computes</span>
+<span class="sd">            :math:`\rho&#39; = \rho(S, Th, p) - \rho_0`</span>
+<span class="sd">        :return: water density</span>
+<span class="sd">        :rtype: float or numpy.array</span>
+
+<span class="sd">        All pressures are gauge pressures: they are the absolute pressures minus standard atmosperic</span>
+<span class="sd">        pressure 10.1325 dbar.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="EquationOfState.eval"><a class="viewcode-back" href="../../thetis.html#thetis.utility.EquationOfState.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Compute sea water density.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="JackettEquationOfState"><a class="viewcode-back" href="../../thetis.html#thetis.utility.JackettEquationOfState">[docs]</a><span class="k">class</span> <span class="nc">JackettEquationOfState</span><span class="p">(</span><span class="n">EquationOfState</span><span class="p">):</span>
     <span class="sd">r&quot;&quot;&quot;</span>
 <span class="sd">    Equation of State according of Jackett et al. (2006) for computing sea</span>
 <span class="sd">    water density.</span>
@@ -1289,27 +1467,25 @@
 <span class="sd">        \rho = \rho&#39;(T, S, p) + \rho_0</span>
 <span class="sd">        :label: equation_of_state</span>
 
+<span class="sd">    :math:`\rho&#39;(T, S, p)` is a nonlinear rational function.</span>
+
 <span class="sd">    Jackett et al. (2006). Algorithms for Density, Potential Temperature,</span>
 <span class="sd">    Conservative Temperature, and the Freezing Temperature of Seawater.</span>
 <span class="sd">    Journal of Atmospheric and Oceanic Technology, 23(12):1709-1728.</span>
 <span class="sd">    http://dx.doi.org/10.1175/JTECH1946.1</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO make an abstract base class</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sets coefficients&quot;&quot;&quot;</span>
-        <span class="c1"># polynomial coefficients</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">9.9984085444849347e2</span><span class="p">,</span> <span class="mf">7.3471625860981584e0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.3211231792841769e-2</span><span class="p">,</span>
-                           <span class="mf">3.6492439109814549e-4</span><span class="p">,</span> <span class="mf">2.5880571023991390e0</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.7168282786692355e-3</span><span class="p">,</span>
-                           <span class="mf">1.9203202055760151e-3</span><span class="p">,</span> <span class="mf">1.1798263740430364e-2</span><span class="p">,</span> <span class="mf">9.8920219266399117e-8</span><span class="p">,</span>
-                           <span class="mf">4.6996642771754730e-6</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5862187075154352e-8</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.2921414007960662e-12</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">7.2815210113327091e-3</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.4787265461983921e-5</span><span class="p">,</span> <span class="mf">3.3851002965802430e-7</span><span class="p">,</span>
-                           <span class="mf">1.3651202389758572e-10</span><span class="p">,</span> <span class="mf">1.7632126669040377e-3</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.8066583251206474e-6</span><span class="p">,</span>
-                           <span class="o">-</span><span class="mf">1.8832689434804897e-10</span><span class="p">,</span> <span class="mf">5.7463776745432097e-6</span><span class="p">,</span> <span class="mf">1.4716275472242334e-9</span><span class="p">,</span>
-                           <span class="mf">6.7103246285651894e-6</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.4461698007024582e-17</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.1534417604289062e-18</span><span class="p">])</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">9.9984085444849347e2</span><span class="p">,</span> <span class="mf">7.3471625860981584e0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.3211231792841769e-2</span><span class="p">,</span>
+                  <span class="mf">3.6492439109814549e-4</span><span class="p">,</span> <span class="mf">2.5880571023991390e0</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.7168282786692355e-3</span><span class="p">,</span>
+                  <span class="mf">1.9203202055760151e-3</span><span class="p">,</span> <span class="mf">1.1798263740430364e-2</span><span class="p">,</span> <span class="mf">9.8920219266399117e-8</span><span class="p">,</span>
+                  <span class="mf">4.6996642771754730e-6</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5862187075154352e-8</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.2921414007960662e-12</span><span class="p">])</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">7.2815210113327091e-3</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.4787265461983921e-5</span><span class="p">,</span> <span class="mf">3.3851002965802430e-7</span><span class="p">,</span>
+                  <span class="mf">1.3651202389758572e-10</span><span class="p">,</span> <span class="mf">1.7632126669040377e-3</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.8066583251206474e-6</span><span class="p">,</span>
+                  <span class="o">-</span><span class="mf">1.8832689434804897e-10</span><span class="p">,</span> <span class="mf">5.7463776745432097e-6</span><span class="p">,</span> <span class="mf">1.4716275472242334e-9</span><span class="p">,</span>
+                  <span class="mf">6.7103246285651894e-6</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.4461698007024582e-17</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.1534417604289062e-18</span><span class="p">])</span>
 
-<div class="viewcode-block" id="EquationOfState.compute_rho"><a class="viewcode-back" href="../../thetis.html#thetis.utility.EquationOfState.compute_rho">[docs]</a>    <span class="k">def</span> <span class="nf">compute_rho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<div class="viewcode-block" id="JackettEquationOfState.compute_rho"><a class="viewcode-back" href="../../thetis.html#thetis.utility.JackettEquationOfState.compute_rho">[docs]</a>    <span class="k">def</span> <span class="nf">compute_rho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
         <span class="sd">r&quot;&quot;&quot;</span>
-<span class="sd">        Computes sea water density.</span>
+<span class="sd">        Compute sea water density.</span>
 
 <span class="sd">        :arg s: Salinity expressed on the Practical Salinity Scale 1978</span>
 <span class="sd">        :type s: float or numpy.array</span>
@@ -1327,20 +1503,23 @@
 <span class="sd">        pressure 10.1325 dbar.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>  <span class="c1"># ensure salinity is positive</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">s_pos</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JackettEquationOfState.eval"><a class="viewcode-back" href="../../thetis.html#thetis.utility.JackettEquationOfState.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
         <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span>
         <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
-        <span class="n">pn</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">th</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">s_pos</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span>
-              <span class="n">th</span><span class="o">*</span><span class="n">s_pos</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="n">s_pos</span><span class="o">*</span><span class="n">s_pos</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="o">*</span><span class="n">th</span> <span class="o">*</span> <span class="n">th</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="o">*</span><span class="n">s_pos</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">+</span>
+        <span class="n">pn</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">th</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span>
+              <span class="n">th</span><span class="o">*</span><span class="n">s</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="o">*</span><span class="n">s</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="o">*</span><span class="n">th</span> <span class="o">*</span> <span class="n">th</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="o">*</span><span class="n">s</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">+</span>
               <span class="n">p</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="mi">11</span><span class="p">])</span>
         <span class="n">pd</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">th</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span>
-              <span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">s_pos</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="n">s_pos</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="n">s_pos</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">+</span>
-              <span class="nb">pow</span><span class="p">(</span><span class="n">s_pos</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="nb">pow</span><span class="p">(</span><span class="n">s_pos</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span>
+              <span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">+</span>
+              <span class="nb">pow</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="nb">pow</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span>
               <span class="n">p</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">th</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">12</span><span class="p">])</span>
         <span class="n">rho</span> <span class="o">=</span> <span class="n">pn</span><span class="o">/</span><span class="n">pd</span> <span class="o">-</span> <span class="n">rho0</span>
         <span class="k">return</span> <span class="n">rho</span></div></div>
 
 
-<div class="viewcode-block" id="LinearEquationOfState"><a class="viewcode-back" href="../../thetis.html#thetis.utility.LinearEquationOfState">[docs]</a><span class="k">class</span> <span class="nc">LinearEquationOfState</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="LinearEquationOfState"><a class="viewcode-back" href="../../thetis.html#thetis.utility.LinearEquationOfState">[docs]</a><span class="k">class</span> <span class="nc">LinearEquationOfState</span><span class="p">(</span><span class="n">EquationOfState</span><span class="p">):</span>
     <span class="sd">r&quot;&quot;&quot;</span>
 <span class="sd">    Linear Equation of State for computing sea water density</span>
 
@@ -1363,7 +1542,7 @@
 
 <div class="viewcode-block" id="LinearEquationOfState.compute_rho"><a class="viewcode-back" href="../../thetis.html#thetis.utility.LinearEquationOfState.compute_rho">[docs]</a>    <span class="k">def</span> <span class="nf">compute_rho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
         <span class="sd">r&quot;&quot;&quot;</span>
-<span class="sd">        Computes sea water density.</span>
+<span class="sd">        Compute sea water density.</span>
 
 <span class="sd">        :arg s: Salinity expressed on the Practical Salinity Scale 1978</span>
 <span class="sd">        :type s: float or numpy.array</span>
@@ -1381,7 +1560,10 @@
         <span class="n">rho</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rho_ref</span> <span class="o">-</span> <span class="n">rho0</span> <span class="o">-</span>
                <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="o">*</span><span class="p">(</span><span class="n">th</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">th_ref</span><span class="p">)</span> <span class="o">+</span>
                <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="o">*</span><span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">S_ref</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">rho</span></div></div>
+        <span class="k">return</span> <span class="n">rho</span></div>
+
+<div class="viewcode-block" id="LinearEquationOfState.eval"><a class="viewcode-back" href="../../thetis.html#thetis.utility.LinearEquationOfState.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_rho</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="tensor_jump"><a class="viewcode-back" href="../../thetis.html#thetis.utility.tensor_jump">[docs]</a><span class="k">def</span> <span class="nf">tensor_jump</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>

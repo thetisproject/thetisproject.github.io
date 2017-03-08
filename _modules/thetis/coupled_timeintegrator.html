@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>thetis.coupled_timeintegrator &#8212; Thetis 0+untagged.833.g086f878 documentation</title>
+    <title>thetis.coupled_timeintegrator &#8212; Thetis 0+untagged.863.gb20c529 documentation</title>
     
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0+untagged.833.g086f878',
+        VERSION:     '0+untagged.863.gb20c529',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -153,8 +153,7 @@
     <span class="k">def</span> <span class="nf">_update_baroclinicity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Computes baroclinic head&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">baroclinic</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;aux_baroclin&#39;</span><span class="p">):</span>
-                <span class="n">compute_baroclinic_head</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">)</span>
+            <span class="n">compute_baroclinic_head</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_turbulence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -275,8 +274,6 @@
         <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;uv_bottom&#39;</span><span class="p">:</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_bottom_2d&#39;</span><span class="p">),</span>
             <span class="s1">&#39;bottom_drag&#39;</span><span class="p">:</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;bottom_drag_2d&#39;</span><span class="p">),</span>
-            <span class="s1">&#39;baroc_head&#39;</span><span class="p">:</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;baroc_head_2d&#39;</span><span class="p">),</span>
-            <span class="s1">&#39;baroc_head_bot&#39;</span><span class="p">:</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;baroc_head_bot_2d&#39;</span><span class="p">),</span>
             <span class="s1">&#39;viscosity_h&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;h_viscosity&#39;</span><span class="p">),</span>  <span class="c1"># FIXME should be total h visc</span>
             <span class="s1">&#39;uv_lax_friedrichs&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">uv_lax_friedrichs</span><span class="p">,</span>
             <span class="s1">&#39;coriolis&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">coriolis</span><span class="p">,</span>
@@ -308,8 +305,7 @@
         <span class="n">impl_v_visc</span><span class="p">,</span> <span class="n">expl_v_visc</span><span class="p">,</span> <span class="n">impl_v_diff</span><span class="p">,</span> <span class="n">expl_v_diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_vert_diffusivity_functions</span><span class="p">()</span>
 
         <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;eta&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">,</span>  <span class="c1"># FIXME rename elev</span>
-                  <span class="s1">&#39;baroc_head&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;baroc_head_3d&#39;</span><span class="p">),</span>
-                  <span class="s1">&#39;mean_baroc_head&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;baroc_head_int_3d&#39;</span><span class="p">),</span>
+                  <span class="s1">&#39;int_pg&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;int_pg_3d&#39;</span><span class="p">),</span>
                   <span class="s1">&#39;uv_depth_av&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_dav_3d&#39;</span><span class="p">),</span>
                   <span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_3d</span><span class="p">,</span>
                   <span class="s1">&#39;w_mesh&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;w_mesh_3d&#39;</span><span class="p">),</span>
@@ -1036,7 +1032,7 @@
 <span class="sd">    equations and a compatible implicit Trapezoid method to advance the 2D</span>
 <span class="sd">    equations. Backward Euler scheme is used for vertical diffusion.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">integrator_2d</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">TwoStageTrapezoid</span>
+    <span class="n">integrator_2d</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">ESDIRKTrapezoid</span>
     <span class="n">integrator_3d</span> <span class="o">=</span> <span class="n">timeintegrator</span><span class="o">.</span><span class="n">SSPRK22ALE</span>
     <span class="n">integrator_vert_3d</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">BackwardEuler</span>
 
@@ -1149,8 +1145,7 @@
             <span class="c1"># update coupling terms</span>
             <span class="n">last</span> <span class="o">=</span> <span class="n">i_stage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span> <span class="o">-</span> <span class="mi">1</span>
 
-            <span class="k">if</span> <span class="n">last</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_update_2d_coupling</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_2d_coupling</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_baroclinicity</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_bottom_friction</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">i_stage</span> <span class="o">==</span> <span class="n">last</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
