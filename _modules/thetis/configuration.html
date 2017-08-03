@@ -1,0 +1,351 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>thetis.configuration &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.5+875.ge1658a7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="../../_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="../../_static/icon_thetis.ico" />
+
+
+  </head>
+  <body>
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.png" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetisproject%2Fthetis/activity" title="Thetis build status">Jenkins</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/thetis/configuration">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for thetis.configuration</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Utility function and extensions to traitlets used for specifying Thetis options</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">ipython_genutils.text</span> <span class="k">import</span> <span class="n">indent</span><span class="p">,</span> <span class="n">dedent</span>
+<span class="kn">from</span> <span class="nn">traitlets.config.configurable</span> <span class="k">import</span> <span class="n">Configurable</span>
+<span class="kn">from</span> <span class="nn">traitlets</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">thetis</span> <span class="k">import</span> <span class="n">FiredrakeConstant</span> <span class="k">as</span> <span class="n">Constant</span>
+<span class="kn">from</span> <span class="nn">thetis</span> <span class="k">import</span> <span class="n">FiredrakeFunction</span> <span class="k">as</span> <span class="n">Function</span>
+
+
+<div class="viewcode-block" id="rst_all_options"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.rst_all_options">[docs]</a><span class="k">def</span> <span class="nf">rst_all_options</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">nspace</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Recursively generate rST for a provided Configurable class.</span>
+
+<span class="sd">    :arg cls: The Configurable class.</span>
+<span class="sd">    :arg nspace: Indentation level.</span>
+<span class="sd">    :arg prefix: Prefix to use for new traits.&quot;&quot;&quot;</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">classname</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="c1"># Slaved options don&#39;t appear directly, but underneath their controlling enum.</span>
+    <span class="n">slaved_options</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">trait</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_own_traits</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trait</span><span class="p">,</span> <span class="n">PairedEnum</span><span class="p">):</span>
+            <span class="n">slaved_options</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">trait</span><span class="o">.</span><span class="n">paired_name</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">trait</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">class_own_traits</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="n">typ</span> <span class="o">=</span> <span class="n">trait</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">if</span> <span class="n">trait</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">slaved_options</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">_prefix</span> <span class="o">=</span> <span class="n">prefix</span> <span class="k">if</span> <span class="n">prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">classname</span>
+        <span class="n">termline</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{prefix:}</span><span class="s2">.\ **</span><span class="si">{suffix:}</span><span class="s2">**&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">_prefix</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Enum&#39;</span> <span class="ow">in</span> <span class="n">typ</span><span class="p">:</span>
+            <span class="n">termline</span> <span class="o">+=</span> <span class="s1">&#39; : &#39;</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">trait</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">termline</span> <span class="o">+=</span> <span class="s1">&#39; : &#39;</span> <span class="o">+</span> <span class="n">typ</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indent</span><span class="p">(</span><span class="n">termline</span><span class="p">,</span> <span class="n">nspace</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trait</span><span class="p">,</span> <span class="n">PairedEnum</span><span class="p">):</span>
+            <span class="c1"># Find the slaved option and recurse to fill in the subtree.</span>
+            <span class="n">dvr</span> <span class="o">=</span> <span class="n">trait</span><span class="o">.</span><span class="n">default_value_repr</span><span class="p">()</span>
+            <span class="n">extra</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;Setting value implies configuration of sub-tree </span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">classname</span><span class="p">,</span> <span class="n">trait</span><span class="o">.</span><span class="n">paired_name</span><span class="p">),</span>
+                     <span class="s2">&quot;&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">opt</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">trait</span><span class="o">.</span><span class="n">paired_defaults</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">extra</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39;:&quot;</span> <span class="o">%</span> <span class="n">opt</span><span class="p">)</span>
+                <span class="n">extra</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">extra</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rst_all_options</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">nspace</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">classname</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">trait</span><span class="o">.</span><span class="n">paired_name</span><span class="p">))</span>
+            <span class="n">extra</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">extra</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">extra</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dvr</span> <span class="o">=</span> <span class="n">trait</span><span class="o">.</span><span class="n">default_value_repr</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">dvr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">help</span> <span class="o">=</span> <span class="n">trait</span><span class="o">.</span><span class="n">help</span> <span class="ow">or</span> <span class="s1">&#39;No description&#39;</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indent</span><span class="p">(</span><span class="n">dedent</span><span class="p">(</span><span class="n">help</span><span class="p">),</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">nspace</span><span class="p">))</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indent</span><span class="p">(</span><span class="s2">&quot;Default:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">nspace</span><span class="p">))</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indent</span><span class="p">(</span><span class="n">dvr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\\\</span><span class="s2">n&quot;</span><span class="p">),</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">nspace</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">extra</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indent</span><span class="p">(</span><span class="n">extra</span><span class="p">,</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">nspace</span><span class="p">))</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PositiveInteger"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.PositiveInteger">[docs]</a><span class="k">class</span> <span class="nc">PositiveInteger</span><span class="p">(</span><span class="n">Integer</span><span class="p">):</span>
+<div class="viewcode-block" id="PositiveInteger.info"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.PositiveInteger.info">[docs]</a>    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">u</span><span class="s1">&#39;a positive integer&#39;</span></div>
+
+<div class="viewcode-block" id="PositiveInteger.validate"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.PositiveInteger.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PositiveInteger</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">proposal</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">proposal</span></div></div>
+
+
+<div class="viewcode-block" id="PositiveFloat"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.PositiveFloat">[docs]</a><span class="k">class</span> <span class="nc">PositiveFloat</span><span class="p">(</span><span class="n">Float</span><span class="p">):</span>
+<div class="viewcode-block" id="PositiveFloat.info"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.PositiveFloat.info">[docs]</a>    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">u</span><span class="s1">&#39;a positive float&#39;</span></div>
+
+<div class="viewcode-block" id="PositiveFloat.validate"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.PositiveFloat.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PositiveFloat</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">proposal</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">proposal</span></div></div>
+
+
+<div class="viewcode-block" id="NonNegativeInteger"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.NonNegativeInteger">[docs]</a><span class="k">class</span> <span class="nc">NonNegativeInteger</span><span class="p">(</span><span class="n">Integer</span><span class="p">):</span>
+<div class="viewcode-block" id="NonNegativeInteger.info"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.NonNegativeInteger.info">[docs]</a>    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">u</span><span class="s1">&#39;a non-negative integer&#39;</span></div>
+
+<div class="viewcode-block" id="NonNegativeInteger.validate"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.NonNegativeInteger.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NonNegativeInteger</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">proposal</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">proposal</span></div></div>
+
+
+<div class="viewcode-block" id="NonNegativeFloat"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.NonNegativeFloat">[docs]</a><span class="k">class</span> <span class="nc">NonNegativeFloat</span><span class="p">(</span><span class="n">Float</span><span class="p">):</span>
+<div class="viewcode-block" id="NonNegativeFloat.info"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.NonNegativeFloat.info">[docs]</a>    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">u</span><span class="s1">&#39;a non-negative float&#39;</span></div>
+
+<div class="viewcode-block" id="NonNegativeFloat.validate"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.NonNegativeFloat.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NonNegativeFloat</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">proposal</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">proposal</span></div></div>
+
+
+<div class="viewcode-block" id="BoundedInteger"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.BoundedInteger">[docs]</a><span class="k">class</span> <span class="nc">BoundedInteger</span><span class="p">(</span><span class="n">Integer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="n">Undefined</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BoundedInteger</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minval</span> <span class="o">=</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">=</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<div class="viewcode-block" id="BoundedInteger.info"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.BoundedInteger.info">[docs]</a>    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">u</span><span class="s1">&#39;an integer between </span><span class="si">{:}</span><span class="s1"> and </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minval</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BoundedInteger.validate"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.BoundedInteger.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BoundedInteger</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">proposal</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minval</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">proposal</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">proposal</span></div></div>
+
+
+<div class="viewcode-block" id="BoundedFloat"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.BoundedFloat">[docs]</a><span class="k">class</span> <span class="nc">BoundedFloat</span><span class="p">(</span><span class="n">Float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="n">Undefined</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minval</span> <span class="o">=</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">=</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BoundedFloat</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BoundedFloat.info"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.BoundedFloat.info">[docs]</a>    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">u</span><span class="s1">&#39;a float between </span><span class="si">{:}</span><span class="s1"> and </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minval</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BoundedFloat.validate"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.BoundedFloat.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BoundedFloat</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">proposal</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minval</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">proposal</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">proposal</span></div></div>
+
+
+<div class="viewcode-block" id="FiredrakeConstant"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.FiredrakeConstant">[docs]</a><span class="k">class</span> <span class="nc">FiredrakeConstant</span><span class="p">(</span><span class="n">TraitType</span><span class="p">):</span>
+    <span class="n">default_value</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">info_text</span> <span class="o">=</span> <span class="s1">&#39;a Firedrake Constant&#39;</span>
+
+<div class="viewcode-block" id="FiredrakeConstant.validate"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.FiredrakeConstant.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Constant</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FiredrakeConstant.default_value_repr"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.FiredrakeConstant.default_value_repr">[docs]</a>    <span class="k">def</span> <span class="nf">default_value_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;Constant(</span><span class="si">{:}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_value</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div></div>
+
+
+<div class="viewcode-block" id="FiredrakeCoefficient"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.FiredrakeCoefficient">[docs]</a><span class="k">class</span> <span class="nc">FiredrakeCoefficient</span><span class="p">(</span><span class="n">TraitType</span><span class="p">):</span>
+    <span class="n">default_value</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">info_text</span> <span class="o">=</span> <span class="s1">&#39;a Firedrake Constant or Function&#39;</span>
+
+<div class="viewcode-block" id="FiredrakeCoefficient.validate"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.FiredrakeCoefficient.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">Constant</span><span class="p">,</span> <span class="n">Function</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FiredrakeCoefficient.default_value_repr"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.FiredrakeCoefficient.default_value_repr">[docs]</a>    <span class="k">def</span> <span class="nf">default_value_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_value</span><span class="p">,</span> <span class="n">Constant</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;Constant(</span><span class="si">{:}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_value</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="s1">&#39;Function&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="PETScSolverParameters"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.PETScSolverParameters">[docs]</a><span class="k">class</span> <span class="nc">PETScSolverParameters</span><span class="p">(</span><span class="n">Dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;PETSc solver options dictionary&quot;&quot;&quot;</span>
+    <span class="n">default_value</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">info_text</span> <span class="o">=</span> <span class="s1">&#39;a PETSc solver options dictionary&#39;</span>
+
+<div class="viewcode-block" id="PETScSolverParameters.validate"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.PETScSolverParameters.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PairedEnum"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.PairedEnum">[docs]</a><span class="k">class</span> <span class="nc">PairedEnum</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A enum whose value must be in a given sequence.</span>
+
+<span class="sd">    This enum controls a slaved option, with default values provided here.</span>
+
+<span class="sd">    :arg values: iterable of (value, HasTraits) pairs</span>
+<span class="sd">    :arg paired_name: trait name this enum is paired with.</span>
+<span class="sd">    :arg default_value: default value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">paired_name</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="n">Undefined</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paired_defaults</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paired_name</span> <span class="o">=</span> <span class="n">paired_name</span>
+        <span class="n">values</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PairedEnum</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">default_value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PairedEnum.info"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.PairedEnum.info">[docs]</a>    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;This option also requires configuration of </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paired_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="o">+</span> <span class="nb">super</span><span class="p">(</span><span class="n">PairedEnum</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="FrozenHasTraits"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.FrozenHasTraits">[docs]</a><span class="k">class</span> <span class="nc">FrozenHasTraits</span><span class="p">(</span><span class="n">HasTraits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A HasTraits class that only allows adding new attributes in the class</span>
+<span class="sd">    definition or when  self._isfrozen is False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Adding new attribute &quot;</span><span class="si">{:}</span><span class="s1">&quot; to </span><span class="si">{:}</span><span class="s1"> class is forbidden&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FrozenConfigurable"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.FrozenConfigurable">[docs]</a><span class="k">class</span> <span class="nc">FrozenConfigurable</span><span class="p">(</span><span class="n">Configurable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Configurable class that only allows adding new attributes in the class</span>
+<span class="sd">    definition or when  self._isfrozen is False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FrozenConfigurable</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Adding new attribute &quot;</span><span class="si">{:}</span><span class="s1">&quot; to </span><span class="si">{:}</span><span class="s1"> class is forbidden&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FrozenConfigurable</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FrozenConfigurable.update"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.FrozenConfigurable.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">source</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_traits</span><span class="p">(</span><span class="o">**</span><span class="n">source</span><span class="o">.</span><span class="n">traits</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="attach_paired_options"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.attach_paired_options">[docs]</a><span class="k">def</span> <span class="nf">attach_paired_options</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">name_trait</span><span class="p">,</span> <span class="n">value_trait</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Attach paired options to a Configurable object.</span>
+
+<span class="sd">    :arg name: the name of the enum trait</span>
+<span class="sd">    :arg name_trait: the enum trait (a PairedEnum)</span>
+<span class="sd">    :arg value_trait: the slaved value trait.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_observer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="s2">&quot;Observer called when the choice option is updated.&quot;</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_trait</span><span class="o">.</span><span class="n">paired_name</span><span class="p">,</span> <span class="n">name_trait</span><span class="o">.</span><span class="n">paired_defaults</span><span class="p">[</span><span class="n">change</span><span class="p">[</span><span class="s2">&quot;new&quot;</span><span class="p">]])</span>
+
+    <span class="k">def</span> <span class="nf">_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Dynamic default value setter&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">name_trait</span><span class="p">,</span> <span class="s1">&#39;default_value&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name_trait</span><span class="o">.</span><span class="n">default_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">name_trait</span><span class="o">.</span><span class="n">paired_defaults</span><span class="p">[</span><span class="n">name_trait</span><span class="o">.</span><span class="n">default_value</span><span class="p">]</span>
+
+    <span class="n">obs_handler</span> <span class="o">=</span> <span class="n">ObserveHandler</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;change&quot;</span><span class="p">)</span>
+    <span class="n">def_handler</span> <span class="o">=</span> <span class="n">DefaultHandler</span><span class="p">(</span><span class="n">name_trait</span><span class="o">.</span><span class="n">paired_name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="s2">&quot;Programmatically update the class&quot;</span>
+        <span class="c1"># Set the new class attributes</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">name_trait</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name_trait</span><span class="o">.</span><span class="n">paired_name</span><span class="p">,</span> <span class="n">value_trait</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_</span><span class="si">%s</span><span class="s2">_observer&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">,</span> <span class="n">obs_handler</span><span class="p">(</span><span class="n">_observer</span><span class="p">))</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_</span><span class="si">%s</span><span class="s2">_default&quot;</span> <span class="o">%</span> <span class="n">name_trait</span><span class="o">.</span><span class="n">paired_name</span><span class="p">,</span> <span class="n">def_handler</span><span class="p">(</span><span class="n">_default</span><span class="p">))</span>
+        <span class="c1"># Mimic the magic metaclass voodoo.</span>
+        <span class="n">name_trait</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">value_trait</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name_trait</span><span class="o">.</span><span class="n">paired_name</span><span class="p">)</span>
+        <span class="n">obs_handler</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_</span><span class="si">%s</span><span class="s2">_observer&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">def_handler</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_</span><span class="si">%s</span><span class="s2">_default&quot;</span> <span class="o">%</span> <span class="n">name_trait</span><span class="o">.</span><span class="n">paired_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span>
+    <span class="k">return</span> <span class="n">update_class</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

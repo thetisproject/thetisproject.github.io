@@ -1,0 +1,158 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>thetis.assembledschur &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.5+875.ge1658a7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="../../_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="../../_static/icon_thetis.ico" />
+
+
+  </head>
+  <body>
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.png" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetisproject%2Fthetis/activity" title="Thetis build status">Jenkins</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/thetis/assembledschur">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for thetis.assembledschur</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">firedrake</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">petsc4py</span> <span class="k">import</span> <span class="n">PETSc</span>
+
+
+<div class="viewcode-block" id="AssembledSchurPC"><a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC">[docs]</a><span class="k">class</span> <span class="nc">AssembledSchurPC</span><span class="p">(</span><span class="n">PCBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Preconditioner for the Schur complement, where the preconditioner</span>
+<span class="sd">    matrix is assembled by explicitly matrix multiplying A10*Minv*A10. Here:</span>
+<span class="sd">    A01, A10 are the assembled sub-blocks of the saddle point system. The form</span>
+<span class="sd">        of this system needs to be supplied in the appctx to the solver as appctx[&#39;a&#39;]</span>
+<span class="sd">    Minv is the inverse of the mass-matrix which is assembled as</span>
+<span class="sd">        assemble(v*u*dx, inverse=True), i.e. the element-wise inverse, where</span>
+<span class="sd">        v and u are the test and trial of the 00 block. This gives the exact</span>
+<span class="sd">        inverse of the mass matrix for a DG discretisation.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AssembledSchurPC.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">):</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">getOperators</span><span class="p">()</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">getPythonContext</span><span class="p">()</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">appctx</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>
+        <span class="n">options_prefix</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">getOptionsPrefix</span><span class="p">()</span>
+
+        <span class="n">test</span><span class="p">,</span> <span class="n">trial</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">arguments</span><span class="p">()</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
+        <span class="n">V</span><span class="p">,</span> <span class="n">Q</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+        <span class="n">mass</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A00_inv</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mat_type</span><span class="o">=</span><span class="s1">&#39;aij&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">handle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A10_A00_inv</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schur</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schur_plus</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">fs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">formmanipulation</span><span class="o">.</span><span class="n">split_form</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a01</span> <span class="o">=</span> <span class="n">fs</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a10</span> <span class="o">=</span> <span class="n">fs</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a11</span> <span class="o">=</span> <span class="n">fs</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A01</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A10</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A11</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span> <span class="o">=</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">KSP</span><span class="p">()</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">setOptionsPrefix</span><span class="p">(</span><span class="n">options_prefix</span> <span class="o">+</span> <span class="s1">&#39;schur_&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">setFromOptions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AssembledSchurPC.update"><a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A01</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a01</span><span class="p">,</span> <span class="n">tensor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">A01</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A10</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a10</span><span class="p">,</span> <span class="n">tensor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">A10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A11</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a11</span><span class="p">,</span> <span class="n">tensor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">A11</span><span class="p">)</span>
+        <span class="n">A01</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A01</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">handle</span>
+        <span class="n">A10</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A10</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">handle</span>
+        <span class="n">A11</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A11</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">handle</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">A10_A00_inv</span> <span class="o">=</span> <span class="n">A10</span><span class="o">.</span><span class="n">matMult</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A00_inv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">A10_A00_inv</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A10_A00_inv</span><span class="o">.</span><span class="n">matMult</span><span class="p">(</span><span class="n">A01</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schur</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schur_plus</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schur_plus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schur</span><span class="o">.</span><span class="n">duplicate</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schur_plus</span><span class="o">.</span><span class="n">aypx</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">A11</span><span class="p">,</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Mat</span><span class="o">.</span><span class="n">Structure</span><span class="o">.</span><span class="n">DIFFERENT_NONZERO_PATTERN</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schur_plus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schur</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schur_plus</span><span class="p">,</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Mat</span><span class="o">.</span><span class="n">Structure</span><span class="o">.</span><span class="n">DIFFERENT_NONZERO_PATTERN</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schur_plus</span><span class="o">.</span><span class="n">aypx</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">A11</span><span class="p">,</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Mat</span><span class="o">.</span><span class="n">Structure</span><span class="o">.</span><span class="n">SAME_NONZERO_PATTERN</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">setOperators</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schur_plus</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AssembledSchurPC.apply"><a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">getConvergedReason</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;LinearSolver failed to converge after </span><span class="si">%d</span><span class="s2"> iterations with reason: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">getIterationNumber</span><span class="p">(),</span> <span class="n">solving_utils</span><span class="o">.</span><span class="n">KSPReasons</span><span class="p">[</span><span class="n">r</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="AssembledSchurPC.view"><a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.view">[docs]</a>    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">viewer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AssembledSchurPC</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">viewer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">viewer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">viewer</span><span class="o">.</span><span class="n">getType</span><span class="p">()</span> <span class="o">!=</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Viewer</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">ASCII</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">viewer</span><span class="o">.</span><span class="n">pushASCIITab</span><span class="p">()</span>
+        <span class="n">viewer</span><span class="o">.</span><span class="n">printfASCII</span><span class="p">(</span><span class="s2">&quot;Solves assembled Schur system D - C M.inv C^T</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">viewer</span><span class="p">)</span>
+        <span class="n">viewer</span><span class="o">.</span><span class="n">popASCIITab</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="AssembledSchurPC.applyTranspose"><a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.applyTranspose">[docs]</a>    <span class="k">def</span> <span class="nf">applyTranspose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="bp">NotImplemented</span><span class="p">(</span><span class="s2">&quot;applyTranspose not implemented for AssembledSchurPC&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

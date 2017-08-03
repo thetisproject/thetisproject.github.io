@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>thetis.coupled_timeintegrator &#8212; Thetis 0.0.5+764.g4dac05e documentation</title>
-    
+    <title>thetis.coupled_timeintegrator &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.0.5+764.g4dac05e',
+        VERSION:     '0.0.5+875.ge1658a7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -38,7 +35,7 @@
 
 
   </head>
-  <body role="document">
+  <body>
 <div class="wrapper">
   <a href="../../index.html"><img src="../../_static/banner.png" height="180px" alt="Thetis Project Banner" /></a>
   <div id="access">
@@ -152,7 +149,7 @@
 
     <span class="k">def</span> <span class="nf">_update_baroclinicity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Computes baroclinic head&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">baroclinic</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_baroclinic_formulation</span><span class="p">:</span>
             <span class="n">compute_baroclinic_head</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_turbulence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
@@ -177,7 +174,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">uv_mag_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
             <span class="c1"># update P1 velocity field</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">uv_p1_projector</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">smagorinsky_factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_smagorinsky_viscosity</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">smagorinsky_diff_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_update_all_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
@@ -197,13 +194,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_baroclinicity</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">do_turbulence</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_turbulence</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">do_vert_diffusion</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">do_vert_diffusion</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;impl_mom_vvisc&#39;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_mom_vdff_3d</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;impl_salt_vdiff&#39;</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_vdff_3d</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;impl_temp_vdiff&#39;</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_vdff_3d</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">do_stab_params</span><span class="p">:</span>
@@ -250,7 +247,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assign vertical viscosity/diffusivity to implicit/explicit parts</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
             <span class="n">impl_v_visc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tot_v_visc</span><span class="o">.</span><span class="n">get_sum</span><span class="p">()</span>
             <span class="n">expl_v_visc</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">impl_v_diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tot_v_diff</span><span class="o">.</span><span class="n">get_sum</span><span class="p">()</span>
@@ -268,34 +265,34 @@
 <span class="sd">        Create time integrator for 2D system</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span>
-        <span class="n">uv_source_2d</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">split_residual_2d</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">uv_source_2d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">uv_source_2d</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">split_residual_2d</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">uv_source_2d</span>
+        <span class="n">momentum_source_2d</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">split_residual_2d</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">momentum_source_2d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">momentum_source_2d</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">split_residual_2d</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">momentum_source_2d</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;uv_bottom&#39;</span><span class="p">:</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_bottom_2d&#39;</span><span class="p">),</span>
             <span class="s1">&#39;bottom_drag&#39;</span><span class="p">:</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;bottom_drag_2d&#39;</span><span class="p">),</span>
-            <span class="s1">&#39;viscosity_h&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;h_viscosity&#39;</span><span class="p">),</span>  <span class="c1"># FIXME should be total h visc</span>
-            <span class="s1">&#39;uv_lax_friedrichs&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">uv_lax_friedrichs</span><span class="p">,</span>
-            <span class="s1">&#39;coriolis&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">coriolis</span><span class="p">,</span>
+            <span class="s1">&#39;viscosity_h&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">horizontal_viscosity</span><span class="p">,</span>  <span class="c1"># FIXME should be total h visc</span>
+            <span class="s1">&#39;lax_friedrichs_velocity_scaling_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">lax_friedrichs_velocity_scaling_factor</span><span class="p">,</span>
+            <span class="s1">&#39;coriolis&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">coriolis_frequency</span><span class="p">,</span>
             <span class="s1">&#39;wind_stress&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wind_stress</span><span class="p">,</span>
-            <span class="s1">&#39;uv_source&#39;</span><span class="p">:</span> <span class="n">uv_source_2d</span><span class="p">,</span>
-            <span class="s1">&#39;elev_source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">elev_source_2d</span><span class="p">,</span>
-            <span class="s1">&#39;linear_drag&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">linear_drag</span><span class="p">}</span>
+            <span class="s1">&#39;momentum_source&#39;</span><span class="p">:</span> <span class="n">momentum_source_2d</span><span class="p">,</span>
+            <span class="s1">&#39;volume_source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">volume_source_2d</span><span class="p">,</span>
+            <span class="s1">&#39;linear_drag_coefficient&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">linear_drag_coefficient</span><span class="p">}</span>
 
         <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">integrator_2d</span><span class="p">,</span> <span class="p">(</span><span class="n">rungekutta</span><span class="o">.</span><span class="n">ERKSemiImplicitGeneric</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_2d</span><span class="p">(</span>
                 <span class="n">solver</span><span class="o">.</span><span class="n">eq_sw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">,</span>
                 <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">],</span>
-                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_sw</span><span class="p">,</span>
-                <span class="n">semi_implicit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_linearized_semi_implicit_2d</span><span class="p">,</span>
-                <span class="n">theta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">shallow_water_theta</span><span class="p">)</span>
+                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_2d_swe</span><span class="p">,</span>
+                <span class="n">semi_implicit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">theta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">implicitness_theta_2d</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_2d</span><span class="p">(</span>
                 <span class="n">solver</span><span class="o">.</span><span class="n">eq_sw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">,</span>
                 <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">],</span>
-                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_sw</span><span class="p">)</span>
+                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_2d_swe</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_mom_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -311,19 +308,19 @@
                   <span class="s1">&#39;w_mesh&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;w_mesh_3d&#39;</span><span class="p">),</span>
                   <span class="s1">&#39;viscosity_v&#39;</span><span class="p">:</span> <span class="n">expl_v_visc</span><span class="p">,</span>
                   <span class="s1">&#39;viscosity_h&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tot_h_visc</span><span class="o">.</span><span class="n">get_sum</span><span class="p">(),</span>
-                  <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">uv_source_3d</span><span class="p">,</span>
+                  <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">momentum_source_3d</span><span class="p">,</span>
                   <span class="c1"># uv_mag&#39;: self.fields.uv_mag_3d,</span>
                   <span class="s1">&#39;uv_p1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_p1_3d&#39;</span><span class="p">),</span>
-                  <span class="s1">&#39;lax_friedrichs_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">uv_lax_friedrichs</span><span class="p">,</span>
+                  <span class="s1">&#39;lax_friedrichs_velocity_scaling_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">lax_friedrichs_velocity_scaling_factor</span><span class="p">,</span>
                   <span class="s1">&#39;coriolis&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;coriolis_3d&#39;</span><span class="p">),</span>
-                  <span class="s1">&#39;linear_drag&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">linear_drag</span><span class="p">,</span>
-                  <span class="s1">&#39;quadratic_drag&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">quadratic_drag</span><span class="p">,</span>
+                  <span class="s1">&#39;linear_drag_coefficient&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">linear_drag_coefficient</span><span class="p">,</span>
+                  <span class="s1">&#39;quadratic_drag_coefficient&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">quadratic_drag_coefficient</span><span class="p">,</span>
                   <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_mom_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_3d</span><span class="p">(</span>
             <span class="n">solver</span><span class="o">.</span><span class="n">eq_momentum</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
             <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;momentum&#39;</span><span class="p">],</span>
-            <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_momentum_explicit</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
+            <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_momentum_explicit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
             <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;viscosity_v&#39;</span><span class="p">:</span> <span class="n">impl_v_visc</span><span class="p">,</span>
                       <span class="s1">&#39;wind_stress&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;wind_stress_3d&#39;</span><span class="p">),</span>
                       <span class="s1">&#39;uv_depth_av&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_dav_3d&#39;</span><span class="p">),</span>
@@ -331,7 +328,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_mom_vdff_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_vert_3d</span><span class="p">(</span>
                 <span class="n">solver</span><span class="o">.</span><span class="n">eq_vertmomentum</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;momentum&#39;</span><span class="p">],</span>
-                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_momentum_implicit</span><span class="p">)</span>
+                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_momentum_implicit</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_salt_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -340,7 +337,7 @@
         <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span>
         <span class="n">impl_v_visc</span><span class="p">,</span> <span class="n">expl_v_visc</span><span class="p">,</span> <span class="n">impl_v_diff</span><span class="p">,</span> <span class="n">expl_v_diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_vert_diffusivity_functions</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
             <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">,</span>
                       <span class="s1">&#39;uv_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span><span class="p">,</span>
                       <span class="s1">&#39;uv_depth_av&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_dav_3d&#39;</span><span class="p">),</span>
@@ -348,23 +345,23 @@
                       <span class="s1">&#39;w_mesh&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;w_mesh_3d&#39;</span><span class="p">),</span>
                       <span class="s1">&#39;diffusivity_h&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tot_h_diff</span><span class="o">.</span><span class="n">get_sum</span><span class="p">(),</span>
                       <span class="s1">&#39;diffusivity_v&#39;</span><span class="p">:</span> <span class="n">expl_v_diff</span><span class="p">,</span>
-                      <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">salt_source_3d</span><span class="p">,</span>
+                      <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">salinity_source_3d</span><span class="p">,</span>
                       <span class="c1"># uv_mag&#39;: self.fields.uv_mag_3d,</span>
                       <span class="s1">&#39;uv_p1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_p1_3d&#39;</span><span class="p">),</span>
-                      <span class="s1">&#39;lax_friedrichs_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">tracer_lax_friedrichs</span><span class="p">,</span>
+                      <span class="s1">&#39;lax_friedrichs_tracer_scaling_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">lax_friedrichs_tracer_scaling_factor</span><span class="p">,</span>
                       <span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_3d</span><span class="p">(</span>
                 <span class="n">solver</span><span class="o">.</span><span class="n">eq_salt</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">salt_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;salt&#39;</span><span class="p">],</span>
-                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_tracer_explicit</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
+                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_tracer_explicit</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
                 <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">,</span>
                           <span class="s1">&#39;diffusivity_v&#39;</span><span class="p">:</span> <span class="n">impl_v_diff</span><span class="p">,</span>
                           <span class="p">}</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_vdff_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_vert_3d</span><span class="p">(</span>
                     <span class="n">solver</span><span class="o">.</span><span class="n">eq_salt_vdff</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">salt_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                     <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;salt&#39;</span><span class="p">],</span>
-                    <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_tracer_implicit</span><span class="p">)</span>
+                    <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_tracer_implicit</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_temp_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -373,7 +370,7 @@
         <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span>
         <span class="n">impl_v_visc</span><span class="p">,</span> <span class="n">expl_v_visc</span><span class="p">,</span> <span class="n">impl_v_diff</span><span class="p">,</span> <span class="n">expl_v_diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_vert_diffusivity_functions</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
             <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">,</span>
                       <span class="s1">&#39;uv_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span><span class="p">,</span>
                       <span class="s1">&#39;uv_depth_av&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_dav_3d&#39;</span><span class="p">),</span>
@@ -381,23 +378,23 @@
                       <span class="s1">&#39;w_mesh&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;w_mesh_3d&#39;</span><span class="p">),</span>
                       <span class="s1">&#39;diffusivity_h&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tot_h_diff</span><span class="o">.</span><span class="n">get_sum</span><span class="p">(),</span>
                       <span class="s1">&#39;diffusivity_v&#39;</span><span class="p">:</span> <span class="n">expl_v_diff</span><span class="p">,</span>
-                      <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">temp_source_3d</span><span class="p">,</span>
+                      <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">temperature_source_3d</span><span class="p">,</span>
                       <span class="c1"># uv_mag&#39;: self.fields.uv_mag_3d,</span>
                       <span class="s1">&#39;uv_p1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_p1_3d&#39;</span><span class="p">),</span>
-                      <span class="s1">&#39;lax_friedrichs_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">tracer_lax_friedrichs</span><span class="p">,</span>
+                      <span class="s1">&#39;lax_friedrichs_tracer_scaling_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">lax_friedrichs_tracer_scaling_factor</span><span class="p">,</span>
                       <span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_3d</span><span class="p">(</span>
                 <span class="n">solver</span><span class="o">.</span><span class="n">eq_temp</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">temp_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;temp&#39;</span><span class="p">],</span>
-                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_tracer_explicit</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
+                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_tracer_explicit</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
                 <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">,</span>
                           <span class="s1">&#39;diffusivity_v&#39;</span><span class="p">:</span> <span class="n">impl_v_diff</span><span class="p">,</span>
                           <span class="p">}</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_vdff_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_vert_3d</span><span class="p">(</span>
                     <span class="n">solver</span><span class="o">.</span><span class="n">eq_temp_vdff</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">temp_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                     <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;temp&#39;</span><span class="p">],</span>
-                    <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_tracer_implicit</span><span class="p">)</span>
+                    <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_tracer_implicit</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_turb_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -417,10 +414,10 @@
                       <span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_tke_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_vert_3d</span><span class="p">(</span>
                 <span class="n">solver</span><span class="o">.</span><span class="n">eq_tke_diff</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">tke_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
-                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_tracer_implicit</span><span class="p">)</span>
+                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_tracer_implicit</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_psi_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_vert_3d</span><span class="p">(</span>
                 <span class="n">solver</span><span class="o">.</span><span class="n">eq_psi_diff</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">psi_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
-                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_tracer_implicit</span><span class="p">)</span>
+                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_tracer_implicit</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_turbulence_advection</span><span class="p">:</span>
                 <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">,</span>
                           <span class="s1">&#39;uv_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span><span class="p">,</span>
@@ -429,14 +426,14 @@
                           <span class="s1">&#39;w_mesh&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;w_mesh_3d&#39;</span><span class="p">),</span>
                           <span class="c1"># uv_mag&#39;: self.fields.uv_mag_3d,</span>
                           <span class="s1">&#39;uv_p1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_p1_3d&#39;</span><span class="p">),</span>
-                          <span class="s1">&#39;lax_friedrichs_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">tracer_lax_friedrichs</span><span class="p">,</span>
+                          <span class="s1">&#39;lax_friedrichs_tracer_scaling_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">lax_friedrichs_tracer_scaling_factor</span><span class="p">,</span>
                           <span class="p">}</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_tke_adv_eq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_3d</span><span class="p">(</span>
                     <span class="n">solver</span><span class="o">.</span><span class="n">eq_tke_adv</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">tke_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
-                    <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_tracer_explicit</span><span class="p">)</span>
+                    <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_tracer_explicit</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_psi_adv_eq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_3d</span><span class="p">(</span>
                     <span class="n">solver</span><span class="o">.</span><span class="n">eq_psi_adv</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">psi_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
-                    <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_tracer_explicit</span><span class="p">)</span>
+                    <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_tracer_explicit</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_integrators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -468,15 +465,15 @@
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Case dt_2d &lt; dt is not implemented yet&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper2d</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_mom_3d</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_mom_vdff_3d</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_vdff_3d</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_vdff_3d</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_turbulence</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_tke_3d</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
@@ -493,15 +490,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper2d</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_mom_3d</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_mom_vdff_3d</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">salt_3d</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_vdff_3d</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">salt_3d</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">temp_3d</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_vdff_3d</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">temp_3d</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_turbulence</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_tke_3d</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">tke_3d</span><span class="p">)</span>
@@ -544,12 +541,12 @@
 
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;salt_eq&#39;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">solve_stage</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="p">)</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">salt_3d</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;temp_eq&#39;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">solve_stage</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="p">)</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">temp_3d</span><span class="p">)</span>
@@ -667,10 +664,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">compute_mesh_velocity</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;salt_eq&#39;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">solve_tendency</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;temp_eq&#39;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">solve_tendency</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;turb_advection&#39;</span><span class="p">):</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_turbulence_advection</span><span class="p">:</span>
@@ -683,12 +680,12 @@
 
             <span class="k">if</span> <span class="n">last_step</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;salt_eq&#39;</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">get_final_solution</span><span class="p">()</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">salt_3d</span><span class="p">)</span>
                 <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;temp_eq&#39;</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">get_final_solution</span><span class="p">()</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">temp_3d</span><span class="p">)</span>
@@ -700,12 +697,12 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_mom_3d</span><span class="o">.</span><span class="n">get_final_solution</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;salt_eq&#39;</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">update_solution</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">salt_3d</span><span class="p">)</span>
                 <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;temp_eq&#39;</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">update_solution</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">temp_3d</span><span class="p">)</span>
@@ -815,11 +812,11 @@
             <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper2d</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">update_solution</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_mom_3d</span><span class="o">.</span><span class="n">update_solution</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">update_solution</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">salt_3d</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">update_solution</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">temp_3d</span><span class="p">)</span>
@@ -839,9 +836,9 @@
 
             <span class="c1"># - EX: evaluate explicit tendency</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_mom_3d</span><span class="o">.</span><span class="n">solve_tendency</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">solve_tendency</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">solve_tendency</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="p">)</span>
 
             <span class="n">last_step</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
@@ -852,11 +849,11 @@
             <span class="k">if</span> <span class="n">last_step</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_mom_3d</span><span class="o">.</span><span class="n">get_final_solution</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_update_vertical_velocity</span><span class="p">()</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">get_final_solution</span><span class="p">()</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">salt_3d</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">get_final_solution</span><span class="p">()</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">temp_3d</span><span class="p">)</span>
@@ -914,12 +911,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_mesh_3d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;salt_eq&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">predict</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">salt_3d</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;temp_eq&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">predict</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">temp_3d</span><span class="p">)</span>
@@ -968,10 +965,10 @@
         <span class="c1"># -------------------------------------------------</span>
 
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;salt_eq&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">eval_rhs</span><span class="p">()</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;temp_eq&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">eval_rhs</span><span class="p">()</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;turb_advection&#39;</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_turbulence_advection</span><span class="p">:</span>
@@ -984,12 +981,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_moving_mesh</span><span class="p">()</span>
 
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;salt_eq&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">correct</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">salt_3d</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;temp_eq&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">correct</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">temp_3d</span><span class="p">)</span>
@@ -1000,15 +997,15 @@
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;momentum_eq&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_mom_3d</span><span class="o">.</span><span class="n">correct</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_2d_coupling</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_baroclinicity</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_bottom_friction</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_turbulence</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;impl_salt_vdiff&#39;</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_vdff_3d</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;impl_temp_vdiff&#39;</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_vdff_3d</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;impl_mom_vvisc&#39;</span><span class="p">):</span>
@@ -1108,10 +1105,10 @@
 
             <span class="c1"># solve 3D mode: preprocess in old mesh</span>
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;salt_eq&#39;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">prepare_stage</span><span class="p">(</span><span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;temp_eq&#39;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">prepare_stage</span><span class="p">(</span><span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;turb_advection&#39;</span><span class="p">):</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_turbulence_advection</span><span class="p">:</span>
@@ -1126,12 +1123,12 @@
 
             <span class="c1"># solve 3D mode</span>
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;salt_eq&#39;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_3d</span><span class="o">.</span><span class="n">solve_stage</span><span class="p">(</span><span class="n">i_stage</span><span class="p">)</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">salt_3d</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;temp_eq&#39;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_3d</span><span class="o">.</span><span class="n">solve_stage</span><span class="p">(</span><span class="n">i_stage</span><span class="p">)</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">temp_3d</span><span class="p">)</span>
@@ -1148,12 +1145,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_2d_coupling</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_baroclinicity</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_bottom_friction</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">i_stage</span> <span class="o">==</span> <span class="n">last</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i_stage</span> <span class="o">==</span> <span class="n">last</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_update_turbulence</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                     <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;impl_salt_vdiff&#39;</span><span class="p">):</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_salt_vdff_3d</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
                     <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;impl_temp_vdiff&#39;</span><span class="p">):</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper_temp_vdff_3d</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
                 <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;impl_mom_vvisc&#39;</span><span class="p">):</span>
@@ -1172,7 +1169,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

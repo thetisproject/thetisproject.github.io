@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>thetis.timeintegrator &#8212; Thetis 0.0.5+764.g4dac05e documentation</title>
-    
+    <title>thetis.timeintegrator &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.0.5+764.g4dac05e',
+        VERSION:     '0.0.5+875.ge1658a7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -38,7 +35,7 @@
 
 
   </head>
-  <body role="document">
+  <body>
 <div class="wrapper">
   <a href="../../index.html"><img src="../../_static/banner.png" height="180px" alt="Thetis Project Banner" /></a>
   <div id="access">
@@ -86,8 +83,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
 
-    <span class="nd">@abstractmethod</span>
-<div class="viewcode-block" id="TimeIntegratorBase.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.TimeIntegratorBase.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeIntegratorBase.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.TimeIntegratorBase.advance">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Advances equations for one time step</span>
 
@@ -98,8 +95,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-    <span class="nd">@abstractmethod</span>
-<div class="viewcode-block" id="TimeIntegratorBase.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.TimeIntegratorBase.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solution</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeIntegratorBase.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.TimeIntegratorBase.initialize">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solution</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the time integrator</span>
 
@@ -387,6 +384,20 @@
         <span class="n">uv_lagged</span><span class="p">,</span> <span class="n">eta_lagged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_lagged</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
         <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
 
+        <span class="k">if</span> <span class="p">(</span><span class="n">solver_parameters</span><span class="p">[</span><span class="s1">&#39;ksp_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;preonly&#39;</span>
+                <span class="ow">and</span> <span class="s1">&#39;fieldsplit_H_2d&#39;</span> <span class="ow">in</span> <span class="n">solver_parameters</span>
+                <span class="ow">and</span> <span class="n">solver_parameters</span><span class="p">[</span><span class="s1">&#39;fieldsplit_H_2d&#39;</span><span class="p">][</span><span class="s1">&#39;ksp_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;preonly&#39;</span>
+                <span class="ow">and</span> <span class="n">solver_parameters</span><span class="p">[</span><span class="s1">&#39;fieldsplit_H_2d&#39;</span><span class="p">][</span><span class="s1">&#39;pc_python_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;thetis.AssembledSchurPC&#39;</span>
+                <span class="ow">and</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">eta_old</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span><span class="o">.</span><span class="n">horizontal</span> <span class="o">!=</span> <span class="s1">&#39;cg&#39;</span><span class="p">):</span>
+            <span class="c1"># the default settings use AssembledSchurPC which assumes that the velocity block is only a dg mass matrix</span>
+            <span class="c1"># Under these assumptions this preconditioner assembles the exact Schur complement. If this is not true, we either need</span>
+            <span class="c1"># iterations with the unassembled Schur complement (fieldsplit_H_2d_ksp_type), or alternatively iterations outside</span>
+            <span class="c1"># the fieldsplit to deal with the fact that we haven&#39;t solved the Schur complement exactly.</span>
+            <span class="c1"># Currently only the dg-cg element pair, gives a pure DG  mass matrix velocity block: for dg-dg the pressure gradient adds a</span>
+            <span class="c1"># Riemann term in the velocity block, for rt-dg the velocity block cannot be explicitly inverted either.</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;The timestepper PressureProjectionPicard is only recommended in combination with the &quot;</span>
+                            <span class="s2">&quot;dg-cg element_family. If you want to use it in combination with dg-dg or rt-dg you need to adjust the solver_parameters_pressure option.&quot;</span><span class="p">)</span>
+
         <span class="c1"># create functions to hold the values of previous time step</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
@@ -456,6 +467,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">[</span><span class="s1">&#39;mat_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;aij&#39;</span>
         <span class="n">prob</span> <span class="o">=</span> <span class="n">NonlinearVariationalProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">NonlinearVariationalSolver</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span>
+                                                 <span class="n">appctx</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">derivative</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">)},</span>
                                                  <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">,</span>
                                                  <span class="n">options_prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 
@@ -476,8 +488,10 @@
         <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterations</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">solution_lagged</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver_mom</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+            <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s2">&quot;Momentum solve&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">solver_mom</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+            <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s2">&quot;Pressure solve&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 
         <span class="c1"># shift time</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields_old</span><span class="p">:</span>
@@ -793,7 +807,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>3D tidal channel demo &#8212; Thetis 0.0.5+764.g4dac05e documentation</title>
-    
+    <title>3D tidal channel demo &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
     <link rel="stylesheet" href="../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.0.5+764.g4dac05e',
+        VERSION:     '0.0.5+875.ge1658a7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <!--[if lte IE 6]>
@@ -38,7 +35,7 @@
 
 
   </head>
-  <body role="document">
+  <body>
 <div class="wrapper">
   <a href="../index.html"><img src="../_static/banner.png" height="180px" alt="Thetis Project Banner" /></a>
   <div id="access">
@@ -100,16 +97,16 @@ direction using a constant number of layers:</p>
 <span class="n">solver_obj</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">FlowSolver</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>We then set some options (see <a class="reference internal" href="../thetis.html#thetis.options.ModelOptions" title="thetis.options.ModelOptions"><code class="xref py py-class docutils literal"><span class="pre">ModelOptions</span></code></a> for more information):</p>
+<p>We then set some options (see <code class="xref py py-class docutils literal"><span class="pre">ModelOptions</span></code> for more information):</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">options</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span>
 <span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="o">=</span> <span class="s1">&#39;dg-dg&#39;</span>
-<span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;ssprk22&#39;</span>
-<span class="n">options</span><span class="o">.</span><span class="n">solve_vert_diffusion</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;SSPRK22&#39;</span>
+<span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span> <span class="o">=</span> <span class="bp">False</span>
 <span class="n">options</span><span class="o">.</span><span class="n">use_bottom_friction</span> <span class="o">=</span> <span class="bp">False</span>
 <span class="n">options</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span> <span class="o">=</span> <span class="bp">True</span>
 <span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span> <span class="o">=</span> <span class="bp">True</span>
-<span class="n">options</span><span class="o">.</span><span class="n">t_export</span> <span class="o">=</span> <span class="mf">900.0</span>
-<span class="n">options</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span>
+<span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span> <span class="o">=</span> <span class="mf">900.0</span>
+<span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span>
 <span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;uv_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;elev_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;elev_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;uv_3d&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;w_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;w_mesh_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;salt_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;baroc_head_3d&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;uv_dav_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;uv_bottom_2d&#39;</span><span class="p">]</span>
@@ -118,14 +115,14 @@ direction using a constant number of layers:</p>
 <p>We set this simulation to be barotropic (i.e. salinity and temperature do not
 affect water density), but we still wish to simulate salinity as a passive
 tracer:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">baroclinic</span> <span class="o">=</span> <span class="bp">False</span>
-<span class="n">options</span><span class="o">.</span><span class="n">solve_salt</span> <span class="o">=</span> <span class="bp">True</span>
-<span class="n">options</span><span class="o">.</span><span class="n">solve_temp</span> <span class="o">=</span> <span class="bp">False</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">use_baroclinic_formulation</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span> <span class="o">=</span> <span class="bp">False</span>
 </pre></div>
 </div>
 <p>We also want to see how much the salinity value deviates from its initial
 value:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">check_salt_overshoot</span> <span class="o">=</span> <span class="bp">True</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">check_salinity_overshoot</span> <span class="o">=</span> <span class="bp">True</span>
 </pre></div>
 </div>
 <p>In this simulation we do not set the time step manually but instead use the
@@ -134,8 +131,8 @@ CFL number, used spatial discretization and time integration
 method. We only need to define maximal horizontal and vertical velocity scales:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">u_max</span> <span class="o">=</span> <span class="mf">0.5</span>
 <span class="n">w_max</span> <span class="o">=</span> <span class="mf">2e-4</span>
-<span class="n">options</span><span class="o">.</span><span class="n">u_advection</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">u_max</span><span class="p">)</span>
-<span class="n">options</span><span class="o">.</span><span class="n">w_advection</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">w_max</span><span class="p">)</span>
+<span class="n">options</span><span class="o">.</span><span class="n">horizontal_velocity_scale</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">u_max</span><span class="p">)</span>
+<span class="n">options</span><span class="o">.</span><span class="n">vertical_velocity_scale</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">w_max</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Next we define the boundary conditions. Note that in a 3D model there are
@@ -176,7 +173,7 @@ use them as boundary conditions for the 2D shallow water model:</p>
                                              <span class="n">river_bnd_id</span><span class="p">:</span> <span class="n">river_funcs</span><span class="p">}</span>
 </pre></div>
 </div>
-<p>The volume fluxes are now defined in the 2D mode, so there&#8217;s no need to impose
+<p>The volume fluxes are now defined in the 2D mode, so there’s no need to impose
 anything in the 3D momentum equation. We therefore only use symmetry condition
 for 3D horizontal velocity:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ocean_funcs_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;symm&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
@@ -251,7 +248,7 @@ horizontal velocity field (3D velocity minus its vertical average).</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

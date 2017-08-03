@@ -1,0 +1,423 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2D model options &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
+    <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.5+875.ge1658a7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="_static/icon_thetis.ico" />
+
+
+  </head>
+  <body>
+<div class="wrapper">
+  <a href="index.html"><img src="_static/banner.png" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetisproject%2Fthetis/activity" title="Thetis build status">Jenkins</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="model_options_2d">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="d-model-options">
+<span id="model-options-2d"></span><h1>2D model options<a class="headerlink" href="#d-model-options" title="Permalink to this headline">¶</a></h1>
+<p>This page lists all available options for the 2D model.</p>
+<dl class="docutils">
+<dt>CommonModelOptions.<strong>atmospheric_pressure</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dd><p class="first">Atmospheric pressure at free surface, in pascals</p>
+<p>Default:</p>
+<p class="last">Function</p>
+</dd>
+<dt>CommonModelOptions.<strong>cfl_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dd><p class="first">Factor to scale the 2d time step OBSOLETE</p>
+<p>Default:</p>
+<p class="last">1.0</p>
+</dd>
+<dt>CommonModelOptions.<strong>cfl_3d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dd><p class="first">Factor to scale the 2d time step OBSOLETE</p>
+<p>Default:</p>
+<p class="last">1.0</p>
+</dd>
+</dl>
+<p>CommonModelOptions.<strong>check_volume_conservation_2d</strong> : Bool</p>
+<blockquote>
+<div><p>Compute volume of the 2D mode at every export</p>
+<p>2D volume is defined as the integral of the water elevation field.
+Prints deviation from the initial volume to stdout.</p>
+<p>Default:</p>
+<p>False</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>CommonModelOptions.<strong>coriolis_frequency</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dd><p class="first">2D Coriolis parameter</p>
+<p>Default:</p>
+<p class="last">Function</p>
+</dd>
+<dt>CommonModelOptions.<strong>element_family</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘dg-dg’|’rt-dg’|’dg-cg’</span></dt>
+<dd><p class="first">Finite element family</p>
+<p>2D solver supports ‘dg-dg’, ‘rt-dg’, or ‘dg-cg’ velocity-pressure pairs.
+3D solver supports ‘dg-dg’, or ‘rt-dg’ velocity-pressure pairs.</p>
+<p>Default:</p>
+<p class="last">‘dg-dg’</p>
+</dd>
+<dt>CommonModelOptions.<strong>export_diagnostics</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dd><p class="first">Store diagnostic variables to disk in HDF5 format</p>
+<p>Default:</p>
+<p class="last">True</p>
+</dd>
+<dt>CommonModelOptions.<strong>fields_to_export</strong> <span class="classifier-delimiter">:</span> <span class="classifier">List</span></dt>
+<dd><p class="first">Fields to export in VTK format</p>
+<p>Default:</p>
+<p class="last">[‘elev_2d’, ‘uv_2d’, ‘uv_3d’, ‘w_3d’]</p>
+</dd>
+<dt>CommonModelOptions.<strong>fields_to_export_hdf5</strong> <span class="classifier-delimiter">:</span> <span class="classifier">List</span></dt>
+<dd><p class="first">Fields to export in HDF5 format</p>
+<p>Default:</p>
+<p class="last">[]</p>
+</dd>
+</dl>
+<p>CommonModelOptions.<strong>horizontal_velocity_scale</strong> : FiredrakeConstant</p>
+<blockquote>
+<div><p>Maximum horizontal velocity magnitude</p>
+<p>Used to compute max stable advection time step.</p>
+<p>Default:</p>
+<p>Constant(0.1)</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>CommonModelOptions.<strong>horizontal_viscosity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dd><p class="first">Horizontal viscosity</p>
+<p>Default:</p>
+<p class="last">Function</p>
+</dd>
+</dl>
+<p>CommonModelOptions.<strong>horizontal_viscosity_scale</strong> : FiredrakeConstant</p>
+<blockquote>
+<div><p>Maximum horizontal viscosity</p>
+<p>Used to compute max stable diffusion time step.</p>
+<p>Default:</p>
+<p>Constant(1.0)</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>CommonModelOptions.<strong>lax_friedrichs_velocity_scaling_factor</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeConstant</span></dt>
+<dd><p class="first">Scaling factor for Lax Friedrichs stabilisation term in horiozonal momentum advection.</p>
+<p>Default:</p>
+<p class="last">Constant(1.0)</p>
+</dd>
+</dl>
+<p>CommonModelOptions.<strong>linear_drag_coefficient</strong> : FiredrakeCoefficient</p>
+<blockquote>
+<div><p>2D linear drag parameter <span class="math">\(L\)</span></p>
+<p>Bottom stress is <span class="math">\(\tau_b/\rho_0 = -L \mathbf{u} H\)</span></p>
+<p>Default:</p>
+<p>Function</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>CommonModelOptions.<strong>log_output</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dd><p class="first">Redirect all output to log file in output directory</p>
+<p>Default:</p>
+<p class="last">True</p>
+</dd>
+</dl>
+<p>CommonModelOptions.<strong>manning_drag_coefficient</strong> : FiredrakeCoefficient</p>
+<blockquote>
+<div><p>Manning-Strickler 2D quadratic drag parameter <span class="math">\(\mu\)</span></p>
+<p>Bottom stress is <span class="math">\(\tau_b/\rho_0 = -g \mu^2 |\mathbf{u}|\mathbf{u}/H^{1/3}\)</span></p>
+<p>Default:</p>
+<p>Function</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>CommonModelOptions.<strong>momentum_source_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dd><p class="first">Source term for 2D momentum equation</p>
+<p>Default:</p>
+<p class="last">Function</p>
+</dd>
+</dl>
+<p>CommonModelOptions.<strong>no_exports</strong> : Bool</p>
+<blockquote>
+<div><p>Do not store any outputs to disk</p>
+<p>Disables VTK and HDF5 field outputs. and HDF5 diagnostic outputs.
+Used in CI test suite.</p>
+<p>Default:</p>
+<p>False</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>CommonModelOptions.<strong>output_directory</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Unicode</span></dt>
+<dd><p class="first">Directory where model output files are stored</p>
+<p>Default:</p>
+<p class="last">‘outputs’</p>
+</dd>
+<dt>CommonModelOptions.<strong>polynomial_degree</strong> <span class="classifier-delimiter">:</span> <span class="classifier">NonNegativeInteger</span></dt>
+<dd><p class="first">Polynomial degree of elements</p>
+<p>Default:</p>
+<p class="last">1</p>
+</dd>
+</dl>
+<p>CommonModelOptions.<strong>quadratic_drag_coefficient</strong> : FiredrakeCoefficient</p>
+<blockquote>
+<div><p>Dimensionless 2D quadratic drag parameter <span class="math">\(C_D\)</span></p>
+<p>Bottom stress is <span class="math">\(\tau_b/\rho_0 = -C_D |\mathbf{u}|\mathbf{u}\)</span></p>
+<p>Default:</p>
+<p>Function</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>CommonModelOptions.<strong>simulation_end_time</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dd><p class="first">Simulation duration in seconds</p>
+<p>Default:</p>
+<p class="last">1000.0</p>
+</dd>
+</dl>
+<p>CommonModelOptions.<strong>simulation_export_time</strong> : PositiveFloat</p>
+<blockquote>
+<div><p>Export interval in seconds</p>
+<p>All fields in fields_to_export list will be stored to disk and
+diagnostics will be computed</p>
+<p>Default:</p>
+<p>100.0</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>CommonModelOptions.<strong>timestep</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dd><p class="first">Time step</p>
+<p>Default:</p>
+<p class="last">10.0</p>
+</dd>
+<dt>CommonModelOptions.<strong>use_grad_depth_viscosity_term</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dd><p class="first">Include <span class="math">\(\nabla H\)</span> term in the depth-averaged viscosity</p>
+<p>See <a class="reference internal" href="thetis.html#thetis.shallowwater_eq.HorizontalViscosityTerm" title="thetis.shallowwater_eq.HorizontalViscosityTerm"><code class="xref py py-class docutils literal"><span class="pre">shallowwater_eq.HorizontalViscosityTerm</span></code></a> for details.</p>
+<p>Default:</p>
+<p class="last">True</p>
+</dd>
+<dt>CommonModelOptions.<strong>use_grad_div_viscosity_term</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dd><p class="first">Include <span class="math">\(\nabla (\nu_h \nabla \cdot \bar{\textbf{u}})\)</span> term in the depth-averaged viscosity</p>
+<p>See <a class="reference internal" href="thetis.html#thetis.shallowwater_eq.HorizontalViscosityTerm" title="thetis.shallowwater_eq.HorizontalViscosityTerm"><code class="xref py py-class docutils literal"><span class="pre">shallowwater_eq.HorizontalViscosityTerm</span></code></a> for details.</p>
+<p>Default:</p>
+<p class="last">False</p>
+</dd>
+<dt>CommonModelOptions.<strong>use_lax_friedrichs_velocity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dd><p class="first">use Lax Friedrichs stabilisation in horizontal momentum advection.</p>
+<p>Default:</p>
+<p class="last">True</p>
+</dd>
+<dt>CommonModelOptions.<strong>use_nonlinear_equations</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dd><p class="first">Use nonlinear shallow water equations</p>
+<p>Default:</p>
+<p class="last">True</p>
+</dd>
+<dt>CommonModelOptions.<strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Int</span></dt>
+<dd><p class="first">Verbosity level</p>
+<p>Default:</p>
+<p class="last">0</p>
+</dd>
+<dt>CommonModelOptions.<strong>volume_source_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dd><p class="first">Source term for 2D continuity equation</p>
+<p>Default:</p>
+<p class="last">Function</p>
+</dd>
+<dt>CommonModelOptions.<strong>wind_stress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dd><p class="first">Stress at free surface (2D vector function)</p>
+<p>Default:</p>
+<p class="last">Function</p>
+</dd>
+<dt>ModelOptions2d.<strong>timestepper_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘SSPRK33’|’SSPRK33Semi’|’ForwardEuler’|’BackwardEuler’|’CrankNicolson’|’DIRK22’|’DIRK33’|’SteadyState’|’PressureProjectionPicard’|’SSPIMEX’</span></dt>
+<dd><p class="first">Name of the time integrator</p>
+<p>Default:</p>
+<p>‘CrankNicolson’</p>
+<p>Setting value implies configuration of sub-tree ModelOptions2d.timestepper_options:</p>
+<p>‘DIRK22’:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
+<dd><p class="first">No description</p>
+<p>Default:</p>
+<p class="last">{‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘ksp_type’: ‘gmres’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘SteadyState’:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
+<dd><p class="first">No description</p>
+<p>Default:</p>
+<p class="last">{‘pc_type’: ‘lu’, ‘mat_type’: ‘aij’, ‘ksp_type’: ‘preonly’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘DIRK33’:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
+<dd><p class="first">No description</p>
+<p>Default:</p>
+<p class="last">{‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘ksp_type’: ‘gmres’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘SSPRK33Semi’:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ModelOptions2d.timestepper_options.<strong>implicitness_theta</strong> <span class="classifier-delimiter">:</span> <span class="classifier">BoundedFloat</span></dt>
+<dd><p class="first">implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.</p>
+<p>Default:</p>
+<p class="last">0.5</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>use_semi_implicit_linearization</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dd><p class="first">Use linearized semi-implicit time integration</p>
+<p>Default:</p>
+<p class="last">False</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘PressureProjectionPicard’:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ModelOptions2d.timestepper_options.<strong>implicitness_theta</strong> <span class="classifier-delimiter">:</span> <span class="classifier">BoundedFloat</span></dt>
+<dd><p class="first">implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.</p>
+<p>Default:</p>
+<p class="last">0.5</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_momentum</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
+<dd><p class="first">No description</p>
+<p>Default:</p>
+<p class="last">{‘pc_type’: ‘bjacobi’, ‘ksp_converged_reason’: True, ‘sub_pc_type’: ‘sor’, ‘sub_ksp_type’: ‘preonly’, ‘ksp_type’: ‘gmres’}</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_pressure</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
+<dd><p class="first">No description</p>
+<p>Default:</p>
+<p class="last">{‘fieldsplit_H_2d’: {‘schur_ksp_type’: ‘gmres’, ‘schur_ksp_converged_reason’: True, ‘schur_ksp_max_it’: 100, ‘pc_type’: ‘python’, ‘schur_pc_type’: ‘gamg’, ‘pc_python_type’: ‘thetis.AssembledSchurPC’, ‘ksp_type’: ‘preonly’}, ‘mat_type’: ‘matfree’, ‘pc_fieldsplit_schur_fact_type’: ‘full’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘schur’, ‘fieldsplit_U_2d’: {‘assembled_pc_type’: ‘bjacobi’, ‘assembled_sub_pc_type’: ‘ilu’, ‘assembled_ksp_type’: ‘preonly’, ‘pc_type’: ‘python’, ‘pc_python_type’: ‘firedrake.AssembledPC’, ‘ksp_type’: ‘gmres’}, ‘ksp_type’: ‘preonly’}</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>use_semi_implicit_linearization</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dd><p class="first">Use linearized semi-implicit time integration</p>
+<p>Default:</p>
+<p class="last">True</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘SSPRK33’:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
+<dd><p class="first">No description</p>
+<p>Default:</p>
+<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_pc_type’: ‘ilu’, ‘pc_type’: ‘bjacobi’, ‘mat_type’: ‘aij’, ‘sub_ksp_type’: ‘preonly’, ‘ksp_type’: ‘cg’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘SSPIMEX’:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
+<dd><p class="first">No description</p>
+<p>Default:</p>
+<p class="last">{‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘ksp_type’: ‘gmres’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘ForwardEuler’:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
+<dd><p class="first">No description</p>
+<p>Default:</p>
+<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_pc_type’: ‘ilu’, ‘pc_type’: ‘bjacobi’, ‘mat_type’: ‘aij’, ‘sub_ksp_type’: ‘preonly’, ‘ksp_type’: ‘cg’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘BackwardEuler’:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
+<dd><p class="first">No description</p>
+<p>Default:</p>
+<p class="last">{‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘ksp_type’: ‘gmres’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘CrankNicolson’:</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>ModelOptions2d.timestepper_options.<strong>implicitness_theta</strong> <span class="classifier-delimiter">:</span> <span class="classifier">BoundedFloat</span></dt>
+<dd><p class="first">implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.</p>
+<p>Default:</p>
+<p class="last">0.5</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>use_semi_implicit_linearization</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dd><p class="first">Use linearized semi-implicit time integration</p>
+<p>Default:</p>
+<p class="last">False</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd>
+<dt>ModelOptions2d.<strong>use_wetting_and_drying</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dd><p class="first">bool: Turn on wetting and drying</p>
+<p>Uses the wetting and drying scheme from Karna et al (2011).
+If <code class="docutils literal"><span class="pre">True</span></code>, one should also set <code class="xref py py-attr docutils literal"><span class="pre">wetting_and_drying_alpha</span></code> to control the bathymetry displacement.</p>
+<p>Default:</p>
+<p class="last">False</p>
+</dd>
+</dl>
+<p>ModelOptions2d.<strong>wetting_and_drying_alpha</strong> : FiredrakeConstant</p>
+<blockquote>
+<div><p>Coefficient: Wetting and drying parameter <span class="math">\(\alpha\)</span>.</p>
+<p>Used in bathymetry displacement function that ensures positive water depths. Unit is meters.</p>
+<p>Default:</p>
+<p>Constant(0.5)</p>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

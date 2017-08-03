@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Model outputs and visualization &#8212; Thetis 0.0.5+764.g4dac05e documentation</title>
-    
+    <title>Model outputs and visualization &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
     <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.0.5+764.g4dac05e',
+        VERSION:     '0.0.5+875.ge1658a7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
 <!--[if lte IE 6]>
@@ -38,7 +35,7 @@
 
 
   </head>
-  <body role="document">
+  <body>
 <div class="wrapper">
   <a href="index.html"><img src="_static/banner.png" height="180px" alt="Thetis Project Banner" /></a>
   <div id="access">
@@ -72,9 +69,9 @@
 <p>By default Thetis stores outputs in <a class="reference external" href="http://www.vtk.org/">VTK</a>
 format, suitable for visualization with <a class="reference external" href="http://www.paraview.org/">ParaView</a>.</p>
 <p>By default results are stored to <code class="docutils literal"><span class="pre">outputs</span></code> sub-directory.
-Users can define a custom output directory with <a class="reference internal" href="thetis.html#thetis.options.ModelOptions.outputdir" title="thetis.options.ModelOptions.outputdir"><code class="xref py py-attr docutils literal"><span class="pre">outputdir</span></code></a>
+Users can define a custom output directory with <a class="reference internal" href="model_options_3d.html#model-options-3d"><span class="std std-ref">ModelOptions3d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.output_directory" title="thetis.options.CommonModelOptions.output_directory"><code class="xref py py-attr docutils literal"><span class="pre">output_directory</span></code></a>
 option. The fields to be exported are defined with
-<a class="reference internal" href="thetis.html#thetis.options.ModelOptions.fields_to_export" title="thetis.options.ModelOptions.fields_to_export"><code class="xref py py-attr docutils literal"><span class="pre">fields_to_export</span></code></a> list.</p>
+<a class="reference internal" href="model_options_3d.html#model-options-3d"><span class="std std-ref">ModelOptions3d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.fields_to_export" title="thetis.options.CommonModelOptions.fields_to_export"><code class="xref py py-attr docutils literal"><span class="pre">fields_to_export</span></code></a> list.</p>
 <p>For example to store only 2D water elevation and 3D temperature fields to <code class="docutils literal"><span class="pre">mydir</span></code>
 directory one would set:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">solver_obj</span> <span class="o">=</span> <span class="n">FlowSolver</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
@@ -88,9 +85,9 @@ directory one would set:</p>
 Note that fields are exported only if they are defined; e.g. exporting a field
 <code class="docutils literal"><span class="pre">'temp_3d'</span></code> is ignored if you are running a 2D model.</p>
 <p>In some cases it is useful to suppress all output to disk (e.g. with some test
-cases). This can be achieved by setting <a class="reference internal" href="thetis.html#thetis.options.ModelOptions.no_exports" title="thetis.options.ModelOptions.no_exports"><code class="xref py py-attr docutils literal"><span class="pre">no_exports</span></code></a>
+cases). This can be achieved by setting <a class="reference internal" href="model_options_3d.html#model-options-3d"><span class="std std-ref">ModelOptions3d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.no_exports" title="thetis.options.CommonModelOptions.no_exports"><code class="xref py py-attr docutils literal"><span class="pre">no_exports</span></code></a>
 option to <code class="docutils literal"><span class="pre">True</span></code>.</p>
-<p>See Firedrake&#8217;s
+<p>See Firedrake’s
 <a class="reference external" href="http://firedrakeproject.org/visualisation.html">documentation</a>
 for more information on visualization cababilities.</p>
 <div class="section" id="visualizing-stored-paraview-state-files">
@@ -107,14 +104,14 @@ directory:</p>
 </div>
 <p>The script replaces all <code class="docutils literal"><span class="pre">*.pvd</span></code> file paths in <code class="docutils literal"><span class="pre">statefile.pvsm</span></code> to point
 to <code class="docutils literal"><span class="pre">outputdir</span></code>, and launches ParaView.
-You&#8217;ll need to have <code class="docutils literal"><span class="pre">paraview</span></code> in your seach path for this to work.
+You’ll need to have <code class="docutils literal"><span class="pre">paraview</span></code> in your seach path for this to work.
 Run <code class="docutils literal"><span class="pre">visualize-output.py</span> <span class="pre">-h</span></code> to see full usage instructions.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">If you add ParaView&#8217;s <code class="docutils literal"><span class="pre">bin</span></code> directory to your <code class="docutils literal"><span class="pre">PATH</span></code>
+<p class="last">If you add ParaView’s <code class="docutils literal"><span class="pre">bin</span></code> directory to your <code class="docutils literal"><span class="pre">PATH</span></code>
 environment variable, be careful:
 ParaView has its own <code class="docutils literal"><span class="pre">python</span></code> and <code class="docutils literal"><span class="pre">mpiexec</span></code> binaries which may
-break your Firedrake installation. It&#8217;s advisable to modify <code class="docutils literal"><span class="pre">PATH</span></code>
+break your Firedrake installation. It’s advisable to modify <code class="docutils literal"><span class="pre">PATH</span></code>
 before activating the Firedrake virtual environment, or appending
 (rather than prepending) the directory to <code class="docutils literal"><span class="pre">PATH</span></code>.</p>
 </div>
@@ -128,15 +125,15 @@ loading a previous model state from disk.</p>
 <p class="first admonition-title">Note</p>
 <p class="last">Currently HDF5 checkpointing file can only be
 loaded on same number of MPI processes as were used to create the file.
-See Firedrake&#8217;s <a class="reference external" href="http://firedrakeproject.org/checkpointing.html">documentation</a>
+See Firedrake’s <a class="reference external" href="http://firedrakeproject.org/checkpointing.html">documentation</a>
 for more information.</p>
 </div>
 <p>The fields to be exported in HDF5 format are defined in
-<a class="reference internal" href="thetis.html#thetis.options.ModelOptions.fields_to_export_hdf5" title="thetis.options.ModelOptions.fields_to_export_hdf5"><code class="xref py py-attr docutils literal"><span class="pre">fields_to_export_hdf5</span></code></a> list, that is empty by default.
+<a class="reference internal" href="model_options_3d.html#model-options-3d"><span class="std std-ref">ModelOptions3d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.fields_to_export_hdf5" title="thetis.options.CommonModelOptions.fields_to_export_hdf5"><code class="xref py py-attr docutils literal"><span class="pre">fields_to_export_hdf5</span></code></a> list, that is empty by default.
 The files are stored in <code class="docutils literal"><span class="pre">outputdir/hdf5</span></code> directory in format
 <code class="docutils literal"><span class="pre">Elevation2d_00001.h5</span></code> where the prefix is the output file name of the field,
 followed by the export index. HDF5 files are stored at the same time intervals
-as VTK files, defined by <a class="reference internal" href="thetis.html#thetis.options.ModelOptions.t_export" title="thetis.options.ModelOptions.t_export"><code class="xref py py-attr docutils literal"><span class="pre">t_export</span></code></a> option.</p>
+as VTK files, defined by <a class="reference internal" href="model_options_3d.html#model-options-3d"><span class="std std-ref">ModelOptions3d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.simulation_export_time" title="thetis.options.CommonModelOptions.simulation_export_time"><code class="xref py py-attr docutils literal"><span class="pre">simulation_export_time</span></code></a> option.</p>
 <p>In order to be able to restart a previous simulation, one has to export all
 the prognostic variables that define the model state.
 For a 2D simulation this implies:</p>
@@ -179,7 +176,7 @@ It is also possible to load the initial state from another (sub-) directory:</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>
