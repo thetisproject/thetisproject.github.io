@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>2D model options &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
+    <title>2D model options &#8212; Thetis 0+untagged.1138.g086f153 documentation</title>
     <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.0.5+875.ge1658a7',
+        VERSION:     '0+untagged.1138.g086f153',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -66,10 +66,10 @@
 <span id="model-options-2d"></span><h1>2D model options<a class="headerlink" href="#d-model-options" title="Permalink to this headline">¶</a></h1>
 <p>This page lists all available options for the 2D model.</p>
 <dl class="docutils">
-<dt>CommonModelOptions.<strong>atmospheric_pressure</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>CommonModelOptions.<strong>atmospheric_pressure</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeScalarExpression</span></dt>
 <dd><p class="first">Atmospheric pressure at free surface, in pascals</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL scalar expression</p>
 </dd>
 <dt>CommonModelOptions.<strong>cfl_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
 <dd><p class="first">Factor to scale the 2d time step OBSOLETE</p>
@@ -91,10 +91,10 @@ Prints deviation from the initial volume to stdout.</p>
 <p>False</p>
 </div></blockquote>
 <dl class="docutils">
-<dt>CommonModelOptions.<strong>coriolis_frequency</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>CommonModelOptions.<strong>coriolis_frequency</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeScalarExpression</span></dt>
 <dd><p class="first">2D Coriolis parameter</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL scalar expression</p>
 </dd>
 <dt>CommonModelOptions.<strong>element_family</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘dg-dg’|’rt-dg’|’dg-cg’</span></dt>
 <dd><p class="first">Finite element family</p>
@@ -127,10 +127,10 @@ Prints deviation from the initial volume to stdout.</p>
 <p>Constant(0.1)</p>
 </div></blockquote>
 <dl class="docutils">
-<dt>CommonModelOptions.<strong>horizontal_viscosity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>CommonModelOptions.<strong>horizontal_viscosity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeScalarExpression</span></dt>
 <dd><p class="first">Horizontal viscosity</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL scalar expression</p>
 </dd>
 </dl>
 <p>CommonModelOptions.<strong>horizontal_viscosity_scale</strong> : FiredrakeConstant</p>
@@ -147,12 +147,12 @@ Prints deviation from the initial volume to stdout.</p>
 <p class="last">Constant(1.0)</p>
 </dd>
 </dl>
-<p>CommonModelOptions.<strong>linear_drag_coefficient</strong> : FiredrakeCoefficient</p>
+<p>CommonModelOptions.<strong>linear_drag_coefficient</strong> : FiredrakeScalarExpression</p>
 <blockquote>
 <div><p>2D linear drag parameter <span class="math">\(L\)</span></p>
 <p>Bottom stress is <span class="math">\(\tau_b/\rho_0 = -L \mathbf{u} H\)</span></p>
 <p>Default:</p>
-<p>Function</p>
+<p>UFL scalar expression</p>
 </div></blockquote>
 <dl class="docutils">
 <dt>CommonModelOptions.<strong>log_output</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
@@ -161,18 +161,18 @@ Prints deviation from the initial volume to stdout.</p>
 <p class="last">True</p>
 </dd>
 </dl>
-<p>CommonModelOptions.<strong>manning_drag_coefficient</strong> : FiredrakeCoefficient</p>
+<p>CommonModelOptions.<strong>manning_drag_coefficient</strong> : FiredrakeScalarExpression</p>
 <blockquote>
 <div><p>Manning-Strickler 2D quadratic drag parameter <span class="math">\(\mu\)</span></p>
 <p>Bottom stress is <span class="math">\(\tau_b/\rho_0 = -g \mu^2 |\mathbf{u}|\mathbf{u}/H^{1/3}\)</span></p>
 <p>Default:</p>
-<p>Function</p>
+<p>UFL scalar expression</p>
 </div></blockquote>
 <dl class="docutils">
-<dt>CommonModelOptions.<strong>momentum_source_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>CommonModelOptions.<strong>momentum_source_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeVectorExpression</span></dt>
 <dd><p class="first">Source term for 2D momentum equation</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL vector expression</p>
 </dd>
 </dl>
 <p>CommonModelOptions.<strong>no_exports</strong> : Bool</p>
@@ -195,12 +195,12 @@ Used in CI test suite.</p>
 <p class="last">1</p>
 </dd>
 </dl>
-<p>CommonModelOptions.<strong>quadratic_drag_coefficient</strong> : FiredrakeCoefficient</p>
+<p>CommonModelOptions.<strong>quadratic_drag_coefficient</strong> : FiredrakeScalarExpression</p>
 <blockquote>
 <div><p>Dimensionless 2D quadratic drag parameter <span class="math">\(C_D\)</span></p>
 <p>Bottom stress is <span class="math">\(\tau_b/\rho_0 = -C_D |\mathbf{u}|\mathbf{u}\)</span></p>
 <p>Default:</p>
-<p>Function</p>
+<p>UFL scalar expression</p>
 </div></blockquote>
 <dl class="docutils">
 <dt>CommonModelOptions.<strong>simulation_end_time</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
@@ -250,38 +250,58 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p class="last">0</p>
 </dd>
-<dt>CommonModelOptions.<strong>volume_source_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>CommonModelOptions.<strong>volume_source_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeScalarExpression</span></dt>
 <dd><p class="first">Source term for 2D continuity equation</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL scalar expression</p>
 </dd>
-<dt>CommonModelOptions.<strong>wind_stress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>CommonModelOptions.<strong>wind_stress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeVectorExpression</span></dt>
 <dd><p class="first">Stress at free surface (2D vector function)</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL vector expression</p>
 </dd>
-<dt>ModelOptions2d.<strong>timestepper_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘SSPRK33’|’SSPRK33Semi’|’ForwardEuler’|’BackwardEuler’|’CrankNicolson’|’DIRK22’|’DIRK33’|’SteadyState’|’PressureProjectionPicard’|’SSPIMEX’</span></dt>
+<dt>ModelOptions2d.<strong>timestepper_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘SSPRK33’|’ForwardEuler’|’BackwardEuler’|’CrankNicolson’|’DIRK22’|’DIRK33’|’SteadyState’|’PressureProjectionPicard’|’SSPIMEX’</span></dt>
 <dd><p class="first">Name of the time integrator</p>
 <p>Default:</p>
 <p>‘CrankNicolson’</p>
 <p>Setting value implies configuration of sub-tree ModelOptions2d.timestepper_options:</p>
-<p>‘DIRK22’:</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘ksp_type’: ‘gmres’}</p>
-</dd>
-</dl>
-</div></blockquote>
 <p>‘SteadyState’:</p>
 <blockquote>
 <div><dl class="docutils">
 <dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘pc_type’: ‘lu’, ‘mat_type’: ‘aij’, ‘ksp_type’: ‘preonly’}</p>
+<p class="last">{‘ksp_type’: ‘preonly’, ‘mat_type’: ‘aij’, ‘pc_type’: ‘lu’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘SSPIMEX’:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
+<dd><p class="first">No description</p>
+<p>Default:</p>
+<p class="last">{‘ksp_type’: ‘gmres’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘pc_type’: ‘fieldsplit’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘SSPRK33’:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
+<dd><p class="first">No description</p>
+<p>Default:</p>
+<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_ksp_type’: ‘preonly’, ‘pc_type’: ‘bjacobi’, ‘ksp_type’: ‘cg’, ‘mat_type’: ‘aij’, ‘sub_pc_type’: ‘ilu’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘DIRK22’:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
+<dd><p class="first">No description</p>
+<p>Default:</p>
+<p class="last">{‘ksp_type’: ‘gmres’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘pc_type’: ‘fieldsplit’}</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -291,11 +311,11 @@ diagnostics will be computed</p>
 <dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘ksp_type’: ‘gmres’}</p>
+<p class="last">{‘ksp_type’: ‘gmres’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘pc_type’: ‘fieldsplit’}</p>
 </dd>
 </dl>
 </div></blockquote>
-<p>‘SSPRK33Semi’:</p>
+<p>‘CrankNicolson’:</p>
 <blockquote>
 <div><dl class="docutils">
 <dt>ModelOptions2d.timestepper_options.<strong>implicitness_theta</strong> <span class="classifier-delimiter">:</span> <span class="classifier">BoundedFloat</span></dt>
@@ -321,47 +341,17 @@ diagnostics will be computed</p>
 <dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_momentum</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘pc_type’: ‘bjacobi’, ‘ksp_converged_reason’: True, ‘sub_pc_type’: ‘sor’, ‘sub_ksp_type’: ‘preonly’, ‘ksp_type’: ‘gmres’}</p>
+<p class="last">{‘ksp_type’: ‘gmres’, ‘ksp_converged_reason’: True, ‘sub_ksp_type’: ‘preonly’, ‘pc_type’: ‘bjacobi’, ‘sub_pc_type’: ‘sor’}</p>
 </dd>
 <dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_pressure</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘fieldsplit_H_2d’: {‘schur_ksp_type’: ‘gmres’, ‘schur_ksp_converged_reason’: True, ‘schur_ksp_max_it’: 100, ‘pc_type’: ‘python’, ‘schur_pc_type’: ‘gamg’, ‘pc_python_type’: ‘thetis.AssembledSchurPC’, ‘ksp_type’: ‘preonly’}, ‘mat_type’: ‘matfree’, ‘pc_fieldsplit_schur_fact_type’: ‘full’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘schur’, ‘fieldsplit_U_2d’: {‘assembled_pc_type’: ‘bjacobi’, ‘assembled_sub_pc_type’: ‘ilu’, ‘assembled_ksp_type’: ‘preonly’, ‘pc_type’: ‘python’, ‘pc_python_type’: ‘firedrake.AssembledPC’, ‘ksp_type’: ‘gmres’}, ‘ksp_type’: ‘preonly’}</p>
+<p class="last">{‘pc_fieldsplit_schur_fact_type’: ‘full’, ‘fieldsplit_H_2d’: {‘schur_ksp_converged_reason’: True, ‘schur_ksp_max_it’: 100, ‘pc_type’: ‘python’, ‘ksp_type’: ‘preonly’, ‘schur_ksp_type’: ‘gmres’, ‘schur_pc_type’: ‘gamg’, ‘pc_python_type’: ‘thetis.AssembledSchurPC’}, ‘mat_type’: ‘matfree’, ‘pc_type’: ‘fieldsplit’, ‘ksp_type’: ‘preonly’, ‘pc_fieldsplit_type’: ‘schur’, ‘fieldsplit_U_2d’: {‘assembled_sub_pc_type’: ‘ilu’, ‘assembled_ksp_type’: ‘preonly’, ‘ksp_type’: ‘gmres’, ‘pc_type’: ‘python’, ‘assembled_pc_type’: ‘bjacobi’, ‘pc_python_type’: ‘firedrake.AssembledPC’}}</p>
 </dd>
 <dt>ModelOptions2d.timestepper_options.<strong>use_semi_implicit_linearization</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">Use linearized semi-implicit time integration</p>
 <p>Default:</p>
 <p class="last">True</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>‘SSPRK33’:</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_pc_type’: ‘ilu’, ‘pc_type’: ‘bjacobi’, ‘mat_type’: ‘aij’, ‘sub_ksp_type’: ‘preonly’, ‘ksp_type’: ‘cg’}</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>‘SSPIMEX’:</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘ksp_type’: ‘gmres’}</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>‘ForwardEuler’:</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_pc_type’: ‘ilu’, ‘pc_type’: ‘bjacobi’, ‘mat_type’: ‘aij’, ‘sub_ksp_type’: ‘preonly’, ‘ksp_type’: ‘cg’}</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -371,22 +361,17 @@ diagnostics will be computed</p>
 <dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘ksp_type’: ‘gmres’}</p>
+<p class="last">{‘ksp_type’: ‘gmres’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘pc_type’: ‘fieldsplit’}</p>
 </dd>
 </dl>
 </div></blockquote>
-<p>‘CrankNicolson’:</p>
+<p>‘ForwardEuler’:</p>
 <blockquote class="last">
 <div><dl class="docutils">
-<dt>ModelOptions2d.timestepper_options.<strong>implicitness_theta</strong> <span class="classifier-delimiter">:</span> <span class="classifier">BoundedFloat</span></dt>
-<dd><p class="first">implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.</p>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
+<dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">0.5</p>
-</dd>
-<dt>ModelOptions2d.timestepper_options.<strong>use_semi_implicit_linearization</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
-<dd><p class="first">Use linearized semi-implicit time integration</p>
-<p>Default:</p>
-<p class="last">False</p>
+<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_ksp_type’: ‘preonly’, ‘pc_type’: ‘bjacobi’, ‘ksp_type’: ‘cg’, ‘mat_type’: ‘aij’, ‘sub_pc_type’: ‘ilu’}</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -417,7 +402,7 @@ If <code class="docutils literal"><span class="pre">True</span></code>, one shou
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
     </div>
   </body>
 </html>

@@ -8,12 +8,12 @@ This page lists all available options for the 3D model.
 
 See also :ref:`turbulence_options` and :ref:`eos_options`.
 
-CommonModelOptions.\ **atmospheric_pressure** : FiredrakeCoefficient
+CommonModelOptions.\ **atmospheric_pressure** : FiredrakeScalarExpression
     Atmospheric pressure at free surface, in pascals
 
     Default:
 
-    Function
+    UFL scalar expression
 
 CommonModelOptions.\ **cfl_2d** : PositiveFloat
     Factor to scale the 2d time step OBSOLETE
@@ -41,12 +41,12 @@ CommonModelOptions.\ **check_volume_conservation_2d** : Bool
 
     False
 
-CommonModelOptions.\ **coriolis_frequency** : FiredrakeCoefficient
+CommonModelOptions.\ **coriolis_frequency** : FiredrakeScalarExpression
     2D Coriolis parameter
 
     Default:
 
-    Function
+    UFL scalar expression
 
 CommonModelOptions.\ **element_family** : 'dg-dg'|'rt-dg'|'dg-cg'
     Finite element family
@@ -90,12 +90,12 @@ CommonModelOptions.\ **horizontal_velocity_scale** : FiredrakeConstant
 
     Constant(0.1)
 
-CommonModelOptions.\ **horizontal_viscosity** : FiredrakeCoefficient
+CommonModelOptions.\ **horizontal_viscosity** : FiredrakeScalarExpression
     Horizontal viscosity
 
     Default:
 
-    Function
+    UFL scalar expression
 
 CommonModelOptions.\ **horizontal_viscosity_scale** : FiredrakeConstant
     
@@ -115,7 +115,7 @@ CommonModelOptions.\ **lax_friedrichs_velocity_scaling_factor** : FiredrakeConst
 
     Constant(1.0)
 
-CommonModelOptions.\ **linear_drag_coefficient** : FiredrakeCoefficient
+CommonModelOptions.\ **linear_drag_coefficient** : FiredrakeScalarExpression
     
     2D linear drag parameter :math:`L`
     
@@ -124,7 +124,7 @@ CommonModelOptions.\ **linear_drag_coefficient** : FiredrakeCoefficient
 
     Default:
 
-    Function
+    UFL scalar expression
 
 CommonModelOptions.\ **log_output** : Bool
     Redirect all output to log file in output directory
@@ -133,7 +133,7 @@ CommonModelOptions.\ **log_output** : Bool
 
     True
 
-CommonModelOptions.\ **manning_drag_coefficient** : FiredrakeCoefficient
+CommonModelOptions.\ **manning_drag_coefficient** : FiredrakeScalarExpression
     
     Manning-Strickler 2D quadratic drag parameter :math:`\mu`
     
@@ -142,14 +142,14 @@ CommonModelOptions.\ **manning_drag_coefficient** : FiredrakeCoefficient
 
     Default:
 
-    Function
+    UFL scalar expression
 
-CommonModelOptions.\ **momentum_source_2d** : FiredrakeCoefficient
+CommonModelOptions.\ **momentum_source_2d** : FiredrakeVectorExpression
     Source term for 2D momentum equation
 
     Default:
 
-    Function
+    UFL vector expression
 
 CommonModelOptions.\ **no_exports** : Bool
     
@@ -177,7 +177,7 @@ CommonModelOptions.\ **polynomial_degree** : NonNegativeInteger
 
     1
 
-CommonModelOptions.\ **quadratic_drag_coefficient** : FiredrakeCoefficient
+CommonModelOptions.\ **quadratic_drag_coefficient** : FiredrakeScalarExpression
     
     Dimensionless 2D quadratic drag parameter :math:`C_D`
     
@@ -186,7 +186,7 @@ CommonModelOptions.\ **quadratic_drag_coefficient** : FiredrakeCoefficient
 
     Default:
 
-    Function
+    UFL scalar expression
 
 CommonModelOptions.\ **simulation_end_time** : PositiveFloat
     Simulation duration in seconds
@@ -253,19 +253,19 @@ CommonModelOptions.\ **verbose** : Int
 
     0
 
-CommonModelOptions.\ **volume_source_2d** : FiredrakeCoefficient
+CommonModelOptions.\ **volume_source_2d** : FiredrakeScalarExpression
     Source term for 2D continuity equation
 
     Default:
 
-    Function
+    UFL scalar expression
 
-CommonModelOptions.\ **wind_stress** : FiredrakeCoefficient
+CommonModelOptions.\ **wind_stress** : FiredrakeVectorExpression
     Stress at free surface (2D vector function)
 
     Default:
 
-    Function
+    UFL vector expression
 ModelOptions3d.\ **check_salinity_conservation** : Bool
     
     Compute total salinity mass at every export
@@ -344,9 +344,6 @@ ModelOptions3d.\ **equation_of_state_type** : 'full'|'linear'
     
     Setting value implies configuration of sub-tree ModelOptions3d.equation_of_state_options:
     
-    'full':
-    
-    
     'linear':
     
         ModelOptions3d.equation_of_state_options.\ **alpha** : Float
@@ -383,14 +380,17 @@ ModelOptions3d.\ **equation_of_state_type** : 'full'|'linear'
             Default:
     
             15.0
+    
+    'full':
+    
 
 
-ModelOptions3d.\ **horizontal_diffusivity** : FiredrakeCoefficient
+ModelOptions3d.\ **horizontal_diffusivity** : FiredrakeScalarExpression
     Horizontal diffusivity for tracers
 
     Default:
 
-    Function
+    UFL scalar expression
 
 ModelOptions3d.\ **lax_friedrichs_tracer_scaling_factor** : FiredrakeConstant
     Scaling factor for tracer Lax Friedrichs stability term.
@@ -399,19 +399,19 @@ ModelOptions3d.\ **lax_friedrichs_tracer_scaling_factor** : FiredrakeConstant
 
     Constant(1.0)
 
-ModelOptions3d.\ **momentum_source_3d** : FiredrakeCoefficient
+ModelOptions3d.\ **momentum_source_3d** : FiredrakeVectorExpression
     Source term for 3D momentum equation
 
     Default:
 
-    Function
+    UFL vector expression
 
-ModelOptions3d.\ **salinity_source_3d** : FiredrakeCoefficient
+ModelOptions3d.\ **salinity_source_3d** : FiredrakeScalarExpression
     Source term for salinity equation
 
     Default:
 
-    Function
+    UFL scalar expression
 
 ModelOptions3d.\ **smagorinsky_coefficient** : FiredrakeConstant
     Smagorinsky viscosity coefficient :math:`C_S`
@@ -436,12 +436,12 @@ ModelOptions3d.\ **solve_temperature** : Bool
 
     True
 
-ModelOptions3d.\ **temperature_source_3d** : FiredrakeCoefficient
+ModelOptions3d.\ **temperature_source_3d** : FiredrakeScalarExpression
     Source term for temperature equation
 
     Default:
 
-    Function
+    UFL scalar expression
 
 ModelOptions3d.\ **timestep_2d** : PositiveFloat
     
@@ -455,7 +455,7 @@ ModelOptions3d.\ **timestep_2d** : PositiveFloat
 
     10.0
 
-ModelOptions3d.\ **timestepper_type** : 'SSPRK33'|'LeapFrog'|'SSPRK22'|'IMEXALE'|'ERKALE'
+ModelOptions3d.\ **timestepper_type** : 'LeapFrog'|'SSPRK22'
     Name of the time integrator
 
     Default:
@@ -464,89 +464,6 @@ ModelOptions3d.\ **timestepper_type** : 'SSPRK33'|'LeapFrog'|'SSPRK22'|'IMEXALE'
     
     Setting value implies configuration of sub-tree ModelOptions3d.timestepper_options:
     
-    'SSPRK33':
-    
-        ModelOptions3d.timestepper_options.\ **implicitness_theta_2d** : BoundedFloat
-            implicitness parameter theta for 2D solver. Value 1.0 implies fully implicit formulation.
-    
-            Default:
-    
-            0.5
-    
-    'ERKALE':
-    
-        ModelOptions3d.timestepper_options.\ **solver_parameters_2d_swe** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative', 'ksp_type': 'gmres'}
-    
-        ModelOptions3d.timestepper_options.\ **solver_parameters_momentum_explicit** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'snes_type': 'ksponly', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'sub_pc_type': 'ilu', 'ksp_type': 'cg'}
-    
-        ModelOptions3d.timestepper_options.\ **solver_parameters_momentum_implicit** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'snes_type': 'ksponly', 'sub_pc_type': 'ilu', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'snes_monitor': False, 'ksp_type': 'preonly'}
-    
-        ModelOptions3d.timestepper_options.\ **solver_parameters_tracer_explicit** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'snes_type': 'ksponly', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'sub_pc_type': 'ilu', 'ksp_type': 'cg'}
-    
-        ModelOptions3d.timestepper_options.\ **solver_parameters_tracer_implicit** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'snes_type': 'ksponly', 'sub_pc_type': 'ilu', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'snes_monitor': False, 'ksp_type': 'preonly'}
-    
-    'IMEXALE':
-    
-        ModelOptions3d.timestepper_options.\ **solver_parameters_2d_swe** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative', 'ksp_type': 'gmres'}
-    
-        ModelOptions3d.timestepper_options.\ **solver_parameters_momentum_explicit** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'snes_type': 'ksponly', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'sub_pc_type': 'ilu', 'ksp_type': 'cg'}
-    
-        ModelOptions3d.timestepper_options.\ **solver_parameters_momentum_implicit** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'snes_type': 'ksponly', 'sub_pc_type': 'ilu', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'snes_monitor': False, 'ksp_type': 'preonly'}
-    
-        ModelOptions3d.timestepper_options.\ **solver_parameters_tracer_explicit** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'snes_type': 'ksponly', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'sub_pc_type': 'ilu', 'ksp_type': 'cg'}
-    
-        ModelOptions3d.timestepper_options.\ **solver_parameters_tracer_implicit** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'snes_type': 'ksponly', 'sub_pc_type': 'ilu', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'snes_monitor': False, 'ksp_type': 'preonly'}
-    
     'SSPRK22':
     
         ModelOptions3d.timestepper_options.\ **solver_parameters_2d_swe** : PETScSolverParameters
@@ -554,35 +471,35 @@ ModelOptions3d.\ **timestepper_type** : 'SSPRK33'|'LeapFrog'|'SSPRK22'|'IMEXALE'
     
             Default:
     
-            {'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative', 'ksp_type': 'gmres'}
+            {'ksp_type': 'gmres', 'pc_fieldsplit_type': 'multiplicative', 'pc_type': 'fieldsplit'}
     
         ModelOptions3d.timestepper_options.\ **solver_parameters_momentum_explicit** : PETScSolverParameters
             No description
     
             Default:
     
-            {'snes_type': 'ksponly', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'sub_pc_type': 'ilu', 'ksp_type': 'cg'}
+            {'snes_type': 'ksponly', 'ksp_type': 'cg', 'sub_ksp_type': 'preonly', 'pc_type': 'bjacobi', 'sub_pc_type': 'ilu'}
     
         ModelOptions3d.timestepper_options.\ **solver_parameters_momentum_implicit** : PETScSolverParameters
             No description
     
             Default:
     
-            {'snes_type': 'ksponly', 'sub_pc_type': 'ilu', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'snes_monitor': False, 'ksp_type': 'preonly'}
+            {'snes_type': 'ksponly', 'sub_ksp_type': 'preonly', 'snes_monitor': False, 'pc_type': 'bjacobi', 'ksp_type': 'preonly', 'sub_pc_type': 'ilu'}
     
         ModelOptions3d.timestepper_options.\ **solver_parameters_tracer_explicit** : PETScSolverParameters
             No description
     
             Default:
     
-            {'snes_type': 'ksponly', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'sub_pc_type': 'ilu', 'ksp_type': 'cg'}
+            {'snes_type': 'ksponly', 'ksp_type': 'cg', 'sub_ksp_type': 'preonly', 'pc_type': 'bjacobi', 'sub_pc_type': 'ilu'}
     
         ModelOptions3d.timestepper_options.\ **solver_parameters_tracer_implicit** : PETScSolverParameters
             No description
     
             Default:
     
-            {'snes_type': 'ksponly', 'sub_pc_type': 'ilu', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'snes_monitor': False, 'ksp_type': 'preonly'}
+            {'snes_type': 'ksponly', 'sub_ksp_type': 'preonly', 'snes_monitor': False, 'pc_type': 'bjacobi', 'ksp_type': 'preonly', 'sub_pc_type': 'ilu'}
     
     'LeapFrog':
     
@@ -591,63 +508,63 @@ ModelOptions3d.\ **timestepper_type** : 'SSPRK33'|'LeapFrog'|'SSPRK22'|'IMEXALE'
     
             Default:
     
-            {'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative', 'ksp_type': 'gmres'}
+            {'ksp_type': 'gmres', 'pc_fieldsplit_type': 'multiplicative', 'pc_type': 'fieldsplit'}
     
         ModelOptions3d.timestepper_options.\ **solver_parameters_momentum_explicit** : PETScSolverParameters
             No description
     
             Default:
     
-            {'snes_type': 'ksponly', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'sub_pc_type': 'ilu', 'ksp_type': 'cg'}
+            {'snes_type': 'ksponly', 'ksp_type': 'cg', 'sub_ksp_type': 'preonly', 'pc_type': 'bjacobi', 'sub_pc_type': 'ilu'}
     
         ModelOptions3d.timestepper_options.\ **solver_parameters_momentum_implicit** : PETScSolverParameters
             No description
     
             Default:
     
-            {'snes_type': 'ksponly', 'sub_pc_type': 'ilu', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'snes_monitor': False, 'ksp_type': 'preonly'}
+            {'snes_type': 'ksponly', 'sub_ksp_type': 'preonly', 'snes_monitor': False, 'pc_type': 'bjacobi', 'ksp_type': 'preonly', 'sub_pc_type': 'ilu'}
     
         ModelOptions3d.timestepper_options.\ **solver_parameters_tracer_explicit** : PETScSolverParameters
             No description
     
             Default:
     
-            {'snes_type': 'ksponly', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'sub_pc_type': 'ilu', 'ksp_type': 'cg'}
+            {'snes_type': 'ksponly', 'ksp_type': 'cg', 'sub_ksp_type': 'preonly', 'pc_type': 'bjacobi', 'sub_pc_type': 'ilu'}
     
         ModelOptions3d.timestepper_options.\ **solver_parameters_tracer_implicit** : PETScSolverParameters
             No description
     
             Default:
     
-            {'snes_type': 'ksponly', 'sub_pc_type': 'ilu', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'snes_monitor': False, 'ksp_type': 'preonly'}
+            {'snes_type': 'ksponly', 'sub_ksp_type': 'preonly', 'snes_monitor': False, 'pc_type': 'bjacobi', 'ksp_type': 'preonly', 'sub_pc_type': 'ilu'}
 
 
-ModelOptions3d.\ **turbulence_model_type** : 'gls'
+ModelOptions3d.\ **turbulence_model_type** : 'gls'|'pacanowski'
     Type of vertical turbulence model
 
     Default:
 
     'gls'
     
-    Setting value implies configuration of sub-tree ModelOptions3d.gls_options:
+    Setting value implies configuration of sub-tree ModelOptions3d.turbulence_model_options:
     
     'gls':
     
-        ModelOptions3d.gls_options.\ **c1** : Float
+        ModelOptions3d.turbulence_model_options.\ **c1** : Float
             float: c1 parameter for Psi equations
     
             Default:
     
             1.44
     
-        ModelOptions3d.gls_options.\ **c2** : Float
+        ModelOptions3d.turbulence_model_options.\ **c2** : Float
             float: c2 parameter for Psi equations
     
             Default:
     
             1.92
     
-        ModelOptions3d.gls_options.\ **c3_minus** : Float
+        ModelOptions3d.turbulence_model_options.\ **c3_minus** : Float
             float: c3 parameter for Psi equations, stable stratification
             
             If :attr:`compute_c3_minus` is True this value will be overriden
@@ -656,35 +573,35 @@ ModelOptions3d.\ **turbulence_model_type** : 'gls'
     
             -0.52
     
-        ModelOptions3d.gls_options.\ **c3_plus** : Float
+        ModelOptions3d.turbulence_model_options.\ **c3_plus** : Float
             float: c3 parameter for Psi equations, unstable stratification
     
             Default:
     
             1.0
     
-        ModelOptions3d.gls_options.\ **closure_name** : 'k-epsilon'|'k-omega'|'Generic Lenght Scale'
+        ModelOptions3d.turbulence_model_options.\ **closure_name** : 'k-epsilon'|'k-omega'|'Generic Lenght Scale'
             Name of two-equation closure
     
             Default:
     
             'k-epsilon'
     
-        ModelOptions3d.gls_options.\ **cmu0** : PositiveFloat
+        ModelOptions3d.turbulence_model_options.\ **cmu0** : PositiveFloat
             float: cmu0 parameter
     
             Default:
     
             0.5477
     
-        ModelOptions3d.gls_options.\ **compute_c3_minus** : Bool
+        ModelOptions3d.turbulence_model_options.\ **compute_c3_minus** : Bool
             bool: compute :attr:`c3_minus` from :attr:`ri_st`
     
             Default:
     
             True
     
-        ModelOptions3d.gls_options.\ **compute_cmu0** : Bool
+        ModelOptions3d.turbulence_model_options.\ **compute_cmu0** : Bool
             bool: compute cmu0 from stability function parameters
             
             If :attr:`compute_cmu0` is True, this value will be overriden
@@ -693,63 +610,63 @@ ModelOptions3d.\ **turbulence_model_type** : 'gls'
     
             True
     
-        ModelOptions3d.gls_options.\ **compute_kappa** : Bool
+        ModelOptions3d.turbulence_model_options.\ **compute_kappa** : Bool
             bool: compute von Karman constant from :attr:`schmidt_nb_psi`
     
             Default:
     
             True
     
-        ModelOptions3d.gls_options.\ **compute_len_min** : Bool
+        ModelOptions3d.turbulence_model_options.\ **compute_len_min** : Bool
             bool: compute min_len from k_min and psi_min
     
             Default:
     
             True
     
-        ModelOptions3d.gls_options.\ **compute_psi_min** : Bool
+        ModelOptions3d.turbulence_model_options.\ **compute_psi_min** : Bool
             bool: compute psi_len from k_min and eps_min
     
             Default:
     
             True
     
-        ModelOptions3d.gls_options.\ **diff_min** : PositiveFloat
+        ModelOptions3d.turbulence_model_options.\ **diff_min** : PositiveFloat
             float: minimum value for eddy diffusivity
     
             Default:
     
             1e-08
     
-        ModelOptions3d.gls_options.\ **eps_min** : PositiveFloat
+        ModelOptions3d.turbulence_model_options.\ **eps_min** : PositiveFloat
             float: minimum value for epsilon
     
             Default:
     
             1e-10
     
-        ModelOptions3d.gls_options.\ **f_wall** : Float
+        ModelOptions3d.turbulence_model_options.\ **f_wall** : Float
             float: wall function parameter
     
             Default:
     
             1.0
     
-        ModelOptions3d.gls_options.\ **galperin_lim** : PositiveFloat
+        ModelOptions3d.turbulence_model_options.\ **galperin_lim** : PositiveFloat
             float: Galperin lenght scale limitation parameter
     
             Default:
     
             0.56
     
-        ModelOptions3d.gls_options.\ **k_min** : PositiveFloat
+        ModelOptions3d.turbulence_model_options.\ **k_min** : PositiveFloat
             float: minimum value for turbulent kinetic energy
     
             Default:
     
             3.7e-08
     
-        ModelOptions3d.gls_options.\ **kappa** : Float
+        ModelOptions3d.turbulence_model_options.\ **kappa** : Float
             float: von Karman constant
             
             If :attr:`compute_kappa` is True this value will be overriden
@@ -758,103 +675,126 @@ ModelOptions3d.\ **turbulence_model_type** : 'gls'
     
             0.4
     
-        ModelOptions3d.gls_options.\ **len_min** : PositiveFloat
+        ModelOptions3d.turbulence_model_options.\ **len_min** : PositiveFloat
             float: minimum value for turbulent lenght scale
     
             Default:
     
             1e-10
     
-        ModelOptions3d.gls_options.\ **limit_eps** : Bool
+        ModelOptions3d.turbulence_model_options.\ **limit_eps** : Bool
             bool: apply Galperin lenght scale limit on epsilon
     
             Default:
     
             False
     
-        ModelOptions3d.gls_options.\ **limit_len** : Bool
+        ModelOptions3d.turbulence_model_options.\ **limit_len** : Bool
             bool: apply Galperin lenght scale limit
     
             Default:
     
             False
     
-        ModelOptions3d.gls_options.\ **limit_len_min** : Bool
+        ModelOptions3d.turbulence_model_options.\ **limit_len_min** : Bool
             bool: limit minimum turbulent length scale to len_min
     
             Default:
     
             True
     
-        ModelOptions3d.gls_options.\ **limit_psi** : Bool
+        ModelOptions3d.turbulence_model_options.\ **limit_psi** : Bool
             bool: apply Galperin lenght scale limit on psi
     
             Default:
     
             False
     
-        ModelOptions3d.gls_options.\ **m** : Float
+        ModelOptions3d.turbulence_model_options.\ **m** : Float
             float: parameter m for the definition of psi
     
             Default:
     
             1.5
     
-        ModelOptions3d.gls_options.\ **n** : Float
+        ModelOptions3d.turbulence_model_options.\ **n** : Float
             float: parameter n for the definition of psi
     
             Default:
     
             -1.0
     
-        ModelOptions3d.gls_options.\ **p** : Float
+        ModelOptions3d.turbulence_model_options.\ **p** : Float
             float: parameter p for the definition of psi
     
             Default:
     
             3.0
     
-        ModelOptions3d.gls_options.\ **psi_min** : PositiveFloat
+        ModelOptions3d.turbulence_model_options.\ **psi_min** : PositiveFloat
             float: minimum value for psi
     
             Default:
     
             1e-10
     
-        ModelOptions3d.gls_options.\ **ri_st** : Float
+        ModelOptions3d.turbulence_model_options.\ **ri_st** : Float
             steady state gradient Richardson number
     
             Default:
     
             0.25
     
-        ModelOptions3d.gls_options.\ **schmidt_nb_psi** : PositiveFloat
+        ModelOptions3d.turbulence_model_options.\ **schmidt_nb_psi** : PositiveFloat
             float: psi Schmidt number
     
             Default:
     
             1.3
     
-        ModelOptions3d.gls_options.\ **schmidt_nb_tke** : PositiveFloat
+        ModelOptions3d.turbulence_model_options.\ **schmidt_nb_tke** : PositiveFloat
             float: turbulent kinetic energy Schmidt number
     
             Default:
     
             1.0
     
-        ModelOptions3d.gls_options.\ **stability_function_name** : 'Canuto A'|'Canuto B'|'Kantha-Clayson'|'Cheng'
+        ModelOptions3d.turbulence_model_options.\ **stability_function_name** : 'Canuto A'|'Canuto B'|'Kantha-Clayson'|'Cheng'
             Name of stability function family
     
             Default:
     
             'Canuto A'
     
-        ModelOptions3d.gls_options.\ **visc_min** : PositiveFloat
+        ModelOptions3d.turbulence_model_options.\ **visc_min** : PositiveFloat
             float: minimum value for eddy viscosity
     
             Default:
     
             1e-08
+    
+    'pacanowski':
+    
+        ModelOptions3d.turbulence_model_options.\ **alpha** : PositiveFloat
+            float: Richardson number multiplier
+    
+            Default:
+    
+            10.0
+    
+        ModelOptions3d.turbulence_model_options.\ **exponent** : PositiveFloat
+            float: Exponent of viscosity numerator :math:`n`
+    
+            Default:
+    
+            2.0
+    
+        ModelOptions3d.turbulence_model_options.\ **max_viscosity** : PositiveFloat
+            float: Constant maximum viscosity :math:`\nu_{max}`
+    
+            Default:
+    
+            0.05
 
 
 ModelOptions3d.\ **use_ale_moving_mesh** : Bool
@@ -897,7 +837,14 @@ ModelOptions3d.\ **use_limiter_for_tracers** : Bool
 
     Default:
 
-    False
+    True
+
+ModelOptions3d.\ **use_limiter_for_velocity** : Bool
+    Apply P1DG limiter for 3D horizontal velocity field
+
+    Default:
+
+    True
 
 ModelOptions3d.\ **use_parabolic_viscosity** : Bool
     Use idealized parabolic eddy viscosity
@@ -965,12 +912,12 @@ ModelOptions3d.\ **use_turbulence_advection** : Bool
 
     False
 
-ModelOptions3d.\ **vertical_diffusivity** : FiredrakeCoefficient
+ModelOptions3d.\ **vertical_diffusivity** : FiredrakeScalarExpression
     Vertical diffusivity for tracers
 
     Default:
 
-    Function
+    UFL scalar expression
 
 ModelOptions3d.\ **vertical_velocity_scale** : FiredrakeConstant
     
@@ -983,9 +930,9 @@ ModelOptions3d.\ **vertical_velocity_scale** : FiredrakeConstant
 
     Constant(0.0001)
 
-ModelOptions3d.\ **vertical_viscosity** : FiredrakeCoefficient
+ModelOptions3d.\ **vertical_viscosity** : FiredrakeScalarExpression
     Vertical viscosity
 
     Default:
 
-    Function
+    UFL scalar expression

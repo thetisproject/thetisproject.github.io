@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>thetis.momentum_eq &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
+    <title>thetis.momentum_eq &#8212; Thetis 0+untagged.1138.g086f153 documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.0.5+875.ge1658a7',
+        VERSION:     '0+untagged.1138.g086f153',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -277,7 +277,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;either uv_p1 or uv_mag must be given&#39;</span><span class="p">)</span>
                 <span class="n">f</span> <span class="o">+=</span> <span class="n">gamma</span><span class="o">*</span><span class="p">(</span><span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="n">uv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span>
-                            <span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="n">uv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS_v</span>
+                            <span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="n">uv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dS_v</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dS_h</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">bnd_marker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_markers</span><span class="p">:</span>
                 <span class="n">funcs</span> <span class="o">=</span> <span class="n">bnd_conditions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bnd_marker</span><span class="p">)</span>
                 <span class="n">ds_bnd</span> <span class="o">=</span> <span class="n">ds_v</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bnd_marker</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span><span class="p">)</span>
@@ -392,11 +392,11 @@
 <span class="sd">    Using the symmetric interior penalty method the weak form becomes</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        - \int_\Omega \nabla_h \cdot \left( \nu_h \nabla_h \textbf{u} \right) \cdot \boldsymbol{\psi} dx</span>
-<span class="sd">        =&amp; \int_\Omega \nu_h (\nabla_h \boldsymbol{\psi}) : (\nabla_h \textbf{u})^T dx \\</span>
-<span class="sd">        &amp;- \int_{\mathcal{I}_h \cup \mathcal{I}_v} \text{jump}(\boldsymbol{\psi} \textbf{n}_h) \cdot \text{avg}( \nu_h \nabla_h \textbf{u}) dS</span>
-<span class="sd">        - \int_{\mathcal{I}_h \cup \mathcal{I}_v} \text{jump}(\textbf{u} \textbf{n}_h) \cdot \text{avg}( \nu_h \nabla_h \boldsymbol{\psi}) dS \\</span>
-<span class="sd">        &amp;+ \int_{\mathcal{I}_h \cup \mathcal{I}_v} \sigma \text{avg}(\nu_h) \text{jump}(\textbf{u} \textbf{n}_h) \cdot \text{jump}(\boldsymbol{\psi} \textbf{n}_h) dS</span>
+<span class="sd">        \int_\Omega \nabla_h \cdot \left( \nu_h \nabla_h \textbf{u} \right) \cdot \boldsymbol{\psi} dx</span>
+<span class="sd">        =&amp; -\int_\Omega \nu_h (\nabla_h \boldsymbol{\psi}) : (\nabla_h \textbf{u})^T dx \\</span>
+<span class="sd">        &amp;+ \int_{\mathcal{I}_h \cup \mathcal{I}_v} \text{jump}(\boldsymbol{\psi} \textbf{n}_h) \cdot \text{avg}( \nu_h \nabla_h \textbf{u}) dS</span>
+<span class="sd">        + \int_{\mathcal{I}_h \cup \mathcal{I}_v} \text{jump}(\textbf{u} \textbf{n}_h) \cdot \text{avg}( \nu_h \nabla_h \boldsymbol{\psi}) dS \\</span>
+<span class="sd">        &amp;- \int_{\mathcal{I}_h \cup \mathcal{I}_v} \sigma \text{avg}(\nu_h) \text{jump}(\textbf{u} \textbf{n}_h) \cdot \text{jump}(\boldsymbol{\psi} \textbf{n}_h) dS</span>
 
 <span class="sd">    where :math:`\sigma` is a penalty parameter,</span>
 <span class="sd">    see Epshteyn and Riviere (2007).</span>
@@ -404,9 +404,6 @@
 <span class="sd">    Epshteyn and Riviere (2007). Estimation of penalty parameters for symmetric</span>
 <span class="sd">    interior penalty Galerkin methods. Journal of Computational and Applied</span>
 <span class="sd">    Mathematics, 206(2):843-872. http://dx.doi.org/10.1016/j.cam.2006.08.029</span>
-
-<span class="sd">    .. note ::</span>
-<span class="sd">        Note the minus sign due to :class:`.equation.Term` sign convention</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="HorizontalViscosityTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.HorizontalViscosityTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">viscosity_h</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;viscosity_h&#39;</span><span class="p">)</span>
@@ -479,11 +476,11 @@
 <span class="sd">    Using the symmetric interior penalty method the weak form becomes</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        - \int_\Omega \frac{\partial }{\partial z}\left( \nu \frac{\partial \textbf{u}}{\partial z}\right) \cdot \boldsymbol{\psi} dx</span>
-<span class="sd">        =&amp; \int_\Omega \nu \frac{\partial \boldsymbol{\psi}}{\partial z} \cdot \frac{\partial \textbf{u}}{\partial z} dx \\</span>
-<span class="sd">        &amp;- \int_{\mathcal{I}_h} \text{jump}(\boldsymbol{\psi} n_z) \cdot \text{avg}\left(\nu \frac{\partial \textbf{u}}{\partial z}\right) dS</span>
-<span class="sd">        - \int_{\mathcal{I}_h} \text{jump}(\textbf{u} n_z) \cdot \text{avg}\left(\nu \frac{\partial \boldsymbol{\psi}}{\partial z}\right) dS \\</span>
-<span class="sd">        &amp;+ \int_{\mathcal{I}_h} \sigma \text{avg}(\nu) \text{jump}(\textbf{u} n_z) \cdot \text{jump}(\boldsymbol{\psi} n_z) dS</span>
+<span class="sd">        \int_\Omega \frac{\partial }{\partial z}\left( \nu \frac{\partial \textbf{u}}{\partial z}\right) \cdot \boldsymbol{\psi} dx</span>
+<span class="sd">        =&amp; -\int_\Omega \nu \frac{\partial \boldsymbol{\psi}}{\partial z} \cdot \frac{\partial \textbf{u}}{\partial z} dx \\</span>
+<span class="sd">        &amp;+ \int_{\mathcal{I}_h} \text{jump}(\boldsymbol{\psi} n_z) \cdot \text{avg}\left(\nu \frac{\partial \textbf{u}}{\partial z}\right) dS</span>
+<span class="sd">        + \int_{\mathcal{I}_h} \text{jump}(\textbf{u} n_z) \cdot \text{avg}\left(\nu \frac{\partial \boldsymbol{\psi}}{\partial z}\right) dS \\</span>
+<span class="sd">        &amp;- \int_{\mathcal{I}_h} \sigma \text{avg}(\nu) \text{jump}(\textbf{u} n_z) \cdot \text{jump}(\boldsymbol{\psi} n_z) dS</span>
 
 <span class="sd">    where :math:`\sigma` is a penalty parameter,</span>
 <span class="sd">    see Epshteyn and Riviere (2007).</span>
@@ -491,9 +488,6 @@
 <span class="sd">    Epshteyn and Riviere (2007). Estimation of penalty parameters for symmetric</span>
 <span class="sd">    interior penalty Galerkin methods. Journal of Computational and Applied</span>
 <span class="sd">    Mathematics, 206(2):843-872. http://dx.doi.org/10.1016/j.cam.2006.08.029</span>
-
-<span class="sd">    .. note ::</span>
-<span class="sd">        Note the minus sign due to :class:`.equation.Term` sign convention</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="VerticalViscosityTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.VerticalViscosityTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">viscosity_v</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;viscosity_v&#39;</span><span class="p">)</span>
@@ -557,7 +551,6 @@
 <span class="sd">    field.</span>
 <span class="sd">    The user can override the :math:`C_D` value by providing ``quadratic_drag_coefficient``</span>
 <span class="sd">    field.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO z_0 should be a field in the options dict, remove from physical_constants</span>
 <div class="viewcode-block" id="BottomFrictionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.BottomFrictionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -571,10 +564,10 @@
                 <span class="n">uv</span> <span class="o">=</span> <span class="n">solution</span>
                 <span class="n">uv_old</span> <span class="o">=</span> <span class="n">solution_old</span>
 
+            <span class="n">z_bot</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">v_elem_size</span>
             <span class="n">drag</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;quadratic_drag_coefficient&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">drag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">z0_friction</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;z0_friction&#39;</span><span class="p">]</span>
-                <span class="n">z_bot</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">v_elem_size</span>
                 <span class="n">von_karman</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;von_karman&#39;</span><span class="p">]</span>
                 <span class="n">drag</span> <span class="o">=</span> <span class="p">(</span><span class="n">von_karman</span> <span class="o">/</span> <span class="n">ln</span><span class="p">((</span><span class="n">z_bot</span> <span class="o">+</span> <span class="n">z0_friction</span><span class="p">)</span><span class="o">/</span><span class="n">z0_friction</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span>
             <span class="c1"># compute uv_bottom implicitly</span>
@@ -599,7 +592,12 @@
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="c1"># Linear drag (consistent with drag in 2D mode)</span>
         <span class="k">if</span> <span class="n">linear_drag_coefficient</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">bottom_fri</span> <span class="o">=</span> <span class="n">linear_drag_coefficient</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">solution</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
+            <span class="n">uv_depth_av</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_depth_av&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">uv_depth_av</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">uv</span> <span class="o">=</span> <span class="n">solution</span> <span class="o">+</span> <span class="n">uv_depth_av</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">uv</span> <span class="o">=</span> <span class="n">solution</span>
+            <span class="n">bottom_fri</span> <span class="o">=</span> <span class="n">linear_drag_coefficient</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">uv</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
             <span class="n">f</span> <span class="o">+=</span> <span class="n">bottom_fri</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
 
@@ -636,9 +634,6 @@
 <span class="sd">        F_w = \int_{\Gamma_s} \frac{1}{\rho_0} \tau_w \cdot \boldsymbol{\psi} dx</span>
 
 <span class="sd">    Wind stress is only included if vertical viscosity is provided.</span>
-
-<span class="sd">    .. note ::</span>
-<span class="sd">        Due to the sign convention of :class:`.equation.Term`, this term is assembled to the left hand side of the equation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO implement wind stress as a separate term</span>
 <div class="viewcode-block" id="SourceTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.momentum_eq.SourceTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -646,6 +641,8 @@
         <span class="n">source</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;source&#39;</span><span class="p">)</span>
         <span class="n">viscosity_v</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;viscosity_v&#39;</span><span class="p">)</span>
         <span class="n">wind_stress</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;wind_stress&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">wind_stress</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">viscosity_v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Wind stress is prescribed but vertical viscosity is not:</span><span class="se">\n</span><span class="s1">  Wind stress will be ignored.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">viscosity_v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># wind stress</span>
             <span class="k">if</span> <span class="n">wind_stress</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -703,6 +700,9 @@
 <span class="sd">        \int_\Omega g \nabla_h r \cdot \boldsymbol{\psi} dx</span>
 <span class="sd">            = - \int_\Omega g r \nabla_h \cdot \boldsymbol{\psi} dx</span>
 <span class="sd">            + \int_{\mathcal{I}_h \cup \mathcal{I}_v} g \text{avg}(r) \text{jump}(\boldsymbol{\psi} \cdot \textbf{n}_h) dx</span>
+
+<span class="sd">    .. note ::</span>
+<span class="sd">        Due to the :class:`Term` sign convention this term is assembled on the right-hand-side.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_functions</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -722,8 +722,8 @@
         <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;baroc_head&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">baroc_head_3d</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">solution</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span>
-                          <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">bnd_functions</span><span class="p">)</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">solution</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span>
+                           <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">bnd_functions</span><span class="p">)</span>
         <span class="n">trial</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="p">)</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
         <span class="n">prob</span> <span class="o">=</span> <span class="n">LinearVariationalProblem</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">solution</span><span class="p">)</span>
@@ -772,7 +772,7 @@
                                   <span class="n">Dx</span><span class="p">(</span><span class="n">bhead</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="n">f</span> <span class="o">=</span> <span class="n">g_grav</span> <span class="o">*</span> <span class="n">grad_head_dot_test</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
 
-        <span class="k">return</span> <span class="n">f</span></div></div>
+        <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
 </pre></div>
 
           </div>
@@ -783,7 +783,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
     </div>
   </body>
 </html>

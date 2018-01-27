@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>thetis.implicitexplicit &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
+    <title>thetis.implicitexplicit &#8212; Thetis 0+untagged.1138.g086f153 documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.0.5+875.ge1658a7',
+        VERSION:     '0+untagged.1138.g086f153',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -71,7 +71,7 @@
 <span class="kn">from</span> <span class="nn">.rungekutta</span> <span class="k">import</span> <span class="o">*</span>
 
 
-<div class="viewcode-block" id="IMEXGeneric"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXGeneric">[docs]</a><span class="k">class</span> <span class="nc">IMEXGeneric</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">):</span>
+<div class="viewcode-block" id="IMEXGeneric"><a class="viewcode-back" href="../../thetis.html#thetis.implicitexplicit.IMEXGeneric">[docs]</a><span class="k">class</span> <span class="nc">IMEXGeneric</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic implementation of Runge-Kutta Implicit-Explicit schemes</span>
 
@@ -124,28 +124,30 @@
         <span class="c1"># FIXME may violate max DIRK SSP time step (if any)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfl_coeff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">cfl_coeff</span>
 
-<div class="viewcode-block" id="IMEXGeneric.update_solver"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXGeneric.update_solver">[docs]</a>    <span class="k">def</span> <span class="nf">update_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IMEXGeneric.update_solver"><a class="viewcode-back" href="../../thetis.html#thetis.implicitexplicit.IMEXGeneric.update_solver">[docs]</a>    <span class="k">def</span> <span class="nf">update_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create solver objects&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dirk</span><span class="o">.</span><span class="n">update_solver</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">update_solver</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="IMEXGeneric.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXGeneric.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
+<div class="viewcode-block" id="IMEXGeneric.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.implicitexplicit.IMEXGeneric.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Assigns initial conditions to all required fields.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dirk</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IMEXGeneric.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXGeneric.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="IMEXGeneric.advance"><a class="viewcode-back" href="../../thetis.html#thetis.implicitexplicit.IMEXGeneric.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Advances equations for one time step.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solve_stage</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_final_solution</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="IMEXGeneric.solve_stage"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXGeneric.solve_stage">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="IMEXGeneric.solve_stage"><a class="viewcode-back" href="../../thetis.html#thetis.implicitexplicit.IMEXGeneric.solve_stage">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solves i-th stage</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># set solution to u_n + dt*sum(a*k_erk)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">update_solution</span><span class="p">(</span><span class="n">i_stage</span><span class="p">,</span> <span class="n">additive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># set correct reference solution in the DIRK solver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dirk</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span>
         <span class="c1"># solve implicit tendency (this is implicit solve)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dirk</span><span class="o">.</span><span class="n">solve_tendency</span><span class="p">(</span><span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span>
         <span class="c1"># set solution to u_n + dt*sum(a*k_erk) + *sum(a*k_dirk)</span>
@@ -153,19 +155,20 @@
         <span class="c1"># evaluate explicit tendency</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">solve_tendency</span><span class="p">(</span><span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IMEXGeneric.get_final_solution"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXGeneric.get_final_solution">[docs]</a>    <span class="k">def</span> <span class="nf">get_final_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IMEXGeneric.get_final_solution"><a class="viewcode-back" href="../../thetis.html#thetis.implicitexplicit.IMEXGeneric.get_final_solution">[docs]</a>    <span class="k">def</span> <span class="nf">get_final_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluates the final solution.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># set solution to u_n + sum(b*k_erk)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">get_final_solution</span><span class="p">(</span><span class="n">additive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># set correct reference solution in the DIRK solver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dirk</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span>
         <span class="c1"># set solution to u_n + sum(b*k_erk) + sum(b*k_dirk)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dirk</span><span class="o">.</span><span class="n">get_final_solution</span><span class="p">()</span>
         <span class="c1"># update old solution</span>
-        <span class="c1"># TODO share old solution func between dirk and erk</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirk</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IMEXGeneric.set_dt"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXGeneric.set_dt">[docs]</a>    <span class="k">def</span> <span class="nf">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<div class="viewcode-block" id="IMEXGeneric.set_dt"><a class="viewcode-back" href="../../thetis.html#thetis.implicitexplicit.IMEXGeneric.set_dt">[docs]</a>    <span class="k">def</span> <span class="nf">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update time step</span>
 
@@ -175,7 +178,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dirk</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="IMEXLPUM2"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXLPUM2">[docs]</a><span class="k">class</span> <span class="nc">IMEXLPUM2</span><span class="p">(</span><span class="n">IMEXGeneric</span><span class="p">):</span>
+<div class="viewcode-block" id="IMEXLPUM2"><a class="viewcode-back" href="../../thetis.html#thetis.implicitexplicit.IMEXLPUM2">[docs]</a><span class="k">class</span> <span class="nc">IMEXLPUM2</span><span class="p">(</span><span class="n">IMEXGeneric</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    SSP-IMEX RK scheme (20) in Higureras et al. (2014)</span>
 
@@ -189,7 +192,7 @@
     <span class="n">dirk_class</span> <span class="o">=</span> <span class="n">DIRKLPUM2</span></div>
 
 
-<div class="viewcode-block" id="IMEXLSPUM2"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXLSPUM2">[docs]</a><span class="k">class</span> <span class="nc">IMEXLSPUM2</span><span class="p">(</span><span class="n">IMEXGeneric</span><span class="p">):</span>
+<div class="viewcode-block" id="IMEXLSPUM2"><a class="viewcode-back" href="../../thetis.html#thetis.implicitexplicit.IMEXLSPUM2">[docs]</a><span class="k">class</span> <span class="nc">IMEXLSPUM2</span><span class="p">(</span><span class="n">IMEXGeneric</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    SSP-IMEX RK scheme (17) in Higureras et al. (2014)</span>
 
@@ -203,7 +206,7 @@
     <span class="n">dirk_class</span> <span class="o">=</span> <span class="n">DIRKLSPUM2</span></div>
 
 
-<div class="viewcode-block" id="IMEXMidpoint"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXMidpoint">[docs]</a><span class="k">class</span> <span class="nc">IMEXMidpoint</span><span class="p">(</span><span class="n">IMEXGeneric</span><span class="p">):</span>
+<div class="viewcode-block" id="IMEXMidpoint"><a class="viewcode-back" href="../../thetis.html#thetis.implicitexplicit.IMEXMidpoint">[docs]</a><span class="k">class</span> <span class="nc">IMEXMidpoint</span><span class="p">(</span><span class="n">IMEXGeneric</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implicit-explicit midpoint scheme (1, 2, 2) from Ascher et al. (1997)</span>
 
@@ -215,12 +218,12 @@
     <span class="n">dirk_class</span> <span class="o">=</span> <span class="n">ESDIRKMidpoint</span></div>
 
 
-<div class="viewcode-block" id="IMEXEuler"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.IMEXEuler">[docs]</a><span class="k">class</span> <span class="nc">IMEXEuler</span><span class="p">(</span><span class="n">IMEXGeneric</span><span class="p">):</span>
+<div class="viewcode-block" id="IMEXEuler"><a class="viewcode-back" href="../../thetis.html#thetis.implicitexplicit.IMEXEuler">[docs]</a><span class="k">class</span> <span class="nc">IMEXEuler</span><span class="p">(</span><span class="n">IMEXGeneric</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Forward-Backward Euler</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">erk_class</span> <span class="o">=</span> <span class="n">ERKEuler</span>
-    <span class="n">dirk_class</span> <span class="o">=</span> <span class="n">DIRKEuler</span></div>
+    <span class="n">dirk_class</span> <span class="o">=</span> <span class="n">BackwardEuler</span></div>
 </pre></div>
 
           </div>
@@ -231,7 +234,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
     </div>
   </body>
 </html>

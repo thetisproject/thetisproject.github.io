@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>thetis.solver2d &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
+    <title>thetis.solver2d &#8212; Thetis 0+untagged.1138.g086f153 documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.0.5+875.ge1658a7',
+        VERSION:     '0+untagged.1138.g086f153',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -79,6 +79,7 @@
 <span class="kn">from</span> <span class="nn">.options</span> <span class="k">import</span> <span class="n">ModelOptions2d</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">callback</span>
 <span class="kn">from</span> <span class="nn">.log</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
 
 
 <div class="viewcode-block" id="FlowSolver2d"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d">[docs]</a><span class="k">class</span> <span class="nc">FlowSolver2d</span><span class="p">(</span><span class="n">FrozenClass</span><span class="p">):</span>
@@ -332,14 +333,6 @@
                                                   <span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                                                   <span class="n">bnd_conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">],</span>
                                                   <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">==</span> <span class="s1">&#39;SSPRK33Semi&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">SSPRK33SemiImplicit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eq_sw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">,</span>
-                                                              <span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
-                                                              <span class="n">bnd_conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">],</span>
-                                                              <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">,</span>
-                                                              <span class="n">semi_implicit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">use_semi_implicit_linearization</span><span class="p">,</span>
-                                                              <span class="n">theta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">implicitness_theta</span><span class="p">)</span>
-
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">==</span> <span class="s1">&#39;ForwardEuler&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">timeintegrator</span><span class="o">.</span><span class="n">ForwardEuler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eq_sw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">,</span>
                                                            <span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
@@ -358,10 +351,10 @@
                                                             <span class="n">semi_implicit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">use_semi_implicit_linearization</span><span class="p">,</span>
                                                             <span class="n">theta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">implicitness_theta</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">==</span> <span class="s1">&#39;DIRK22&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">CrankNicolsonRK</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eq_sw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">,</span>
-                                                          <span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
-                                                          <span class="n">bnd_conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">],</span>
-                                                          <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">DIRK22</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eq_sw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">,</span>
+                                                 <span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                                                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">],</span>
+                                                 <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">==</span> <span class="s1">&#39;DIRK33&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">DIRK33</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eq_sw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">,</span>
                                                  <span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
@@ -376,7 +369,7 @@
 
             <span class="n">u_test</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U_2d</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">eq_mom</span> <span class="o">=</span> <span class="n">shallowwater_eq</span><span class="o">.</span><span class="n">ShallowWaterMomentumEquation</span><span class="p">(</span>
-                <span class="n">u_test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">H_2d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U_2d</span><span class="p">,</span>
+                <span class="n">u_test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U_2d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">H_2d</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="p">,</span>
                 <span class="n">options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span>
             <span class="p">)</span>
@@ -422,7 +415,7 @@
         <span class="n">uv_2d</span><span class="p">,</span> <span class="n">elev_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_2d</span> <span class="o">=</span> <span class="n">uv_2d</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_2d</span> <span class="o">=</span> <span class="n">elev_2d</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">no_exports</span><span class="p">:</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">exporter</span><span class="o">.</span><span class="n">ExportManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span>
                                        <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span><span class="p">,</span>
@@ -493,8 +486,8 @@
 <span class="sd">        Also evaluates all callbacks set to &#39;export&#39; interval.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;export&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">export</span><span class="p">()</span></div>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">export</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="FlowSolver2d.load_state"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.load_state">[docs]</a>    <span class="k">def</span> <span class="nf">load_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_export</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iteration</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -550,8 +543,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">offset</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">next_export_t</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i_export</span> <span class="o">+</span> <span class="n">offset</span><span class="p">)</span></div>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i_export</span> <span class="o">+</span> <span class="n">offset</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FlowSolver2d.print_state"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.print_state">[docs]</a>    <span class="k">def</span> <span class="nf">print_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cputime</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -639,7 +632,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
     </div>
   </body>
 </html>

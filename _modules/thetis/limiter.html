@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>thetis.limiter &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
+    <title>thetis.limiter &#8212; Thetis 0+untagged.1138.g086f153 documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.0.5+875.ge1658a7',
+        VERSION:     '0+untagged.1138.g086f153',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -120,28 +120,45 @@
 <span class="sd">    and Applied Mathematics, 233(12):3077-3085.</span>
 <span class="sd">    http://dx.doi.org/10.1016/j.cam.2009.05.028</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1dg_space</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1dg_space</span><span class="p">,</span> <span class="n">time_dependent_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg p1dg_space: P1DG function space</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">assert_function_space</span><span class="p">(</span><span class="n">p1dg_space</span><span class="p">,</span> <span class="s1">&#39;Discontinuous Lagrange&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p1dg_space</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_vector</span> <span class="o">=</span> <span class="n">p1dg_space</span><span class="o">.</span><span class="n">value_size</span> <span class="o">&gt;</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_vector</span><span class="p">:</span>
+            <span class="n">p1dg_scalar_space</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">p1dg_space</span><span class="o">.</span><span class="n">mesh</span><span class="p">(),</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p1dg_scalar_space</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p1dg_space</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_dependent_mesh</span> <span class="o">=</span> <span class="n">time_dependent_mesh</span>
+
+    <span class="k">def</span> <span class="nf">_construct_centroid_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs a linear problem for computing the centroids</span>
+
+<span class="sd">        :return: LinearSolver instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a_form</span> <span class="o">=</span> <span class="n">u</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">dx</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a_form</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">LinearSolver</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
+                                                  <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">,</span>
+                                                  <span class="s1">&#39;sub_pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ilu&#39;</span><span class="p">})</span>
 
     <span class="k">def</span> <span class="nf">_update_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Re-compute element centroid values</span>
-
-<span class="sd">        :arg field: :class:`Function` to limit</span>
+<span class="sd">        Update centroid values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">tri</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="p">)</span>
-        <span class="n">test</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="p">)</span>
-
-        <span class="n">a</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">tri</span><span class="o">*</span><span class="n">test</span><span class="o">*</span><span class="n">dx</span><span class="p">)</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">field</span><span class="o">*</span><span class="n">test</span><span class="o">*</span><span class="n">dx</span><span class="p">)</span>
-        <span class="n">solve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroids</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">TestFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="p">)</span> <span class="o">*</span> <span class="n">field</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_dependent_mesh</span><span class="p">:</span>
+            <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a_form</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid_solver</span><span class="o">.</span><span class="n">A</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">centroid_solver</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">force_evaluation</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centroid_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centroids</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
 <div class="viewcode-block" id="VertexBasedP1DGLimiter.compute_bounds"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.compute_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">compute_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -192,8 +209,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span><span class="p">:</span>
             <span class="c1"># Add nodal values from surface/bottom boundaries</span>
             <span class="c1"># NOTE calling firedrake par_loop with measure=ds_t raises an error</span>
-            <span class="n">bottom_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P1CG</span><span class="o">.</span><span class="n">bt_masks</span><span class="p">[</span><span class="s1">&#39;geometric&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">top_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P1CG</span><span class="o">.</span><span class="n">bt_masks</span><span class="p">[</span><span class="s1">&#39;geometric&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">bottom_nodes</span> <span class="o">=</span> <span class="n">get_facet_mask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P1CG</span><span class="p">,</span> <span class="s1">&#39;geometric&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
+            <span class="n">top_nodes</span> <span class="o">=</span> <span class="n">get_facet_mask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P1CG</span><span class="p">,</span> <span class="s1">&#39;geometric&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">)</span>
             <span class="n">bottom_idx</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bottom_nodes</span><span class="p">),</span> <span class="n">bottom_nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;node_idx&#39;</span><span class="p">)</span>
             <span class="n">top_idx</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">top_nodes</span><span class="p">),</span> <span class="n">top_nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;node_idx&#39;</span><span class="p">)</span>
             <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -231,7 +248,16 @@
 <span class="sd">        :arg field: :class:`Function` to limit</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;limiter&#39;</span><span class="p">):</span>
-            <span class="nb">super</span><span class="p">(</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">field</span><span class="p">)</span></div></div>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_vector</span><span class="p">:</span>
+                <span class="n">tmp_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P1DG</span><span class="o">.</span><span class="n">get_work_function</span><span class="p">()</span>
+                <span class="n">fs</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">value_size</span><span class="p">):</span>
+                    <span class="n">tmp_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+                    <span class="nb">super</span><span class="p">(</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">tmp_func</span><span class="p">)</span>
+                    <span class="n">field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">P1DG</span><span class="o">.</span><span class="n">restore_work_function</span><span class="p">(</span><span class="n">tmp_func</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">super</span><span class="p">(</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">field</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -242,7 +268,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
     </div>
   </body>
 </html>

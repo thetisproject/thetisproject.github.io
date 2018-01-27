@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>thetis.tracer_eq &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
+    <title>thetis.tracer_eq &#8212; Thetis 0+untagged.1138.g086f153 documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.0.5+875.ge1658a7',
+        VERSION:     '0+untagged.1138.g086f153',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -312,13 +312,13 @@
 <span class="sd">    Using the symmetric interior penalty method the weak form becomes</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        -\int_\Omega \nabla_h \cdot (\mu_h \nabla_h T) \phi dx</span>
-<span class="sd">        =&amp; \int_\Omega \mu_h (\nabla_h \phi) \cdot (\nabla_h T) dx \\</span>
-<span class="sd">        &amp;- \int_{\mathcal{I}_h\cup\mathcal{I}_v} \text{jump}(\phi \textbf{n}_h)</span>
+<span class="sd">        \int_\Omega \nabla_h \cdot (\mu_h \nabla_h T) \phi dx</span>
+<span class="sd">        =&amp; -\int_\Omega \mu_h (\nabla_h \phi) \cdot (\nabla_h T) dx \\</span>
+<span class="sd">        &amp;+ \int_{\mathcal{I}_h\cup\mathcal{I}_v} \text{jump}(\phi \textbf{n}_h)</span>
 <span class="sd">        \cdot \text{avg}(\mu_h \nabla_h T) dS</span>
-<span class="sd">        - \int_{\mathcal{I}_h\cup\mathcal{I}_v} \text{jump}(T \textbf{n}_h)</span>
+<span class="sd">        + \int_{\mathcal{I}_h\cup\mathcal{I}_v} \text{jump}(T \textbf{n}_h)</span>
 <span class="sd">        \cdot \text{avg}(\mu_h  \nabla \phi) dS \\</span>
-<span class="sd">        &amp;+ \int_{\mathcal{I}_h\cup\mathcal{I}_v} \sigma \text{avg}(\mu_h) \text{jump}(T \textbf{n}_h) \cdot</span>
+<span class="sd">        &amp;- \int_{\mathcal{I}_h\cup\mathcal{I}_v} \sigma \text{avg}(\mu_h) \text{jump}(T \textbf{n}_h) \cdot</span>
 <span class="sd">            \text{jump}(\phi \textbf{n}_h) dS</span>
 
 <span class="sd">    where :math:`\sigma` is a penalty parameter,</span>
@@ -327,9 +327,6 @@
 <span class="sd">    Epshteyn and Riviere (2007). Estimation of penalty parameters for symmetric</span>
 <span class="sd">    interior penalty Galerkin methods. Journal of Computational and Applied</span>
 <span class="sd">    Mathematics, 206(2):843-872. http://dx.doi.org/10.1016/j.cam.2006.08.029</span>
-
-<span class="sd">    .. note ::</span>
-<span class="sd">        Note the minus sign due to :class:`.equation.Term` sign convention</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="HorizontalDiffusionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.HorizontalDiffusionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;diffusivity_h&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -388,11 +385,11 @@
 <span class="sd">    Using the symmetric interior penalty method the weak form becomes</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        -\int_\Omega \frac{\partial}{\partial z} \Big(\mu \frac{T}{\partial z}\Big) \phi dx</span>
-<span class="sd">        =&amp; \int_\Omega \mu \frac{\partial T}{\partial z} \frac{\partial \phi}{\partial z} dz \\</span>
-<span class="sd">        &amp;- \int_{\mathcal{I}_{h}} \text{jump}(\phi n_z) \text{avg}\Big(\mu \frac{\partial T}{\partial z}\Big) dS</span>
-<span class="sd">        - \int_{\mathcal{I}_{h}} \text{jump}(T n_z) \text{avg}\Big(\mu \frac{\partial \phi}{\partial z}\Big) dS \\</span>
-<span class="sd">        &amp;+ \int_{\mathcal{I}_{h}} \sigma \text{avg}(\mu) \text{jump}(T n_z) \cdot</span>
+<span class="sd">        \int_\Omega \frac{\partial}{\partial z} \Big(\mu \frac{T}{\partial z}\Big) \phi dx</span>
+<span class="sd">        =&amp; -\int_\Omega \mu \frac{\partial T}{\partial z} \frac{\partial \phi}{\partial z} dz \\</span>
+<span class="sd">        &amp;+ \int_{\mathcal{I}_{h}} \text{jump}(\phi n_z) \text{avg}\Big(\mu \frac{\partial T}{\partial z}\Big) dS</span>
+<span class="sd">        + \int_{\mathcal{I}_{h}} \text{jump}(T n_z) \text{avg}\Big(\mu \frac{\partial \phi}{\partial z}\Big) dS \\</span>
+<span class="sd">        &amp;- \int_{\mathcal{I}_{h}} \sigma \text{avg}(\mu) \text{jump}(T n_z) \cdot</span>
 <span class="sd">            \text{jump}(\phi n_z) dS</span>
 
 <span class="sd">    where :math:`\sigma` is a penalty parameter,</span>
@@ -401,9 +398,6 @@
 <span class="sd">    Epshteyn and Riviere (2007). Estimation of penalty parameters for symmetric</span>
 <span class="sd">    interior penalty Galerkin methods. Journal of Computational and Applied</span>
 <span class="sd">    Mathematics, 206(2):843-872. http://dx.doi.org/10.1016/j.cam.2006.08.029</span>
-
-<span class="sd">    .. note ::</span>
-<span class="sd">        Note the minus sign due to :class:`.equation.Term` sign convention</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="VerticalDiffusionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.VerticalDiffusionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;diffusivity_v&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -453,16 +447,13 @@
 <span class="sd">        F_s = \int_\Omega \sigma \phi dx</span>
 
 <span class="sd">    where :math:`\sigma` is a user defined scalar :class:`Function`.</span>
-
-<span class="sd">    .. note ::</span>
-<span class="sd">        Due to the sign convention of :class:`.equation.Term`, this term is assembled to the left hand side of the equation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="SourceTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.SourceTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">source</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;source&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">+=</span> <span class="o">-</span><span class="n">inner</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
-        <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
+            <span class="n">f</span> <span class="o">+=</span> <span class="n">inner</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
+        <span class="k">return</span> <span class="n">f</span></div></div>
 
 
 <div class="viewcode-block" id="TracerEquation"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.TracerEquation">[docs]</a><span class="k">class</span> <span class="nc">TracerEquation</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
@@ -502,7 +493,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
     </div>
   </body>
 </html>

@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>thetis.shallowwater_eq &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
+    <title>thetis.shallowwater_eq &#8212; Thetis 0+untagged.1138.g086f153 documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.0.5+875.ge1658a7',
+        VERSION:     '0+untagged.1138.g086f153',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -622,9 +622,6 @@
 <span class="sd">    Epshteyn and Riviere (2007). Estimation of penalty parameters for symmetric</span>
 <span class="sd">    interior penalty Galerkin methods. Journal of Computational and Applied</span>
 <span class="sd">    Mathematics, 206(2):843-872. http://dx.doi.org/10.1016/j.cam.2006.08.029</span>
-
-<span class="sd">    .. note ::</span>
-<span class="sd">        Note the minus sign due to :class:`.equation.Term` sign convention</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="HorizontalViscosityTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.HorizontalViscosityTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">total_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">eta_old</span><span class="p">)</span>
@@ -713,8 +710,8 @@
         <span class="n">total_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">eta_old</span><span class="p">)</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">wind_stress</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">+=</span> <span class="o">-</span><span class="n">dot</span><span class="p">(</span><span class="n">wind_stress</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">)</span><span class="o">/</span><span class="n">total_h</span><span class="o">/</span><span class="n">rho_0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
-        <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
+            <span class="n">f</span> <span class="o">+=</span> <span class="n">dot</span><span class="p">(</span><span class="n">wind_stress</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">)</span><span class="o">/</span><span class="n">total_h</span><span class="o">/</span><span class="n">rho_0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
+        <span class="k">return</span> <span class="n">f</span></div></div>
 
 
 <div class="viewcode-block" id="AtmosphericPressureTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.AtmosphericPressureTerm">[docs]</a><span class="k">class</span> <span class="nc">AtmosphericPressureTerm</span><span class="p">(</span><span class="n">ShallowWaterMomentumTerm</span><span class="p">):</span>
@@ -806,17 +803,14 @@
 <span class="sd">        F_s = \int_\Omega \boldsymbol{\tau} \cdot \boldsymbol{\psi} dx</span>
 
 <span class="sd">    where :math:`\boldsymbol{\tau}` is a user defined vector valued :class:`Function`.</span>
-
-<span class="sd">    .. note ::</span>
-<span class="sd">        Due to the sign convention of :class:`.equation.Term`, this term is assembled to the left hand side of the equation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="MomentumSourceTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.MomentumSourceTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">momentum_source</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;momentum_source&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">momentum_source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">+=</span> <span class="o">-</span><span class="n">inner</span><span class="p">(</span><span class="n">momentum_source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
-        <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
+            <span class="n">f</span> <span class="o">+=</span> <span class="n">inner</span><span class="p">(</span><span class="n">momentum_source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
+        <span class="k">return</span> <span class="n">f</span></div></div>
 
 
 <div class="viewcode-block" id="ContinuitySourceTerm"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ContinuitySourceTerm">[docs]</a><span class="k">class</span> <span class="nc">ContinuitySourceTerm</span><span class="p">(</span><span class="n">ShallowWaterContinuityTerm</span><span class="p">):</span>
@@ -829,17 +823,14 @@
 <span class="sd">        F_s = \int_\Omega S \phi dx</span>
 
 <span class="sd">    where :math:`S` is a user defined scalar :class:`Function`.</span>
-
-<span class="sd">    .. note ::</span>
-<span class="sd">        Due to the sign convention of :class:`.equation.Term`, this term is assembled to the left hand side of the equation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="ContinuitySourceTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ContinuitySourceTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">volume_source</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;volume_source&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">volume_source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">+=</span> <span class="o">-</span><span class="n">inner</span><span class="p">(</span><span class="n">volume_source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta_test</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
-        <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
+            <span class="n">f</span> <span class="o">+=</span> <span class="n">inner</span><span class="p">(</span><span class="n">volume_source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta_test</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
+        <span class="k">return</span> <span class="n">f</span></div></div>
 
 
 <span class="k">class</span> <span class="nc">BathymetryDisplacementMassTerm</span><span class="p">(</span><span class="n">ShallowWaterContinuityTerm</span><span class="p">):</span>
@@ -860,7 +851,7 @@
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_wetting_and_drying</span><span class="p">:</span>
             <span class="n">f</span> <span class="o">+=</span> <span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wd_bathymetry_displacement</span><span class="p">(</span><span class="n">eta</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta_test</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
-        <span class="k">return</span> <span class="n">f</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">f</span>
 
 
 <div class="viewcode-block" id="BaseShallowWaterEquation"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.BaseShallowWaterEquation">[docs]</a><span class="k">class</span> <span class="nc">BaseShallowWaterEquation</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
@@ -930,7 +921,7 @@
 
 <div class="viewcode-block" id="ShallowWaterEquations.mass_term"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ShallowWaterEquations.mass_term">[docs]</a>    <span class="k">def</span> <span class="nf">mass_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ShallowWaterEquations</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">mass_term</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
-        <span class="n">f</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bathymetry_displacement_mass_term</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">+=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">bathymetry_displacement_mass_term</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">f</span></div>
 
 <div class="viewcode-block" id="ShallowWaterEquations.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ShallowWaterEquations.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
@@ -973,7 +964,8 @@
 <div class="viewcode-block" id="ModeSplit2DEquations.add_momentum_terms"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ModeSplit2DEquations.add_momentum_terms">[docs]</a>    <span class="k">def</span> <span class="nf">add_momentum_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">ExternalPressureGradientTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;implicit&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">CoriolisTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">MomentumSourceTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">MomentumSourceTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">AtmosphericPressureTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ModeSplit2DEquations.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ModeSplit2DEquations.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">solution</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -1006,7 +998,7 @@
 
 <div class="viewcode-block" id="FreeSurfaceEquation.mass_term"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.FreeSurfaceEquation.mass_term">[docs]</a>    <span class="k">def</span> <span class="nf">mass_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ShallowWaterEquations</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">mass_term</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
-        <span class="n">f</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bathymetry_displacement_mass_term</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">+=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">bathymetry_displacement_mass_term</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">f</span></div>
 
 <div class="viewcode-block" id="FreeSurfaceEquation.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.FreeSurfaceEquation.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
@@ -1022,20 +1014,19 @@
 <span class="sd">    2D depth averaged momentum equation :eq:`swe_momentum` in non-conservative</span>
 <span class="sd">    form.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eta_test</span><span class="p">,</span> <span class="n">eta_space</span><span class="p">,</span> <span class="n">u_space</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_test</span><span class="p">,</span> <span class="n">u_space</span><span class="p">,</span> <span class="n">eta_space</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="p">,</span>
                  <span class="n">options</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :arg eta_test: test function of the elevation function space</span>
-<span class="sd">        :arg eta_space: elevation function space</span>
+<span class="sd">        :arg u_test: test function of the velocity function space</span>
 <span class="sd">        :arg u_space: velocity function space</span>
-<span class="sd">        :arg function_space: Mixed function space where the solution belongs</span>
+<span class="sd">        :arg eta_space: elevation function space</span>
 <span class="sd">        :arg bathymetry: bathymetry of the domain</span>
 <span class="sd">        :type bathymetry: :class:`Function` or :class:`Constant`</span>
 <span class="sd">        :arg options: :class:`.AttrDict` object containing all circulation model options</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ShallowWaterMomentumEquation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">u_space</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_momentum_terms</span><span class="p">(</span><span class="n">eta_test</span><span class="p">,</span> <span class="n">u_space</span><span class="p">,</span> <span class="n">eta_space</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_momentum_terms</span><span class="p">(</span><span class="n">u_test</span><span class="p">,</span> <span class="n">u_space</span><span class="p">,</span> <span class="n">eta_space</span><span class="p">,</span>
                                 <span class="n">bathymetry</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ShallowWaterMomentumEquation.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.ShallowWaterMomentumEquation.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
@@ -1054,7 +1045,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
     </div>
   </body>
 </html>

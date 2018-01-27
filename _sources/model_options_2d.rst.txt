@@ -6,12 +6,12 @@
 
 This page lists all available options for the 2D model.
 
-CommonModelOptions.\ **atmospheric_pressure** : FiredrakeCoefficient
+CommonModelOptions.\ **atmospheric_pressure** : FiredrakeScalarExpression
     Atmospheric pressure at free surface, in pascals
 
     Default:
 
-    Function
+    UFL scalar expression
 
 CommonModelOptions.\ **cfl_2d** : PositiveFloat
     Factor to scale the 2d time step OBSOLETE
@@ -39,12 +39,12 @@ CommonModelOptions.\ **check_volume_conservation_2d** : Bool
 
     False
 
-CommonModelOptions.\ **coriolis_frequency** : FiredrakeCoefficient
+CommonModelOptions.\ **coriolis_frequency** : FiredrakeScalarExpression
     2D Coriolis parameter
 
     Default:
 
-    Function
+    UFL scalar expression
 
 CommonModelOptions.\ **element_family** : 'dg-dg'|'rt-dg'|'dg-cg'
     Finite element family
@@ -88,12 +88,12 @@ CommonModelOptions.\ **horizontal_velocity_scale** : FiredrakeConstant
 
     Constant(0.1)
 
-CommonModelOptions.\ **horizontal_viscosity** : FiredrakeCoefficient
+CommonModelOptions.\ **horizontal_viscosity** : FiredrakeScalarExpression
     Horizontal viscosity
 
     Default:
 
-    Function
+    UFL scalar expression
 
 CommonModelOptions.\ **horizontal_viscosity_scale** : FiredrakeConstant
     
@@ -113,7 +113,7 @@ CommonModelOptions.\ **lax_friedrichs_velocity_scaling_factor** : FiredrakeConst
 
     Constant(1.0)
 
-CommonModelOptions.\ **linear_drag_coefficient** : FiredrakeCoefficient
+CommonModelOptions.\ **linear_drag_coefficient** : FiredrakeScalarExpression
     
     2D linear drag parameter :math:`L`
     
@@ -122,7 +122,7 @@ CommonModelOptions.\ **linear_drag_coefficient** : FiredrakeCoefficient
 
     Default:
 
-    Function
+    UFL scalar expression
 
 CommonModelOptions.\ **log_output** : Bool
     Redirect all output to log file in output directory
@@ -131,7 +131,7 @@ CommonModelOptions.\ **log_output** : Bool
 
     True
 
-CommonModelOptions.\ **manning_drag_coefficient** : FiredrakeCoefficient
+CommonModelOptions.\ **manning_drag_coefficient** : FiredrakeScalarExpression
     
     Manning-Strickler 2D quadratic drag parameter :math:`\mu`
     
@@ -140,14 +140,14 @@ CommonModelOptions.\ **manning_drag_coefficient** : FiredrakeCoefficient
 
     Default:
 
-    Function
+    UFL scalar expression
 
-CommonModelOptions.\ **momentum_source_2d** : FiredrakeCoefficient
+CommonModelOptions.\ **momentum_source_2d** : FiredrakeVectorExpression
     Source term for 2D momentum equation
 
     Default:
 
-    Function
+    UFL vector expression
 
 CommonModelOptions.\ **no_exports** : Bool
     
@@ -175,7 +175,7 @@ CommonModelOptions.\ **polynomial_degree** : NonNegativeInteger
 
     1
 
-CommonModelOptions.\ **quadratic_drag_coefficient** : FiredrakeCoefficient
+CommonModelOptions.\ **quadratic_drag_coefficient** : FiredrakeScalarExpression
     
     Dimensionless 2D quadratic drag parameter :math:`C_D`
     
@@ -184,7 +184,7 @@ CommonModelOptions.\ **quadratic_drag_coefficient** : FiredrakeCoefficient
 
     Default:
 
-    Function
+    UFL scalar expression
 
 CommonModelOptions.\ **simulation_end_time** : PositiveFloat
     Simulation duration in seconds
@@ -251,20 +251,20 @@ CommonModelOptions.\ **verbose** : Int
 
     0
 
-CommonModelOptions.\ **volume_source_2d** : FiredrakeCoefficient
+CommonModelOptions.\ **volume_source_2d** : FiredrakeScalarExpression
     Source term for 2D continuity equation
 
     Default:
 
-    Function
+    UFL scalar expression
 
-CommonModelOptions.\ **wind_stress** : FiredrakeCoefficient
+CommonModelOptions.\ **wind_stress** : FiredrakeVectorExpression
     Stress at free surface (2D vector function)
 
     Default:
 
-    Function
-ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'SSPRK33Semi'|'ForwardEuler'|'BackwardEuler'|'CrankNicolson'|'DIRK22'|'DIRK33'|'SteadyState'|'PressureProjectionPicard'|'SSPIMEX'
+    UFL vector expression
+ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'|'CrankNicolson'|'DIRK22'|'DIRK33'|'SteadyState'|'PressureProjectionPicard'|'SSPIMEX'
     Name of the time integrator
 
     Default:
@@ -273,15 +273,6 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'SSPRK33Semi'|'ForwardEuler'|'
     
     Setting value implies configuration of sub-tree ModelOptions2d.timestepper_options:
     
-    'DIRK22':
-    
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative', 'ksp_type': 'gmres'}
-    
     'SteadyState':
     
         ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
@@ -289,7 +280,34 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'SSPRK33Semi'|'ForwardEuler'|'
     
             Default:
     
-            {'pc_type': 'lu', 'mat_type': 'aij', 'ksp_type': 'preonly'}
+            {'ksp_type': 'preonly', 'mat_type': 'aij', 'pc_type': 'lu'}
+    
+    'SSPIMEX':
+    
+        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_fieldsplit_type': 'multiplicative', 'pc_type': 'fieldsplit'}
+    
+    'SSPRK33':
+    
+        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'snes_type': 'ksponly', 'sub_ksp_type': 'preonly', 'pc_type': 'bjacobi', 'ksp_type': 'cg', 'mat_type': 'aij', 'sub_pc_type': 'ilu'}
+    
+    'DIRK22':
+    
+        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_fieldsplit_type': 'multiplicative', 'pc_type': 'fieldsplit'}
     
     'DIRK33':
     
@@ -298,9 +316,9 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'SSPRK33Semi'|'ForwardEuler'|'
     
             Default:
     
-            {'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative', 'ksp_type': 'gmres'}
+            {'ksp_type': 'gmres', 'pc_fieldsplit_type': 'multiplicative', 'pc_type': 'fieldsplit'}
     
-    'SSPRK33Semi':
+    'CrankNicolson':
     
         ModelOptions2d.timestepper_options.\ **implicitness_theta** : BoundedFloat
             implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.
@@ -330,14 +348,14 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'SSPRK33Semi'|'ForwardEuler'|'
     
             Default:
     
-            {'pc_type': 'bjacobi', 'ksp_converged_reason': True, 'sub_pc_type': 'sor', 'sub_ksp_type': 'preonly', 'ksp_type': 'gmres'}
+            {'ksp_type': 'gmres', 'ksp_converged_reason': True, 'sub_ksp_type': 'preonly', 'pc_type': 'bjacobi', 'sub_pc_type': 'sor'}
     
         ModelOptions2d.timestepper_options.\ **solver_parameters_pressure** : PETScSolverParameters
             No description
     
             Default:
     
-            {'fieldsplit_H_2d': {'schur_ksp_type': 'gmres', 'schur_ksp_converged_reason': True, 'schur_ksp_max_it': 100, 'pc_type': 'python', 'schur_pc_type': 'gamg', 'pc_python_type': 'thetis.AssembledSchurPC', 'ksp_type': 'preonly'}, 'mat_type': 'matfree', 'pc_fieldsplit_schur_fact_type': 'full', 'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'schur', 'fieldsplit_U_2d': {'assembled_pc_type': 'bjacobi', 'assembled_sub_pc_type': 'ilu', 'assembled_ksp_type': 'preonly', 'pc_type': 'python', 'pc_python_type': 'firedrake.AssembledPC', 'ksp_type': 'gmres'}, 'ksp_type': 'preonly'}
+            {'pc_fieldsplit_schur_fact_type': 'full', 'fieldsplit_H_2d': {'schur_ksp_converged_reason': True, 'schur_ksp_max_it': 100, 'pc_type': 'python', 'ksp_type': 'preonly', 'schur_ksp_type': 'gmres', 'schur_pc_type': 'gamg', 'pc_python_type': 'thetis.AssembledSchurPC'}, 'mat_type': 'matfree', 'pc_type': 'fieldsplit', 'ksp_type': 'preonly', 'pc_fieldsplit_type': 'schur', 'fieldsplit_U_2d': {'assembled_sub_pc_type': 'ilu', 'assembled_ksp_type': 'preonly', 'ksp_type': 'gmres', 'pc_type': 'python', 'assembled_pc_type': 'bjacobi', 'pc_python_type': 'firedrake.AssembledPC'}}
     
         ModelOptions2d.timestepper_options.\ **use_semi_implicit_linearization** : Bool
             Use linearized semi-implicit time integration
@@ -346,23 +364,14 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'SSPRK33Semi'|'ForwardEuler'|'
     
             True
     
-    'SSPRK33':
+    'BackwardEuler':
     
         ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
             No description
     
             Default:
     
-            {'snes_type': 'ksponly', 'sub_pc_type': 'ilu', 'pc_type': 'bjacobi', 'mat_type': 'aij', 'sub_ksp_type': 'preonly', 'ksp_type': 'cg'}
-    
-    'SSPIMEX':
-    
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative', 'ksp_type': 'gmres'}
+            {'ksp_type': 'gmres', 'pc_fieldsplit_type': 'multiplicative', 'pc_type': 'fieldsplit'}
     
     'ForwardEuler':
     
@@ -371,32 +380,7 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'SSPRK33Semi'|'ForwardEuler'|'
     
             Default:
     
-            {'snes_type': 'ksponly', 'sub_pc_type': 'ilu', 'pc_type': 'bjacobi', 'mat_type': 'aij', 'sub_ksp_type': 'preonly', 'ksp_type': 'cg'}
-    
-    'BackwardEuler':
-    
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative', 'ksp_type': 'gmres'}
-    
-    'CrankNicolson':
-    
-        ModelOptions2d.timestepper_options.\ **implicitness_theta** : BoundedFloat
-            implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.
-    
-            Default:
-    
-            0.5
-    
-        ModelOptions2d.timestepper_options.\ **use_semi_implicit_linearization** : Bool
-            Use linearized semi-implicit time integration
-    
-            Default:
-    
-            False
+            {'snes_type': 'ksponly', 'sub_ksp_type': 'preonly', 'pc_type': 'bjacobi', 'ksp_type': 'cg', 'mat_type': 'aij', 'sub_pc_type': 'ilu'}
 
 
 ModelOptions2d.\ **use_wetting_and_drying** : Bool

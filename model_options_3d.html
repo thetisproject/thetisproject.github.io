@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>3D model options &#8212; Thetis 0.0.5+875.ge1658a7 documentation</title>
+    <title>3D model options &#8212; Thetis 0+untagged.1138.g086f153 documentation</title>
     <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.0.5+875.ge1658a7',
+        VERSION:     '0+untagged.1138.g086f153',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -67,10 +67,10 @@
 <p>This page lists all available options for the 3D model.</p>
 <p>See also <a class="reference internal" href="turbulence_options.html#turbulence-options"><span class="std std-ref">Turbulence model options</span></a> and <a class="reference internal" href="eos_options.html#eos-options"><span class="std std-ref">Equation of State options</span></a>.</p>
 <dl class="docutils">
-<dt>CommonModelOptions.<strong>atmospheric_pressure</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>CommonModelOptions.<strong>atmospheric_pressure</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeScalarExpression</span></dt>
 <dd><p class="first">Atmospheric pressure at free surface, in pascals</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL scalar expression</p>
 </dd>
 <dt>CommonModelOptions.<strong>cfl_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
 <dd><p class="first">Factor to scale the 2d time step OBSOLETE</p>
@@ -92,10 +92,10 @@ Prints deviation from the initial volume to stdout.</p>
 <p>False</p>
 </div></blockquote>
 <dl class="docutils">
-<dt>CommonModelOptions.<strong>coriolis_frequency</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>CommonModelOptions.<strong>coriolis_frequency</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeScalarExpression</span></dt>
 <dd><p class="first">2D Coriolis parameter</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL scalar expression</p>
 </dd>
 <dt>CommonModelOptions.<strong>element_family</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘dg-dg’|’rt-dg’|’dg-cg’</span></dt>
 <dd><p class="first">Finite element family</p>
@@ -128,10 +128,10 @@ Prints deviation from the initial volume to stdout.</p>
 <p>Constant(0.1)</p>
 </div></blockquote>
 <dl class="docutils">
-<dt>CommonModelOptions.<strong>horizontal_viscosity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>CommonModelOptions.<strong>horizontal_viscosity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeScalarExpression</span></dt>
 <dd><p class="first">Horizontal viscosity</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL scalar expression</p>
 </dd>
 </dl>
 <p>CommonModelOptions.<strong>horizontal_viscosity_scale</strong> : FiredrakeConstant</p>
@@ -148,12 +148,12 @@ Prints deviation from the initial volume to stdout.</p>
 <p class="last">Constant(1.0)</p>
 </dd>
 </dl>
-<p>CommonModelOptions.<strong>linear_drag_coefficient</strong> : FiredrakeCoefficient</p>
+<p>CommonModelOptions.<strong>linear_drag_coefficient</strong> : FiredrakeScalarExpression</p>
 <blockquote>
 <div><p>2D linear drag parameter <span class="math">\(L\)</span></p>
 <p>Bottom stress is <span class="math">\(\tau_b/\rho_0 = -L \mathbf{u} H\)</span></p>
 <p>Default:</p>
-<p>Function</p>
+<p>UFL scalar expression</p>
 </div></blockquote>
 <dl class="docutils">
 <dt>CommonModelOptions.<strong>log_output</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
@@ -162,18 +162,18 @@ Prints deviation from the initial volume to stdout.</p>
 <p class="last">True</p>
 </dd>
 </dl>
-<p>CommonModelOptions.<strong>manning_drag_coefficient</strong> : FiredrakeCoefficient</p>
+<p>CommonModelOptions.<strong>manning_drag_coefficient</strong> : FiredrakeScalarExpression</p>
 <blockquote>
 <div><p>Manning-Strickler 2D quadratic drag parameter <span class="math">\(\mu\)</span></p>
 <p>Bottom stress is <span class="math">\(\tau_b/\rho_0 = -g \mu^2 |\mathbf{u}|\mathbf{u}/H^{1/3}\)</span></p>
 <p>Default:</p>
-<p>Function</p>
+<p>UFL scalar expression</p>
 </div></blockquote>
 <dl class="docutils">
-<dt>CommonModelOptions.<strong>momentum_source_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>CommonModelOptions.<strong>momentum_source_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeVectorExpression</span></dt>
 <dd><p class="first">Source term for 2D momentum equation</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL vector expression</p>
 </dd>
 </dl>
 <p>CommonModelOptions.<strong>no_exports</strong> : Bool</p>
@@ -196,12 +196,12 @@ Used in CI test suite.</p>
 <p class="last">1</p>
 </dd>
 </dl>
-<p>CommonModelOptions.<strong>quadratic_drag_coefficient</strong> : FiredrakeCoefficient</p>
+<p>CommonModelOptions.<strong>quadratic_drag_coefficient</strong> : FiredrakeScalarExpression</p>
 <blockquote>
 <div><p>Dimensionless 2D quadratic drag parameter <span class="math">\(C_D\)</span></p>
 <p>Bottom stress is <span class="math">\(\tau_b/\rho_0 = -C_D |\mathbf{u}|\mathbf{u}\)</span></p>
 <p>Default:</p>
-<p>Function</p>
+<p>UFL scalar expression</p>
 </div></blockquote>
 <dl class="docutils">
 <dt>CommonModelOptions.<strong>simulation_end_time</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
@@ -251,15 +251,15 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p class="last">0</p>
 </dd>
-<dt>CommonModelOptions.<strong>volume_source_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>CommonModelOptions.<strong>volume_source_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeScalarExpression</span></dt>
 <dd><p class="first">Source term for 2D continuity equation</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL scalar expression</p>
 </dd>
-<dt>CommonModelOptions.<strong>wind_stress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>CommonModelOptions.<strong>wind_stress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeVectorExpression</span></dt>
 <dd><p class="first">Stress at free surface (2D vector function)</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL vector expression</p>
 </dd>
 </dl>
 <p>ModelOptions3d.<strong>check_salinity_conservation</strong> : Bool</p>
@@ -313,9 +313,8 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p>‘full’</p>
 <p>Setting value implies configuration of sub-tree ModelOptions3d.equation_of_state_options:</p>
-<p>‘full’:</p>
 <p>‘linear’:</p>
-<blockquote class="last">
+<blockquote>
 <div><dl class="docutils">
 <dt>ModelOptions3d.equation_of_state_options.<strong>alpha</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
 <dd><p class="first">Thermal expansion coefficient of ocean water</p>
@@ -344,26 +343,27 @@ diagnostics will be computed</p>
 </dd>
 </dl>
 </div></blockquote>
+<p class="last">‘full’:</p>
 </dd>
-<dt>ModelOptions3d.<strong>horizontal_diffusivity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>ModelOptions3d.<strong>horizontal_diffusivity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeScalarExpression</span></dt>
 <dd><p class="first">Horizontal diffusivity for tracers</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL scalar expression</p>
 </dd>
 <dt>ModelOptions3d.<strong>lax_friedrichs_tracer_scaling_factor</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeConstant</span></dt>
 <dd><p class="first">Scaling factor for tracer Lax Friedrichs stability term.</p>
 <p>Default:</p>
 <p class="last">Constant(1.0)</p>
 </dd>
-<dt>ModelOptions3d.<strong>momentum_source_3d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>ModelOptions3d.<strong>momentum_source_3d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeVectorExpression</span></dt>
 <dd><p class="first">Source term for 3D momentum equation</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL vector expression</p>
 </dd>
-<dt>ModelOptions3d.<strong>salinity_source_3d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>ModelOptions3d.<strong>salinity_source_3d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeScalarExpression</span></dt>
 <dd><p class="first">Source term for salinity equation</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL scalar expression</p>
 </dd>
 <dt>ModelOptions3d.<strong>smagorinsky_coefficient</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeConstant</span></dt>
 <dd><p class="first">Smagorinsky viscosity coefficient <span class="math">\(C_S\)</span></p>
@@ -381,10 +381,10 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p class="last">True</p>
 </dd>
-<dt>ModelOptions3d.<strong>temperature_source_3d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>ModelOptions3d.<strong>temperature_source_3d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeScalarExpression</span></dt>
 <dd><p class="first">Source term for temperature equation</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL scalar expression</p>
 </dd>
 </dl>
 <p>ModelOptions3d.<strong>timestep_2d</strong> : PositiveFloat</p>
@@ -396,108 +396,38 @@ explicitly.</p>
 <p>10.0</p>
 </div></blockquote>
 <dl class="docutils">
-<dt>ModelOptions3d.<strong>timestepper_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘SSPRK33’|’LeapFrog’|’SSPRK22’|’IMEXALE’|’ERKALE’</span></dt>
+<dt>ModelOptions3d.<strong>timestepper_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘LeapFrog’|’SSPRK22’</span></dt>
 <dd><p class="first">Name of the time integrator</p>
 <p>Default:</p>
 <p>‘SSPRK22’</p>
 <p>Setting value implies configuration of sub-tree ModelOptions3d.timestepper_options:</p>
-<p>‘SSPRK33’:</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>ModelOptions3d.timestepper_options.<strong>implicitness_theta_2d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">BoundedFloat</span></dt>
-<dd><p class="first">implicitness parameter theta for 2D solver. Value 1.0 implies fully implicit formulation.</p>
-<p>Default:</p>
-<p class="last">0.5</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>‘ERKALE’:</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_2d_swe</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘ksp_type’: ‘gmres’}</p>
-</dd>
-<dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_momentum_explicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’, ‘ksp_type’: ‘cg’}</p>
-</dd>
-<dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_momentum_implicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_pc_type’: ‘ilu’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘snes_monitor’: False, ‘ksp_type’: ‘preonly’}</p>
-</dd>
-<dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_tracer_explicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’, ‘ksp_type’: ‘cg’}</p>
-</dd>
-<dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_tracer_implicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_pc_type’: ‘ilu’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘snes_monitor’: False, ‘ksp_type’: ‘preonly’}</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>‘IMEXALE’:</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_2d_swe</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘ksp_type’: ‘gmres’}</p>
-</dd>
-<dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_momentum_explicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’, ‘ksp_type’: ‘cg’}</p>
-</dd>
-<dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_momentum_implicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_pc_type’: ‘ilu’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘snes_monitor’: False, ‘ksp_type’: ‘preonly’}</p>
-</dd>
-<dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_tracer_explicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’, ‘ksp_type’: ‘cg’}</p>
-</dd>
-<dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_tracer_implicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
-<dd><p class="first">No description</p>
-<p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_pc_type’: ‘ilu’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘snes_monitor’: False, ‘ksp_type’: ‘preonly’}</p>
-</dd>
-</dl>
-</div></blockquote>
 <p>‘SSPRK22’:</p>
 <blockquote>
 <div><dl class="docutils">
 <dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_2d_swe</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘ksp_type’: ‘gmres’}</p>
+<p class="last">{‘ksp_type’: ‘gmres’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘pc_type’: ‘fieldsplit’}</p>
 </dd>
 <dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_momentum_explicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’, ‘ksp_type’: ‘cg’}</p>
+<p class="last">{‘snes_type’: ‘ksponly’, ‘ksp_type’: ‘cg’, ‘sub_ksp_type’: ‘preonly’, ‘pc_type’: ‘bjacobi’, ‘sub_pc_type’: ‘ilu’}</p>
 </dd>
 <dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_momentum_implicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_pc_type’: ‘ilu’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘snes_monitor’: False, ‘ksp_type’: ‘preonly’}</p>
+<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_ksp_type’: ‘preonly’, ‘snes_monitor’: False, ‘pc_type’: ‘bjacobi’, ‘ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’}</p>
 </dd>
 <dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_tracer_explicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’, ‘ksp_type’: ‘cg’}</p>
+<p class="last">{‘snes_type’: ‘ksponly’, ‘ksp_type’: ‘cg’, ‘sub_ksp_type’: ‘preonly’, ‘pc_type’: ‘bjacobi’, ‘sub_pc_type’: ‘ilu’}</p>
 </dd>
 <dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_tracer_implicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_pc_type’: ‘ilu’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘snes_monitor’: False, ‘ksp_type’: ‘preonly’}</p>
+<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_ksp_type’: ‘preonly’, ‘snes_monitor’: False, ‘pc_type’: ‘bjacobi’, ‘ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’}</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -507,196 +437,216 @@ explicitly.</p>
 <dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_2d_swe</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘ksp_type’: ‘gmres’}</p>
+<p class="last">{‘ksp_type’: ‘gmres’, ‘pc_fieldsplit_type’: ‘multiplicative’, ‘pc_type’: ‘fieldsplit’}</p>
 </dd>
 <dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_momentum_explicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’, ‘ksp_type’: ‘cg’}</p>
+<p class="last">{‘snes_type’: ‘ksponly’, ‘ksp_type’: ‘cg’, ‘sub_ksp_type’: ‘preonly’, ‘pc_type’: ‘bjacobi’, ‘sub_pc_type’: ‘ilu’}</p>
 </dd>
 <dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_momentum_implicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_pc_type’: ‘ilu’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘snes_monitor’: False, ‘ksp_type’: ‘preonly’}</p>
+<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_ksp_type’: ‘preonly’, ‘snes_monitor’: False, ‘pc_type’: ‘bjacobi’, ‘ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’}</p>
 </dd>
 <dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_tracer_explicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’, ‘ksp_type’: ‘cg’}</p>
+<p class="last">{‘snes_type’: ‘ksponly’, ‘ksp_type’: ‘cg’, ‘sub_ksp_type’: ‘preonly’, ‘pc_type’: ‘bjacobi’, ‘sub_pc_type’: ‘ilu’}</p>
 </dd>
 <dt>ModelOptions3d.timestepper_options.<strong>solver_parameters_tracer_implicit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PETScSolverParameters</span></dt>
 <dd><p class="first">No description</p>
 <p>Default:</p>
-<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_pc_type’: ‘ilu’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘snes_monitor’: False, ‘ksp_type’: ‘preonly’}</p>
+<p class="last">{‘snes_type’: ‘ksponly’, ‘sub_ksp_type’: ‘preonly’, ‘snes_monitor’: False, ‘pc_type’: ‘bjacobi’, ‘ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’}</p>
 </dd>
 </dl>
 </div></blockquote>
 </dd>
-<dt>ModelOptions3d.<strong>turbulence_model_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘gls’</span></dt>
+<dt>ModelOptions3d.<strong>turbulence_model_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘gls’|’pacanowski’</span></dt>
 <dd><p class="first">Type of vertical turbulence model</p>
 <p>Default:</p>
 <p>‘gls’</p>
-<p>Setting value implies configuration of sub-tree ModelOptions3d.gls_options:</p>
+<p>Setting value implies configuration of sub-tree ModelOptions3d.turbulence_model_options:</p>
 <p>‘gls’:</p>
-<blockquote class="last">
+<blockquote>
 <div><dl class="docutils">
-<dt>ModelOptions3d.gls_options.<strong>c1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>c1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
 <dd><p class="first">float: c1 parameter for Psi equations</p>
 <p>Default:</p>
 <p class="last">1.44</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>c2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>c2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
 <dd><p class="first">float: c2 parameter for Psi equations</p>
 <p>Default:</p>
 <p class="last">1.92</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>c3_minus</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>c3_minus</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
 <dd><p class="first">float: c3 parameter for Psi equations, stable stratification</p>
 <p>If <code class="xref py py-attr docutils literal"><span class="pre">compute_c3_minus</span></code> is True this value will be overriden</p>
 <p>Default:</p>
 <p class="last">-0.52</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>c3_plus</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>c3_plus</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
 <dd><p class="first">float: c3 parameter for Psi equations, unstable stratification</p>
 <p>Default:</p>
 <p class="last">1.0</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>closure_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘k-epsilon’|’k-omega’|’Generic Lenght Scale’</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>closure_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘k-epsilon’|’k-omega’|’Generic Lenght Scale’</span></dt>
 <dd><p class="first">Name of two-equation closure</p>
 <p>Default:</p>
 <p class="last">‘k-epsilon’</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>cmu0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>cmu0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
 <dd><p class="first">float: cmu0 parameter</p>
 <p>Default:</p>
 <p class="last">0.5477</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>compute_c3_minus</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>compute_c3_minus</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">bool: compute <code class="xref py py-attr docutils literal"><span class="pre">c3_minus</span></code> from <code class="xref py py-attr docutils literal"><span class="pre">ri_st</span></code></p>
 <p>Default:</p>
 <p class="last">True</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>compute_cmu0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>compute_cmu0</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">bool: compute cmu0 from stability function parameters</p>
 <p>If <code class="xref py py-attr docutils literal"><span class="pre">compute_cmu0</span></code> is True, this value will be overriden</p>
 <p>Default:</p>
 <p class="last">True</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>compute_kappa</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>compute_kappa</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">bool: compute von Karman constant from <code class="xref py py-attr docutils literal"><span class="pre">schmidt_nb_psi</span></code></p>
 <p>Default:</p>
 <p class="last">True</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>compute_len_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>compute_len_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">bool: compute min_len from k_min and psi_min</p>
 <p>Default:</p>
 <p class="last">True</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>compute_psi_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>compute_psi_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">bool: compute psi_len from k_min and eps_min</p>
 <p>Default:</p>
 <p class="last">True</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>diff_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>diff_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
 <dd><p class="first">float: minimum value for eddy diffusivity</p>
 <p>Default:</p>
 <p class="last">1e-08</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>eps_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>eps_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
 <dd><p class="first">float: minimum value for epsilon</p>
 <p>Default:</p>
 <p class="last">1e-10</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>f_wall</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>f_wall</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
 <dd><p class="first">float: wall function parameter</p>
 <p>Default:</p>
 <p class="last">1.0</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>galperin_lim</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>galperin_lim</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
 <dd><p class="first">float: Galperin lenght scale limitation parameter</p>
 <p>Default:</p>
 <p class="last">0.56</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>k_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>k_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
 <dd><p class="first">float: minimum value for turbulent kinetic energy</p>
 <p>Default:</p>
 <p class="last">3.7e-08</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>kappa</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>kappa</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
 <dd><p class="first">float: von Karman constant</p>
 <p>If <code class="xref py py-attr docutils literal"><span class="pre">compute_kappa</span></code> is True this value will be overriden</p>
 <p>Default:</p>
 <p class="last">0.4</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>len_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>len_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
 <dd><p class="first">float: minimum value for turbulent lenght scale</p>
 <p>Default:</p>
 <p class="last">1e-10</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>limit_eps</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>limit_eps</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">bool: apply Galperin lenght scale limit on epsilon</p>
 <p>Default:</p>
 <p class="last">False</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>limit_len</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>limit_len</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">bool: apply Galperin lenght scale limit</p>
 <p>Default:</p>
 <p class="last">False</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>limit_len_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>limit_len_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">bool: limit minimum turbulent length scale to len_min</p>
 <p>Default:</p>
 <p class="last">True</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>limit_psi</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>limit_psi</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">bool: apply Galperin lenght scale limit on psi</p>
 <p>Default:</p>
 <p class="last">False</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>m</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>m</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
 <dd><p class="first">float: parameter m for the definition of psi</p>
 <p>Default:</p>
 <p class="last">1.5</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>n</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>n</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
 <dd><p class="first">float: parameter n for the definition of psi</p>
 <p>Default:</p>
 <p class="last">-1.0</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>p</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>p</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
 <dd><p class="first">float: parameter p for the definition of psi</p>
 <p>Default:</p>
 <p class="last">3.0</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>psi_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>psi_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
 <dd><p class="first">float: minimum value for psi</p>
 <p>Default:</p>
 <p class="last">1e-10</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>ri_st</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>ri_st</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Float</span></dt>
 <dd><p class="first">steady state gradient Richardson number</p>
 <p>Default:</p>
 <p class="last">0.25</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>schmidt_nb_psi</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>schmidt_nb_psi</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
 <dd><p class="first">float: psi Schmidt number</p>
 <p>Default:</p>
 <p class="last">1.3</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>schmidt_nb_tke</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>schmidt_nb_tke</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
 <dd><p class="first">float: turbulent kinetic energy Schmidt number</p>
 <p>Default:</p>
 <p class="last">1.0</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>stability_function_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘Canuto A’|’Canuto B’|’Kantha-Clayson’|’Cheng’</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>stability_function_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">‘Canuto A’|’Canuto B’|’Kantha-Clayson’|’Cheng’</span></dt>
 <dd><p class="first">Name of stability function family</p>
 <p>Default:</p>
 <p class="last">‘Canuto A’</p>
 </dd>
-<dt>ModelOptions3d.gls_options.<strong>visc_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dt>ModelOptions3d.turbulence_model_options.<strong>visc_min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
 <dd><p class="first">float: minimum value for eddy viscosity</p>
 <p>Default:</p>
 <p class="last">1e-08</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘pacanowski’:</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>ModelOptions3d.turbulence_model_options.<strong>alpha</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dd><p class="first">float: Richardson number multiplier</p>
+<p>Default:</p>
+<p class="last">10.0</p>
+</dd>
+<dt>ModelOptions3d.turbulence_model_options.<strong>exponent</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dd><p class="first">float: Exponent of viscosity numerator <span class="math">\(n\)</span></p>
+<p>Default:</p>
+<p class="last">2.0</p>
+</dd>
+<dt>ModelOptions3d.turbulence_model_options.<strong>max_viscosity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PositiveFloat</span></dt>
+<dd><p class="first">float: Constant maximum viscosity <span class="math">\(\nu_{max}\)</span></p>
+<p>Default:</p>
+<p class="last">0.05</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -729,7 +679,12 @@ explicitly.</p>
 <dt>ModelOptions3d.<strong>use_limiter_for_tracers</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">Apply P1DG limiter for tracer fields</p>
 <p>Default:</p>
-<p class="last">False</p>
+<p class="last">True</p>
+</dd>
+<dt>ModelOptions3d.<strong>use_limiter_for_velocity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dd><p class="first">Apply P1DG limiter for 3D horizontal velocity field</p>
+<p>Default:</p>
+<p class="last">True</p>
 </dd>
 <dt>ModelOptions3d.<strong>use_parabolic_viscosity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">Use idealized parabolic eddy viscosity</p>
@@ -779,10 +734,10 @@ pressure gradient is in the velocity space.</p>
 <p>Default:</p>
 <p class="last">False</p>
 </dd>
-<dt>ModelOptions3d.<strong>vertical_diffusivity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>ModelOptions3d.<strong>vertical_diffusivity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeScalarExpression</span></dt>
 <dd><p class="first">Vertical diffusivity for tracers</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL scalar expression</p>
 </dd>
 </dl>
 <p>ModelOptions3d.<strong>vertical_velocity_scale</strong> : FiredrakeConstant</p>
@@ -793,10 +748,10 @@ pressure gradient is in the velocity space.</p>
 <p>Constant(0.0001)</p>
 </div></blockquote>
 <dl class="docutils">
-<dt>ModelOptions3d.<strong>vertical_viscosity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeCoefficient</span></dt>
+<dt>ModelOptions3d.<strong>vertical_viscosity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeScalarExpression</span></dt>
 <dd><p class="first">Vertical viscosity</p>
 <p>Default:</p>
-<p class="last">Function</p>
+<p class="last">UFL scalar expression</p>
 </dd>
 </dl>
 </div>
@@ -810,7 +765,7 @@ pressure gradient is in the velocity space.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
     </div>
   </body>
 </html>
