@@ -1,0 +1,217 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>thetis.coupled_timeintegrator_2d &#8212; Thetis 0+untagged.1213.g0b06141 documentation</title>
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="../../_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="../../_static/icon_thetis.ico" />
+
+
+  </head><body>
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetisproject%2Fthetis/activity" title="Thetis build status">Jenkins</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/thetis/coupled_timeintegrator_2d">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for thetis.coupled_timeintegrator_2d</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Time integrators for solving coupled shallow water equations with one tracer.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">timeintegrator</span>
+<span class="kn">from</span> <span class="nn">.log</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractproperty</span>
+
+
+<div class="viewcode-block" id="CoupledTimeIntegrator2D"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator_2d.CoupledTimeIntegrator2D">[docs]</a><span class="k">class</span> <span class="nc">CoupledTimeIntegrator2D</span><span class="p">(</span><span class="n">timeintegrator</span><span class="o">.</span><span class="n">TimeIntegratorBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class of time integrator for coupled shallow water and tracer equations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
+
+    <span class="nd">@abstractproperty</span>
+    <span class="k">def</span> <span class="nf">swe_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;time integrator for the shallow water equations&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractproperty</span>
+    <span class="k">def</span> <span class="nf">tracer_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;time integrator for the tracer equation&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg solver: :class:`.FlowSolver` object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">solver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Coupled time integrator: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Shallow Water time integrator: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">swe_integrator</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Tracer time integrator: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer_integrator</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_integrators</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_create_swe_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create time integrator for 2D system</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;linear_drag_coefficient&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">linear_drag_coefficient</span><span class="p">,</span>
+            <span class="s1">&#39;quadratic_drag_coefficient&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">quadratic_drag_coefficient</span><span class="p">,</span>
+            <span class="s1">&#39;manning_drag_coefficient&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">manning_drag_coefficient</span><span class="p">,</span>
+            <span class="s1">&#39;viscosity_h&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">horizontal_viscosity</span><span class="p">,</span>
+            <span class="s1">&#39;lax_friedrichs_velocity_scaling_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">lax_friedrichs_velocity_scaling_factor</span><span class="p">,</span>
+            <span class="s1">&#39;coriolis&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">coriolis_frequency</span><span class="p">,</span>
+            <span class="s1">&#39;wind_stress&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wind_stress</span><span class="p">,</span>
+            <span class="s1">&#39;atmospheric_pressure&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">atmospheric_pressure</span><span class="p">,</span>
+            <span class="s1">&#39;momentum_source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">momentum_source_2d</span><span class="p">,</span>
+            <span class="s1">&#39;volume_source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">volume_source_2d</span><span class="p">,</span> <span class="p">}</span>
+
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">swe_integrator</span><span class="p">,</span> <span class="n">timeintegrator</span><span class="o">.</span><span class="n">CrankNicolson</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">swe2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">swe_integrator</span><span class="p">(</span>
+                <span class="n">solver</span><span class="o">.</span><span class="n">eq_sw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">,</span>
+                <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">],</span>
+                <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">,</span>
+                <span class="n">semi_implicit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">use_semi_implicit_linearization</span><span class="p">,</span>
+                <span class="n">theta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">implicitness_theta</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">swe2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">swe_integrator</span><span class="p">(</span><span class="n">solver</span><span class="o">.</span><span class="n">eq_sw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">,</span>
+                                                          <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                                                          <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">],</span>
+                                                          <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_tracer_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create time integrator for tracer equation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_tracer</span><span class="p">:</span>
+            <span class="n">uv</span><span class="p">,</span> <span class="n">elev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_2d&#39;</span><span class="p">:</span> <span class="n">elev</span><span class="p">,</span>
+                      <span class="s1">&#39;uv_2d&#39;</span><span class="p">:</span> <span class="n">uv</span><span class="p">,</span>
+                      <span class="s1">&#39;diffusivity_h&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">horizontal_diffusivity</span><span class="p">,</span>
+                      <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">tracer_source_2d</span><span class="p">,</span>
+                      <span class="s1">&#39;lax_friedrichs_tracer_scaling_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">lax_friedrichs_tracer_scaling_factor</span><span class="p">,</span>
+                      <span class="p">}</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer_integrator</span><span class="p">,</span> <span class="n">timeintegrator</span><span class="o">.</span><span class="n">CrankNicolson</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">tracer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer_integrator</span><span class="p">(</span>
+                    <span class="n">solver</span><span class="o">.</span><span class="n">eq_tracer</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">tracer_2d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                    <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;tracer&#39;</span><span class="p">],</span>
+                    <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_tracer</span><span class="p">,</span>
+                    <span class="n">semi_implicit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">use_semi_implicit_linearization</span><span class="p">,</span>
+                    <span class="n">theta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">implicitness_theta</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">tracer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer_integrator</span><span class="p">(</span><span class="n">solver</span><span class="o">.</span><span class="n">eq_tracer</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">tracer_2d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                                                                  <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;tracer&#39;</span><span class="p">],</span>
+                                                                  <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_tracer</span><span class="p">,)</span>
+
+    <span class="k">def</span> <span class="nf">_create_integrators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates all time integrators with the correct arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_swe_integrator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_tracer_integrator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfl_coeff_2d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">swe2d</span><span class="o">.</span><span class="n">cfl_coeff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">cfl_coeff</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CoupledTimeIntegrator2D.set_dt"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator_2d.CoupledTimeIntegrator2D.set_dt">[docs]</a>    <span class="k">def</span> <span class="nf">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set time step for the coupled time integrator</span>
+
+<span class="sd">        :arg float dt: Time step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">stepper</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="p">[</span><span class="n">stepper</span><span class="p">]</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CoupledTimeIntegrator2D.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator_2d.CoupledTimeIntegrator2D.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution2d</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assign initial conditions to all necessary fields</span>
+
+<span class="sd">        Initial conditions are read from :attr:`fields` dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># solution2d is only provided to make a timeintegrator of just the swe</span>
+        <span class="c1"># compatible with the 2d coupled timeintegrator</span>
+        <span class="k">assert</span> <span class="n">solution2d</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">swe2d</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_tracer</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">tracer_2d</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="CoupledTimeIntegrator2D.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator_2d.CoupledTimeIntegrator2D.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">swe2d</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="n">update_forcings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="n">update_forcings</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tracer_limiter</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">tracer_2d</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CoupledCrankNicolson2D"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator_2d.CoupledCrankNicolson2D">[docs]</a><span class="k">class</span> <span class="nc">CoupledCrankNicolson2D</span><span class="p">(</span><span class="n">CoupledTimeIntegrator2D</span><span class="p">):</span>
+    <span class="n">swe_integrator</span> <span class="o">=</span> <span class="n">timeintegrator</span><span class="o">.</span><span class="n">CrankNicolson</span>
+    <span class="n">tracer_integrator</span> <span class="o">=</span> <span class="n">timeintegrator</span><span class="o">.</span><span class="n">CrankNicolson</span></div>
+
+
+<div class="viewcode-block" id="CoupledCrankEuler2D"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator_2d.CoupledCrankEuler2D">[docs]</a><span class="k">class</span> <span class="nc">CoupledCrankEuler2D</span><span class="p">(</span><span class="n">CoupledTimeIntegrator2D</span><span class="p">):</span>
+    <span class="n">swe_integrator</span> <span class="o">=</span> <span class="n">timeintegrator</span><span class="o">.</span><span class="n">CrankNicolson</span>
+    <span class="n">tracer_integrator</span> <span class="o">=</span> <span class="n">timeintegrator</span><span class="o">.</span><span class="n">ForwardEuler</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2018, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+    </div>
+  </body>
+</html>

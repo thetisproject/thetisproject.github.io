@@ -28,12 +28,10 @@ CommonModelOptions.\ **cfl_3d** : PositiveFloat
     1.0
 
 CommonModelOptions.\ **check_volume_conservation_2d** : Bool
-    
     Compute volume of the 2D mode at every export
     
     2D volume is defined as the integral of the water elevation field.
     Prints deviation from the initial volume to stdout.
-
 
     Default:
 
@@ -77,12 +75,17 @@ CommonModelOptions.\ **fields_to_export_hdf5** : List
 
     []
 
+CommonModelOptions.\ **horizontal_diffusivity** : FiredrakeCoefficient
+    Horizontal diffusivity for tracers
+
+    Default:
+
+    Function
+
 CommonModelOptions.\ **horizontal_velocity_scale** : FiredrakeConstant
-    
     Maximum horizontal velocity magnitude
     
     Used to compute max stable advection time step.
-
 
     Default:
 
@@ -96,11 +99,16 @@ CommonModelOptions.\ **horizontal_viscosity** : FiredrakeScalarExpression
     UFL scalar expression
 
 CommonModelOptions.\ **horizontal_viscosity_scale** : FiredrakeConstant
-    
     Maximum horizontal viscosity
     
     Used to compute max stable diffusion time step.
 
+    Default:
+
+    Constant(1.0)
+
+CommonModelOptions.\ **lax_friedrichs_tracer_scaling_factor** : FiredrakeConstant
+    Scaling factor for tracer Lax Friedrichs stability term.
 
     Default:
 
@@ -114,11 +122,9 @@ CommonModelOptions.\ **lax_friedrichs_velocity_scaling_factor** : FiredrakeConst
     Constant(1.0)
 
 CommonModelOptions.\ **linear_drag_coefficient** : FiredrakeScalarExpression
-    
     2D linear drag parameter :math:`L`
     
     Bottom stress is :math:`\tau_b/\rho_0 = -L \mathbf{u} H`
-
 
     Default:
 
@@ -132,11 +138,9 @@ CommonModelOptions.\ **log_output** : Bool
     True
 
 CommonModelOptions.\ **manning_drag_coefficient** : FiredrakeScalarExpression
-    
     Manning-Strickler 2D quadratic drag parameter :math:`\mu`
     
     Bottom stress is :math:`\tau_b/\rho_0 = -g \mu^2 |\mathbf{u}|\mathbf{u}/H^{1/3}`
-
 
     Default:
 
@@ -150,12 +154,10 @@ CommonModelOptions.\ **momentum_source_2d** : FiredrakeVectorExpression
     UFL vector expression
 
 CommonModelOptions.\ **no_exports** : Bool
-    
     Do not store any outputs to disk
     
     Disables VTK and HDF5 field outputs. and HDF5 diagnostic outputs.
     Used in CI test suite.
-
 
     Default:
 
@@ -176,11 +178,9 @@ CommonModelOptions.\ **polynomial_degree** : NonNegativeInteger
     1
 
 CommonModelOptions.\ **quadratic_drag_coefficient** : FiredrakeScalarExpression
-    
     Dimensionless 2D quadratic drag parameter :math:`C_D`
     
     Bottom stress is :math:`\tau_b/\rho_0 = -C_D |\mathbf{u}|\mathbf{u}`
-
 
     Default:
 
@@ -194,12 +194,10 @@ CommonModelOptions.\ **simulation_end_time** : PositiveFloat
     1000.0
 
 CommonModelOptions.\ **simulation_export_time** : PositiveFloat
-    
     Export interval in seconds
     
     All fields in fields_to_export list will be stored to disk and
     diagnostics will be computed
-
 
     Default:
 
@@ -211,6 +209,13 @@ CommonModelOptions.\ **timestep** : PositiveFloat
     Default:
 
     10.0
+
+CommonModelOptions.\ **tracer_source_2d** : FiredrakeScalarExpression
+    Source term for 2D tracer equation
+
+    Default:
+
+    UFL scalar expression
 
 CommonModelOptions.\ **use_grad_depth_viscosity_term** : Bool
     Include :math:`\nabla H` term in the depth-averaged viscosity
@@ -230,8 +235,22 @@ CommonModelOptions.\ **use_grad_div_viscosity_term** : Bool
 
     False
 
+CommonModelOptions.\ **use_lax_friedrichs_tracer** : Bool
+    Use Lax Friedrichs stabilisation in tracer advection.
+
+    Default:
+
+    True
+
 CommonModelOptions.\ **use_lax_friedrichs_velocity** : Bool
     use Lax Friedrichs stabilisation in horizontal momentum advection.
+
+    Default:
+
+    True
+
+CommonModelOptions.\ **use_limiter_for_tracers** : Bool
+    Apply P1DG limiter for tracer fields
 
     Default:
 
@@ -264,6 +283,32 @@ CommonModelOptions.\ **wind_stress** : FiredrakeVectorExpression
     Default:
 
     UFL vector expression
+
+ModelOptions2d.\ **check_tracer_conservation** : Bool
+    Compute total tracer mass at every export
+    
+    Prints deviation from the initial mass to stdout.
+
+    Default:
+
+    False
+
+ModelOptions2d.\ **check_tracer_overshoot** : Bool
+    Compute tracer overshoots at every export
+    
+    Prints overshoot values that exceed the initial range to stdout.
+
+    Default:
+
+    False
+
+ModelOptions2d.\ **solve_tracer** : Bool
+    Solve tracer transport
+
+    Default:
+
+    False
+
 ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'|'CrankNicolson'|'DIRK22'|'DIRK33'|'SteadyState'|'PressureProjectionPicard'|'SSPIMEX'
     Name of the time integrator
 
@@ -273,24 +318,6 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'
     
     Setting value implies configuration of sub-tree ModelOptions2d.timestepper_options:
     
-    'SteadyState':
-    
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'ksp_type': 'preonly', 'mat_type': 'aij', 'pc_type': 'lu'}
-    
-    'SSPIMEX':
-    
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'ksp_type': 'gmres', 'pc_fieldsplit_type': 'multiplicative', 'pc_type': 'fieldsplit'}
-    
     'SSPRK33':
     
         ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
@@ -298,25 +325,32 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'
     
             Default:
     
-            {'snes_type': 'ksponly', 'sub_ksp_type': 'preonly', 'pc_type': 'bjacobi', 'ksp_type': 'cg', 'mat_type': 'aij', 'sub_pc_type': 'ilu'}
+            {'snes_type': 'ksponly', 'ksp_type': 'cg', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'sub_pc_type': 'ilu', 'mat_type': 'aij'}
     
-    'DIRK22':
-    
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'ksp_type': 'gmres', 'pc_fieldsplit_type': 'multiplicative', 'pc_type': 'fieldsplit'}
-    
-    'DIRK33':
+    'ForwardEuler':
     
         ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
             No description
     
             Default:
     
-            {'ksp_type': 'gmres', 'pc_fieldsplit_type': 'multiplicative', 'pc_type': 'fieldsplit'}
+            {'snes_type': 'ksponly', 'ksp_type': 'cg', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'sub_pc_type': 'ilu', 'mat_type': 'aij'}
+    
+    'BackwardEuler':
+    
+        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative'}
+    
+        ModelOptions2d.timestepper_options.\ **solver_parameters_tracer** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
     
     'CrankNicolson':
     
@@ -334,6 +368,47 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'
     
             False
     
+    'DIRK22':
+    
+        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative'}
+    
+        ModelOptions2d.timestepper_options.\ **solver_parameters_tracer** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'DIRK33':
+    
+        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative'}
+    
+        ModelOptions2d.timestepper_options.\ **solver_parameters_tracer** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'SteadyState':
+    
+        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'preonly', 'pc_type': 'lu', 'mat_type': 'aij'}
+    
     'PressureProjectionPicard':
     
         ModelOptions2d.timestepper_options.\ **implicitness_theta** : BoundedFloat
@@ -348,14 +423,14 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'
     
             Default:
     
-            {'ksp_type': 'gmres', 'ksp_converged_reason': True, 'sub_ksp_type': 'preonly', 'pc_type': 'bjacobi', 'sub_pc_type': 'sor'}
+            {'ksp_type': 'gmres', 'ksp_converged_reason': True, 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'sub_pc_type': 'sor'}
     
         ModelOptions2d.timestepper_options.\ **solver_parameters_pressure** : PETScSolverParameters
             No description
     
             Default:
     
-            {'pc_fieldsplit_schur_fact_type': 'full', 'fieldsplit_H_2d': {'schur_ksp_converged_reason': True, 'schur_ksp_max_it': 100, 'pc_type': 'python', 'ksp_type': 'preonly', 'schur_ksp_type': 'gmres', 'schur_pc_type': 'gamg', 'pc_python_type': 'thetis.AssembledSchurPC'}, 'mat_type': 'matfree', 'pc_type': 'fieldsplit', 'ksp_type': 'preonly', 'pc_fieldsplit_type': 'schur', 'fieldsplit_U_2d': {'assembled_sub_pc_type': 'ilu', 'assembled_ksp_type': 'preonly', 'ksp_type': 'gmres', 'pc_type': 'python', 'assembled_pc_type': 'bjacobi', 'pc_python_type': 'firedrake.AssembledPC'}}
+            {'ksp_type': 'preonly', 'mat_type': 'matfree', 'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'schur', 'pc_fieldsplit_schur_fact_type': 'full', 'fieldsplit_U_2d': {'ksp_type': 'gmres', 'pc_type': 'python', 'pc_python_type': 'firedrake.AssembledPC', 'assembled_ksp_type': 'preonly', 'assembled_pc_type': 'bjacobi', 'assembled_sub_pc_type': 'ilu'}, 'fieldsplit_H_2d': {'ksp_type': 'preonly', 'pc_type': 'python', 'pc_python_type': 'thetis.AssembledSchurPC', 'schur_ksp_type': 'gmres', 'schur_ksp_max_it': 100, 'schur_ksp_converged_reason': True, 'schur_pc_type': 'gamg'}}
     
         ModelOptions2d.timestepper_options.\ **use_semi_implicit_linearization** : Bool
             Use linearized semi-implicit time integration
@@ -364,23 +439,21 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'
     
             True
     
-    'BackwardEuler':
+    'SSPIMEX':
     
         ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
             No description
     
             Default:
     
-            {'ksp_type': 'gmres', 'pc_fieldsplit_type': 'multiplicative', 'pc_type': 'fieldsplit'}
+            {'ksp_type': 'gmres', 'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative'}
     
-    'ForwardEuler':
-    
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+        ModelOptions2d.timestepper_options.\ **solver_parameters_tracer** : PETScSolverParameters
             No description
     
             Default:
     
-            {'snes_type': 'ksponly', 'sub_ksp_type': 'preonly', 'pc_type': 'bjacobi', 'ksp_type': 'cg', 'mat_type': 'aij', 'sub_pc_type': 'ilu'}
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
 
 
 ModelOptions2d.\ **use_wetting_and_drying** : Bool
@@ -389,17 +462,14 @@ ModelOptions2d.\ **use_wetting_and_drying** : Bool
     Uses the wetting and drying scheme from Karna et al (2011).
     If ``True``, one should also set :attr:`wetting_and_drying_alpha` to control the bathymetry displacement.
 
-
     Default:
 
     False
 
 ModelOptions2d.\ **wetting_and_drying_alpha** : FiredrakeConstant
-    
     Coefficient: Wetting and drying parameter :math:`\alpha`.
     
     Used in bathymetry displacement function that ensures positive water depths. Unit is meters.
-
 
     Default:
 

@@ -1,0 +1,174 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>thetis.coordsys &#8212; Thetis 0+untagged.1213.g0b06141 documentation</title>
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="../../_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="../../_static/icon_thetis.ico" />
+
+
+  </head><body>
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetisproject%2Fthetis/activity" title="Thetis build status">Jenkins</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/thetis/coordsys">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for thetis.coordsys</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Generic methods for converting data between different spatial coordinate systems.</span>
+<span class="sd">Uses pyproj library.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pyproj</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="n">UTM_ZONE10</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Proj</span><span class="p">(</span>
+    <span class="n">proj</span><span class="o">=</span><span class="s1">&#39;utm&#39;</span><span class="p">,</span>
+    <span class="n">zone</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">datum</span><span class="o">=</span><span class="s1">&#39;NAD83&#39;</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span>
+    <span class="n">errcheck</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">SPCS_N_OR</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Proj</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="s1">&#39;nad27:3601&#39;</span><span class="p">,</span> <span class="n">errcheck</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">LL_WGS84</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Proj</span><span class="p">(</span><span class="n">proj</span><span class="o">=</span><span class="s1">&#39;latlong&#39;</span><span class="p">,</span> <span class="n">datum</span><span class="o">=</span><span class="s1">&#39;WGS84&#39;</span><span class="p">,</span> <span class="n">errcheck</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="convert_coords"><a class="viewcode-back" href="../../thetis.html#thetis.coordsys.convert_coords">[docs]</a><span class="k">def</span> <span class="nf">convert_coords</span><span class="p">(</span><span class="n">source_sys</span><span class="p">,</span> <span class="n">target_sys</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts coordinates from source_sys to target_sys</span>
+
+<span class="sd">    This function extends pyproj.transform method by handling NaNs correctly.</span>
+
+<span class="sd">    :arg source_sys: pyproj coordinate system where (x, y) are defined in</span>
+<span class="sd">    :arg target_sys: target pyproj coordinate system</span>
+<span class="sd">    :arg x: x coordinate</span>
+<span class="sd">    :arg y: y coordinate</span>
+<span class="sd">    :type x: float or numpy.array_like</span>
+<span class="sd">    :type y: float or numpy.array_like</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="c1"># proj may give wrong results if nans in the arrays</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">goodIx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+        <span class="n">lon</span><span class="p">[</span><span class="n">goodIx</span><span class="p">],</span> <span class="n">lat</span><span class="p">[</span><span class="n">goodIx</span><span class="p">]</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+            <span class="n">source_sys</span><span class="p">,</span> <span class="n">target_sys</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">goodIx</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">goodIx</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">source_sys</span><span class="p">,</span> <span class="n">target_sys</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span></div>
+
+
+<div class="viewcode-block" id="get_vector_rotation_matrix"><a class="viewcode-back" href="../../thetis.html#thetis.coordsys.get_vector_rotation_matrix">[docs]</a><span class="k">def</span> <span class="nf">get_vector_rotation_matrix</span><span class="p">(</span><span class="n">source_sys</span><span class="p">,</span> <span class="n">target_sys</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimate rotation matrix that converts vectors defined in source_sys to</span>
+<span class="sd">    target_sys.</span>
+
+<span class="sd">    Assume that we have a vector field defined in source_sys: vectors located at</span>
+<span class="sd">    (x, y) define the x and y components. We can then rotate the vectors to</span>
+<span class="sd">    represent x2 and y2 components of the target_sys by applying a local</span>
+<span class="sd">    rotation:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        R, theta = get_vector_rotation_matrix(source_sys, target_sys, x, lat)</span>
+<span class="sd">        v_xy = numpy.array([[v_x], [v_y]])</span>
+<span class="sd">        v_new = numpy.matmul(R, v_xy)</span>
+<span class="sd">        v_x2, v_y2 = v_new</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">delta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="mf">1e-6</span>  <span class="c1"># ~1 m in LL_WGS84</span>
+    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">source_sys</span><span class="p">,</span> <span class="n">target_sys</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">source_sys</span><span class="p">,</span> <span class="n">target_sys</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">delta</span><span class="p">)</span>
+    <span class="n">dxdl</span> <span class="o">=</span> <span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">/</span> <span class="n">delta</span>
+    <span class="n">dydl</span> <span class="o">=</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">/</span> <span class="n">delta</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="o">-</span><span class="n">dxdl</span><span class="p">,</span> <span class="n">dydl</span><span class="p">)</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">c</span><span class="p">,</span> <span class="o">-</span><span class="n">s</span><span class="p">],</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">c</span><span class="p">]])</span>
+
+    <span class="k">return</span> <span class="n">R</span><span class="p">,</span> <span class="n">theta</span></div>
+
+
+<div class="viewcode-block" id="VectorCoordSysRotation"><a class="viewcode-back" href="../../thetis.html#thetis.coordsys.VectorCoordSysRotation">[docs]</a><span class="k">class</span> <span class="nc">VectorCoordSysRotation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rotates vectors defined in source_sys coordinates to a different coordinate</span>
+<span class="sd">    system.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_sys</span><span class="p">,</span> <span class="n">target_sys</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg source_sys: pyproj coordinate system where (x, y) are defined in</span>
+<span class="sd">        :arg target_sys: target pyproj coordinate system</span>
+<span class="sd">        :arg x: x coordinate</span>
+<span class="sd">        :arg y: y coordinate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">R</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="n">get_vector_rotation_matrix</span><span class="p">(</span><span class="n">source_sys</span><span class="p">,</span> <span class="n">target_sys</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotation_sin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotation_cos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_x</span><span class="p">,</span> <span class="n">v_y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rotate vectors defined by the `v_x` and `v_y` components</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># | c -s | | v_x |</span>
+        <span class="c1"># | s  c | | v_y |</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">v_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotation_cos</span> <span class="o">-</span> <span class="n">v_y</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotation_sin</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotation_sin</span> <span class="o">+</span> <span class="n">v_y</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotation_cos</span>
+        <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2018, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+    </div>
+  </body>
+</html>

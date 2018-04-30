@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>thetis.options &#8212; Thetis 0+untagged.1138.g086f153 documentation</title>
+    <title>thetis.options &#8212; Thetis 0+untagged.1213.g0b06141 documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '0+untagged.1138.g086f153',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
@@ -34,10 +26,9 @@
 <link rel="shortcut icon" href="../../_static/icon_thetis.ico" />
 
 
-  </head>
-  <body>
+  </head><body>
 <div class="wrapper">
-  <a href="../../index.html"><img src="../../_static/banner.png" height="180px" alt="Thetis Project Banner" /></a>
+  <a href="../../index.html"><img src="../../_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
   <div id="access">
     <div class="menu">
       <ul>
@@ -89,6 +80,10 @@
         <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;gmres&#39;</span><span class="p">,</span>
         <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;fieldsplit&#39;</span><span class="p">,</span>
         <span class="s1">&#39;pc_fieldsplit_type&#39;</span><span class="p">:</span> <span class="s1">&#39;multiplicative&#39;</span><span class="p">,</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">solver_parameters_tracer</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
+        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;gmres&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;sor&#39;</span><span class="p">,</span>
     <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
@@ -416,6 +411,13 @@
         <span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;use Lax Friedrichs stabilisation in horizontal momentum advection.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">lax_friedrichs_velocity_scaling_factor</span> <span class="o">=</span> <span class="n">FiredrakeConstant</span><span class="p">(</span>
         <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Scaling factor for Lax Friedrichs stabilisation term in horiozonal momentum advection.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">use_lax_friedrichs_tracer</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use Lax Friedrichs stabilisation in tracer advection.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">lax_friedrichs_tracer_scaling_factor</span> <span class="o">=</span> <span class="n">FiredrakeConstant</span><span class="p">(</span>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Scaling factor for tracer Lax Friedrichs stability term.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">use_limiter_for_tracers</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Apply P1DG limiter for tracer fields&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
     <span class="n">check_volume_conservation_2d</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Compute volume of the 2D mode at every export</span>
@@ -501,7 +503,11 @@
     <span class="n">momentum_source_2d</span> <span class="o">=</span> <span class="n">FiredrakeVectorExpression</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Source term for 2D momentum equation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">volume_source_2d</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Source term for 2D continuity equation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Source term for 2D continuity equation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">tracer_source_2d</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Source term for 2D tracer equation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">horizontal_diffusivity</span> <span class="o">=</span> <span class="n">FiredrakeCoefficient</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Horizontal diffusivity for tracers&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <span class="c1"># NOTE all parameters are now case sensitive</span>
@@ -524,6 +530,7 @@
 <span class="k">class</span> <span class="nc">ModelOptions2d</span><span class="p">(</span><span class="n">CommonModelOptions</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Options for 2D depth-averaged shallow water model&quot;&quot;&quot;</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Depth-averaged 2D model&#39;</span>
+    <span class="n">solve_tracer</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Solve tracer transport&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_wetting_and_drying</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;bool: Turn on wetting and drying</span>
 
@@ -535,6 +542,20 @@
 <span class="s2">        Coefficient: Wetting and drying parameter :math:`\alpha`.</span>
 
 <span class="s2">        Used in bathymetry displacement function that ensures positive water depths. Unit is meters.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">check_tracer_conservation</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Compute total tracer mass at every export</span>
+
+<span class="s2">        Prints deviation from the initial mass to stdout.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">check_tracer_overshoot</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Compute tracer overshoots at every export</span>
+
+<span class="s2">        Prints overshoot values that exceed the initial range to stdout.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
@@ -592,8 +613,6 @@
 
 <span class="s2">        See :class:`.SmagorinskyViscosity`.&quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">use_limiter_for_tracers</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
-        <span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Apply P1DG limiter for tracer fields&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_limiter_for_velocity</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Apply P1DG limiter for 3D horizontal velocity field&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_lax_friedrichs_tracer</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
@@ -687,8 +706,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
+        &#169; Copyright 2016-2018, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

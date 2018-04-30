@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Depth averaged 2D model formulation &#8212; Thetis 0+untagged.1138.g086f153 documentation</title>
+    <title>Depth averaged 2D model formulation &#8212; Thetis 0+untagged.1213.g0b06141 documentation</title>
     <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0+untagged.1138.g086f153',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -34,10 +26,9 @@
 <link rel="shortcut icon" href="_static/icon_thetis.ico" />
 
 
-  </head>
-  <body>
+  </head><body>
 <div class="wrapper">
-  <a href="index.html"><img src="_static/banner.png" height="180px" alt="Thetis Project Banner" /></a>
+  <a href="index.html"><img src="_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
   <div id="access">
     <div class="menu">
       <ul>
@@ -67,14 +58,14 @@
 <div class="section" id="governing-equations">
 <h2>Governing equations<a class="headerlink" href="#governing-equations" title="Permalink to this headline">¶</a></h2>
 <p>The two dimensional model solves the depth averaged shallow water equations
-<a class="reference internal" href="thetis.html#equation-swe_freesurf">(5)</a>-<a class="reference internal" href="thetis.html#equation-swe_momentum">(6)</a>.
-The prognostic variables are the water elevation <span class="math">\(\eta\)</span> and depth
-averaged velocity <span class="math">\(\bar{\mathbf{u}}\)</span>.
-The corresponding fields in Thetis are called <code class="docutils literal"><span class="pre">'elev_2d'</span></code> and  <code class="docutils literal"><span class="pre">'uv_2d'</span></code>.</p>
+<a class="reference internal" href="thetis.html#equation-swe-freesurf">(5)</a>-<a class="reference internal" href="thetis.html#equation-swe-momentum">(6)</a>.
+The prognostic variables are the water elevation <span class="math notranslate nohighlight">\(\eta\)</span> and depth
+averaged velocity <span class="math notranslate nohighlight">\(\bar{\mathbf{u}}\)</span>.
+The corresponding fields in Thetis are called <code class="docutils literal notranslate"><span class="pre">'elev_2d'</span></code> and  <code class="docutils literal notranslate"><span class="pre">'uv_2d'</span></code>.</p>
 </div>
 <div class="section" id="wetting-and-drying">
 <h2>Wetting and drying<a class="headerlink" href="#wetting-and-drying" title="Permalink to this headline">¶</a></h2>
-<p>Wetting and drying is included through the modified bathymetry formulation of Karna et al. (2011). The modified equations are given by <a class="reference internal" href="thetis.html#equation-swe_freesurf_wd">(11)</a>-<a class="reference internal" href="thetis.html#equation-swe_momentum_wd">(12)</a>.</p>
+<p>Wetting and drying is included through the modified bathymetry formulation of Karna et al. (2011). The modified equations are given by <a class="reference internal" href="thetis.html#equation-swe-freesurf-wd">(11)</a>-<a class="reference internal" href="thetis.html#equation-swe-momentum-wd">(12)</a>.</p>
 </div>
 <div class="section" id="spatial-discretization">
 <h2>Spatial discretization<a class="headerlink" href="#spatial-discretization" title="Permalink to this headline">¶</a></h2>
@@ -92,25 +83,25 @@ table below.</p>
 <tr class="row-odd"><th class="head">Element Family</th>
 <th class="head">Name</th>
 <th class="head">Degree <em>n</em></th>
-<th class="head"><span class="math">\(\bar{\mathbf{u}}\)</span> space</th>
-<th class="head"><span class="math">\(\eta\)</span> space</th>
+<th class="head"><span class="math notranslate nohighlight">\(\bar{\mathbf{u}}\)</span> space</th>
+<th class="head"><span class="math notranslate nohighlight">\(\eta\)</span> space</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Equal order DG</td>
-<td><code class="docutils literal"><span class="pre">'dg-dg'</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">'dg-dg'</span></code></td>
 <td>1, 2</td>
 <td>P(n)DG</td>
 <td>P(n)DG</td>
 </tr>
 <tr class="row-odd"><td>Raviart-Thomas DG</td>
-<td><code class="docutils literal"><span class="pre">'rt-dg'</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">'rt-dg'</span></code></td>
 <td>1, 2</td>
 <td>RT(n+1)</td>
 <td>P(n)DG</td>
 </tr>
 <tr class="row-even"><td>P1DG-P2</td>
-<td><code class="docutils literal"><span class="pre">'dg-cg'</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">'dg-cg'</span></code></td>
 <td>1</td>
 <td>P(n)DG</td>
 <td>P(n+1)</td>
@@ -118,12 +109,12 @@ table below.</p>
 </tbody>
 </table>
 <p>Table 1. <em>Finite element families for polynomial degree n.</em></p>
-<p>The element family and polynomial degree are set by the <span class="xref std std-ref">CommonModelOptions.element_family</span> <a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.element_family" title="thetis.options.CommonModelOptions.element_family"><code class="xref py py-attr docutils literal"><span class="pre">element_family</span></code></a> and <a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.polynomial_degree" title="thetis.options.CommonModelOptions.polynomial_degree"><code class="xref py py-attr docutils literal"><span class="pre">polynomial_degree</span></code></a> options.</p>
+<p>The element family and polynomial degree are set by the <a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.element_family" title="thetis.options.CommonModelOptions.element_family"><code class="xref py py-attr docutils literal notranslate"><span class="pre">element_family</span></code></a> and <a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.polynomial_degree" title="thetis.options.CommonModelOptions.polynomial_degree"><code class="xref py py-attr docutils literal notranslate"><span class="pre">polynomial_degree</span></code></a> options.</p>
 </div>
 <div class="section" id="temporal-discretization">
 <h2>Temporal discretization<a class="headerlink" href="#temporal-discretization" title="Permalink to this headline">¶</a></h2>
 <p>Thetis supports different time integration methods, set by the
-<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions3d.timestepper_type" title="thetis.options.ModelOptions3d.timestepper_type"><code class="xref py py-attr docutils literal"><span class="pre">timestepper_type</span></code></a> option.</p>
+<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.timestepper_type" title="thetis.options.ModelOptions2d.timestepper_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">timestepper_type</span></code></a> option.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="24%" />
@@ -139,55 +130,55 @@ table below.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">'ForwardEuler'</span></code></td>
-<td><a class="reference internal" href="thetis.html#thetis.timeintegrator.ForwardEuler" title="thetis.timeintegrator.ForwardEuler"><code class="xref py py-class docutils literal"><span class="pre">ForwardEuler</span></code></a></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">'ForwardEuler'</span></code></td>
+<td><a class="reference internal" href="thetis.html#thetis.timeintegrator.ForwardEuler" title="thetis.timeintegrator.ForwardEuler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardEuler</span></code></a></td>
 <td>No</td>
 <td>Forward Euler method</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">'BackwardEuler'</span></code></td>
-<td><a class="reference internal" href="thetis.html#thetis.rungekutta.BackwardEuler" title="thetis.rungekutta.BackwardEuler"><code class="xref py py-class docutils literal"><span class="pre">BackwardEuler</span></code></a></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">'BackwardEuler'</span></code></td>
+<td><a class="reference internal" href="thetis.html#thetis.rungekutta.BackwardEuler" title="thetis.rungekutta.BackwardEuler"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackwardEuler</span></code></a></td>
 <td>Yes</td>
 <td>Backward Euler method</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">'CrankNicolson'</span></code></td>
-<td><a class="reference internal" href="thetis.html#thetis.timeintegrator.CrankNicolson" title="thetis.timeintegrator.CrankNicolson"><code class="xref py py-class docutils literal"><span class="pre">CrankNicolson</span></code></a></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">'CrankNicolson'</span></code></td>
+<td><a class="reference internal" href="thetis.html#thetis.timeintegrator.CrankNicolson" title="thetis.timeintegrator.CrankNicolson"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrankNicolson</span></code></a></td>
 <td>Yes</td>
 <td>Crank-Nicolson method</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">'DIRK33'</span></code></td>
-<td><a class="reference internal" href="thetis.html#thetis.rungekutta.DIRK33" title="thetis.rungekutta.DIRK33"><code class="xref py py-class docutils literal"><span class="pre">DIRK33</span></code></a></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">'DIRK33'</span></code></td>
+<td><a class="reference internal" href="thetis.html#thetis.rungekutta.DIRK33" title="thetis.rungekutta.DIRK33"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIRK33</span></code></a></td>
 <td>Yes</td>
 <td>DIRK(3,4,3) method</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">'SSPRK33'</span></code></td>
-<td><a class="reference internal" href="thetis.html#thetis.rungekutta.SSPRK33" title="thetis.rungekutta.SSPRK33"><code class="xref py py-class docutils literal"><span class="pre">SSPRK33</span></code></a></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">'SSPRK33'</span></code></td>
+<td><a class="reference internal" href="thetis.html#thetis.rungekutta.SSPRK33" title="thetis.rungekutta.SSPRK33"><code class="xref py py-class docutils literal notranslate"><span class="pre">SSPRK33</span></code></a></td>
 <td>No</td>
 <td>SSPRK(3,3) method</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">'SSPIMEX'</span></code></td>
-<td><a class="reference internal" href="thetis.html#thetis.implicitexplicit.IMEXLPUM2" title="thetis.implicitexplicit.IMEXLPUM2"><code class="xref py py-class docutils literal"><span class="pre">IMEXLPUM2</span></code></a></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">'SSPIMEX'</span></code></td>
+<td><a class="reference internal" href="thetis.html#thetis.implicitexplicit.IMEXLPUM2" title="thetis.implicitexplicit.IMEXLPUM2"><code class="xref py py-class docutils literal notranslate"><span class="pre">IMEXLPUM2</span></code></a></td>
 <td>No</td>
 <td>LPUM2 SSP IMEX scheme</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">'PressureProjectionPicard'</span></code></td>
-<td><a class="reference internal" href="thetis.html#thetis.timeintegrator.PressureProjectionPicard" title="thetis.timeintegrator.PressureProjectionPicard"><code class="xref py py-class docutils literal"><span class="pre">PressureProjectionPicard</span></code></a></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">'PressureProjectionPicard'</span></code></td>
+<td><a class="reference internal" href="thetis.html#thetis.timeintegrator.PressureProjectionPicard" title="thetis.timeintegrator.PressureProjectionPicard"><code class="xref py py-class docutils literal notranslate"><span class="pre">PressureProjectionPicard</span></code></a></td>
 <td>No</td>
 <td>Efficient pressure projection solver</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">'SteadyState'</span></code></td>
-<td><a class="reference internal" href="thetis.html#thetis.timeintegrator.SteadyState" title="thetis.timeintegrator.SteadyState"><code class="xref py py-class docutils literal"><span class="pre">SteadyState</span></code></a></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">'SteadyState'</span></code></td>
+<td><a class="reference internal" href="thetis.html#thetis.timeintegrator.SteadyState" title="thetis.timeintegrator.SteadyState"><code class="xref py py-class docutils literal notranslate"><span class="pre">SteadyState</span></code></a></td>
 <td>–</td>
 <td>Solves equations in steady state</td>
 </tr>
 </tbody>
 </table>
 <p>Table 2. <em>Time integration methods for 2D model.</em></p>
-<p>Model time step is defined by the <a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.timestep" title="thetis.options.CommonModelOptions.timestep"><code class="xref py py-attr docutils literal"><span class="pre">timestep</span></code></a> option.</p>
+<p>Model time step is defined by the <a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.timestep" title="thetis.options.CommonModelOptions.timestep"><code class="xref py py-attr docutils literal notranslate"><span class="pre">timestep</span></code></a> option.</p>
 <p>For explicit solvers, Thetis can also estimate the maximum stable time step
 based on the mesh resolution, used element family and time integration scheme.
 To use this feature, the user should provide the maximal horizontal velocity
-scale with <a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.horizontal_velocity_scale" title="thetis.options.CommonModelOptions.horizontal_velocity_scale"><code class="xref py py-attr docutils literal"><span class="pre">horizontal_velocity_scale</span></code></a> option and set
-<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.timestepper_options" title="thetis.options.ModelOptions2d.timestepper_options"><code class="xref py py-attr docutils literal"><span class="pre">timestepper_options</span></code></a>.<a class="reference internal" href="thetis.html#thetis.options.ExplicitTimestepperOptions.use_automatic_timestep" title="thetis.options.ExplicitTimestepperOptions.use_automatic_timestep"><code class="xref py py-attr docutils literal"><span class="pre">use_automatic_timestep</span></code></a> to <code class="docutils literal"><span class="pre">True</span></code>.</p>
+scale with <a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.horizontal_velocity_scale" title="thetis.options.CommonModelOptions.horizontal_velocity_scale"><code class="xref py py-attr docutils literal notranslate"><span class="pre">horizontal_velocity_scale</span></code></a> option and set
+<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.timestepper_options" title="thetis.options.ModelOptions2d.timestepper_options"><code class="xref py py-attr docutils literal notranslate"><span class="pre">timestepper_options</span></code></a>.<a class="reference internal" href="thetis.html#thetis.options.ExplicitTimestepperOptions.use_automatic_timestep" title="thetis.options.ExplicitTimestepperOptions.use_automatic_timestep"><code class="xref py py-attr docutils literal notranslate"><span class="pre">use_automatic_timestep</span></code></a> to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </div>
 </div>
 
@@ -199,8 +190,8 @@ scale with <a class="reference internal" href="model_options_2d.html#model-optio
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
+        &#169; Copyright 2016-2018, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

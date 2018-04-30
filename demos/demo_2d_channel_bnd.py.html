@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>2D channel with time-dependent boundary conditions &#8212; Thetis 0+untagged.1138.g086f153 documentation</title>
+    <title>2D channel with time-dependent boundary conditions &#8212; Thetis 0+untagged.1213.g0b06141 documentation</title>
     <link rel="stylesheet" href="../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0+untagged.1138.g086f153',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
@@ -34,10 +26,9 @@
 <link rel="shortcut icon" href="../_static/icon_thetis.ico" />
 
 
-  </head>
-  <body>
+  </head><body>
 <div class="wrapper">
-  <a href="../index.html"><img src="../_static/banner.png" height="180px" alt="Thetis Project Banner" /></a>
+  <a href="../index.html"><img src="../_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
   <div id="access">
     <div class="menu">
       <ul>
@@ -67,7 +58,7 @@
 <p>Here we extend the <a class="reference internal" href="demo_2d_channel.py.html"><span class="doc">2D channel example</span></a> by adding constant and time
 dependent boundary conditions.</p>
 <p>We begin by defining the domain and solver as before:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">thetis</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">thetis</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">lx</span> <span class="o">=</span> <span class="mf">40e3</span>
 <span class="n">ly</span> <span class="o">=</span> <span class="mf">2e3</span>
@@ -95,22 +86,22 @@ dependent boundary conditions.</p>
 </div>
 <p>We will force the model with a constant volume flux at the right boundary
 (x=40 km) and impose a tidal volume flux on the left boundary (x=0 km).
-Note that we have increased <code class="docutils literal"><span class="pre">t_end</span></code> and <code class="docutils literal"><span class="pre">t_export</span></code> to better illustrate
+Note that we have increased <code class="docutils literal notranslate"><span class="pre">t_end</span></code> and <code class="docutils literal notranslate"><span class="pre">t_export</span></code> to better illustrate
 tidal dynamics.</p>
 <p>Boundary condtitions are defined for each external boundary using their ID.
 In this example we are using a
-<a class="reference external" href="http://firedrakeproject.org/firedrake.html#firedrake.utility_meshes.RectangleMesh" title="(in Firedrake v0.12)"><code class="xref py py-func docutils literal"><span class="pre">RectangleMesh()</span></code></a> which assigns IDs 1, 2, 3,
+<a class="reference external" href="https://firedrakeproject.org/firedrake.html#firedrake.utility_meshes.RectangleMesh" title="(in Firedrake v0.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">RectangleMesh()</span></code></a> which assigns IDs 1, 2, 3,
 and 4 for the four sides of the rectangle:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">left_bnd_id</span> <span class="o">=</span> <span class="mi">1</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">left_bnd_id</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">right_bnd_id</span> <span class="o">=</span> <span class="mi">2</span>
 </pre></div>
 </div>
 <p>At each boundary we need to define the external value of the prognostic
 variables, i.e. in this case the water elevation and velocity.
-The value should be either a Firedrake <a class="reference external" href="http://firedrakeproject.org/firedrake.html#firedrake.constant.Constant" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal"><span class="pre">Constant</span></code></a> or
-<a class="reference external" href="http://firedrakeproject.org/firedrake.html#firedrake.function.Function" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal"><span class="pre">Function</span></code></a> (in case the boundary condition is not uniform in space).</p>
+The value should be either a Firedrake <a class="reference external" href="https://firedrakeproject.org/firedrake.html#firedrake.constant.Constant" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constant</span></code></a> or
+<a class="reference external" href="https://firedrakeproject.org/firedrake.html#firedrake.function.Function" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></a> (in case the boundary condition is not uniform in space).</p>
 <p>We store the boundary conditions in a dictionary:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">swe_bnd</span> <span class="o">=</span> <span class="p">{}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">swe_bnd</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">in_flux</span> <span class="o">=</span> <span class="mf">1e3</span>
 <span class="n">swe_bnd</span><span class="p">[</span><span class="n">right_bnd_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev&#39;</span><span class="p">:</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span>
                          <span class="s1">&#39;flux&#39;</span><span class="p">:</span> <span class="n">Constant</span><span class="p">(</span><span class="o">-</span><span class="n">in_flux</span><span class="p">)}</span>
@@ -119,12 +110,12 @@ The value should be either a Firedrake <a class="reference external" href="http:
 <p>Above we set the water elevation to zero and prescribe a constant volume flux.
 The volume flux is defined as outward normal flux, i.e. a negative value stands
 for flow into the domain.
-Alternatively we could also prescribe the normal velocity (with key <code class="docutils literal"><span class="pre">'un'</span></code>)
-or the 2D velocity vector (<code class="docutils literal"><span class="pre">'uv'</span></code>).
-For all supported boundary conditions, see module <a class="reference internal" href="../thetis.html#module-thetis.shallowwater_eq" title="thetis.shallowwater_eq"><code class="xref py py-mod docutils literal"><span class="pre">shallowwater_eq</span></code></a>.</p>
+Alternatively we could also prescribe the normal velocity (with key <code class="docutils literal notranslate"><span class="pre">'un'</span></code>)
+or the 2D velocity vector (<code class="docutils literal notranslate"><span class="pre">'uv'</span></code>).
+For all supported boundary conditions, see module <a class="reference internal" href="../thetis.html#module-thetis.shallowwater_eq" title="thetis.shallowwater_eq"><code class="xref py py-mod docutils literal notranslate"><span class="pre">shallowwater_eq</span></code></a>.</p>
 <p>In order to set time-dependent boundary conditions we first define a python
 function that evaluates the time dependent variable:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">timedep_flux</span><span class="p">(</span><span class="n">simulation_time</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">timedep_flux</span><span class="p">(</span><span class="n">simulation_time</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Time-dependent flux function&quot;&quot;&quot;</span>
     <span class="n">tide_amp</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2e3</span>
     <span class="n">tide_t</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="mf">3600.</span>
@@ -134,13 +125,13 @@ function that evaluates the time dependent variable:</p>
 </div>
 <p>We then create a Constant object with the initial value,
 and assign it to the left boundary:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">tide_flux_const</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">timedep_flux</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tide_flux_const</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">timedep_flux</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 <span class="n">swe_bnd</span><span class="p">[</span><span class="n">left_bnd_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;flux&#39;</span><span class="p">:</span> <span class="n">tide_flux_const</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>Boundary conditions are now complete, and we assign them to the solver
 object:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">swe_bnd</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">swe_bnd</span>
 </pre></div>
 </div>
 <p>Note that if boundary conditions are not assigned for some boundaries
@@ -148,19 +139,19 @@ object:</p>
 conditions.</p>
 <p>The only missing piece is to add a mechanism that re-evaluates the boundary
 condition as the simulation progresses.
-For this purpose we use the optional <code class="docutils literal"><span class="pre">update_forcings</span></code> argument of the
-<a class="reference internal" href="../thetis.html#thetis.solver2d.FlowSolver2d.iterate" title="thetis.solver2d.FlowSolver2d.iterate"><code class="xref py py-meth docutils literal"><span class="pre">iterate()</span></code></a> method.
-<code class="docutils literal"><span class="pre">update_forcings</span></code> is a python function that updates all time dependent
-<a class="reference external" href="http://firedrakeproject.org/firedrake.html#firedrake.constant.Constant" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal"><span class="pre">Constant</span></code></a>s or
-<a class="reference external" href="http://firedrakeproject.org/firedrake.html#firedrake.function.Function" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal"><span class="pre">Function</span></code></a>s used to force the model.
-In this case we only need to update <code class="docutils literal"><span class="pre">tide_flux_const</span></code>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">update_forcings</span><span class="p">(</span><span class="n">t_new</span><span class="p">):</span>
+For this purpose we use the optional <code class="docutils literal notranslate"><span class="pre">update_forcings</span></code> argument of the
+<a class="reference internal" href="../thetis.html#thetis.solver2d.FlowSolver2d.iterate" title="thetis.solver2d.FlowSolver2d.iterate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iterate()</span></code></a> method.
+<code class="docutils literal notranslate"><span class="pre">update_forcings</span></code> is a python function that updates all time dependent
+<a class="reference external" href="https://firedrakeproject.org/firedrake.html#firedrake.constant.Constant" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constant</span></code></a>s or
+<a class="reference external" href="https://firedrakeproject.org/firedrake.html#firedrake.function.Function" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></a>s used to force the model.
+In this case we only need to update <code class="docutils literal notranslate"><span class="pre">tide_flux_const</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">update_forcings</span><span class="p">(</span><span class="n">t_new</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Callback function that updates all time dependent forcing fields&quot;&quot;&quot;</span>
     <span class="n">tide_flux_const</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">timedep_flux</span><span class="p">(</span><span class="n">t_new</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>and finally pass this callback to the time iterator:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="n">update_forcings</span><span class="o">=</span><span class="n">update_forcings</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="n">update_forcings</span><span class="o">=</span><span class="n">update_forcings</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This tutorial can be dowloaded as a Python script <a class="reference external" href="demo_2d_channel_bnd.py">here</a>.</p>
@@ -174,8 +165,8 @@ In this case we only need to update <code class="docutils literal"><span class="
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
+        &#169; Copyright 2016-2018, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>
