@@ -6,14 +6,14 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>thetis package &#8212; Thetis 0+untagged.1213.g0b06141 documentation</title>
+    <title>thetis package &#8212; Thetis 0+untagged.1276.g4e1ded2 documentation</title>
     <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
 <!--[if lte IE 6]>
@@ -63,7 +63,7 @@
 <dl class="class">
 <dt id="thetis.assembledschur.AssembledSchurPC">
 <em class="property">class </em><code class="descclassname">thetis.assembledschur.</code><code class="descname">AssembledSchurPC</code><a class="reference internal" href="_modules/thetis/assembledschur.html#AssembledSchurPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.assembledschur.AssembledSchurPC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://firedrakeproject.org/firedrake.matrix_free.html#firedrake.matrix_free.preconditioners.PCBase" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">firedrake.matrix_free.preconditioners.PCBase</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://firedrakeproject.org/firedrake.preconditioners.html#firedrake.preconditioners.base.PCBase" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">firedrake.preconditioners.base.PCBase</span></code></a></p>
 <p>Preconditioner for the Schur complement</p>
 <p>The preconditioner matrix is assembled by explicitly matrix multiplying
 <span class="math notranslate nohighlight">\(A10*Minv*A10\)</span>.</p>
@@ -72,13 +72,13 @@
 <li><dl class="first docutils">
 <dt><span class="math notranslate nohighlight">\(A01\)</span>, <span class="math notranslate nohighlight">\(A10\)</span> are the assembled sub-blocks of the saddle point</dt>
 <dd>system. The form of this system needs to be supplied in the
-<span class="math notranslate nohighlight">\(appctx\)</span> to the solver as <span class="math notranslate nohighlight">\(appctx['a']\)</span>.</dd>
+<code class="code docutils literal notranslate"><span class="pre">appctx</span></code> argument to the solver as <code class="code docutils literal notranslate"><span class="pre">appctx['a']</span></code>.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
 <dt><span class="math notranslate nohighlight">\(Minv\)</span> is the inverse of the mass-matrix which is assembled as</dt>
-<dd><span class="math notranslate nohighlight">\(assemble(v*u*dx, inverse=True)\)</span>, i.e. the element-wise inverse,
-where <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(u\)</span> are the test and trial of the <span class="math notranslate nohighlight">\(00\)</span>
+<dd><code class="code docutils literal notranslate"><span class="pre">assemble(v*u*dx,</span> <span class="pre">inverse=True)</span></code>, i.e. the element-wise inverse,
+where <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(u\)</span> are the test and trial of the <span class="math notranslate nohighlight">\(A00\)</span>
 block. This gives the exact inverse of the mass matrix for a DG
 discretisation.</dd>
 </dl>
@@ -130,6 +130,54 @@ implement:</p>
 <div class="section" id="module-thetis.callback">
 <span id="thetis-callback-module"></span><h2>thetis.callback module<a class="headerlink" href="#module-thetis.callback" title="Permalink to this headline">¶</a></h2>
 <p>Defines custom callback functions used to compute various metrics at runtime.</p>
+<dl class="class">
+<dt id="thetis.callback.AccumulatorCallback">
+<em class="property">class </em><code class="descclassname">thetis.callback.</code><code class="descname">AccumulatorCallback</code><span class="sig-paren">(</span><em>scalar_callback</em>, <em>solver_obj</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/callback.html#AccumulatorCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.callback.AccumulatorCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.callback.DiagnosticCallback" title="thetis.callback.DiagnosticCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.callback.DiagnosticCallback</span></code></a></p>
+<p>Callback that evaluates a (scalar) functional involving integrals in both time and space. This callback can also
+be used to assemble time dependent objective functionals for adjoint simulations. Time integration is achieved using
+the trapezium rule.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>scalar_callback</strong> – Python function that returns a list of values of an objective functional.</li>
+<li><strong>solver_obj</strong> – Thetis solver object</li>
+<li><strong>**kwargs</strong> – <p>any additional keyword arguments, see DiagnosticCallback</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="thetis.callback.AccumulatorCallback.get_val">
+<code class="descname">get_val</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/callback.html#AccumulatorCallback.get_val"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.callback.AccumulatorCallback.get_val" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="thetis.callback.AccumulatorCallback.message_str">
+<code class="descname">message_str</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/callback.html#AccumulatorCallback.message_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.callback.AccumulatorCallback.message_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string representation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> – If provided, these will be the return value from
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">__call__()</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.callback.AccumulatorCallback.variable_names">
+<code class="descname">variable_names</code><em class="property"> = ['spatial integral at current timestep']</em><a class="headerlink" href="#thetis.callback.AccumulatorCallback.variable_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="class">
 <dt id="thetis.callback.CallbackManager">
 <em class="property">class </em><code class="descclassname">thetis.callback.</code><code class="descname">CallbackManager</code><a class="reference internal" href="_modules/thetis/callback.html#CallbackManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.callback.CallbackManager" title="Permalink to this definition">¶</a></dt>
@@ -215,6 +263,21 @@ where NNN is the (0-padded) detector number.</li>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="thetis.callback.DetectorsCallback.message_str">
+<code class="descname">message_str</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/callback.html#DetectorsCallback.message_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.callback.DetectorsCallback.message_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string representation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> – If provided, these will be the return value from
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">__call__()</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="thetis.callback.DetectorsCallback.name">
 <code class="descname">name</code><a class="headerlink" href="#thetis.callback.DetectorsCallback.name" title="Permalink to this definition">¶</a></dt>
@@ -231,8 +294,8 @@ where NNN is the (0-padded) detector number.</li>
 
 <dl class="class">
 <dt id="thetis.callback.DiagnosticCallback">
-<em class="property">class </em><code class="descclassname">thetis.callback.</code><code class="descname">DiagnosticCallback</code><span class="sig-paren">(</span><em>solver_obj</em>, <em>array_dim=1</em>, <em>attrs=None</em>, <em>outputdir=None</em>, <em>export_to_hdf5=True</em>, <em>append_to_log=True</em>, <em>hdf5_dtype='d'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/callback.html#DiagnosticCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.callback.DiagnosticCallback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="descclassname">thetis.callback.</code><code class="descname">DiagnosticCallback</code><span class="sig-paren">(</span><em>solver_obj</em>, <em>array_dim=1</em>, <em>attrs=None</em>, <em>outputdir=None</em>, <em>export_to_hdf5=True</em>, <em>append_to_log=True</em>, <em>include_time=True</em>, <em>hdf5_dtype='d'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/callback.html#DiagnosticCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.callback.DiagnosticCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>A base class for all Callback classes</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -248,6 +311,7 @@ By default solver’s output directory is used.</li>
 format</li>
 <li><strong>append_to_log</strong> (<a class="reference external" href="https://docs.python.org/2.7/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – If True, callback output messages will be
 printed in log</li>
+<li><strong>include_time</strong> (<a class="reference external" href="https://docs.python.org/2.7/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – whether to include time in the hdf5 file</li>
 <li><strong>hdf5_dtype</strong> – Precision to use in hdf5 output: <cite>d</cite> for double
 precision (default), and <cite>f</cite> for single precision</li>
 </ul>
@@ -321,7 +385,7 @@ precision (default), and <cite>f</cite> for single precision</li>
 <dl class="method">
 <dt id="thetis.callback.DiagnosticCallback.set_write_mode">
 <code class="descname">set_write_mode</code><span class="sig-paren">(</span><em>mode</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/callback.html#DiagnosticCallback.set_write_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.callback.DiagnosticCallback.set_write_mode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Define whether to create a new hdf5 file or append to an exisiting one</p>
+<dd><p>Define whether to create a new hdf5 file or append to an existing one</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -342,7 +406,7 @@ precision (default), and <cite>f</cite> for single precision</li>
 
 <dl class="class">
 <dt id="thetis.callback.DiagnosticHDF5">
-<em class="property">class </em><code class="descclassname">thetis.callback.</code><code class="descname">DiagnosticHDF5</code><span class="sig-paren">(</span><em>filename</em>, <em>varnames</em>, <em>array_dim=1</em>, <em>attrs=None</em>, <em>comm=&lt;mpi4py.MPI.Intracomm object&gt;</em>, <em>new_file=True</em>, <em>dtype='d'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/callback.html#DiagnosticHDF5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.callback.DiagnosticHDF5" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">thetis.callback.</code><code class="descname">DiagnosticHDF5</code><span class="sig-paren">(</span><em>filename</em>, <em>varnames</em>, <em>array_dim=1</em>, <em>attrs=None</em>, <em>comm=&lt;mpi4py.MPI.Intracomm object&gt;</em>, <em>new_file=True</em>, <em>dtype='d'</em>, <em>include_time=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/callback.html#DiagnosticHDF5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.callback.DiagnosticHDF5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A HDF5 file for storing diagnostic time series arrays.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -365,7 +429,7 @@ append to an existing one (if any)</li>
 </table>
 <dl class="method">
 <dt id="thetis.callback.DiagnosticHDF5.export">
-<code class="descname">export</code><span class="sig-paren">(</span><em>time</em>, <em>variables</em>, <em>index=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/callback.html#DiagnosticHDF5.export"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.callback.DiagnosticHDF5.export" title="Permalink to this definition">¶</a></dt>
+<code class="descname">export</code><span class="sig-paren">(</span><em>variables</em>, <em>time=None</em>, <em>index=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/callback.html#DiagnosticHDF5.export"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.callback.DiagnosticHDF5.export" title="Permalink to this definition">¶</a></dt>
 <dd><p>Appends a new entry of (time, variables) to the file.</p>
 <p>The HDF5 is updated immediately.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -692,8 +756,8 @@ or by using the traitlet instance’s .metadata dictionary.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="thetis.configuration.FiredrakeConstant">
-<em class="property">class </em><code class="descclassname">thetis.configuration.</code><code class="descname">FiredrakeConstant</code><span class="sig-paren">(</span><em>default_value=traitlets.Undefined</em>, <em>allow_none=False</em>, <em>read_only=None</em>, <em>help=None</em>, <em>config=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/configuration.html#FiredrakeConstant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.configuration.FiredrakeConstant" title="Permalink to this definition">¶</a></dt>
+<dt id="thetis.configuration.FiredrakeConstantTraitlet">
+<em class="property">class </em><code class="descclassname">thetis.configuration.</code><code class="descname">FiredrakeConstantTraitlet</code><span class="sig-paren">(</span><em>default_value=traitlets.Undefined</em>, <em>allow_none=False</em>, <em>read_only=None</em>, <em>help=None</em>, <em>config=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/configuration.html#FiredrakeConstantTraitlet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.configuration.FiredrakeConstantTraitlet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">traitlets.traitlets.TraitType</span></code></p>
 <p>Declare a traitlet.</p>
 <p>If <em>allow_none</em> is True, None is a valid value in addition to any
@@ -702,23 +766,23 @@ For most trait types, the default value for <code class="docutils literal notran
 <p>Extra metadata can be associated with the traitlet using the .tag() convenience method
 or by using the traitlet instance’s .metadata dictionary.</p>
 <dl class="attribute">
-<dt id="thetis.configuration.FiredrakeConstant.default_value">
-<code class="descname">default_value</code><em class="property"> = None</em><a class="headerlink" href="#thetis.configuration.FiredrakeConstant.default_value" title="Permalink to this definition">¶</a></dt>
+<dt id="thetis.configuration.FiredrakeConstantTraitlet.default_value">
+<code class="descname">default_value</code><em class="property"> = None</em><a class="headerlink" href="#thetis.configuration.FiredrakeConstantTraitlet.default_value" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="thetis.configuration.FiredrakeConstant.default_value_repr">
-<code class="descname">default_value_repr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/configuration.html#FiredrakeConstant.default_value_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.configuration.FiredrakeConstant.default_value_repr" title="Permalink to this definition">¶</a></dt>
+<dt id="thetis.configuration.FiredrakeConstantTraitlet.default_value_repr">
+<code class="descname">default_value_repr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/configuration.html#FiredrakeConstantTraitlet.default_value_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.configuration.FiredrakeConstantTraitlet.default_value_repr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="thetis.configuration.FiredrakeConstant.info_text">
-<code class="descname">info_text</code><em class="property"> = 'a Firedrake Constant'</em><a class="headerlink" href="#thetis.configuration.FiredrakeConstant.info_text" title="Permalink to this definition">¶</a></dt>
+<dt id="thetis.configuration.FiredrakeConstantTraitlet.info_text">
+<code class="descname">info_text</code><em class="property"> = 'a Firedrake Constant'</em><a class="headerlink" href="#thetis.configuration.FiredrakeConstantTraitlet.info_text" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="thetis.configuration.FiredrakeConstant.validate">
-<code class="descname">validate</code><span class="sig-paren">(</span><em>obj</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/configuration.html#FiredrakeConstant.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.configuration.FiredrakeConstant.validate" title="Permalink to this definition">¶</a></dt>
+<dt id="thetis.configuration.FiredrakeConstantTraitlet.validate">
+<code class="descname">validate</code><span class="sig-paren">(</span><em>obj</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/configuration.html#FiredrakeConstantTraitlet.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.configuration.FiredrakeConstantTraitlet.validate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1442,7 +1506,7 @@ time and updates any time-dependent boundary conditions</li>
 </table>
 <dl class="attribute">
 <dt id="thetis.equation.Equation.SUPPORTED_LABELS">
-<code class="descname">SUPPORTED_LABELS</code><em class="property"> = frozenset({'nonlinear', 'explicit', 'source', 'implicit'})</em><a class="headerlink" href="#thetis.equation.Equation.SUPPORTED_LABELS" title="Permalink to this definition">¶</a></dt>
+<code class="descname">SUPPORTED_LABELS</code><em class="property"> = frozenset({'implicit', 'explicit', 'source', 'nonlinear'})</em><a class="headerlink" href="#thetis.equation.Equation.SUPPORTED_LABELS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Valid labels for terms, indicating how they should be treated in the time
 integrator.</p>
 <dl class="docutils">
@@ -1919,7 +1983,7 @@ functions.</li>
 <p>Definitions and meta data of fields</p>
 <dl class="data">
 <dt id="thetis.field_defs.field_metadata">
-<code class="descclassname">thetis.field_defs.</code><code class="descname">field_metadata</code><em class="property"> = {'baroc_head_3d': {'name': 'Baroclinic head', 'shortname': 'Baroclinic head', 'unit': 'm', 'filename': 'BaroHead3d'}, 'bathymetry_2d': {'name': 'Bathymetry', 'shortname': 'Bathymetry', 'unit': 'm', 'filename': 'bathymetry2d'}, 'bathymetry_3d': {'name': 'Bathymetry', 'shortname': 'Bathymetry', 'unit': 'm', 'filename': 'bathymetry3d'}, 'bottom_drag_2d': {'name': 'Bottom drag coefficient', 'shortname': 'Bottom drag coefficient', 'unit': '', 'filename': 'BottomDrag2d'}, 'bottom_drag_3d': {'name': 'Bottom drag coefficient', 'shortname': 'Bottom drag coefficient', 'unit': '', 'filename': 'BottomDrag3d'}, 'buoy_freq_3d': {'name': 'Buoyancy frequency squared', 'shortname': 'Buoyancy frequency squared', 'unit': 's-2', 'filename': 'BuoyFreq3d'}, 'coriolis_2d': {'name': 'Coriolis parameter', 'shortname': 'Coriolis parameter', 'unit': 's-1', 'filename': 'coriolis_2d'}, 'coriolis_3d': {'name': 'Coriolis parameter', 'shortname': 'Coriolis parameter', 'unit': 's-1', 'filename': 'coriolis_3d'}, 'density_3d': {'name': 'Water density', 'shortname': 'Density', 'unit': 'kg m-3', 'filename': 'Density3d'}, 'eddy_diff_3d': {'name': 'Eddy diffusivity', 'shortname': 'Eddy diffusivity', 'unit': 'm2 s-1', 'filename': 'EddyDiff3d'}, 'eddy_visc_3d': {'name': 'Eddy Viscosity', 'shortname': 'Eddy Viscosity', 'unit': 'm2 s-1', 'filename': 'EddyVisc3d'}, 'elev_2d': {'name': 'Water elevation', 'shortname': 'Elevation', 'unit': 'm', 'filename': 'Elevation2d'}, 'elev_3d': {'name': 'Water elevation', 'shortname': 'Elevation', 'unit': 'm', 'filename': 'Elevation3d'}, 'elev_cg_2d': {'name': 'Water elevation CG', 'shortname': 'Elevation', 'unit': 'm', 'filename': 'ElevationCG2d'}, 'elev_cg_3d': {'name': 'Water elevation CG', 'shortname': 'Elevation', 'unit': 'm', 'filename': 'ElevationCG3d'}, 'eps_3d': {'name': 'TKE dissipation rate', 'shortname': 'TKE dissipation rate', 'unit': 'm2 s-2', 'filename': 'TurbEps3d'}, 'h_elem_size_2d': {'name': 'Element size in horizontal direction', 'shortname': 'Horizontal element size', 'unit': 'm', 'filename': 'h_elem_size_2d'}, 'h_elem_size_3d': {'name': 'Element size in horizontal direction', 'shortname': 'Horizontal element size', 'unit': 'm', 'filename': 'h_elem_size_3d'}, 'hcc_metric_3d': {'name': 'HCC mesh quality', 'shortname': 'HCC metric', 'unit': '-', 'filename': 'HCCMetric3d'}, 'int_pg_3d': {'name': 'Internal pressure gradient', 'shortname': 'Int. Pressure gradient', 'unit': 'm s-2', 'filename': 'IntPG3d'}, 'len_3d': {'name': 'Turbulent length scale', 'shortname': 'Turbulent length scale', 'unit': 'm', 'filename': 'TurbLen3d'}, 'max_h_diff': {'name': 'Maximum stable horizontal diffusivity', 'shortname': 'Maximum horizontal diffusivity', 'unit': 'm2 s-1', 'filename': 'MaxHDiffusivity3d'}, 'parab_visc_3d': {'name': 'Parabolic Viscosity', 'shortname': 'Parabolic Viscosity', 'unit': 'm2 s-1', 'filename': 'ParabVisc3d'}, 'psi_3d': {'name': 'Turbulence psi variable', 'shortname': 'Turbulence psi variable', 'unit': '', 'filename': 'TurbPsi3d'}, 'salt_3d': {'name': 'Water salinity', 'shortname': 'Salinity', 'unit': 'psu', 'filename': 'Salinity3d'}, 'shear_freq_3d': {'name': 'Vertical shear frequency squared', 'shortname': 'Vertical shear frequency squared', 'unit': 's-2', 'filename': 'ShearFreq3d'}, 'smag_visc_3d': {'name': 'Smagorinsky viscosity', 'shortname': 'Smagorinsky viscosity', 'unit': 'm2 s-1', 'filename': 'SmagViscosity3d'}, 'split_residual_2d': {'name': 'Momentum eq. residual for mode splitting', 'shortname': 'Momentum residual', 'unit': 'm s-2', 'filename': 'SplitResidual2d'}, 'temp_3d': {'name': 'Water temperature', 'shortname': 'Temperature', 'unit': 'C', 'filename': 'Temperature3d'}, 'tke_3d': {'name': 'Turbulent Kinetic Energy', 'shortname': 'Turbulent Kinetic Energy', 'unit': 'm2 s-2', 'filename': 'TurbKEnergy3d'}, 'tracer_2d': {'name': 'Depth averaged tracer', 'shortname': 'Tracer', 'unit': '', 'filename': 'Tracer2d'}, 'uv_2d': {'name': 'Depth averaged velocity', 'shortname': 'Depth averaged velocity', 'unit': 'm s-1', 'filename': 'Velocity2d'}, 'uv_3d': {'name': 'Horizontal velocity', 'shortname': 'Horizontal velocity', 'unit': 'm s-1', 'filename': 'Velocity3d'}, 'uv_bottom_2d': {'name': 'Bottom velocity', 'shortname': 'Bottom velocity', 'unit': 'm s-1', 'filename': 'BottomVelo2d'}, 'uv_bottom_3d': {'name': 'Bottom velocity', 'shortname': 'Bottom velocity', 'unit': 'm s-1', 'filename': 'BottomVelo3d'}, 'uv_dav_2d': {'name': 'Depth averaged velocity', 'shortname': 'Depth averaged velocity', 'unit': 'm s-1', 'filename': 'DAVelocity2d'}, 'uv_dav_3d': {'name': 'Depth averaged velocity', 'shortname': 'Depth averaged velocity', 'unit': 'm s-1', 'filename': 'DAVelocity3d'}, 'uv_mag_3d': {'name': 'Magnitude of horizontal velocity', 'shortname': 'Velocity magnitude', 'unit': 'm s-1', 'filename': 'VeloMag3d'}, 'uv_p1_3d': {'name': 'P1 projection of horizontal velocity', 'shortname': 'P1 Velocity', 'unit': 'm s-1', 'filename': 'VeloCG3d'}, 'v_elem_size_2d': {'name': 'Element size in vertical direction', 'shortname': 'Vertical element size', 'unit': 'm', 'filename': 'VElemSize2d'}, 'v_elem_size_3d': {'name': 'Element size in vertical direction', 'shortname': 'Vertical element size', 'unit': 'm', 'filename': 'VElemSize3d'}, 'w_3d': {'name': 'Vertical velocity', 'shortname': 'Vertical velocity', 'unit': 'm s-1', 'filename': 'VertVelo3d'}, 'w_mesh_3d': {'name': 'Mesh velocity', 'shortname': 'Mesh velocity', 'unit': 'm s-1', 'filename': 'MeshVelo3d'}, 'w_mesh_surf_2d': {'name': 'Surface mesh velocity', 'shortname': 'Surface mesh velocity', 'unit': 'm s-1', 'filename': 'SurfMeshVelo3d'}, 'w_mesh_surf_3d': {'name': 'Surface mesh velocity', 'shortname': 'Surface mesh velocity', 'unit': 'm s-1', 'filename': 'SurfMeshVelo3d'}, 'wind_stress_3d': {'name': 'Wind stress', 'shortname': 'Wind stress', 'unit': 'Pa', 'filename': 'wind_stress_3d'}, 'z_bottom_2d': {'name': 'Bottom cell z coordinates', 'shortname': 'Bottom cell z coordinates', 'unit': 'm', 'filename': 'ZBottom2d'}, 'z_coord_3d': {'name': 'Mesh z coordinates', 'shortname': 'Z coordinates', 'unit': 'm', 'filename': 'ZCoord3d'}, 'z_coord_ref_3d': {'name': 'Static mesh z coordinates', 'shortname': 'Z coordinates', 'unit': 'm', 'filename': 'ZCoordRef3d'}}</em><a class="headerlink" href="#thetis.field_defs.field_metadata" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">thetis.field_defs.</code><code class="descname">field_metadata</code><em class="property"> = {'baroc_head_3d': {'filename': 'BaroHead3d', 'name': 'Baroclinic head', 'shortname': 'Baroclinic head', 'unit': 'm'}, 'bathymetry_2d': {'filename': 'bathymetry2d', 'name': 'Bathymetry', 'shortname': 'Bathymetry', 'unit': 'm'}, 'bathymetry_3d': {'filename': 'bathymetry3d', 'name': 'Bathymetry', 'shortname': 'Bathymetry', 'unit': 'm'}, 'bottom_drag_2d': {'filename': 'BottomDrag2d', 'name': 'Bottom drag coefficient', 'shortname': 'Bottom drag coefficient', 'unit': ''}, 'bottom_drag_3d': {'filename': 'BottomDrag3d', 'name': 'Bottom drag coefficient', 'shortname': 'Bottom drag coefficient', 'unit': ''}, 'buoy_freq_3d': {'filename': 'BuoyFreq3d', 'name': 'Buoyancy frequency squared', 'shortname': 'Buoyancy frequency squared', 'unit': 's-2'}, 'coriolis_2d': {'filename': 'coriolis_2d', 'name': 'Coriolis parameter', 'shortname': 'Coriolis parameter', 'unit': 's-1'}, 'coriolis_3d': {'filename': 'coriolis_3d', 'name': 'Coriolis parameter', 'shortname': 'Coriolis parameter', 'unit': 's-1'}, 'density_3d': {'filename': 'Density3d', 'name': 'Water density', 'shortname': 'Density', 'unit': 'kg m-3'}, 'eddy_diff_3d': {'filename': 'EddyDiff3d', 'name': 'Eddy diffusivity', 'shortname': 'Eddy diffusivity', 'unit': 'm2 s-1'}, 'eddy_visc_3d': {'filename': 'EddyVisc3d', 'name': 'Eddy Viscosity', 'shortname': 'Eddy Viscosity', 'unit': 'm2 s-1'}, 'elev_2d': {'filename': 'Elevation2d', 'name': 'Water elevation', 'shortname': 'Elevation', 'unit': 'm'}, 'elev_3d': {'filename': 'Elevation3d', 'name': 'Water elevation', 'shortname': 'Elevation', 'unit': 'm'}, 'elev_cg_2d': {'filename': 'ElevationCG2d', 'name': 'Water elevation CG', 'shortname': 'Elevation', 'unit': 'm'}, 'elev_cg_3d': {'filename': 'ElevationCG3d', 'name': 'Water elevation CG', 'shortname': 'Elevation', 'unit': 'm'}, 'eps_3d': {'filename': 'TurbEps3d', 'name': 'TKE dissipation rate', 'shortname': 'TKE dissipation rate', 'unit': 'm2 s-2'}, 'h_elem_size_2d': {'filename': 'h_elem_size_2d', 'name': 'Element size in horizontal direction', 'shortname': 'Horizontal element size', 'unit': 'm'}, 'h_elem_size_3d': {'filename': 'h_elem_size_3d', 'name': 'Element size in horizontal direction', 'shortname': 'Horizontal element size', 'unit': 'm'}, 'hcc_metric_3d': {'filename': 'HCCMetric3d', 'name': 'HCC mesh quality', 'shortname': 'HCC metric', 'unit': '-'}, 'int_pg_3d': {'filename': 'IntPG3d', 'name': 'Internal pressure gradient', 'shortname': 'Int. Pressure gradient', 'unit': 'm s-2'}, 'len_3d': {'filename': 'TurbLen3d', 'name': 'Turbulent length scale', 'shortname': 'Turbulent length scale', 'unit': 'm'}, 'max_h_diff': {'filename': 'MaxHDiffusivity3d', 'name': 'Maximum stable horizontal diffusivity', 'shortname': 'Maximum horizontal diffusivity', 'unit': 'm2 s-1'}, 'parab_visc_3d': {'filename': 'ParabVisc3d', 'name': 'Parabolic Viscosity', 'shortname': 'Parabolic Viscosity', 'unit': 'm2 s-1'}, 'psi_3d': {'filename': 'TurbPsi3d', 'name': 'Turbulence psi variable', 'shortname': 'Turbulence psi variable', 'unit': ''}, 'salt_3d': {'filename': 'Salinity3d', 'name': 'Water salinity', 'shortname': 'Salinity', 'unit': 'psu'}, 'shear_freq_3d': {'filename': 'ShearFreq3d', 'name': 'Vertical shear frequency squared', 'shortname': 'Vertical shear frequency squared', 'unit': 's-2'}, 'smag_visc_3d': {'filename': 'SmagViscosity3d', 'name': 'Smagorinsky viscosity', 'shortname': 'Smagorinsky viscosity', 'unit': 'm2 s-1'}, 'split_residual_2d': {'filename': 'SplitResidual2d', 'name': 'Momentum eq. residual for mode splitting', 'shortname': 'Momentum residual', 'unit': 'm s-2'}, 'temp_3d': {'filename': 'Temperature3d', 'name': 'Water temperature', 'shortname': 'Temperature', 'unit': 'C'}, 'tke_3d': {'filename': 'TurbKEnergy3d', 'name': 'Turbulent Kinetic Energy', 'shortname': 'Turbulent Kinetic Energy', 'unit': 'm2 s-2'}, 'tracer_2d': {'filename': 'Tracer2d', 'name': 'Depth averaged tracer', 'shortname': 'Tracer', 'unit': ''}, 'uv_2d': {'filename': 'Velocity2d', 'name': 'Depth averaged velocity', 'shortname': 'Depth averaged velocity', 'unit': 'm s-1'}, 'uv_3d': {'filename': 'Velocity3d', 'name': 'Horizontal velocity', 'shortname': 'Horizontal velocity', 'unit': 'm s-1'}, 'uv_bottom_2d': {'filename': 'BottomVelo2d', 'name': 'Bottom velocity', 'shortname': 'Bottom velocity', 'unit': 'm s-1'}, 'uv_bottom_3d': {'filename': 'BottomVelo3d', 'name': 'Bottom velocity', 'shortname': 'Bottom velocity', 'unit': 'm s-1'}, 'uv_dav_2d': {'filename': 'DAVelocity2d', 'name': 'Depth averaged velocity', 'shortname': 'Depth averaged velocity', 'unit': 'm s-1'}, 'uv_dav_3d': {'filename': 'DAVelocity3d', 'name': 'Depth averaged velocity', 'shortname': 'Depth averaged velocity', 'unit': 'm s-1'}, 'uv_mag_3d': {'filename': 'VeloMag3d', 'name': 'Magnitude of horizontal velocity', 'shortname': 'Velocity magnitude', 'unit': 'm s-1'}, 'uv_p1_3d': {'filename': 'VeloCG3d', 'name': 'P1 projection of horizontal velocity', 'shortname': 'P1 Velocity', 'unit': 'm s-1'}, 'v_elem_size_2d': {'filename': 'VElemSize2d', 'name': 'Element size in vertical direction', 'shortname': 'Vertical element size', 'unit': 'm'}, 'v_elem_size_3d': {'filename': 'VElemSize3d', 'name': 'Element size in vertical direction', 'shortname': 'Vertical element size', 'unit': 'm'}, 'w_3d': {'filename': 'VertVelo3d', 'name': 'Vertical velocity', 'shortname': 'Vertical velocity', 'unit': 'm s-1'}, 'w_mesh_3d': {'filename': 'MeshVelo3d', 'name': 'Mesh velocity', 'shortname': 'Mesh velocity', 'unit': 'm s-1'}, 'w_mesh_surf_2d': {'filename': 'SurfMeshVelo3d', 'name': 'Surface mesh velocity', 'shortname': 'Surface mesh velocity', 'unit': 'm s-1'}, 'w_mesh_surf_3d': {'filename': 'SurfMeshVelo3d', 'name': 'Surface mesh velocity', 'shortname': 'Surface mesh velocity', 'unit': 'm s-1'}, 'wind_stress_3d': {'filename': 'wind_stress_3d', 'name': 'Wind stress', 'shortname': 'Wind stress', 'unit': 'Pa'}, 'z_bottom_2d': {'filename': 'ZBottom2d', 'name': 'Bottom cell z coordinates', 'shortname': 'Bottom cell z coordinates', 'unit': 'm'}, 'z_coord_3d': {'filename': 'ZCoord3d', 'name': 'Mesh z coordinates', 'shortname': 'Z coordinates', 'unit': 'm'}, 'z_coord_ref_3d': {'filename': 'ZCoordRef3d', 'name': 'Static mesh z coordinates', 'shortname': 'Z coordinates', 'unit': 'm'}}</em><a class="headerlink" href="#thetis.field_defs.field_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dictionary that contains the meta data of each field.</p>
 <p>Required meta data entries are:</p>
 <ul class="simple">
@@ -3274,6 +3338,260 @@ E.g. {3: {‘elev_2d’: Constant(1.0)}} replaces elev_2d function by a constant
 </dd></dl>
 
 </div>
+<div class="section" id="module-thetis.optimisation">
+<span id="thetis-optimisation-module"></span><h2>thetis.optimisation module<a class="headerlink" href="#module-thetis.optimisation" title="Permalink to this headline">¶</a></h2>
+<p>Some classes to help optimisation problems formulated with thetis_adjoint.</p>
+<p>In particular this module contains some OptimisationCallbacks that can be used
+as callbacks of a <code class="xref py py-class docutils literal notranslate"><span class="pre">ReducedFunctional</span></code> called at various stages during the optimisation
+process:
+- eval_cb_pre(controls) and eval_cb_post(functional, controls)                    called before and after (re)evaluation of the forward model
+- derivative_cb_pre(controls) and eval_cb_post(functional, derivative, controls)  called before and after the gradient computation using the adjoint of the model
+- hessian_cb_pre(controls) and eval_cb_post(functional, derivative, controls)     called before and after the hessian computation
+OptimisationCallbacks that (can) use controls, functional and derivative information, work out
+what is provided by the number of arguments: current control values are always in the last argument;
+if more than 2 arguments are provided, the first is the latest evaluated functional value.</p>
+<dl class="class">
+<dt id="thetis.optimisation.ControlsExportOptimisationCallback">
+<em class="property">class </em><code class="descclassname">thetis.optimisation.</code><code class="descname">ControlsExportOptimisationCallback</code><span class="sig-paren">(</span><em>solver_obj_or_outputdir</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/optimisation.html#ControlsExportOptimisationCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.optimisation.ControlsExportOptimisationCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.optimisation.DeferredExportManager" title="thetis.optimisation.DeferredExportManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.optimisation.DeferredExportManager</span></code></a></p>
+<p>A callback that exports the current control values (assumed to all be <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code> s)</p>
+<p>The control values are assumed to be the last argument in the callback (as for all <code class="xref py py-class docutils literal notranslate"><span class="pre">ReducedFunctional</span></code> callbacks).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>solver_obj_or_outputdir</strong> – a <a class="reference internal" href="#thetis.solver2d.FlowSolver2d" title="thetis.solver2d.FlowSolver2d"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowSolver2d</span></code></a> object, used to determine the output directory. Alternatively, the
+outputdir can be specified with a string as the first argument.</li>
+<li><strong>kwargs</strong> – any further keyword arguments are passed on to <a class="reference internal" href="#thetis.optimisation.UserExportManager" title="thetis.optimisation.UserExportManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserExportManager</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="thetis.optimisation.DeferredExportManager">
+<em class="property">class </em><code class="descclassname">thetis.optimisation.</code><code class="descname">DeferredExportManager</code><span class="sig-paren">(</span><em>solver_obj_or_outputdir</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/optimisation.html#DeferredExportManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.optimisation.DeferredExportManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A wrapper around a UserExportManager that is only created on the first export() call.</p>
+<p>In addition the functions provided in the export call are copied into a fixed set of functions,
+where the functions provided in subsequent calls may be different (they need to be in the same
+function space). This is used in the <a class="reference internal" href="#thetis.optimisation.ControlsExportOptimisationCallback" title="thetis.optimisation.ControlsExportOptimisationCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlsExportOptimisationCallback</span></code></a>
+and <a class="reference internal" href="#thetis.optimisation.DerivativesExportOptimisationCallback" title="thetis.optimisation.DerivativesExportOptimisationCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">DerivativesExportOptimisationCallback</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>solver_obj_or_outputdir</strong> – a <a class="reference internal" href="#thetis.solver2d.FlowSolver2d" title="thetis.solver2d.FlowSolver2d"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowSolver2d</span></code></a> object, used to determine the output directory. Alternatively, the
+outputdir can be specified with a string as the first argument.</li>
+<li><strong>kwargs</strong> – any further keyword arguments are passed on to <a class="reference internal" href="#thetis.optimisation.UserExportManager" title="thetis.optimisation.UserExportManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserExportManager</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="thetis.optimisation.DeferredExportManager.export">
+<code class="descname">export</code><span class="sig-paren">(</span><em>functions</em>, <em>suggested_names=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/optimisation.html#DeferredExportManager.export"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.optimisation.DeferredExportManager.export" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the <a class="reference internal" href="#thetis.optimisation.UserExportManager" title="thetis.optimisation.UserExportManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserExportManager</span></code></a> (first call only), and call its export() method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>functions</strong> – a list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code> s that the <a class="reference internal" href="#thetis.optimisation.UserExportManager" title="thetis.optimisation.UserExportManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserExportManager</span></code></a> will be based on. Their values
+are first copied. The list may contain different functions in subsequent calls,
+but their function space should remain the same.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thetis.optimisation.DerivativesExportOptimisationCallback">
+<em class="property">class </em><code class="descclassname">thetis.optimisation.</code><code class="descname">DerivativesExportOptimisationCallback</code><span class="sig-paren">(</span><em>solver_obj_or_outputdir</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/optimisation.html#DerivativesExportOptimisationCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.optimisation.DerivativesExportOptimisationCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.optimisation.DeferredExportManager" title="thetis.optimisation.DeferredExportManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.optimisation.DeferredExportManager</span></code></a></p>
+<p>A callback that exports the derivatives calculated by the adjoint.</p>
+<p>The derivatives are assumed to be the second argument in the callback. This can therefore
+be used as a derivative_cb_post callback in a <code class="xref py py-class docutils literal notranslate"><span class="pre">ReducedFunctional</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>solver_obj_or_outputdir</strong> – a <a class="reference internal" href="#thetis.solver2d.FlowSolver2d" title="thetis.solver2d.FlowSolver2d"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowSolver2d</span></code></a> object, used to determine the output directory. Alternatively, the
+outputdir can be specified with a string as the first argument.</li>
+<li><strong>kwargs</strong> – any further keyword arguments are passed on to <a class="reference internal" href="#thetis.optimisation.UserExportManager" title="thetis.optimisation.UserExportManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserExportManager</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="thetis.optimisation.DiagnosticOptimisationCallback">
+<em class="property">class </em><code class="descclassname">thetis.optimisation.</code><code class="descname">DiagnosticOptimisationCallback</code><span class="sig-paren">(</span><em>solver_obj</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/optimisation.html#DiagnosticOptimisationCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.optimisation.DiagnosticOptimisationCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.callback.DiagnosticCallback" title="thetis.callback.DiagnosticCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.callback.DiagnosticCallback</span></code></a></p>
+<p>An OptimsationCallback similar to <a class="reference internal" href="#thetis.callback.DiagnosticCallback" title="thetis.callback.DiagnosticCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiagnosticCallback</span></code></a> that can be used as callback in a <code class="xref py py-class docutils literal notranslate"><span class="pre">ReducedFunctional</span></code>.</p>
+<p>Note that in this case the computing of the values needs to be defined in the compute_values method,
+not in the __call__ method (as this one is directly called from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ReducedFunctional</span></code>). In addition,
+like any <a class="reference internal" href="#thetis.callback.DiagnosticCallback" title="thetis.callback.DiagnosticCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiagnosticCallback</span></code></a>, the name and variable_names properties and a message_str method need to be defined.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>solver_obj</strong> – Thetis solver object</li>
+<li><strong>kwargs</strong> – keyword arguments passed to <a class="reference internal" href="#thetis.callback.DiagnosticCallback" title="thetis.callback.DiagnosticCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiagnosticCallback</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="thetis.optimisation.DiagnosticOptimisationCallback.compute_values">
+<code class="descname">compute_values</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/optimisation.html#DiagnosticOptimisationCallback.compute_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.optimisation.DiagnosticOptimisationCallback.compute_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute diagnostic values.</p>
+<p>This method is to be implemented in concrete subclasses of a <a class="reference internal" href="#thetis.optimisation.DiagnosticOptimisationCallback" title="thetis.optimisation.DiagnosticOptimisationCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiagnosticOptimisationCallback</span></code></a>.
+The number of arguments varies depending on which of the 6 [eval|derivative|hessian]_cb_[pre|post] callbacks
+this is used as. The last argument always contains the current controls. In the “pre” callbacks this is
+the only argument. In all “post” callbacks the 0th argument is the current functional value. eval_cb_post
+is given two arguments: functional and controls. derivative_cb_post and hessian_cb_post are given three
+arguments with args[1] being the derivative/hessian just calculated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thetis.optimisation.DiagnosticOptimisationCallback.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>*args</em>, <em>index=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/optimisation.html#DiagnosticOptimisationCallback.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.optimisation.DiagnosticOptimisationCallback.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates callback and pushes values to log and hdf file (if enabled)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thetis.optimisation.FunctionalOptimisationCallback">
+<em class="property">class </em><code class="descclassname">thetis.optimisation.</code><code class="descname">FunctionalOptimisationCallback</code><span class="sig-paren">(</span><em>solver_obj</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/optimisation.html#FunctionalOptimisationCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.optimisation.FunctionalOptimisationCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.optimisation.DiagnosticOptimisationCallback" title="thetis.optimisation.DiagnosticOptimisationCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.optimisation.DiagnosticOptimisationCallback</span></code></a></p>
+<p>A simple OptimisationCallback that records the functional value in the log and/or hdf5 file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>solver_obj</strong> – Thetis solver object</li>
+<li><strong>kwargs</strong> – keyword arguments passed to <a class="reference internal" href="#thetis.callback.DiagnosticCallback" title="thetis.callback.DiagnosticCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiagnosticCallback</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="thetis.optimisation.FunctionalOptimisationCallback.compute_values">
+<code class="descname">compute_values</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/optimisation.html#FunctionalOptimisationCallback.compute_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.optimisation.FunctionalOptimisationCallback.compute_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute diagnostic values.</p>
+<p>This method is to be implemented in concrete subclasses of a <a class="reference internal" href="#thetis.optimisation.DiagnosticOptimisationCallback" title="thetis.optimisation.DiagnosticOptimisationCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiagnosticOptimisationCallback</span></code></a>.
+The number of arguments varies depending on which of the 6 [eval|derivative|hessian]_cb_[pre|post] callbacks
+this is used as. The last argument always contains the current controls. In the “pre” callbacks this is
+the only argument. In all “post” callbacks the 0th argument is the current functional value. eval_cb_post
+is given two arguments: functional and controls. derivative_cb_post and hessian_cb_post are given three
+arguments with args[1] being the derivative/hessian just calculated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thetis.optimisation.FunctionalOptimisationCallback.message_str">
+<code class="descname">message_str</code><span class="sig-paren">(</span><em>functional</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/optimisation.html#FunctionalOptimisationCallback.message_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.optimisation.FunctionalOptimisationCallback.message_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string representation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> – If provided, these will be the return value from
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">__call__()</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.optimisation.FunctionalOptimisationCallback.name">
+<code class="descname">name</code><em class="property"> = 'functional'</em><a class="headerlink" href="#thetis.optimisation.FunctionalOptimisationCallback.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.optimisation.FunctionalOptimisationCallback.variable_names">
+<code class="descname">variable_names</code><em class="property"> = ['functional']</em><a class="headerlink" href="#thetis.optimisation.FunctionalOptimisationCallback.variable_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thetis.optimisation.OptimisationCallbackList">
+<em class="property">class </em><code class="descclassname">thetis.optimisation.</code><code class="descname">OptimisationCallbackList</code><a class="reference internal" href="_modules/thetis/optimisation.html#OptimisationCallbackList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.optimisation.OptimisationCallbackList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></p>
+<p>A list of callbacks that can be used as a single callback itself.</p>
+<p>Calls all callbacks in order.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="thetis.optimisation.UserExportManager">
+<em class="property">class </em><code class="descclassname">thetis.optimisation.</code><code class="descname">UserExportManager</code><span class="sig-paren">(</span><em>solver_obj_or_outputdir</em>, <em>functions_to_export</em>, <em>filenames=None</em>, <em>filename_prefix=''</em>, <em>shortnames=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/optimisation.html#UserExportManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.optimisation.UserExportManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.exporter.ExportManager" title="thetis.exporter.ExportManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.exporter.ExportManager</span></code></a></p>
+<p>ExportManager for user provided functions (not necessarily known to Thetis)</p>
+<p>In the standard <a class="reference internal" href="#thetis.exporter.ExportManager" title="thetis.exporter.ExportManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExportManager</span></code></a> all provided functions need to have standard names
+present in <a class="reference internal" href="#thetis.field_defs.field_metadata" title="thetis.field_defs.field_metadata"><code class="xref py py-data docutils literal notranslate"><span class="pre">field_metadata</span></code></a>. Here, any functions can be provided. If function.name() is in
+<a class="reference internal" href="#thetis.field_defs.field_metadata" title="thetis.field_defs.field_metadata"><code class="xref py py-data docutils literal notranslate"><span class="pre">field_metadata</span></code></a>, the standard filename and shortname  are used.
+If the function.name() is unknown, both are based on function.name()
+directly (with an optional additional filename_prefix). Filenames and
+shortnames can be overruled by the shortnames and filenames arguments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>solver_obj_or_outputdir</strong> – a <a class="reference internal" href="#thetis.solver2d.FlowSolver2d" title="thetis.solver2d.FlowSolver2d"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowSolver2d</span></code></a> object, used to determine the output directory. Alternatively, the
+outputdir can be specified with a string as the first argument.</li>
+<li><strong>functions_to_export</strong> – a list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code> s</li>
+<li><strong>filenames</strong> – a list of strings that specify the filename for each provided function. If not provided,
+filenames are based on function.name().</li>
+<li><strong>filename_prefix</strong> – a string prefixed to each filename</li>
+<li><strong>shortnames</strong> – a list of strings with the shortnames used for each provided function. If not provided,
+shortnames are based on function.name().</li>
+<li><strong>kwargs</strong> – any further keyword arguments are passed on to <a class="reference internal" href="#thetis.exporter.ExportManager" title="thetis.exporter.ExportManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExportManager</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="thetis.optimisation.UserExportOptimisationCallback">
+<em class="property">class </em><code class="descclassname">thetis.optimisation.</code><code class="descname">UserExportOptimisationCallback</code><span class="sig-paren">(</span><em>solver_obj_or_outputdir</em>, <em>functions_to_export</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/optimisation.html#UserExportOptimisationCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.optimisation.UserExportOptimisationCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.optimisation.UserExportManager" title="thetis.optimisation.UserExportManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.optimisation.UserExportManager</span></code></a></p>
+<p>A <a class="reference internal" href="#thetis.optimisation.UserExportManager" title="thetis.optimisation.UserExportManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserExportManager</span></code></a> that can be used as a <code class="xref py py-class docutils literal notranslate"><span class="pre">ReducedFunctional</span></code> callback</p>
+<p>Any callback arguments (functional value, derivatives, controls) are ignored</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>solver_obj_or_outputdir</strong> – a <a class="reference internal" href="#thetis.solver2d.FlowSolver2d" title="thetis.solver2d.FlowSolver2d"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowSolver2d</span></code></a> object, used to determine the output directory. Alternatively, the
+outputdir can be specified with a string as the first argument.</li>
+<li><strong>functions_to_export</strong> – a list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code> s</li>
+<li><strong>kwargs</strong> – any further keyword arguments are passed on to <a class="reference internal" href="#thetis.optimisation.UserExportManager" title="thetis.optimisation.UserExportManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserExportManager</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 <div class="section" id="module-thetis.options">
 <span id="thetis-options-module"></span><h2>thetis.options module<a class="headerlink" href="#module-thetis.options" title="Permalink to this headline">¶</a></h2>
 <p>Thetis options for the 2D and 3D model</p>
@@ -3853,6 +4171,12 @@ f_wall, k_min, psi_min</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="thetis.options.ModelOptions2d.tidal_turbine_farms">
+<code class="descname">tidal_turbine_farms</code><a class="headerlink" href="#thetis.options.ModelOptions2d.tidal_turbine_farms" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of a Python dict.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="thetis.options.ModelOptions2d.timestepper_options">
 <code class="descname">timestepper_options</code><a class="headerlink" href="#thetis.options.ModelOptions2d.timestepper_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait whose value must be an instance of a specified class.</p>
@@ -3880,6 +4204,12 @@ create default values if necessary.</li>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.options.ModelOptions2d.tracer_only">
+<code class="descname">tracer_only</code><a class="headerlink" href="#thetis.options.ModelOptions2d.tracer_only" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean (True, False) trait.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -3973,11 +4303,6 @@ create default values if necessary.</li>
 <dl class="attribute">
 <dt id="thetis.options.ModelOptions3d.horizontal_diffusivity">
 <code class="descname">horizontal_diffusivity</code><a class="headerlink" href="#thetis.options.ModelOptions3d.horizontal_diffusivity" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="thetis.options.ModelOptions3d.lax_friedrichs_tracer_scaling_factor">
-<code class="descname">lax_friedrichs_tracer_scaling_factor</code><a class="headerlink" href="#thetis.options.ModelOptions3d.lax_friedrichs_tracer_scaling_factor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4103,12 +4428,6 @@ create default values if necessary.</li>
 <dl class="attribute">
 <dt id="thetis.options.ModelOptions3d.use_implicit_vertical_diffusion">
 <code class="descname">use_implicit_vertical_diffusion</code><a class="headerlink" href="#thetis.options.ModelOptions3d.use_implicit_vertical_diffusion" title="Permalink to this definition">¶</a></dt>
-<dd><p>A boolean (True, False) trait.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="thetis.options.ModelOptions3d.use_lax_friedrichs_tracer">
-<code class="descname">use_lax_friedrichs_tracer</code><a class="headerlink" href="#thetis.options.ModelOptions3d.use_lax_friedrichs_tracer" title="Permalink to this definition">¶</a></dt>
 <dd><p>A boolean (True, False) trait.</p>
 </dd></dl>
 
@@ -4280,6 +4599,50 @@ create default values if necessary.</li>
 <code class="descname">solver_parameters</code><a class="headerlink" href="#thetis.options.SteadyStateTimestepperOptions2d.solver_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>PETSc solver options dictionary</p>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thetis.options.TidalTurbineFarmOptions">
+<em class="property">class </em><code class="descclassname">thetis.options.</code><code class="descname">TidalTurbineFarmOptions</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/options.html#TidalTurbineFarmOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.options.TidalTurbineFarmOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.configuration.FrozenHasTraits" title="thetis.configuration.FrozenHasTraits"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.configuration.FrozenHasTraits</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">traitlets.traitlets.TraitType</span></code></p>
+<p>Tidal turbine farm options</p>
+<dl class="attribute">
+<dt id="thetis.options.TidalTurbineFarmOptions.break_even_wattage">
+<code class="descname">break_even_wattage</code><a class="headerlink" href="#thetis.options.TidalTurbineFarmOptions.break_even_wattage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.options.TidalTurbineFarmOptions.name">
+<code class="descname">name</code><em class="property"> = 'Farm options'</em><a class="headerlink" href="#thetis.options.TidalTurbineFarmOptions.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.options.TidalTurbineFarmOptions.turbine_density">
+<code class="descname">turbine_density</code><a class="headerlink" href="#thetis.options.TidalTurbineFarmOptions.turbine_density" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.options.TidalTurbineFarmOptions.turbine_options">
+<code class="descname">turbine_options</code><em class="property"> = &lt;thetis.options.TidalTurbineOptions object&gt;</em><a class="headerlink" href="#thetis.options.TidalTurbineFarmOptions.turbine_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thetis.options.TidalTurbineOptions">
+<em class="property">class </em><code class="descclassname">thetis.options.</code><code class="descname">TidalTurbineOptions</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/options.html#TidalTurbineOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.options.TidalTurbineOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.configuration.FrozenHasTraits" title="thetis.configuration.FrozenHasTraits"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.configuration.FrozenHasTraits</span></code></a></p>
+<p>Tidal turbine parameters</p>
+<dl class="attribute">
+<dt id="thetis.options.TidalTurbineOptions.diameter">
+<code class="descname">diameter</code><a class="headerlink" href="#thetis.options.TidalTurbineOptions.diameter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.options.TidalTurbineOptions.thrust_coefficient">
+<code class="descname">thrust_coefficient</code><a class="headerlink" href="#thetis.options.TidalTurbineOptions.thrust_coefficient" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -7760,7 +8123,7 @@ arg str name: timezone name</p>
  + \nabla_h \cdot (\textbf{u} T)
  + \frac{\partial (w T)}{\partial z}
  = \nabla_h \cdot (\mu_h \nabla_h T)
- + \frac{\partial}{\partial z} \Big(\mu \frac{T}{\partial z}\Big)\]</div>
+ + \frac{\partial}{\partial z} \Big(\mu \frac{\partial T}{\partial z}\Big)\]</div>
 <p>where <span class="math notranslate nohighlight">\(\nabla_h\)</span> denotes horizontal gradient, <span class="math notranslate nohighlight">\(\textbf{u}\)</span> and
 <span class="math notranslate nohighlight">\(w\)</span> are the horizontal and vertical velocities, respectively, and
 <span class="math notranslate nohighlight">\(\mu_h\)</span> and <span class="math notranslate nohighlight">\(\mu\)</span> denote horizontal and vertical diffusivity.</p>
@@ -8149,8 +8512,8 @@ E.g. {3: {‘elev_2d’: Constant(1.0)}} replaces elev_2d function by a constant
 + \nabla_h \cdot (\textbf{u} T)
 = \nabla_h \cdot (\mu_h \nabla_h T)\]</div>
 <p>where <span class="math notranslate nohighlight">\(\nabla_h\)</span> denotes horizontal gradient, <span class="math notranslate nohighlight">\(\textbf{u}\)</span> are the horizontal
-velocities, respectively, and
-<span class="math notranslate nohighlight">\(\mu_h\)</span> denote horizontal and vertical diffusivity.</p>
+velocities, and
+<span class="math notranslate nohighlight">\(\mu_h\)</span> denotes horizontal diffusivity.</p>
 <dl class="class">
 <dt id="thetis.tracer_eq_2d.TracerEquation2D">
 <em class="property">class </em><code class="descclassname">thetis.tracer_eq_2d.</code><code class="descname">TracerEquation2D</code><span class="sig-paren">(</span><em>function_space</em>, <em>bathymetry=None</em>, <em>use_lax_friedrichs=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/tracer_eq_2d.html#TracerEquation2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.tracer_eq_2d.TracerEquation2D" title="Permalink to this definition">¶</a></dt>
@@ -8369,6 +8732,180 @@ E.g. {3: {‘elev_2d’: Constant(1.0)}} replaces elev_2d function by a constant
 </tbody>
 </table>
 </dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-thetis.turbines">
+<span id="thetis-turbines-module"></span><h2>thetis.turbines module<a class="headerlink" href="#module-thetis.turbines" title="Permalink to this headline">¶</a></h2>
+<p>Classes related to tidal turbine farms in Thetis.</p>
+<dl class="class">
+<dt id="thetis.turbines.TurbineFarm">
+<em class="property">class </em><code class="descclassname">thetis.turbines.</code><code class="descname">TurbineFarm</code><span class="sig-paren">(</span><em>farm_options</em>, <em>subdomain_id</em>, <em>u</em>, <em>v</em>, <em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/turbines.html#TurbineFarm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.turbines.TurbineFarm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Evaluates power output, costs and profit of tidal turbine farm</p>
+<p>Cost is simply the number of turbines evaluated as the integral of the
+turbine density.</p>
+<p>Power output is calculated as the amount of energy
+taken out of the flow by the turbine drag term. This is in general
+an over-estimate of the ‘usefully extractable’ energy. Furthermore no
+density is included, so that assuming a density of 1000 kg/m^3 and
+all further quantities in SI, the power is measured in kW.</p>
+<p>Profit is calculated as:</p>
+<blockquote>
+<div>Profit = Power - break_even_wattage * Cost</div></blockquote>
+<p>With the above assumptions, break_even_wattage should be specified in
+kW and can be interpreted as the average power per turbine required
+to ‘break even’, i.e. Profit=0.</p>
+<p>Power output and profit are time-integrated (simple first order) and
+time-averages are available as average_power and average_profit.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>farm_options</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">TidalTurbineFarmOptions</span></code> object that define the farm and the turbines used</li>
+<li><strong>subdomain_id</strong> (<a class="reference external" href="https://docs.python.org/2.7/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – the farm is restricted to this subdomain</li>
+<li><strong>u</strong><strong>,</strong><strong>v</strong> – the depth-averaged velocity field</li>
+<li><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – used for time-integration.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="thetis.turbines.TurbineFarm.evaluate_timestep">
+<code class="descname">evaluate_timestep</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/turbines.html#TurbineFarm.evaluate_timestep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.turbines.TurbineFarm.evaluate_timestep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform time integration and return current power and time-averaged power and profit.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thetis.turbines.TurbineFunctionalCallback">
+<em class="property">class </em><code class="descclassname">thetis.turbines.</code><code class="descname">TurbineFunctionalCallback</code><span class="sig-paren">(</span><em>solver_obj</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/turbines.html#TurbineFunctionalCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.turbines.TurbineFunctionalCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.callback.DiagnosticCallback" title="thetis.callback.DiagnosticCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.callback.DiagnosticCallback</span></code></a></p>
+<p><a class="reference internal" href="#thetis.callback.DiagnosticCallback" title="thetis.callback.DiagnosticCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiagnosticCallback</span></code></a> that evaluates the performance of each tidal turbine farm.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>solver_obj</strong> – a <a class="reference internal" href="#thetis.solver2d.FlowSolver2d" title="thetis.solver2d.FlowSolver2d"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowSolver2d</span></code></a> object containing the tidal_turbine_farms</li>
+<li><strong>kwargs</strong> – see <code class="xref py py-class docutils literal notranslate"><span class="pre">DiagnosticCallback</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="thetis.turbines.TurbineFunctionalCallback.average_power">
+<code class="descname">average_power</code><a class="headerlink" href="#thetis.turbines.TurbineFunctionalCallback.average_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>The sum of the time-averaged power output of all farms</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.turbines.TurbineFunctionalCallback.average_profit">
+<code class="descname">average_profit</code><a class="headerlink" href="#thetis.turbines.TurbineFunctionalCallback.average_profit" title="Permalink to this definition">¶</a></dt>
+<dd><p>The sum of the time-averaged profit output of all farms</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.turbines.TurbineFunctionalCallback.farms">
+<code class="descname">farms</code><em class="property"> = None</em><a class="headerlink" href="#thetis.turbines.TurbineFunctionalCallback.farms" title="Permalink to this definition">¶</a></dt>
+<dd><p>The sum of the number of turbines in all farms</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.turbines.TurbineFunctionalCallback.integrated_power">
+<code class="descname">integrated_power</code><a class="headerlink" href="#thetis.turbines.TurbineFunctionalCallback.integrated_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>The sum of the time-integrated power output of all farms</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thetis.turbines.TurbineFunctionalCallback.message_str">
+<code class="descname">message_str</code><span class="sig-paren">(</span><em>current_power</em>, <em>average_power</em>, <em>average_profit</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/turbines.html#TurbineFunctionalCallback.message_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.turbines.TurbineFunctionalCallback.message_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string representation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> – If provided, these will be the return value from
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">__call__()</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.turbines.TurbineFunctionalCallback.name">
+<code class="descname">name</code><em class="property"> = 'turbine'</em><a class="headerlink" href="#thetis.turbines.TurbineFunctionalCallback.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.turbines.TurbineFunctionalCallback.variable_names">
+<code class="descname">variable_names</code><em class="property"> = ['current_power', 'average_power', 'average_profit']</em><a class="headerlink" href="#thetis.turbines.TurbineFunctionalCallback.variable_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="thetis.turbines.TurbineOptimisationCallback">
+<em class="property">class </em><code class="descclassname">thetis.turbines.</code><code class="descname">TurbineOptimisationCallback</code><span class="sig-paren">(</span><em>solver_obj</em>, <em>turbine_functional_callback</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/turbines.html#TurbineOptimisationCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.turbines.TurbineOptimisationCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.optimisation.DiagnosticOptimisationCallback" title="thetis.optimisation.DiagnosticOptimisationCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.optimisation.DiagnosticOptimisationCallback</span></code></a></p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">DiagnosticOptimisationCallback</span></code> that evaluates the performance of each tidal turbine farm during an optimisation.</p>
+<p>See the <code class="xref py py-mod docutils literal notranslate"><span class="pre">optimisation</span></code> module for more info about the use of OptimisationCallbacks.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>solver_obj</strong> – a <a class="reference internal" href="#thetis.solver2d.FlowSolver2d" title="thetis.solver2d.FlowSolver2d"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowSolver2d</span></code></a> object</li>
+<li><strong>turbine_functional_callback</strong> – a <a class="reference internal" href="#thetis.turbines.TurbineFunctionalCallback" title="thetis.turbines.TurbineFunctionalCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">TurbineFunctionalCallback</span></code></a> used in the forward model</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Args kwargs:</th><td class="field-body"><p class="first last">see <a class="reference internal" href="#thetis.optimisation.DiagnosticOptimisationCallback" title="thetis.optimisation.DiagnosticOptimisationCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiagnosticOptimisationCallback</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="thetis.turbines.TurbineOptimisationCallback.compute_values">
+<code class="descname">compute_values</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/turbines.html#TurbineOptimisationCallback.compute_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.turbines.TurbineOptimisationCallback.compute_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute diagnostic values.</p>
+<p>This method is to be implemented in concrete subclasses of a <a class="reference internal" href="#thetis.optimisation.DiagnosticOptimisationCallback" title="thetis.optimisation.DiagnosticOptimisationCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiagnosticOptimisationCallback</span></code></a>.
+The number of arguments varies depending on which of the 6 [eval|derivative|hessian]_cb_[pre|post] callbacks
+this is used as. The last argument always contains the current controls. In the “pre” callbacks this is
+the only argument. In all “post” callbacks the 0th argument is the current functional value. eval_cb_post
+is given two arguments: functional and controls. derivative_cb_post and hessian_cb_post are given three
+arguments with args[1] being the derivative/hessian just calculated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="thetis.turbines.TurbineOptimisationCallback.message_str">
+<code class="descname">message_str</code><span class="sig-paren">(</span><em>cost</em>, <em>average_power</em>, <em>average_profit</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/turbines.html#TurbineOptimisationCallback.message_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.turbines.TurbineOptimisationCallback.message_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string representation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> – If provided, these will be the return value from
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">__call__()</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.turbines.TurbineOptimisationCallback.name">
+<code class="descname">name</code><em class="property"> = 'farm_optimisation'</em><a class="headerlink" href="#thetis.turbines.TurbineOptimisationCallback.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="thetis.turbines.TurbineOptimisationCallback.variable_names">
+<code class="descname">variable_names</code><em class="property"> = ['cost', 'average_power', 'average_profit']</em><a class="headerlink" href="#thetis.turbines.TurbineOptimisationCallback.variable_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -9624,6 +10161,19 @@ spaces.</li>
 </dd></dl>
 
 <dl class="class">
+<dt id="thetis.utility.SubdomainProjector">
+<em class="property">class </em><code class="descclassname">thetis.utility.</code><code class="descname">SubdomainProjector</code><span class="sig-paren">(</span><em>v</em>, <em>v_out</em>, <em>subdomain_id</em>, <em>solver_parameters=None</em>, <em>constant_jacobian=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/utility.html#SubdomainProjector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.utility.SubdomainProjector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Projector that projects the restriction of an expression to the specified subdomain.</p>
+<dl class="method">
+<dt id="thetis.utility.SubdomainProjector.project">
+<code class="descname">project</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/utility.html#SubdomainProjector.project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.utility.SubdomainProjector.project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the projection.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="thetis.utility.SumFunction">
 <em class="property">class </em><code class="descclassname">thetis.utility.</code><code class="descname">SumFunction</code><a class="reference internal" href="_modules/thetis/utility.html#SumFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.utility.SumFunction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
@@ -9795,8 +10345,8 @@ A constant in mesh coordinates.</li>
 <dt id="thetis.utility.comp_tracer_mass_2d">
 <code class="descclassname">thetis.utility.</code><code class="descname">comp_tracer_mass_2d</code><span class="sig-paren">(</span><em>eta</em>, <em>bath</em>, <em>scalar_func</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/utility.html#comp_tracer_mass_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#thetis.utility.comp_tracer_mass_2d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes total tracer mass in the 2D domain
-:arg eta: elevation :class: ‘Function’
-:arg bath: bathymetry :class: ‘Function’
+:arg eta: elevation <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code>
+:arg bath: bathymetry <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code>
 :arg scalar_func: scalar <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code> to integrate</p>
 </dd></dl>
 
@@ -10096,7 +10646,7 @@ vectorial UFL jump operator <code class="xref py py-meth docutils literal notran
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2018, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
     </div>
   </body>
 </html>

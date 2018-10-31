@@ -6,14 +6,14 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>thetis.solver &#8212; Thetis 0+untagged.1213.g0b06141 documentation</title>
+    <title>thetis.solver &#8212; Thetis 0+untagged.1276.g4e1ded2 documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -372,8 +372,8 @@
 <span class="sd">        Once the time step is determined, will adjust it to be an integer</span>
 <span class="sd">        fraction of export interval ``options.simulation_export_time``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">automatic_timestep</span> <span class="o">=</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="p">,</span> <span class="s1">&#39;use_automatic_timestep&#39;</span><span class="p">)</span> <span class="ow">and</span>
-                              <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">use_automatic_timestep</span><span class="p">)</span>
+        <span class="n">automatic_timestep</span> <span class="o">=</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="p">,</span> <span class="s1">&#39;use_automatic_timestep&#39;</span><span class="p">)</span>
+                              <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">use_automatic_timestep</span><span class="p">)</span>
 
         <span class="n">cfl2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span><span class="o">.</span><span class="n">cfl_coeff_2d</span>
         <span class="n">cfl3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span><span class="o">.</span><span class="n">cfl_coeff_3d</span>
@@ -614,9 +614,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">tracer_limiter</span> <span class="o">=</span> <span class="n">limiter</span><span class="o">.</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">H</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tracer_limiter</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_velocity</span> <span class="ow">and</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="o">==</span> <span class="s1">&#39;dg-dg&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_velocity</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="o">==</span> <span class="s1">&#39;dg-dg&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">uv_limiter</span> <span class="o">=</span> <span class="n">limiter</span><span class="o">.</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">uv_limiter</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1218,7 +1218,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2018, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
     </div>
   </body>
 </html>

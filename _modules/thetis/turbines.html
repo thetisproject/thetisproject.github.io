@@ -1,0 +1,207 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>thetis.turbines &#8212; Thetis 0+untagged.1276.g4e1ded2 documentation</title>
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="../../_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="../../_static/icon_thetis.ico" />
+
+
+  </head><body>
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetisproject%2Fthetis/activity" title="Thetis build status">Jenkins</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/thetis/turbines">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for thetis.turbines</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Classes related to tidal turbine farms in Thetis.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">.firedrake</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.log</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.callback</span> <span class="k">import</span> <span class="n">DiagnosticCallback</span>
+<span class="kn">from</span> <span class="nn">.optimisation</span> <span class="k">import</span> <span class="n">DiagnosticOptimisationCallback</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+
+<div class="viewcode-block" id="TurbineFarm"><a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineFarm">[docs]</a><span class="k">class</span> <span class="nc">TurbineFarm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluates power output, costs and profit of tidal turbine farm</span>
+
+<span class="sd">    Cost is simply the number of turbines evaluated as the integral of the</span>
+<span class="sd">    turbine density.</span>
+
+<span class="sd">    Power output is calculated as the amount of energy</span>
+<span class="sd">    taken out of the flow by the turbine drag term. This is in general</span>
+<span class="sd">    an over-estimate of the &#39;usefully extractable&#39; energy. Furthermore no</span>
+<span class="sd">    density is included, so that assuming a density of 1000 kg/m^3 and</span>
+<span class="sd">    all further quantities in SI, the power is measured in kW.</span>
+
+<span class="sd">    Profit is calculated as:</span>
+
+<span class="sd">      Profit = Power - break_even_wattage * Cost</span>
+
+<span class="sd">    With the above assumptions, break_even_wattage should be specified in</span>
+<span class="sd">    kW and can be interpreted as the average power per turbine required</span>
+<span class="sd">    to &#39;break even&#39;, i.e. Profit=0.</span>
+
+<span class="sd">    Power output and profit are time-integrated (simple first order) and</span>
+<span class="sd">    time-averages are available as average_power and average_profit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">farm_options</span><span class="p">,</span> <span class="n">subdomain_id</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg farm_options: a :class:`TidalTurbineFarmOptions` object that define the farm and the turbines used</span>
+<span class="sd">        :arg int subdomain_id: the farm is restricted to this subdomain</span>
+<span class="sd">        :arg u,v: the depth-averaged velocity field</span>
+<span class="sd">        :arg float dt: used for time-integration.&quot;&quot;&quot;</span>
+        <span class="n">turbine_density</span> <span class="o">=</span> <span class="n">farm_options</span><span class="o">.</span><span class="n">turbine_density</span>
+        <span class="n">C_T</span> <span class="o">=</span> <span class="n">farm_options</span><span class="o">.</span><span class="n">turbine_options</span><span class="o">.</span><span class="n">thrust_coefficient</span>
+        <span class="n">A_T</span> <span class="o">=</span> <span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">farm_options</span><span class="o">.</span><span class="n">turbine_options</span><span class="o">.</span><span class="n">diameter</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">C_D</span> <span class="o">=</span> <span class="n">C_T</span><span class="o">*</span><span class="n">A_T</span><span class="o">/</span><span class="mf">2.</span><span class="o">*</span><span class="n">turbine_density</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">power_integral</span> <span class="o">=</span> <span class="n">C_D</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">u</span> <span class="o">+</span> <span class="n">v</span><span class="o">*</span><span class="n">v</span><span class="p">)</span><span class="o">**</span><span class="mf">1.5</span> <span class="o">*</span> <span class="n">dx</span><span class="p">(</span><span class="n">subdomain_id</span><span class="p">)</span>
+        <span class="c1"># cost integral is n/o turbines = \int turbine_density</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">turbine_density</span> <span class="o">*</span> <span class="n">dx</span><span class="p">(</span><span class="n">subdomain_id</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">break_even_wattage</span> <span class="o">=</span> <span class="n">farm_options</span><span class="o">.</span><span class="n">break_even_wattage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
+
+        <span class="c1"># time-integrated quantities:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">integrated_power</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">average_power</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">average_profit</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_period</span> <span class="o">=</span> <span class="mf">0.</span>
+
+<div class="viewcode-block" id="TurbineFarm.evaluate_timestep"><a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineFarm.evaluate_timestep">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_timestep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Perform time integration and return current power and time-averaged power and profit.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_period</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_period</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">current_power</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">power_integral</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">integrated_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrated_power</span> <span class="o">+</span> <span class="n">current_power</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">average_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrated_power</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_period</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">average_profit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">average_power</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">break_even_wattage</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost</span>
+        <span class="k">return</span> <span class="n">current_power</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">average_power</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">average_profit</span></div></div>
+
+
+<div class="viewcode-block" id="TurbineFunctionalCallback"><a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineFunctionalCallback">[docs]</a><span class="k">class</span> <span class="nc">TurbineFunctionalCallback</span><span class="p">(</span><span class="n">DiagnosticCallback</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :class:`.DiagnosticCallback` that evaluates the performance of each tidal turbine farm.&quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;turbine&#39;</span>  <span class="c1"># this name will be used in the hdf5 file</span>
+    <span class="n">variable_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;current_power&#39;</span><span class="p">,</span> <span class="s1">&#39;average_power&#39;</span><span class="p">,</span> <span class="s1">&#39;average_profit&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg solver_obj: a :class:`.FlowSolver2d` object containing the tidal_turbine_farms</span>
+<span class="sd">        :arg kwargs: see :class:`DiagnosticCallback`&quot;&quot;&quot;</span>
+        <span class="n">nfarms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">tidal_turbine_farms</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver_obj</span><span class="p">,</span> <span class="n">array_dim</span><span class="o">=</span><span class="n">nfarms</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">solver_obj</span><span class="o">.</span><span class="n">create_equations</span><span class="p">()</span>
+        <span class="c1"># TODO: was u, eta = split(solution)</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">eta</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestep</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">farms</span> <span class="o">=</span> <span class="p">[</span><span class="n">TurbineFarm</span><span class="p">(</span><span class="n">farm_options</span><span class="p">,</span> <span class="n">subdomain_id</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span> <span class="k">for</span> <span class="n">subdomain_id</span><span class="p">,</span> <span class="n">farm_options</span> <span class="ow">in</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">tidal_turbine_farms</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="sd">&quot;&quot;&quot;The sum of the number of turbines in all farms&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">farm</span><span class="o">.</span><span class="n">cost</span> <span class="k">for</span> <span class="n">farm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">farms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">append_to_log</span><span class="p">:</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Number of turbines = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">farm</span><span class="o">.</span><span class="n">evaluate_timestep</span><span class="p">()</span> <span class="k">for</span> <span class="n">farm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">farms</span><span class="p">])</span>
+
+<div class="viewcode-block" id="TurbineFunctionalCallback.message_str"><a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineFunctionalCallback.message_str">[docs]</a>    <span class="k">def</span> <span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_power</span><span class="p">,</span> <span class="n">average_power</span><span class="p">,</span> <span class="n">average_profit</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;Current power, average power and profit for each farm: </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_power</span><span class="p">,</span> <span class="n">average_power</span><span class="p">,</span> <span class="n">average_profit</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">average_profit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The sum of the time-averaged profit output of all farms&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">farm</span><span class="o">.</span><span class="n">average_profit</span> <span class="k">for</span> <span class="n">farm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">farms</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">average_power</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The sum of the time-averaged power output of all farms&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">farm</span><span class="o">.</span><span class="n">average_power</span> <span class="k">for</span> <span class="n">farm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">farms</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">integrated_power</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The sum of the time-integrated power output of all farms&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">farm</span><span class="o">.</span><span class="n">integrated_power</span> <span class="k">for</span> <span class="n">farm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">farms</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TurbineOptimisationCallback"><a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineOptimisationCallback">[docs]</a><span class="k">class</span> <span class="nc">TurbineOptimisationCallback</span><span class="p">(</span><span class="n">DiagnosticOptimisationCallback</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :class:`DiagnosticOptimisationCallback` that evaluates the performance of each tidal turbine farm during an optimisation.</span>
+
+<span class="sd">    See the :py:mod:`optimisation` module for more info about the use of OptimisationCallbacks.&quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;farm_optimisation&#39;</span>
+    <span class="n">variable_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;cost&#39;</span><span class="p">,</span> <span class="s1">&#39;average_power&#39;</span><span class="p">,</span> <span class="s1">&#39;average_profit&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">turbine_functional_callback</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg solver_obj: a :class:`.FlowSolver2d` object</span>
+<span class="sd">        :arg turbine_functional_callback: a :class:`.TurbineFunctionalCallback` used in the forward model</span>
+<span class="sd">        :args kwargs: see :class:`.DiagnosticOptimisationCallback`&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tfc</span> <span class="o">=</span> <span class="n">turbine_functional_callback</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TurbineOptimisationCallback.compute_values"><a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineOptimisationCallback.compute_values">[docs]</a>    <span class="k">def</span> <span class="nf">compute_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">costs</span> <span class="o">=</span> <span class="p">[</span><span class="n">farm</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">block_variable</span><span class="o">.</span><span class="n">saved_output</span> <span class="k">for</span> <span class="n">farm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tfc</span><span class="o">.</span><span class="n">farms</span><span class="p">]</span>
+        <span class="n">powers</span> <span class="o">=</span> <span class="p">[</span><span class="n">farm</span><span class="o">.</span><span class="n">average_power</span><span class="o">.</span><span class="n">block_variable</span><span class="o">.</span><span class="n">saved_output</span> <span class="k">for</span> <span class="n">farm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tfc</span><span class="o">.</span><span class="n">farms</span><span class="p">]</span>
+        <span class="n">profits</span> <span class="o">=</span> <span class="p">[</span><span class="n">farm</span><span class="o">.</span><span class="n">average_profit</span><span class="o">.</span><span class="n">block_variable</span><span class="o">.</span><span class="n">saved_output</span> <span class="k">for</span> <span class="n">farm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tfc</span><span class="o">.</span><span class="n">farms</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">costs</span><span class="p">,</span> <span class="n">powers</span><span class="p">,</span> <span class="n">profits</span></div>
+
+<div class="viewcode-block" id="TurbineOptimisationCallback.message_str"><a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineOptimisationCallback.message_str">[docs]</a>    <span class="k">def</span> <span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="n">average_power</span><span class="p">,</span> <span class="n">average_profit</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;Costs, average power and profit for each farm: </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">average_power</span><span class="p">,</span> <span class="n">average_profit</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2018, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

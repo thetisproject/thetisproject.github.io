@@ -6,14 +6,14 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>2D model options &#8212; Thetis 0+untagged.1213.g0b06141 documentation</title>
+    <title>2D model options &#8212; Thetis 0+untagged.1276.g4e1ded2 documentation</title>
     <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
 <!--[if lte IE 6]>
@@ -111,7 +111,7 @@ Prints deviation from the initial volume to stdout.</p>
 <p>Default:</p>
 <p class="last">Function</p>
 </dd>
-<dt>CommonModelOptions.<strong>horizontal_velocity_scale</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeConstant</span></dt>
+<dt>CommonModelOptions.<strong>horizontal_velocity_scale</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeConstantTraitlet</span></dt>
 <dd><p class="first">Maximum horizontal velocity magnitude</p>
 <p>Used to compute max stable advection time step.</p>
 <p>Default:</p>
@@ -122,19 +122,19 @@ Prints deviation from the initial volume to stdout.</p>
 <p>Default:</p>
 <p class="last">UFL scalar expression</p>
 </dd>
-<dt>CommonModelOptions.<strong>horizontal_viscosity_scale</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeConstant</span></dt>
+<dt>CommonModelOptions.<strong>horizontal_viscosity_scale</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeConstantTraitlet</span></dt>
 <dd><p class="first">Maximum horizontal viscosity</p>
 <p>Used to compute max stable diffusion time step.</p>
 <p>Default:</p>
 <p class="last">Constant(1.0)</p>
 </dd>
-<dt>CommonModelOptions.<strong>lax_friedrichs_tracer_scaling_factor</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeConstant</span></dt>
+<dt>CommonModelOptions.<strong>lax_friedrichs_tracer_scaling_factor</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeConstantTraitlet</span></dt>
 <dd><p class="first">Scaling factor for tracer Lax Friedrichs stability term.</p>
 <p>Default:</p>
 <p class="last">Constant(1.0)</p>
 </dd>
-<dt>CommonModelOptions.<strong>lax_friedrichs_velocity_scaling_factor</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeConstant</span></dt>
-<dd><p class="first">Scaling factor for Lax Friedrichs stabilisation term in horiozonal momentum advection.</p>
+<dt>CommonModelOptions.<strong>lax_friedrichs_velocity_scaling_factor</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeConstantTraitlet</span></dt>
+<dd><p class="first">Scaling factor for Lax Friedrichs stabilisation term in horizontal momentum advection.</p>
 <p>Default:</p>
 <p class="last">Constant(1.0)</p>
 </dd>
@@ -220,7 +220,7 @@ diagnostics will be computed</p>
 <dt>CommonModelOptions.<strong>use_lax_friedrichs_tracer</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">Use Lax Friedrichs stabilisation in tracer advection.</p>
 <p>Default:</p>
-<p class="last">True</p>
+<p class="last">False</p>
 </dd>
 <dt>CommonModelOptions.<strong>use_lax_friedrichs_velocity</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">use Lax Friedrichs stabilisation in horizontal momentum advection.</p>
@@ -405,6 +405,12 @@ diagnostics will be computed</p>
 </dl>
 </div></blockquote>
 </dd>
+<dt>ModelOptions2d.<strong>tracer_only</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
+<dd><p class="first">Hold shallow water variables in initial state</p>
+<p>Advects tracer in the associated (constant) velocity field.</p>
+<p>Default:</p>
+<p class="last">False</p>
+</dd>
 <dt>ModelOptions2d.<strong>use_wetting_and_drying</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bool</span></dt>
 <dd><p class="first">bool: Turn on wetting and drying</p>
 <p>Uses the wetting and drying scheme from Karna et al (2011).
@@ -412,7 +418,7 @@ If <code class="docutils literal notranslate"><span class="pre">True</span></cod
 <p>Default:</p>
 <p class="last">False</p>
 </dd>
-<dt>ModelOptions2d.<strong>wetting_and_drying_alpha</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeConstant</span></dt>
+<dt>ModelOptions2d.<strong>wetting_and_drying_alpha</strong> <span class="classifier-delimiter">:</span> <span class="classifier">FiredrakeConstantTraitlet</span></dt>
 <dd><p class="first">Coefficient: Wetting and drying parameter <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
 <p>Used in bathymetry displacement function that ensures positive water depths. Unit is meters.</p>
 <p>Default:</p>
@@ -430,7 +436,7 @@ If <code class="docutils literal notranslate"><span class="pre">True</span></cod
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2018, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
     </div>
   </body>
 </html>

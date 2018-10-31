@@ -6,14 +6,14 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>thetis.options &#8212; Thetis 0+untagged.1213.g0b06141 documentation</title>
+    <title>thetis.options &#8212; Thetis 0+untagged.1276.g4e1ded2 documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -60,8 +60,8 @@
 <span class="sd">All options are type-checked and they are stored in traitlets Configurable</span>
 <span class="sd">objects.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">thetis</span> <span class="k">import</span> <span class="n">FiredrakeConstant</span> <span class="k">as</span> <span class="n">Constant</span>
 <span class="kn">from</span> <span class="nn">.configuration</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.firedrake</span> <span class="k">import</span> <span class="n">Constant</span>
 
 
 <div class="viewcode-block" id="TimeStepperOptions"><a class="viewcode-back" href="../../thetis.html#thetis.options.TimeStepperOptions">[docs]</a><span class="k">class</span> <span class="nc">TimeStepperOptions</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">):</span>
@@ -383,6 +383,24 @@
     <span class="n">beta</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">0.77</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Saline contraction coefficient of ocean water&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="TidalTurbineOptions"><a class="viewcode-back" href="../../thetis.html#thetis.options.TidalTurbineOptions">[docs]</a><span class="k">class</span> <span class="nc">TidalTurbineOptions</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tidal turbine parameters&quot;&quot;&quot;</span>
+    <span class="n">thrust_coefficient</span> <span class="o">=</span> <span class="n">PositiveFloat</span><span class="p">(</span>
+        <span class="mf">0.8</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Thrust coefficient C_T&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">diameter</span> <span class="o">=</span> <span class="n">PositiveFloat</span><span class="p">(</span>
+        <span class="mf">18.</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Turbine diameter&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TidalTurbineFarmOptions"><a class="viewcode-back" href="../../thetis.html#thetis.options.TidalTurbineFarmOptions">[docs]</a><span class="k">class</span> <span class="nc">TidalTurbineFarmOptions</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">,</span> <span class="n">TraitType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tidal turbine farm options&quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Farm options&#39;</span>
+    <span class="n">turbine_options</span> <span class="o">=</span> <span class="n">TidalTurbineOptions</span><span class="p">()</span>
+    <span class="n">turbine_density</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Density of turbines within the farm&#39;</span><span class="p">)</span>
+    <span class="n">break_even_wattage</span> <span class="o">=</span> <span class="n">NonNegativeFloat</span><span class="p">(</span>
+        <span class="mf">0.0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Average power production per turbine required to break even&#39;</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="CommonModelOptions"><a class="viewcode-back" href="../../thetis.html#thetis.options.CommonModelOptions">[docs]</a><span class="k">class</span> <span class="nc">CommonModelOptions</span><span class="p">(</span><span class="n">FrozenConfigurable</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Options that are common for both 2d and 3d models&quot;&quot;&quot;</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Model options&#39;</span>
@@ -409,11 +427,11 @@
 
     <span class="n">use_lax_friedrichs_velocity</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;use Lax Friedrichs stabilisation in horizontal momentum advection.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">lax_friedrichs_velocity_scaling_factor</span> <span class="o">=</span> <span class="n">FiredrakeConstant</span><span class="p">(</span>
-        <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Scaling factor for Lax Friedrichs stabilisation term in horiozonal momentum advection.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">lax_friedrichs_velocity_scaling_factor</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Scaling factor for Lax Friedrichs stabilisation term in horizontal momentum advection.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_lax_friedrichs_tracer</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
-        <span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use Lax Friedrichs stabilisation in tracer advection.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">lax_friedrichs_tracer_scaling_factor</span> <span class="o">=</span> <span class="n">FiredrakeConstant</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use Lax Friedrichs stabilisation in tracer advection.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">lax_friedrichs_tracer_scaling_factor</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
         <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Scaling factor for tracer Lax Friedrichs stability term.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_limiter_for_tracers</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Apply P1DG limiter for tracer fields&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -442,13 +460,13 @@
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">simulation_end_time</span> <span class="o">=</span> <span class="n">PositiveFloat</span><span class="p">(</span>
         <span class="mf">1000.0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Simulation duration in seconds&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">horizontal_velocity_scale</span> <span class="o">=</span> <span class="n">FiredrakeConstant</span><span class="p">(</span>
+    <span class="n">horizontal_velocity_scale</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
         <span class="n">Constant</span><span class="p">(</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Maximum horizontal velocity magnitude</span>
 
 <span class="s2">        Used to compute max stable advection time step.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">horizontal_viscosity_scale</span> <span class="o">=</span> <span class="n">FiredrakeConstant</span><span class="p">(</span>
+    <span class="n">horizontal_viscosity_scale</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
         <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Maximum horizontal viscosity</span>
 
@@ -537,12 +555,14 @@
 <span class="s2">        Uses the wetting and drying scheme from Karna et al (2011).</span>
 <span class="s2">        If ``True``, one should also set :attr:`wetting_and_drying_alpha` to control the bathymetry displacement.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">wetting_and_drying_alpha</span> <span class="o">=</span> <span class="n">FiredrakeConstant</span><span class="p">(</span>
+    <span class="n">wetting_and_drying_alpha</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
         <span class="n">Constant</span><span class="p">(</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Coefficient: Wetting and drying parameter :math:`\alpha`.</span>
 
 <span class="s2">        Used in bathymetry displacement function that ensures positive water depths. Unit is meters.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">tidal_turbine_farms</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span><span class="n">trait</span><span class="o">=</span><span class="n">TidalTurbineFarmOptions</span><span class="p">,</span>
+                               <span class="n">default_value</span><span class="o">=</span><span class="p">{},</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Dictionary mapping subdomain ids to the options of the corresponding farm&#39;</span><span class="p">)</span>
 
     <span class="n">check_tracer_conservation</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
@@ -556,6 +576,11 @@
 <span class="s2">        Compute tracer overshoots at every export</span>
 
 <span class="s2">        Prints overshoot values that exceed the initial range to stdout.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">tracer_only</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Hold shallow water variables in initial state</span>
+
+<span class="s2">        Advects tracer in the associated (constant) velocity field.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
@@ -607,7 +632,7 @@
         <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Cast eddy viscosity to p1 space instead of p0&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_smagorinsky_viscosity</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use Smagorinsky horisontal viscosity parametrization&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">smagorinsky_coefficient</span> <span class="o">=</span> <span class="n">FiredrakeConstant</span><span class="p">(</span>
+    <span class="n">smagorinsky_coefficient</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
         <span class="n">Constant</span><span class="p">(</span><span class="mf">0.1</span><span class="p">),</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Smagorinsky viscosity coefficient :math:`C_S`</span>
 
@@ -615,10 +640,6 @@
 
     <span class="n">use_limiter_for_velocity</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Apply P1DG limiter for 3D horizontal velocity field&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">use_lax_friedrichs_tracer</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
-        <span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use Lax Friedrichs stabilisation in tracer advection.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">lax_friedrichs_tracer_scaling_factor</span> <span class="o">=</span> <span class="n">FiredrakeConstant</span><span class="p">(</span>
-        <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Scaling factor for tracer Lax Friedrichs stability term.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">check_volume_conservation_3d</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Compute volume of the 3D domain at every export</span>
@@ -656,7 +677,7 @@
 <span class="s2">        This option is only used in the 3d solver, if 2d mode is solved</span>
 <span class="s2">        explicitly.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">vertical_velocity_scale</span> <span class="o">=</span> <span class="n">FiredrakeConstant</span><span class="p">(</span>
+    <span class="n">vertical_velocity_scale</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
         <span class="n">Constant</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Maximum vertical velocity magnitude</span>
 
@@ -693,9 +714,9 @@
         <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Source term for salinity equation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">temperature_source_3d</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Source term for temperature equation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">constant_temperature</span> <span class="o">=</span> <span class="n">FiredrakeConstant</span><span class="p">(</span>
+    <span class="n">constant_temperature</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
         <span class="n">Constant</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Constant temperature if temperature is not solved&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">constant_salinity</span> <span class="o">=</span> <span class="n">FiredrakeConstant</span><span class="p">(</span>
+    <span class="n">constant_salinity</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
         <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Constant salinity if salinity is not solved&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 </pre></div>
 
@@ -707,7 +728,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2018, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
     </div>
   </body>
 </html>

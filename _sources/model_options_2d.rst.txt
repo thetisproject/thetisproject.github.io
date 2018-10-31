@@ -82,7 +82,7 @@ CommonModelOptions.\ **horizontal_diffusivity** : FiredrakeCoefficient
 
     Function
 
-CommonModelOptions.\ **horizontal_velocity_scale** : FiredrakeConstant
+CommonModelOptions.\ **horizontal_velocity_scale** : FiredrakeConstantTraitlet
     Maximum horizontal velocity magnitude
     
     Used to compute max stable advection time step.
@@ -98,7 +98,7 @@ CommonModelOptions.\ **horizontal_viscosity** : FiredrakeScalarExpression
 
     UFL scalar expression
 
-CommonModelOptions.\ **horizontal_viscosity_scale** : FiredrakeConstant
+CommonModelOptions.\ **horizontal_viscosity_scale** : FiredrakeConstantTraitlet
     Maximum horizontal viscosity
     
     Used to compute max stable diffusion time step.
@@ -107,15 +107,15 @@ CommonModelOptions.\ **horizontal_viscosity_scale** : FiredrakeConstant
 
     Constant(1.0)
 
-CommonModelOptions.\ **lax_friedrichs_tracer_scaling_factor** : FiredrakeConstant
+CommonModelOptions.\ **lax_friedrichs_tracer_scaling_factor** : FiredrakeConstantTraitlet
     Scaling factor for tracer Lax Friedrichs stability term.
 
     Default:
 
     Constant(1.0)
 
-CommonModelOptions.\ **lax_friedrichs_velocity_scaling_factor** : FiredrakeConstant
-    Scaling factor for Lax Friedrichs stabilisation term in horiozonal momentum advection.
+CommonModelOptions.\ **lax_friedrichs_velocity_scaling_factor** : FiredrakeConstantTraitlet
+    Scaling factor for Lax Friedrichs stabilisation term in horizontal momentum advection.
 
     Default:
 
@@ -240,7 +240,7 @@ CommonModelOptions.\ **use_lax_friedrichs_tracer** : Bool
 
     Default:
 
-    True
+    False
 
 CommonModelOptions.\ **use_lax_friedrichs_velocity** : Bool
     use Lax Friedrichs stabilisation in horizontal momentum advection.
@@ -456,6 +456,15 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'
             {'ksp_type': 'gmres', 'pc_type': 'sor'}
 
 
+ModelOptions2d.\ **tracer_only** : Bool
+    Hold shallow water variables in initial state
+    
+    Advects tracer in the associated (constant) velocity field.
+
+    Default:
+
+    False
+
 ModelOptions2d.\ **use_wetting_and_drying** : Bool
     bool: Turn on wetting and drying
     
@@ -466,7 +475,7 @@ ModelOptions2d.\ **use_wetting_and_drying** : Bool
 
     False
 
-ModelOptions2d.\ **wetting_and_drying_alpha** : FiredrakeConstant
+ModelOptions2d.\ **wetting_and_drying_alpha** : FiredrakeConstantTraitlet
     Coefficient: Wetting and drying parameter :math:`\alpha`.
     
     Used in bathymetry displacement function that ensures positive water depths. Unit is meters.
