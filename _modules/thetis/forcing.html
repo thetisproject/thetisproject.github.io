@@ -1,0 +1,887 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>thetis.forcing &#8212; Thetis 0+untagged.1409.g7b98a42 documentation</title>
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="../../_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="../../_static/icon_thetis.ico" />
+
+
+  </head><body>
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetis/branches" title="Thetis build status">Jenkins</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/thetis/forcing">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for thetis.forcing</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Routines for interpolating forcing fields for the 3D solver.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">firedrake</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.spatial.qhull</span> <span class="k">as</span> <span class="nn">qhull</span>
+<span class="kn">import</span> <span class="nn">thetis.timezone</span> <span class="k">as</span> <span class="nn">timezone</span>
+<span class="kn">import</span> <span class="nn">thetis.interpolation</span> <span class="k">as</span> <span class="nn">interpolation</span>
+<span class="kn">import</span> <span class="nn">thetis.coordsys</span> <span class="k">as</span> <span class="nn">coordsys</span>
+<span class="kn">from</span> <span class="nn">.log</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">netCDF4</span>
+<span class="kn">import</span> <span class="nn">thetis.physical_constants</span> <span class="k">as</span> <span class="nn">physical_constants</span>
+<span class="kn">import</span> <span class="nn">uptide</span>
+<span class="kn">import</span> <span class="nn">uptide.tidal_netcdf</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span><span class="p">,</span> <span class="n">abstractproperty</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<div class="viewcode-block" id="compute_wind_stress"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.compute_wind_stress">[docs]</a><span class="k">def</span> <span class="nf">compute_wind_stress</span><span class="p">(</span><span class="n">wind_u</span><span class="p">,</span> <span class="n">wind_v</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;LargePond1981&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute wind stress from atmospheric 10 m wind.</span>
+
+<span class="sd">    wind stress is defined as</span>
+
+<span class="sd">    .. math:</span>
+<span class="sd">        tau_w = C_D \rho_{air} \|U_{10}\| U_{10}</span>
+
+<span class="sd">    where :math:`C_D` is the drag coefficient, :math:`\rho_{air}` is the density of</span>
+<span class="sd">    air, and :math:`U_{10}` is wind speed 10 m above the sea surface.</span>
+
+<span class="sd">    In practice `C_D` depends on the wind speed.</span>
+
+<span class="sd">    Two formulation are currently implemented:</span>
+
+<span class="sd">    - &quot;LargePond1981&quot;:</span>
+<span class="sd">        Wind stress formulation by [1]</span>
+<span class="sd">    - &quot;SmithBanke1975&quot;:</span>
+<span class="sd">        Wind stress formulation by [2]</span>
+
+<span class="sd">    [1] Large and Pond (1981). Open Ocean Momentum Flux Measurements in</span>
+<span class="sd">        Moderate to Strong Winds. Journal of Physical Oceanography,</span>
+<span class="sd">        11(3):324-336.</span>
+<span class="sd">        https://doi.org/10.1175/1520-0485(1981)011%3C0324:OOMFMI%3E2.0.CO;2</span>
+<span class="sd">    [2] Smith and Banke (1975). Variation of the sea surface drag coefficient with</span>
+<span class="sd">        wind speed. Q J R Meteorol Soc., 101(429):665-673.</span>
+<span class="sd">        https://doi.org/10.1002/qj.49710142920</span>
+
+<span class="sd">    :arg wind_u, wind_v: Wind u and v components as numpy arrays</span>
+<span class="sd">    :kwarg method: Choose the stress formulation. Currently supports:</span>
+<span class="sd">        &#39;LargePond1981&#39; (default) or &#39;SmithBanke1975&#39;.</span>
+<span class="sd">    :returns: (tau_x, tau_y) wind stress x and y components as numpy arrays</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rho_air</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;rho_air&#39;</span><span class="p">])</span>
+    <span class="n">wind_mag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">wind_u</span><span class="p">,</span> <span class="n">wind_v</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;LargePond1981&#39;</span><span class="p">:</span>
+        <span class="n">CD_LOW</span> <span class="o">=</span> <span class="mf">1.2e-3</span>
+        <span class="n">C_D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">wind_u</span><span class="p">)</span><span class="o">*</span><span class="n">CD_LOW</span>
+        <span class="n">high_wind</span> <span class="o">=</span> <span class="n">wind_mag</span> <span class="o">&gt;</span> <span class="mf">11.0</span>
+        <span class="n">C_D</span><span class="p">[</span><span class="n">high_wind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0e-3</span><span class="o">*</span><span class="p">(</span><span class="mf">0.49</span> <span class="o">+</span> <span class="mf">0.065</span><span class="o">*</span><span class="n">wind_mag</span><span class="p">[</span><span class="n">high_wind</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;SmithBanke1975&#39;</span><span class="p">:</span>
+        <span class="n">C_D</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.63</span> <span class="o">+</span> <span class="mf">0.066</span> <span class="o">*</span> <span class="n">wind_mag</span><span class="p">)</span><span class="o">/</span><span class="mf">1000.</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">C_D</span><span class="o">*</span><span class="n">rho_air</span><span class="o">*</span><span class="n">wind_mag</span>
+    <span class="n">tau_x</span> <span class="o">=</span> <span class="n">tau</span><span class="o">*</span><span class="n">wind_u</span>
+    <span class="n">tau_y</span> <span class="o">=</span> <span class="n">tau</span><span class="o">*</span><span class="n">wind_v</span>
+    <span class="k">return</span> <span class="n">tau_x</span><span class="p">,</span> <span class="n">tau_y</span></div>
+
+
+<div class="viewcode-block" id="ATMNetCDFTime"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.ATMNetCDFTime">[docs]</a><span class="k">class</span> <span class="nc">ATMNetCDFTime</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFTimeParser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A TimeParser class for reading WRF/NAM atmospheric forecast files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">max_duration</span><span class="o">=</span><span class="mf">24.</span><span class="o">*</span><span class="mf">3600.</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg filename:</span>
+<span class="sd">        :kwarg max_duration: Time span to read from each file (in secords,</span>
+<span class="sd">            default one day). Forecast files are usually daily files that</span>
+<span class="sd">            contain forecast for &gt; 1 days.</span>
+<span class="sd">        :kwarg bool verbose: Se True to print debug information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ATMNetCDFTime</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">time_variable_name</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+        <span class="c1"># NOTE these are daily forecast files, limit time steps to one day</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">epoch_to_datetime</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_time_raw</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">epoch_to_datetime</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_duration</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">epoch_to_datetime</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Parsed file </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Raw time span: </span><span class="si">{:}</span><span class="s1"> -&gt; </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time_raw</span><span class="p">))</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Time step: </span><span class="si">{:}</span><span class="s1"> h&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_step</span><span class="o">/</span><span class="mf">3600.</span><span class="p">))</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Restricting duration to </span><span class="si">{:}</span><span class="s1"> h -&gt; keeping </span><span class="si">{:}</span><span class="s1"> steps&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_duration</span><span class="o">/</span><span class="mf">3600.</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">))</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  New time span: </span><span class="si">{:}</span><span class="s1"> -&gt; </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="ATMInterpolator"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.ATMInterpolator">[docs]</a><span class="k">class</span> <span class="nc">ATMInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interpolates WRF/NAM atmospheric model data on 2D fields.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">wind_stress_field</span><span class="p">,</span>
+                 <span class="n">atm_pressure_field</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">,</span>
+                 <span class="n">ncfile_pattern</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span> <span class="n">target_coordsys</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: Target (scalar) :class:`FunctionSpace` object onto</span>
+<span class="sd">            which data will be interpolated.</span>
+<span class="sd">        :arg wind_stress_field: A 2D vector :class:`Function` where the output</span>
+<span class="sd">            wind stress will be stored.</span>
+<span class="sd">        :arg atm_pressure_field: A 2D scalar :class:`Function` where the output</span>
+<span class="sd">            atmospheric pressure will be stored.</span>
+<span class="sd">        :arg to_latlon: Python function that converts local mesh coordinates to</span>
+<span class="sd">            latitude and longitude: &#39;lat, lon = to_latlon(x, y)&#39;</span>
+<span class="sd">        :arg ncfile_pattern: A file name pattern for reading the atmospheric</span>
+<span class="sd">            model output files. E.g. &#39;forcings/nam_air.local.2006_*.nc&#39;</span>
+<span class="sd">        :arg init_date: A :class:`datetime` object that indicates the start</span>
+<span class="sd">            date/time of the Thetis simulation. Must contain time zone. E.g.</span>
+<span class="sd">            &#39;datetime(2006, 5, 1, tzinfo=pytz.utc)&#39;</span>
+<span class="sd">        :arg target_coordsys: coordinate system in which the model grid is</span>
+<span class="sd">            defined. This is used to rotate vectors to local coordinates.</span>
+<span class="sd">        :kwarg bool verbose: Se True to print debug information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span> <span class="o">=</span> <span class="n">function_space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span> <span class="o">=</span> <span class="n">wind_stress_field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atm_pressure_field</span> <span class="o">=</span> <span class="n">atm_pressure_field</span>
+
+        <span class="c1"># construct interpolators</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFLatLonInterpolator2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFSpatialInterpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;uwind&#39;</span><span class="p">,</span> <span class="s1">&#39;vwind&#39;</span><span class="p">,</span> <span class="s1">&#39;prmsl&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timesearch_obj</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFTimeSearch</span><span class="p">(</span><span class="n">ncfile_pattern</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span> <span class="n">ATMNetCDFTime</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">LinearTimeInterpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timesearch_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">)</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="o">.</span><span class="n">mesh_lonlat</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="o">.</span><span class="n">mesh_lonlat</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">VectorCoordSysRotation</span><span class="p">(</span>
+            <span class="n">coordsys</span><span class="o">.</span><span class="n">LL_WGS84</span><span class="p">,</span> <span class="n">target_coordsys</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ATMInterpolator.set_fields"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.ATMInterpolator.set_fields">[docs]</a>    <span class="k">def</span> <span class="nf">set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates forcing fields at the given time.</span>
+
+<span class="sd">        Performs interpolation and updates the output wind stress and</span>
+<span class="sd">        atmospheric pressure fields in place.</span>
+
+<span class="sd">        :arg float time: Thetis simulation time in seconds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lon_wind</span><span class="p">,</span> <span class="n">lat_wind</span><span class="p">,</span> <span class="n">prmsl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">u_wind</span><span class="p">,</span> <span class="n">v_wind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span><span class="p">(</span><span class="n">lon_wind</span><span class="p">,</span> <span class="n">lat_wind</span><span class="p">)</span>
+        <span class="n">u_stress</span><span class="p">,</span> <span class="n">v_stress</span> <span class="o">=</span> <span class="n">compute_wind_stress</span><span class="p">(</span><span class="n">u_wind</span><span class="p">,</span> <span class="n">v_wind</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">u_stress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_stress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atm_pressure_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">prmsl</span></div></div>
+
+
+<div class="viewcode-block" id="SpatialInterpolatorNCOMBase"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOMBase">[docs]</a><span class="k">class</span> <span class="nc">SpatialInterpolatorNCOMBase</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">SpatialInterpolator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for 2D and 3D NCOM spatial interpolators.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">,</span> <span class="n">grid_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: Target (scalar) :class:`FunctionSpace` object onto</span>
+<span class="sd">            which data will be interpolated.</span>
+<span class="sd">        :arg to_latlon: Python function that converts local mesh coordinates to</span>
+<span class="sd">            latitude and longitude: &#39;lat, lon = to_latlon(x, y)&#39;</span>
+<span class="sd">        :arg grid_path: File path where the NCOM model grid files</span>
+<span class="sd">            (&#39;model_lat.nc&#39;, &#39;model_lon.nc&#39;, &#39;model_zm.nc&#39;) are located.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span> <span class="o">=</span> <span class="n">function_space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_path</span> <span class="o">=</span> <span class="n">grid_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_create_2d_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncfile</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create map for 2D nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># read source lat lon grid</span>
+        <span class="n">lat_full</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_forcing_grid</span><span class="p">(</span><span class="s1">&#39;model_lat.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;Lat&#39;</span><span class="p">)</span>
+        <span class="n">lon_full</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_forcing_grid</span><span class="p">(</span><span class="s1">&#39;model_lon.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;Long&#39;</span><span class="p">)</span>
+        <span class="n">x_ind</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="s1">&#39;X_Index&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">y_ind</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="s1">&#39;Y_Index&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="n">lon_full</span><span class="p">[</span><span class="n">y_ind</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">x_ind</span><span class="p">]</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">lat_full</span><span class="p">[</span><span class="n">y_ind</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">x_ind</span><span class="p">]</span>
+
+        <span class="c1"># find where data values are not defined</span>
+        <span class="n">varkey</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;X_Index&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_Index&#39;</span><span class="p">,</span> <span class="s1">&#39;level&#39;</span><span class="p">]:</span>
+                <span class="n">varkey</span> <span class="o">=</span> <span class="n">k</span>
+                <span class="k">break</span>
+        <span class="k">assert</span> <span class="n">varkey</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;Could not find variable in file&#39;</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="n">varkey</span><span class="p">][:]</span>  <span class="c1"># shape (nz, lat, lon) or (lat, lon)</span>
+        <span class="n">is3d</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="n">land_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">mask</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">is3d</span> <span class="k">else</span> <span class="n">vals</span><span class="o">.</span><span class="n">mask</span>
+
+        <span class="c1"># build 2d mask</span>
+        <span class="n">mask_good_values</span> <span class="o">=</span> <span class="o">~</span><span class="n">land_mask</span>
+        <span class="c1"># neighborhood mask with bounding box</span>
+        <span class="n">mask_cover</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">mask_good_values</span><span class="p">)</span>
+        <span class="n">buffer</span> <span class="o">=</span> <span class="mf">0.2</span>
+        <span class="n">lat_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="n">buffer</span>
+        <span class="n">lat_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="n">buffer</span>
+        <span class="n">lon_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="n">buffer</span>
+        <span class="n">lon_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="n">buffer</span>
+        <span class="n">mask_cover</span><span class="p">[(</span><span class="n">lat</span> <span class="o">&gt;=</span> <span class="n">lat_min</span><span class="p">)</span>
+                   <span class="o">*</span> <span class="p">(</span><span class="n">lat</span> <span class="o">&lt;=</span> <span class="n">lat_max</span><span class="p">)</span>
+                   <span class="o">*</span> <span class="p">(</span><span class="n">lon</span> <span class="o">&gt;=</span> <span class="n">lon_min</span><span class="p">)</span>
+                   <span class="o">*</span> <span class="p">(</span><span class="n">lon</span> <span class="o">&lt;=</span> <span class="n">lon_max</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">mask_cover</span> <span class="o">*=</span> <span class="n">mask_good_values</span>
+        <span class="c1"># include nearest valid neighbors</span>
+        <span class="c1"># needed for nearest neighbor filling</span>
+        <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="k">import</span> <span class="n">cKDTree</span>
+        <span class="n">good_lat</span> <span class="o">=</span> <span class="n">lat</span><span class="p">[</span><span class="n">mask_good_values</span><span class="p">]</span>
+        <span class="n">good_lon</span> <span class="o">=</span> <span class="n">lon</span><span class="p">[</span><span class="n">mask_good_values</span><span class="p">]</span>
+        <span class="n">ll</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">good_lat</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">good_lon</span><span class="o">.</span><span class="n">ravel</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">dist</span><span class="p">,</span> <span class="n">ix</span> <span class="o">=</span> <span class="n">cKDTree</span><span class="p">(</span><span class="n">ll</span><span class="p">)</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">ix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span>
+        <span class="n">ix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">mask_good_values</span><span class="o">.</span><span class="n">ravel</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">ix</span><span class="p">,</span> <span class="n">lat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">mask_nn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">mask_good_values</span><span class="p">)</span>
+        <span class="n">mask_nn</span><span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># final mask</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">mask_cover</span> <span class="o">+</span> <span class="n">mask_nn</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">ravel</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">lat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="n">lat_subset</span> <span class="o">=</span> <span class="n">lat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">]</span>
+        <span class="n">lon_subset</span> <span class="o">=</span> <span class="n">lon</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">]</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">lat_subset</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;rank </span><span class="si">{:}</span><span class="s1"> has no source lat points&#39;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">lon_subset</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;rank </span><span class="si">{:}</span><span class="s1"> has no source lon points&#39;</span>
+
+        <span class="k">return</span> <span class="n">lon_subset</span><span class="p">,</span> <span class="n">lat_subset</span><span class="p">,</span> <span class="n">x_ind</span><span class="p">,</span> <span class="n">y_ind</span><span class="p">,</span> <span class="n">vals</span>
+
+    <span class="k">def</span> <span class="nf">_get_forcing_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function to load NCOM grid files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_path</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ncfile</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="n">varname</span><span class="p">][:]</span>
+        <span class="k">return</span> <span class="n">v</span></div>
+
+
+<div class="viewcode-block" id="SpatialInterpolatorNCOM3d"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOM3d">[docs]</a><span class="k">class</span> <span class="nc">SpatialInterpolatorNCOM3d</span><span class="p">(</span><span class="n">SpatialInterpolatorNCOMBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Spatial interpolator class for interpolatin NCOM ocean model 3D fields.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">,</span> <span class="n">grid_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: Target (scalar) :class:`FunctionSpace` object onto</span>
+<span class="sd">            which data will be interpolated.</span>
+<span class="sd">        :arg to_latlon: Python function that converts local mesh coordinates to</span>
+<span class="sd">            latitude and longitude: &#39;lat, lon = to_latlon(x, y)&#39;</span>
+<span class="sd">        :arg grid_path: File path where the NCOM model grid files</span>
+<span class="sd">            (&#39;model_lat.nc&#39;, &#39;model_lon.nc&#39;, &#39;model_zm.nc&#39;) are located.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">,</span> <span class="n">grid_path</span><span class="p">)</span>
+
+        <span class="c1"># construct local coordinates</span>
+        <span class="n">xyz</span> <span class="o">=</span> <span class="n">SpatialCoordinate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">mesh</span><span class="p">())</span>
+        <span class="n">tmp_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">get_work_function</span><span class="p">()</span>
+        <span class="n">xyz_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">tmp_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">tmp_func</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">xyz_array</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">restore_work_function</span><span class="p">(</span><span class="n">tmp_func</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">xyz_array</span><span class="p">)</span>
+        <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">to_latlon</span><span class="p">(</span><span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">positive_lon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">lat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">lon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_create_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncfile</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a compact interpolator by finding the minimal necessary support</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lon_subset</span><span class="p">,</span> <span class="n">lat_subset</span><span class="p">,</span> <span class="n">x_ind</span><span class="p">,</span> <span class="n">y_ind</span><span class="p">,</span> <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_2d_mapping</span><span class="p">(</span><span class="n">ncfile</span><span class="p">)</span>
+
+        <span class="c1"># find 3d mask where data is not defined</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">good_mask_3d</span> <span class="o">=</span> <span class="o">~</span><span class="n">vals</span><span class="o">.</span><span class="n">mask</span>
+
+        <span class="c1"># construct vertical grid</span>
+        <span class="n">zm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_forcing_grid</span><span class="p">(</span><span class="s1">&#39;model_zm.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;zm&#39;</span><span class="p">)</span>
+        <span class="n">zm</span> <span class="o">=</span> <span class="n">zm</span><span class="p">[:,</span> <span class="n">y_ind</span><span class="p">,</span> <span class="p">:][:,</span> <span class="p">:,</span> <span class="n">x_ind</span><span class="p">]</span>
+        <span class="n">grid_z</span> <span class="o">=</span> <span class="n">zm</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">]</span>  <span class="c1"># shape (nz, nlatlon)</span>
+        <span class="n">grid_z</span> <span class="o">=</span> <span class="n">grid_z</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="o">-</span><span class="mf">5000.</span><span class="p">)</span>
+        <span class="c1"># nudge water surface higher for interpolation</span>
+        <span class="n">grid_z</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mf">1.5</span>
+        <span class="n">nz</span> <span class="o">=</span> <span class="n">grid_z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># data shape is [nz, neta*nxi]</span>
+        <span class="n">grid_lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">lat_subset</span><span class="p">,</span> <span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="mi">1</span><span class="p">))[</span><span class="bp">self</span><span class="o">.</span><span class="n">good_mask_3d</span><span class="p">]</span>
+        <span class="n">grid_lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">lon_subset</span><span class="p">,</span> <span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="mi">1</span><span class="p">))[</span><span class="bp">self</span><span class="o">.</span><span class="n">good_mask_3d</span><span class="p">]</span>
+        <span class="n">grid_z</span> <span class="o">=</span> <span class="n">grid_z</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">good_mask_3d</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">isMaskedArray</span><span class="p">(</span><span class="n">grid_lat</span><span class="p">):</span>
+            <span class="n">grid_lat</span> <span class="o">=</span> <span class="n">grid_lat</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">isMaskedArray</span><span class="p">(</span><span class="n">grid_lon</span><span class="p">):</span>
+            <span class="n">grid_lon</span> <span class="o">=</span> <span class="n">grid_lon</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">isMaskedArray</span><span class="p">(</span><span class="n">grid_z</span><span class="p">):</span>
+            <span class="n">grid_z</span> <span class="o">=</span> <span class="n">grid_z</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">grid_latlonz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">grid_lat</span><span class="p">,</span> <span class="n">grid_lon</span><span class="p">,</span> <span class="n">grid_z</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="c1"># building 3D interpolator, this can take a long time (minutes)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Constructing 3D GridInterpolator...&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">GridInterpolator</span><span class="p">(</span>
+            <span class="n">grid_latlonz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">,</span>
+            <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill_mode</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="n">dont_raise</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;done.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="SpatialInterpolatorNCOM3d.interpolate"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOM3d.interpolate">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nc_filename</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">itime</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calls the interpolator object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">nc_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ncfile</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_create_interpolator</span><span class="p">(</span><span class="n">ncfile</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variable_list</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">variables</span>
+                <span class="n">grid_data</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="n">var</span><span class="p">][:][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">good_mask_3d</span><span class="p">]</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="p">(</span><span class="n">grid_data</span><span class="p">)</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span></div></div>
+
+
+<div class="viewcode-block" id="SpatialInterpolatorNCOM2d"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOM2d">[docs]</a><span class="k">class</span> <span class="nc">SpatialInterpolatorNCOM2d</span><span class="p">(</span><span class="n">SpatialInterpolatorNCOMBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Spatial interpolator class for interpolatin NCOM ocean model 2D fields.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">,</span> <span class="n">grid_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: Target (scalar) :class:`FunctionSpace` object onto</span>
+<span class="sd">            which data will be interpolated.</span>
+<span class="sd">        :arg to_latlon: Python function that converts local mesh coordinates to</span>
+<span class="sd">            latitude and longitude: &#39;lat, lon = to_latlon(x, y)&#39;</span>
+<span class="sd">        :arg grid_path: File path where the NCOM model grid files</span>
+<span class="sd">            (&#39;model_lat.nc&#39;, &#39;model_lon.nc&#39;, &#39;model_zm.nc&#39;) are located.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">,</span> <span class="n">grid_path</span><span class="p">)</span>
+        <span class="c1"># construct local coordinates</span>
+        <span class="n">xyz</span> <span class="o">=</span> <span class="n">SpatialCoordinate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">mesh</span><span class="p">())</span>
+        <span class="n">tmp_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">get_work_function</span><span class="p">()</span>
+        <span class="n">xy_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">tmp_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">tmp_func</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">xy_array</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">restore_work_function</span><span class="p">(</span><span class="n">tmp_func</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">xy_array</span><span class="p">)</span>
+        <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">to_latlon</span><span class="p">(</span><span class="n">xy_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xy_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">positive_lon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">lat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">lon</span>
+
+    <span class="k">def</span> <span class="nf">_create_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncfile</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a compact interpolator by finding the minimal necessary support</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lon_subset</span><span class="p">,</span> <span class="n">lat_subset</span><span class="p">,</span> <span class="n">x_ind</span><span class="p">,</span> <span class="n">y_ind</span><span class="p">,</span> <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_2d_mapping</span><span class="p">(</span><span class="n">ncfile</span><span class="p">)</span>
+
+        <span class="n">grid_lat</span> <span class="o">=</span> <span class="n">lat_subset</span>
+        <span class="n">grid_lon</span> <span class="o">=</span> <span class="n">lon_subset</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">isMaskedArray</span><span class="p">(</span><span class="n">grid_lat</span><span class="p">):</span>
+            <span class="n">grid_lat</span> <span class="o">=</span> <span class="n">grid_lat</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">isMaskedArray</span><span class="p">(</span><span class="n">grid_lon</span><span class="p">):</span>
+            <span class="n">grid_lon</span> <span class="o">=</span> <span class="n">grid_lon</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">grid_latlon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">grid_lat</span><span class="p">,</span> <span class="n">grid_lon</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="c1"># building 3D interpolator, this can take a long time (minutes)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">GridInterpolator</span><span class="p">(</span>
+            <span class="n">grid_latlon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">,</span>
+            <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_mode</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="n">dont_raise</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="SpatialInterpolatorNCOM2d.interpolate"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOM2d.interpolate">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nc_filename</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">itime</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calls the interpolator object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">nc_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ncfile</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_create_interpolator</span><span class="p">(</span><span class="n">ncfile</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variable_list</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">variables</span>
+                <span class="n">grid_data</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="n">var</span><span class="p">][:][</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">]</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="p">(</span><span class="n">grid_data</span><span class="p">)</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span></div></div>
+
+
+<div class="viewcode-block" id="NCOMInterpolator"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.NCOMInterpolator">[docs]</a><span class="k">class</span> <span class="nc">NCOMInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interpolates NCOM model data on 3D fields.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        The following NCOM output files must be present:</span>
+<span class="sd">        ./forcings/ncom/model_h.nc</span>
+<span class="sd">        ./forcings/ncom/model_lat.nc</span>
+<span class="sd">        ./forcings/ncom/model_ang.nc</span>
+<span class="sd">        ./forcings/ncom/model_lon.nc</span>
+<span class="sd">        ./forcings/ncom/model_zm.nc</span>
+<span class="sd">        ./forcings/ncom/2006/s3d/s3d.glb8_2f_2006041900.nc</span>
+<span class="sd">        ./forcings/ncom/2006/s3d/s3d.glb8_2f_2006042000.nc</span>
+<span class="sd">        ./forcings/ncom/2006/t3d/t3d.glb8_2f_2006041900.nc</span>
+<span class="sd">        ./forcings/ncom/2006/t3d/t3d.glb8_2f_2006042000.nc</span>
+<span class="sd">        ./forcings/ncom/2006/u3d/u3d.glb8_2f_2006041900.nc</span>
+<span class="sd">        ./forcings/ncom/2006/u3d/u3d.glb8_2f_2006042000.nc</span>
+<span class="sd">        ./forcings/ncom/2006/v3d/v3d.glb8_2f_2006041900.nc</span>
+<span class="sd">        ./forcings/ncom/2006/v3d/v3d.glb8_2f_2006042000.nc</span>
+<span class="sd">        ./forcings/ncom/2006/ssh/ssh.glb8_2f_2006041900.nc</span>
+<span class="sd">        ./forcings/ncom/2006/ssh/ssh.glb8_2f_2006042000.nc</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space_2d</span><span class="p">,</span> <span class="n">function_space_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">field_names</span><span class="p">,</span> <span class="n">field_fnstr</span><span class="p">,</span>
+                 <span class="n">to_latlon</span><span class="p">,</span> <span class="n">basedir</span><span class="p">,</span>
+                 <span class="n">file_pattern</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span> <span class="n">target_coordsys</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space_2d: Target (scalar) :class:`FunctionSpace` object onto</span>
+<span class="sd">            which 2D data will be interpolated.</span>
+<span class="sd">        :arg function_space_3d: Target (scalar) :class:`FunctionSpace` object onto</span>
+<span class="sd">            which 3D data will be interpolated.</span>
+<span class="sd">        :arg fields: list of :class:`Function` objects where data will be</span>
+<span class="sd">            stored.</span>
+<span class="sd">        :arg field_names: List of netCDF variable names for the fields. E.g.</span>
+<span class="sd">            [&#39;Salinity&#39;, &#39;Temperature&#39;].</span>
+<span class="sd">        :arg field_fnstr: List of variables in netCDF file names. E.g.</span>
+<span class="sd">            [&#39;s3d&#39;, &#39;t3d&#39;].</span>
+<span class="sd">        :arg to_latlon: Python function that converts local mesh coordinates to</span>
+<span class="sd">            latitude and longitude: &#39;lat, lon = to_latlon(x, y)&#39;</span>
+<span class="sd">        :arg basedir: Root dir where NCOM files are stored.</span>
+<span class="sd">            E.g. &#39;/forcings/ncom&#39;.</span>
+<span class="sd">        :arg file_pattern: A file name pattern for reading the NCOM output</span>
+<span class="sd">            files (excluding the basedir). E.g.</span>
+<span class="sd">            {year:04d}/{fieldstr:}/{fieldstr:}.glb8_2f_{year:04d}{month:02d}{day:02d}00.nc&#39;.</span>
+<span class="sd">        :arg init_date: A :class:`datetime` object that indicates the start</span>
+<span class="sd">            date/time of the Thetis simulation. Must contain time zone. E.g.</span>
+<span class="sd">            &#39;datetime(2006, 5, 1, tzinfo=pytz.utc)&#39;</span>
+<span class="sd">        :arg target_coordsys: coordinate system in which the model grid is</span>
+<span class="sd">            defined. This is used to rotate vectors to local coordinates.</span>
+<span class="sd">        :kwarg bool verbose: Se True to print debug information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_space_2d</span> <span class="o">=</span> <span class="n">function_space_2d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_space_3d</span> <span class="o">=</span> <span class="n">function_space_3d</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">f</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">function_space_2d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space_3d</span><span class="p">],</span> <span class="s1">&#39;field </span><span class="se">\&#39;</span><span class="si">{:}</span><span class="se">\&#39;</span><span class="s1"> does not belong to given function space.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">field_names</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">field_fnstr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_names</span> <span class="o">=</span> <span class="n">field_names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_names</span><span class="p">,</span> <span class="n">fields</span><span class="p">))</span>
+
+        <span class="c1"># construct interpolators</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator_2d</span> <span class="o">=</span> <span class="n">SpatialInterpolatorNCOM2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_space_2d</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">,</span> <span class="n">basedir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator_3d</span> <span class="o">=</span> <span class="n">SpatialInterpolatorNCOM3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_space_3d</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">,</span> <span class="n">basedir</span><span class="p">)</span>
+        <span class="c1"># each field is in different file</span>
+        <span class="c1"># construct time search and interp objects separately for each</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">ncvarname</span><span class="p">,</span> <span class="n">fnstr</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">field_names</span><span class="p">,</span> <span class="n">field_fnstr</span><span class="p">):</span>
+            <span class="n">gi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator_2d</span> <span class="k">if</span> <span class="n">fnstr</span> <span class="o">==</span> <span class="s1">&#39;ssh&#39;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator_3d</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFSpatialInterpolator</span><span class="p">(</span><span class="n">gi</span><span class="p">,</span> <span class="p">[</span><span class="n">ncvarname</span><span class="p">])</span>
+            <span class="n">pat</span> <span class="o">=</span> <span class="n">file_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{fieldstr:}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fnstr</span><span class="p">)</span>
+            <span class="n">pat</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="n">pat</span><span class="p">)</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">DailyFileTimeSearch</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="n">ti</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">LinearTimeInterpolator</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span><span class="p">[</span><span class="n">ncvarname</span><span class="p">]</span> <span class="o">=</span> <span class="n">ti</span>
+        <span class="c1"># construct velocity rotation object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotate_velocity</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;U_Velocity&#39;</span> <span class="ow">in</span> <span class="n">field_names</span>
+                                <span class="ow">and</span> <span class="s1">&#39;V_Velocity&#39;</span> <span class="ow">in</span> <span class="n">field_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotate_velocity</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_names</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;U_Velocity&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_names</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;V_Velocity&#39;</span><span class="p">)</span>
+            <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator_3d</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">lon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator_3d</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">VectorCoordSysRotation</span><span class="p">(</span>
+                <span class="n">coordsys</span><span class="o">.</span><span class="n">LL_WGS84</span><span class="p">,</span> <span class="n">target_coordsys</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NCOMInterpolator.set_fields"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.NCOMInterpolator.set_fields">[docs]</a>    <span class="k">def</span> <span class="nf">set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates forcing fields at the given time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotate_velocity</span><span class="p">:</span>
+            <span class="c1"># water_u (meter/sec) = Eastward Water Velocity</span>
+            <span class="c1"># water_v (meter/sec) = Northward Water Velocity</span>
+            <span class="n">lon_vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span><span class="p">[</span><span class="s1">&#39;U_Velocity&#39;</span><span class="p">](</span><span class="n">time</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">lat_vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span><span class="p">[</span><span class="s1">&#39;V_Velocity&#39;</span><span class="p">](</span><span class="n">time</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span><span class="p">(</span><span class="n">lon_vel</span><span class="p">,</span> <span class="n">lat_vel</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s1">&#39;U_Velocity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">u</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s1">&#39;V_Velocity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">v</span>
+
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_names</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span><span class="p">[</span><span class="n">fname</span><span class="p">](</span><span class="n">time</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">fname</span><span class="p">]</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">vals</span></div></div>
+
+
+<div class="viewcode-block" id="SpatialInterpolatorROMS3d"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorROMS3d">[docs]</a><span class="k">class</span> <span class="nc">SpatialInterpolatorROMS3d</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">SpatialInterpolator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract spatial interpolator class that can interpolate onto a Function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: target Firedrake FunctionSpace</span>
+<span class="sd">        :arg to_latlon: Python function that converts local mesh coordinates to</span>
+<span class="sd">            latitude and longitude: &#39;lat, lon = to_latlon(x, y)&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span> <span class="o">=</span> <span class="n">function_space</span>
+
+        <span class="c1"># construct local coordinates</span>
+        <span class="n">xyz</span> <span class="o">=</span> <span class="n">SpatialCoordinate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">mesh</span><span class="p">())</span>
+        <span class="n">tmp_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">get_work_function</span><span class="p">()</span>
+        <span class="n">xyz_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">tmp_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">tmp_func</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">xyz_array</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_func</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">restore_work_function</span><span class="p">(</span><span class="n">tmp_func</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">xyz_array</span><span class="p">)</span>
+        <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">to_latlon</span><span class="p">(</span><span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">lat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">lon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_get_subset_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_x</span><span class="p">,</span> <span class="n">grid_y</span><span class="p">,</span> <span class="n">target_x</span><span class="p">,</span> <span class="n">target_y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retuns grid nodes that are necessary for intepolating onto target_x,y</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">orig_shape</span> <span class="o">=</span> <span class="n">grid_x</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">grid_xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">grid_x</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">grid_y</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">target_xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">target_x</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">target_y</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">tri</span> <span class="o">=</span> <span class="n">qhull</span><span class="o">.</span><span class="n">Delaunay</span><span class="p">(</span><span class="n">grid_xy</span><span class="p">)</span>
+        <span class="n">simplex</span> <span class="o">=</span> <span class="n">tri</span><span class="o">.</span><span class="n">find_simplex</span><span class="p">(</span><span class="n">target_xy</span><span class="p">)</span>
+        <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">tri</span><span class="o">.</span><span class="n">simplices</span><span class="p">,</span> <span class="n">simplex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">vertices</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+        <span class="n">nodes_x</span><span class="p">,</span> <span class="n">nodes_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">orig_shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">nodes_x</span><span class="p">,</span> <span class="n">nodes_y</span>
+
+    <span class="k">def</span> <span class="nf">_compute_roms_z_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncfile</span><span class="p">,</span> <span class="n">constant_zeta</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">zeta</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="s1">&#39;zeta&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+        <span class="n">bath</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">][:]</span>
+        <span class="c1"># NOTE compute z coordinates for full levels (w)</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="s1">&#39;Cs_w&#39;</span><span class="p">][:]</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="s1">&#39;s_w&#39;</span><span class="p">][:]</span>
+        <span class="n">hc</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="s1">&#39;hc&#39;</span><span class="p">][:]</span>
+
+        <span class="c1"># ROMS transformation ver. 2:</span>
+        <span class="c1"># z(x, y, sigma, t) = zeta(x, y, t) + (zeta(x, y, t) +  h(x, y))*S(x, y, sigma)</span>
+        <span class="n">zeta</span> <span class="o">=</span> <span class="n">zeta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">bath</span> <span class="o">=</span> <span class="n">bath</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">constant_zeta</span><span class="p">:</span>
+            <span class="n">zeta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">bath</span><span class="p">)</span><span class="o">*</span><span class="n">constant_zeta</span>
+        <span class="n">ss</span> <span class="o">=</span> <span class="p">(</span><span class="n">hc</span><span class="o">*</span><span class="n">s</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">+</span> <span class="n">bath</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span><span class="o">*</span><span class="n">cs</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">hc</span> <span class="o">+</span> <span class="n">bath</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="n">grid_z_w</span> <span class="o">=</span> <span class="n">zeta</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ss</span><span class="p">)</span> <span class="o">+</span> <span class="n">bath</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span><span class="o">*</span><span class="n">ss</span>
+        <span class="n">grid_z</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">grid_z_w</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">grid_z_w</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="n">grid_z</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">grid_z_w</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">grid_z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">grid_z_w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">return</span> <span class="n">grid_z</span>
+
+    <span class="k">def</span> <span class="nf">_create_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncfile</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create compact interpolator by finding the minimal necessary support</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="s1">&#39;lat_rho&#39;</span><span class="p">][:]</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="s1">&#39;lon_rho&#39;</span><span class="p">][:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="s1">&#39;mask_rho&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_subset_nodes</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">lat_subset</span> <span class="o">=</span> <span class="n">lat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">]</span>
+        <span class="n">lon_subset</span> <span class="o">=</span> <span class="n">lon</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">]</span>
+
+        <span class="c1"># COMPUTE z coords for constant elevation=0.1</span>
+        <span class="n">grid_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_roms_z_coord</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span> <span class="n">constant_zeta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="c1"># omit land mask</span>
+        <span class="n">lat_subset</span> <span class="o">=</span> <span class="n">lat_subset</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">lon_subset</span> <span class="o">=</span> <span class="n">lon_subset</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span>
+
+        <span class="n">nz</span> <span class="o">=</span> <span class="n">grid_z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># data shape is [nz, neta, nxi]</span>
+        <span class="n">grid_lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">lat_subset</span><span class="p">,</span> <span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">grid_lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">lon_subset</span><span class="p">,</span> <span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">grid_z</span> <span class="o">=</span> <span class="n">grid_z</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">isMaskedArray</span><span class="p">(</span><span class="n">grid_lat</span><span class="p">):</span>
+            <span class="n">grid_lat</span> <span class="o">=</span> <span class="n">grid_lat</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">isMaskedArray</span><span class="p">(</span><span class="n">grid_lon</span><span class="p">):</span>
+            <span class="n">grid_lon</span> <span class="o">=</span> <span class="n">grid_lon</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">isMaskedArray</span><span class="p">(</span><span class="n">grid_z</span><span class="p">):</span>
+            <span class="n">grid_z</span> <span class="o">=</span> <span class="n">grid_z</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">grid_latlonz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">grid_lat</span><span class="p">,</span> <span class="n">grid_lon</span><span class="p">,</span> <span class="n">grid_z</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="c1"># building 3D interpolator, this can take a long time (minutes)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Constructing 3D GridInterpolator...&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">GridInterpolator</span><span class="p">(</span>
+            <span class="n">grid_latlonz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">fill_mode</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span>
+        <span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;done.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="SpatialInterpolatorROMS3d.interpolate"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorROMS3d.interpolate">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nc_filename</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">itime</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calls the interpolator object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">nc_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ncfile</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_create_interpolator</span><span class="p">(</span><span class="n">ncfile</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variable_list</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">variables</span>
+                <span class="n">grid_data</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">itime</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="p">(</span><span class="n">grid_data</span><span class="p">)</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span></div></div>
+
+
+<div class="viewcode-block" id="LiveOceanInterpolator"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.LiveOceanInterpolator">[docs]</a><span class="k">class</span> <span class="nc">LiveOceanInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interpolates LiveOcean (ROMS) model data on 3D fields</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">field_names</span><span class="p">,</span> <span class="n">ncfile_pattern</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span> <span class="o">=</span> <span class="n">function_space</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">f</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span> <span class="s1">&#39;field </span><span class="se">\&#39;</span><span class="si">{:}</span><span class="se">\&#39;</span><span class="s1"> does not belong to given function space </span><span class="si">{:}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">field_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">fields</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_names</span> <span class="o">=</span> <span class="n">field_names</span>
+
+        <span class="c1"># construct interpolators</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span> <span class="o">=</span> <span class="n">SpatialInterpolatorROMS3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFSpatialInterpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="p">,</span> <span class="n">field_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timesearch_obj</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFTimeSearch</span><span class="p">(</span><span class="n">ncfile_pattern</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFTimeParser</span><span class="p">,</span> <span class="n">time_variable_name</span><span class="o">=</span><span class="s1">&#39;ocean_time&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">LinearTimeInterpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timesearch_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LiveOceanInterpolator.set_fields"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.LiveOceanInterpolator.set_fields">[docs]</a>    <span class="k">def</span> <span class="nf">set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates forcing fields at the given time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="TidalBoundaryForcing"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.TidalBoundaryForcing">[docs]</a><span class="k">class</span> <span class="nc">TidalBoundaryForcing</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for tidal boundary interpolators.&quot;&quot;&quot;</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
+
+    <span class="nd">@abstractproperty</span>
+    <span class="k">def</span> <span class="nf">coord_layout</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Data layout in the netcdf files.</span>
+
+<span class="sd">        Either &#39;lon,lat&#39; or &#39;lat,lon&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;lon,lat&#39;</span>
+
+    <span class="nd">@abstractproperty</span>
+    <span class="k">def</span> <span class="nf">compute_velocity</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;If True, compute tidal currents as well.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="nd">@abstractproperty</span>
+    <span class="k">def</span> <span class="nf">elev_nc_file</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Tidal elavation NetCDF file name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@abstractproperty</span>
+    <span class="k">def</span> <span class="nf">uv_nc_file</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Tidal velocity NetCDF file name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@abstractproperty</span>
+    <span class="k">def</span> <span class="nf">grid_nc_file</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Grid NetCDF file name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elev_field</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">,</span> <span class="n">target_coordsys</span><span class="p">,</span>
+                 <span class="n">uv_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">constituents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">boundary_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">data_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg elev_field: Function where tidal elevation will be interpolated.</span>
+<span class="sd">        :arg init_date: Datetime object defining the simulation init time.</span>
+<span class="sd">        :arg to_latlon: Python function that converts local mesh coordinates to</span>
+<span class="sd">            latitude and longitude: &#39;lat, lon = to_latlon(x, y)&#39;</span>
+<span class="sd">        :arg target_coordsys: coordinate system in which the model grid is</span>
+<span class="sd">            defined. This is used to rotate vectors to local coordinates.</span>
+<span class="sd">        :kwarg uv_field: Function where tidal transport will be interpolated.</span>
+<span class="sd">        :kwarg constituents: list of tidal constituents, e.g. [&#39;M2&#39;, &#39;K1&#39;]</span>
+<span class="sd">        :kwarg boundary_ids: list of boundary_ids where tidal data will be</span>
+<span class="sd">            evaluated. If not defined, tides will be in evaluated in the entire</span>
+<span class="sd">            domain.</span>
+<span class="sd">        :kward data_dir: path to directory where tidal model netCDF files are</span>
+<span class="sd">            located.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">init_date</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;init_date must have time zone information&#39;</span>
+        <span class="k">if</span> <span class="n">constituents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">constituents</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Q1&#39;</span><span class="p">,</span> <span class="s1">&#39;O1&#39;</span><span class="p">,</span> <span class="s1">&#39;P1&#39;</span><span class="p">,</span> <span class="s1">&#39;K1&#39;</span><span class="p">,</span> <span class="s1">&#39;N2&#39;</span><span class="p">,</span> <span class="s1">&#39;M2&#39;</span><span class="p">,</span> <span class="s1">&#39;S2&#39;</span><span class="p">,</span> <span class="s1">&#39;K2&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="k">if</span> <span class="n">data_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_velocity</span> <span class="ow">and</span> <span class="n">uv_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:}</span><span class="s1">: uv_field is defined but velocity computation is not supported. uv_field will be ignored.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_velocity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_velocity</span> <span class="ow">and</span> <span class="n">uv_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="c1"># determine nodes at the boundary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elev_field</span> <span class="o">=</span> <span class="n">elev_field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uv_field</span> <span class="o">=</span> <span class="n">uv_field</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="n">elev_field</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">boundary_ids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># interpolate in the whole domain</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elev_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bc</span> <span class="o">=</span> <span class="n">DirichletBC</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">boundary_ids</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;geometric&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">bc</span><span class="o">.</span><span class="n">nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_empty_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
+
+        <span class="n">xy</span> <span class="o">=</span> <span class="n">SpatialCoordinate</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">())</span>
+        <span class="n">fsx</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_ro_with_halos</span>
+        <span class="n">fsy</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_ro_with_halos</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty_set</span><span class="p">:</span>
+
+            <span class="n">latlon</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">fsx</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">fsy</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+                <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">to_latlon</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">positive_lon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">latlon</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">latlon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">latlon</span><span class="p">)</span>
+
+            <span class="c1"># compute bounding box</span>
+            <span class="n">bounds_lat</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">latlon</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlon</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
+            <span class="n">bounds_lon</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">latlon</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlon</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord_layout</span> <span class="o">==</span> <span class="s1">&#39;lon,lat&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ranges</span> <span class="o">=</span> <span class="p">(</span><span class="n">bounds_lon</span><span class="p">,</span> <span class="n">bounds_lat</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ranges</span> <span class="o">=</span> <span class="p">(</span><span class="n">bounds_lat</span><span class="p">,</span> <span class="n">bounds_lon</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tide</span> <span class="o">=</span> <span class="n">uptide</span><span class="o">.</span><span class="n">Tides</span><span class="p">(</span><span class="n">constituents</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tide</span><span class="o">.</span><span class="n">set_initial_time</span><span class="p">(</span><span class="n">init_date</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_readers</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_velocity</span><span class="p">:</span>
+                <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlon</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">lon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlon</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">VectorCoordSysRotation</span><span class="p">(</span>
+                    <span class="n">coordsys</span><span class="o">.</span><span class="n">LL_WGS84</span><span class="p">,</span> <span class="n">target_coordsys</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_create_readers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create uptide netcdf reader objects.&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="TidalBoundaryForcing.set_tidal_field"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.TidalBoundaryForcing.set_tidal_field">[docs]</a>    <span class="k">def</span> <span class="nf">set_tidal_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty_set</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tnci</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_velocity</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tnciu</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tnciv</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">elev_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elev_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_velocity</span><span class="p">:</span>
+            <span class="n">uv_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uv_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlon</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord_layout</span> <span class="o">==</span> <span class="s1">&#39;lon,lat&#39;</span> <span class="k">else</span> <span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">elev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tnci</span><span class="o">.</span><span class="n">get_val</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">allow_extrapolation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">elev_data</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">elev</span>
+            <span class="k">except</span> <span class="n">uptide</span><span class="o">.</span><span class="n">netcdf_reader</span><span class="o">.</span><span class="n">CoordinateError</span><span class="p">:</span>
+                <span class="n">elev_data</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_velocity</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">lon_vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tnciu</span><span class="o">.</span><span class="n">get_val</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">allow_extrapolation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">lat_vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tnciv</span><span class="o">.</span><span class="n">get_val</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">allow_extrapolation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span><span class="p">(</span><span class="n">lon_vel</span><span class="p">,</span> <span class="n">lat_vel</span><span class="p">,</span> <span class="n">i_node</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+                    <span class="n">uv_data</span><span class="p">[</span><span class="n">node</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">uptide</span><span class="o">.</span><span class="n">netcdf_reader</span><span class="o">.</span><span class="n">CoordinateError</span><span class="p">:</span>
+                    <span class="n">uv_data</span><span class="p">[</span><span class="n">node</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TPXOTidalBoundaryForcing"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.TPXOTidalBoundaryForcing">[docs]</a><span class="k">class</span> <span class="nc">TPXOTidalBoundaryForcing</span><span class="p">(</span><span class="n">TidalBoundaryForcing</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tidal boundary interpolator for TPXO tidal model.&quot;&quot;&quot;</span>
+    <span class="n">elev_nc_file</span> <span class="o">=</span> <span class="s1">&#39;h_tpxo9.v1.nc&#39;</span>
+    <span class="n">uv_nc_file</span> <span class="o">=</span> <span class="s1">&#39;u_tpxo9.v1.nc&#39;</span>
+    <span class="n">grid_nc_file</span> <span class="o">=</span> <span class="s1">&#39;grid_tpxo9.nc&#39;</span>
+    <span class="n">coord_layout</span> <span class="o">=</span> <span class="s1">&#39;lon,lat&#39;</span>
+    <span class="n">compute_velocity</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_create_readers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create uptide netcdf reader objects.&quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;File </span><span class="si">{:}</span><span class="s1"> not found, download it from </span><span class="se">\n</span><span class="s1">ftp://ftp.oce.orst.edu/dist/tides/Global/tpxo9_netcdf.tar.gz&#39;</span>
+        <span class="n">f_grid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_nc_file</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f_grid</span><span class="p">),</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f_grid</span><span class="p">)</span>
+        <span class="n">f_elev</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elev_nc_file</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f_elev</span><span class="p">),</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f_elev</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tnci</span> <span class="o">=</span> <span class="n">uptide</span><span class="o">.</span><span class="n">tidal_netcdf</span><span class="o">.</span><span class="n">OTPSncTidalInterpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tide</span><span class="p">,</span> <span class="n">f_grid</span><span class="p">,</span> <span class="n">f_elev</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ranges</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uv_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">f_uv</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">uv_nc_file</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f_uv</span><span class="p">),</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f_uv</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tnciu</span> <span class="o">=</span> <span class="n">uptide</span><span class="o">.</span><span class="n">tidal_netcdf</span><span class="o">.</span><span class="n">OTPSncTidalComponentInterpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tide</span><span class="p">,</span> <span class="n">f_grid</span><span class="p">,</span> <span class="n">f_uv</span><span class="p">,</span> <span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ranges</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tnciv</span> <span class="o">=</span> <span class="n">uptide</span><span class="o">.</span><span class="n">tidal_netcdf</span><span class="o">.</span><span class="n">OTPSncTidalComponentInterpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tide</span><span class="p">,</span> <span class="n">f_grid</span><span class="p">,</span> <span class="n">f_uv</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ranges</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FES2004TidalBoundaryForcing"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.FES2004TidalBoundaryForcing">[docs]</a><span class="k">class</span> <span class="nc">FES2004TidalBoundaryForcing</span><span class="p">(</span><span class="n">TidalBoundaryForcing</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tidal boundary interpolator for FES2004 tidal model.&quot;&quot;&quot;</span>
+    <span class="n">elev_nc_file</span> <span class="o">=</span> <span class="s1">&#39;tide.fes2004.nc&#39;</span>
+    <span class="n">uv_nc_file</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">grid_nc_file</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">coord_layout</span> <span class="o">=</span> <span class="s1">&#39;lat,lon&#39;</span>
+    <span class="n">compute_velocity</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_create_readers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create uptide netcdf reader objects.&quot;&quot;&quot;</span>
+        <span class="n">f_elev</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elev_nc_file</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;File </span><span class="si">{:}</span><span class="s1"> not found, download it from </span><span class="se">\n</span><span class="s1">ftp://ftp.legos.obs-mip.fr/pub/soa/maree/tide_model/global_solution/fes2004/&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f_elev</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f_elev</span><span class="p">),</span> <span class="n">msg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tnci</span> <span class="o">=</span> <span class="n">uptide</span><span class="o">.</span><span class="n">tidal_netcdf</span><span class="o">.</span><span class="n">FESTidalInterpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tide</span><span class="p">,</span> <span class="n">f_elev</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ranges</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2019, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>
