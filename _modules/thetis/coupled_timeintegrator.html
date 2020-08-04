@@ -1,18 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>thetis.coupled_timeintegrator &#8212; Thetis 0+untagged.1409.g7b98a42 documentation</title>
+    <title>thetis.coupled_timeintegrator &#8212; Thetis 0+untagged.1562.gc08033a documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -56,12 +56,12 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Time integrators for solving coupled 2D-3D system of equations.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">timeintegrator</span>
-<span class="kn">from</span> <span class="nn">.log</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">rungekutta</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractproperty</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">timeintegrator</span>
+<span class="kn">from</span> <span class="nn">.log</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rungekutta</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractproperty</span>
 
 
 <div class="viewcode-block" id="CoupledTimeIntegratorBase"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTimeIntegratorBase">[docs]</a><span class="k">class</span> <span class="nc">CoupledTimeIntegratorBase</span><span class="p">(</span><span class="n">timeintegrator</span><span class="o">.</span><span class="n">TimeIntegratorBase</span><span class="p">):</span>
@@ -70,7 +70,7 @@
 
 <span class="sd">    Provides common functionality for updating diagnostic fields etc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver: :class:`.FlowSolver` object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -82,7 +82,7 @@
     <span class="k">def</span> <span class="nf">_update_3d_elevation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Projects elevation to 3D&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;aux_elev_3d&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">copy_elev_to_3d</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>  <span class="c1"># at t_{n+1}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_2d</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_vertical_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Solve vertical velocity&quot;&quot;&quot;</span>
@@ -94,19 +94,6 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;aux_mesh_ale&#39;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">mesh_updater</span><span class="o">.</span><span class="n">update_mesh_coordinates</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_update_bottom_friction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Computes bottom friction related fields&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_bottom_friction</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;aux_friction&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">uv_p1_projector</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
-                <span class="n">compute_bottom_friction</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_p1_3d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_bottom_2d</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_bottom_2d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bottom_drag_2d</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_parabolic_viscosity</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">parabolic_viscosity_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_update_2d_coupling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Does 2D-3D coupling for the velocity field&quot;&quot;&quot;</span>
@@ -163,9 +150,6 @@
 <span class="sd">        Computes Smagorinsky viscosity etc fields</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;aux_stability&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">uv_mag_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-            <span class="c1"># update P1 velocity field</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">uv_p1_projector</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_smagorinsky_viscosity</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">smagorinsky_diff_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 
@@ -182,7 +166,6 @@
         <span class="k">if</span> <span class="n">do_2d_coupling</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_2d_coupling</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_vertical_velocity</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_bottom_friction</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_baroclinicity</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">do_turbulence</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_turbulence</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -221,7 +204,7 @@
         <span class="sd">&quot;&quot;&quot;time integrator for implicit 3D equations (vertical diffusion)&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver: :class:`.FlowSolver` object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -280,7 +263,7 @@
         <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span>
         <span class="n">impl_v_visc</span><span class="p">,</span> <span class="n">expl_v_visc</span><span class="p">,</span> <span class="n">impl_v_diff</span><span class="p">,</span> <span class="n">expl_v_diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_vert_diffusivity_functions</span><span class="p">()</span>
 
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;eta&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">,</span>  <span class="c1"># FIXME rename elev</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;eta&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span><span class="o">.</span><span class="n">view_3d</span><span class="p">,</span>  <span class="c1"># FIXME rename elev</span>
                   <span class="s1">&#39;int_pg&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;int_pg_3d&#39;</span><span class="p">),</span>
                   <span class="s1">&#39;uv_depth_av&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_dav_3d&#39;</span><span class="p">),</span>
                   <span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_3d</span><span class="p">,</span>
@@ -288,8 +271,6 @@
                   <span class="s1">&#39;viscosity_v&#39;</span><span class="p">:</span> <span class="n">expl_v_visc</span><span class="p">,</span>
                   <span class="s1">&#39;viscosity_h&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tot_h_visc</span><span class="o">.</span><span class="n">get_sum</span><span class="p">(),</span>
                   <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">momentum_source_3d</span><span class="p">,</span>
-                  <span class="c1"># uv_mag&#39;: self.fields.uv_mag_3d,</span>
-                  <span class="s1">&#39;uv_p1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_p1_3d&#39;</span><span class="p">),</span>
                   <span class="s1">&#39;lax_friedrichs_velocity_scaling_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">lax_friedrichs_velocity_scaling_factor</span><span class="p">,</span>
                   <span class="s1">&#39;coriolis&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;coriolis_3d&#39;</span><span class="p">),</span>
                   <span class="p">}</span>
@@ -297,6 +278,7 @@
             <span class="s1">&#39;linear_drag_coefficient&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">linear_drag_coefficient</span><span class="p">,</span>
             <span class="s1">&#39;quadratic_drag_coefficient&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">quadratic_drag_coefficient</span><span class="p">,</span>
             <span class="s1">&#39;wind_stress&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;wind_stress_3d&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;bottom_roughness&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">bottom_roughness</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
             <span class="n">fields</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">friction_fields</span><span class="p">)</span>
@@ -322,7 +304,7 @@
         <span class="n">impl_v_visc</span><span class="p">,</span> <span class="n">expl_v_visc</span><span class="p">,</span> <span class="n">impl_v_diff</span><span class="p">,</span> <span class="n">expl_v_diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_vert_diffusivity_functions</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
-            <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">,</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span><span class="o">.</span><span class="n">view_3d</span><span class="p">,</span>
                       <span class="s1">&#39;uv_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span><span class="p">,</span>
                       <span class="s1">&#39;uv_depth_av&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_dav_3d&#39;</span><span class="p">),</span>
                       <span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_3d</span><span class="p">,</span>
@@ -330,8 +312,6 @@
                       <span class="s1">&#39;diffusivity_h&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tot_h_diff</span><span class="o">.</span><span class="n">get_sum</span><span class="p">(),</span>
                       <span class="s1">&#39;diffusivity_v&#39;</span><span class="p">:</span> <span class="n">expl_v_diff</span><span class="p">,</span>
                       <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">salinity_source_3d</span><span class="p">,</span>
-                      <span class="c1"># uv_mag&#39;: self.fields.uv_mag_3d,</span>
-                      <span class="s1">&#39;uv_p1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_p1_3d&#39;</span><span class="p">),</span>
                       <span class="s1">&#39;lax_friedrichs_tracer_scaling_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">lax_friedrichs_tracer_scaling_factor</span><span class="p">,</span>
                       <span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">salt_expl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_3d</span><span class="p">(</span>
@@ -339,7 +319,7 @@
                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;salt&#39;</span><span class="p">],</span>
                 <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_tracer_explicit</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
-                <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">,</span>
+                <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span><span class="o">.</span><span class="n">view_3d</span><span class="p">,</span>
                           <span class="s1">&#39;diffusivity_v&#39;</span><span class="p">:</span> <span class="n">impl_v_diff</span><span class="p">,</span>
                           <span class="p">}</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">salt_impl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_vert_3d</span><span class="p">(</span>
@@ -355,7 +335,7 @@
         <span class="n">impl_v_visc</span><span class="p">,</span> <span class="n">expl_v_visc</span><span class="p">,</span> <span class="n">impl_v_diff</span><span class="p">,</span> <span class="n">expl_v_diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_vert_diffusivity_functions</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span><span class="p">:</span>
-            <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">,</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span><span class="o">.</span><span class="n">view_3d</span><span class="p">,</span>
                       <span class="s1">&#39;uv_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span><span class="p">,</span>
                       <span class="s1">&#39;uv_depth_av&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_dav_3d&#39;</span><span class="p">),</span>
                       <span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_3d</span><span class="p">,</span>
@@ -363,8 +343,6 @@
                       <span class="s1">&#39;diffusivity_h&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">tot_h_diff</span><span class="o">.</span><span class="n">get_sum</span><span class="p">(),</span>
                       <span class="s1">&#39;diffusivity_v&#39;</span><span class="p">:</span> <span class="n">expl_v_diff</span><span class="p">,</span>
                       <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">temperature_source_3d</span><span class="p">,</span>
-                      <span class="c1"># uv_mag&#39;: self.fields.uv_mag_3d,</span>
-                      <span class="s1">&#39;uv_p1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_p1_3d&#39;</span><span class="p">),</span>
                       <span class="s1">&#39;lax_friedrichs_tracer_scaling_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">lax_friedrichs_tracer_scaling_factor</span><span class="p">,</span>
                       <span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">temp_expl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_3d</span><span class="p">(</span>
@@ -372,7 +350,7 @@
                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;temp&#39;</span><span class="p">],</span>
                 <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_tracer_explicit</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
-                <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">,</span>
+                <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span><span class="o">.</span><span class="n">view_3d</span><span class="p">,</span>
                           <span class="s1">&#39;diffusivity_v&#39;</span><span class="p">:</span> <span class="n">impl_v_diff</span><span class="p">,</span>
                           <span class="p">}</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">temp_impl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_vert_3d</span><span class="p">(</span>
@@ -398,7 +376,8 @@
                       <span class="s1">&#39;epsilon&#39;</span><span class="p">:</span> <span class="n">solver</span><span class="o">.</span><span class="n">turbulence_model</span><span class="o">.</span><span class="n">epsilon</span><span class="p">,</span>
                       <span class="s1">&#39;shear_freq2&#39;</span><span class="p">:</span> <span class="n">solver</span><span class="o">.</span><span class="n">turbulence_model</span><span class="o">.</span><span class="n">m2</span><span class="p">,</span>
                       <span class="s1">&#39;buoy_freq2_neg&#39;</span><span class="p">:</span> <span class="n">solver</span><span class="o">.</span><span class="n">turbulence_model</span><span class="o">.</span><span class="n">n2_neg</span><span class="p">,</span>
-                      <span class="s1">&#39;buoy_freq2_pos&#39;</span><span class="p">:</span> <span class="n">solver</span><span class="o">.</span><span class="n">turbulence_model</span><span class="o">.</span><span class="n">n2_pos</span>
+                      <span class="s1">&#39;buoy_freq2_pos&#39;</span><span class="p">:</span> <span class="n">solver</span><span class="o">.</span><span class="n">turbulence_model</span><span class="o">.</span><span class="n">n2_pos</span><span class="p">,</span>
+                      <span class="s1">&#39;bottom_roughness&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">bottom_roughness</span><span class="p">,</span>
                       <span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">tke_impl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_vert_3d</span><span class="p">(</span>
                 <span class="n">eq_tke_diff</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">tke_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
@@ -407,13 +386,11 @@
                 <span class="n">eq_psi_diff</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">psi_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                 <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_tracer_implicit</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">eq_tke_adv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">eq_psi_adv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">,</span>
+                <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span><span class="o">.</span><span class="n">view_3d</span><span class="p">,</span>
                           <span class="s1">&#39;uv_3d&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span><span class="p">,</span>
                           <span class="s1">&#39;uv_depth_av&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_dav_3d&#39;</span><span class="p">),</span>
                           <span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_3d</span><span class="p">,</span>
                           <span class="s1">&#39;w_mesh&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;w_mesh_3d&#39;</span><span class="p">),</span>
-                          <span class="c1"># uv_mag&#39;: self.fields.uv_mag_3d,</span>
-                          <span class="s1">&#39;uv_p1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_p1_3d&#39;</span><span class="p">),</span>
                           <span class="s1">&#39;lax_friedrichs_tracer_scaling_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">lax_friedrichs_tracer_scaling_factor</span><span class="p">,</span>
                           <span class="p">}</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">tke_expl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrator_3d</span><span class="p">(</span>
@@ -499,9 +476,9 @@
     <span class="n">integrator_3d</span> <span class="o">=</span> <span class="n">timeintegrator</span><span class="o">.</span><span class="n">LeapFrogAM3</span>
     <span class="n">integrator_vert_3d</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">BackwardEuler</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CoupledLeapFrogAM3</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">elev_old_3d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elev_domain_old_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uv_old_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_2d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uv_new_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_2d</span><span class="p">)</span>
 
@@ -553,7 +530,6 @@
         <span class="c1"># dependencies for 2D update</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_2d_coupling</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_baroclinicity</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_bottom_friction</span><span class="p">()</span>
 
         <span class="c1"># update 2D</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span><span class="p">:</span>
@@ -567,10 +543,10 @@
 
         <span class="c1"># set 3D elevation to half step</span>
         <span class="n">gamma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">mom_expl</span><span class="o">.</span><span class="n">gamma</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">elev_old_3d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">copy_elev_to_3d</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span> <span class="o">*=</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">gamma</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_3d</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">gamma</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">elev_old_3d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elev_domain_old_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_2d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span> <span class="o">*=</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">gamma</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">gamma</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">elev_domain_old_2d</span>
 
         <span class="c1"># correct uv_3d to uv_2d at t_{n+1/2}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_2d</span> <span class="o">*=</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">gamma</span><span class="p">)</span>
@@ -627,7 +603,6 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_2d_coupling</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_baroclinicity</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_bottom_friction</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_turbulence</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;impl_salt_vdiff&#39;</span><span class="p">):</span>
@@ -643,7 +618,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_2d_coupling</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_baroclinicity</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_bottom_friction</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_vertical_velocity</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_stabilization_params</span><span class="p">()</span></div></div>
 
@@ -658,9 +632,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">integrator_2d</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">ESDIRKTrapezoid</span>
     <span class="n">integrator_3d</span> <span class="o">=</span> <span class="n">timeintegrator</span><span class="o">.</span><span class="n">SSPRK22ALE</span>
-    <span class="n">integrator_vert_3d</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">DIRK22</span>
+    <span class="n">integrator_vert_3d</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">BackwardEuler</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CoupledTwoStageRK</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver</span><span class="p">)</span>
         <span class="c1"># allocate CG elevation fields for storing mesh geometry</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elev_fields</span> <span class="o">=</span> <span class="p">[]</span>
@@ -699,14 +673,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># compute w_mesh at surface as (2*elev^{n+1} - elev^{(1)} - elev^{n})/dt</span>
                 <span class="n">w_s</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">current_elev</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">elev_fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">elev_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">dt</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_mesh_surf_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">w_s</span><span class="p">)</span>
-            <span class="c1"># use that to compute w_mesh in whole domain</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">mesh_updater</span><span class="o">.</span><span class="n">cp_w_mesh_surf_2d_to_3d</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-            <span class="c1"># solve w_mesh at nodes</span>
-            <span class="n">w_mesh_surf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_mesh_surf_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
-            <span class="n">z_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_coord_ref_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
-            <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_mesh_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">w_mesh_surf</span> <span class="o">*</span> <span class="p">(</span><span class="n">z_ref</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span><span class="o">/</span><span class="n">h</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">mesh_updater</span><span class="o">.</span><span class="n">compute_mesh_velocity_finalize</span><span class="p">(</span>
+                <span class="n">w_mesh_surf_expr</span><span class="o">=</span><span class="n">w_s</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CoupledTwoStageRK.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTwoStageRK.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -789,7 +757,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_update_vertical_velocity</span><span class="p">()</span>
                 <span class="c1"># update parametrizations</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_update_turbulence</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_update_bottom_friction</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_update_stabilization_params</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># update variables that explict solvers depend on</span>
@@ -805,8 +772,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2019, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+        &#169; Copyright 2016-2020, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
     </div>
   </body>
 </html>

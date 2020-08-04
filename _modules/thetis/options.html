@@ -1,18 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>thetis.options &#8212; Thetis 0+untagged.1409.g7b98a42 documentation</title>
+    <title>thetis.options &#8212; Thetis 0+untagged.1562.gc08033a documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -59,8 +59,8 @@
 <span class="sd">All options are type-checked and they are stored in traitlets Configurable</span>
 <span class="sd">objects.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">.configuration</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.firedrake</span> <span class="k">import</span> <span class="n">Constant</span>
+<span class="kn">from</span> <span class="nn">.configuration</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">firedrake</span> <span class="kn">import</span> <span class="n">Constant</span>
 
 
 <div class="viewcode-block" id="TimeStepperOptions"><a class="viewcode-back" href="../../thetis.html#thetis.options.TimeStepperOptions">[docs]</a><span class="k">class</span> <span class="nc">TimeStepperOptions</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">):</span>
@@ -83,7 +83,9 @@
     <span class="n">solver_parameters_tracer</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
         <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;gmres&#39;</span><span class="p">,</span>
         <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;sor&#39;</span><span class="p">,</span>
-    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">use_semi_implicit_linearization</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use linearized semi-implicit time integration&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SteadyStateTimestepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.SteadyStateTimestepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">SteadyStateTimestepperOptions2d</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">):</span>
@@ -99,9 +101,7 @@
     <span class="sd">&quot;&quot;&quot;Options for 2d Crank-Nicolson time integrator&quot;&quot;&quot;</span>
     <span class="n">implicitness_theta</span> <span class="o">=</span> <span class="n">BoundedFloat</span><span class="p">(</span>
         <span class="n">default_value</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">use_semi_implicit_linearization</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
-        <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use linearized semi-implicit time integration&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PressureProjectionTimestepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.PressureProjectionTimestepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">PressureProjectionTimestepperOptions2d</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">):</span>
@@ -160,6 +160,10 @@
         <span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
         <span class="s1">&#39;sub_pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ilu&#39;</span><span class="p">,</span>
         <span class="s1">&#39;mat_type&#39;</span><span class="p">:</span> <span class="s1">&#39;aij&#39;</span><span class="p">,</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">solver_parameters_tracer</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
+        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;gmres&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;sor&#39;</span><span class="p">,</span>
     <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
@@ -514,6 +518,12 @@
 
 <span class="s2">        Bottom stress is :math:`\tau_b/\rho_0 = -g \mu^2 |\mathbf</span><span class="si">{u}</span><span class="s2">|\mathbf</span><span class="si">{u}</span><span class="s2">/H^{1/3}`</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">norm_smoother</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Coefficient used to avoid non-differentiable functions in the continuous formulation of the velocity norm in</span>
+<span class="s2">        the quadratic bottom drag term in the momentum equation. This replaces the velocity norm in the quadratic</span>
+<span class="s2">        bottom drag term with :math:`\|u\| \approx \sqrt{\|u\|^2 + \alpha^2}`</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">horizontal_viscosity</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Horizontal viscosity&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">coriolis_frequency</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
@@ -529,7 +539,25 @@
     <span class="n">tracer_source_2d</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Source term for 2D tracer equation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">horizontal_diffusivity</span> <span class="o">=</span> <span class="n">FiredrakeCoefficient</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Horizontal diffusivity for tracers&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Horizontal diffusivity for tracers&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">use_automatic_sipg_parameter</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Toggle automatic computation of the SIPG penalty parameter used in viscosity and</span>
+<span class="s2">        diffusivity terms.</span>
+
+<span class="s2">        By default, this parameter is set to</span>
+
+<span class="s2">        ..math::</span>
+<span class="s2">            \alpha = 5p(p+1),</span>
+
+<span class="s2">        where :math:`p` is the polynomial degree of the velocity space.</span>
+
+<span class="s2">        For anisotropic meshes, it is advisable to use the automatic SIPG parameter,</span>
+<span class="s2">        rather than the default.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">sipg_parameter</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Penalty parameter used for horizontal viscosity terms.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">sipg_parameter_tracer</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Penalty parameter used for horizontal diffusivity terms.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <span class="c1"># NOTE all parameters are now case sensitive</span>
@@ -553,13 +581,14 @@
     <span class="sd">&quot;&quot;&quot;Options for 2D depth-averaged shallow water model&quot;&quot;&quot;</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Depth-averaged 2D model&#39;</span>
     <span class="n">solve_tracer</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Solve tracer transport&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">use_tracer_conservative_form</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Solve 2D tracer transport in the conservative form&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_wetting_and_drying</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;bool: Turn on wetting and drying</span>
 
 <span class="s2">        Uses the wetting and drying scheme from Karna et al (2011).</span>
 <span class="s2">        If ``True``, one should also set :attr:`wetting_and_drying_alpha` to control the bathymetry displacement.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">wetting_and_drying_alpha</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
+    <span class="n">wetting_and_drying_alpha</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
         <span class="n">Constant</span><span class="p">(</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Coefficient: Wetting and drying parameter :math:`\alpha`.</span>
 
@@ -574,8 +603,13 @@
 
 <span class="s2">        Prints deviation from the initial mass to stdout.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">tracer_advective_velocity</span> <span class="o">=</span> <span class="n">FiredrakeVectorExpression</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Custom function to be used for the velocity variable in tracer advection equation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">tracer_advective_velocity_factor</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Custom factor multiplied to the velocity variable in tracer advection equation.</span>
+
+<span class="s2">        Used to account for mismatch between depth-averaged product of velocity with tracer</span>
+<span class="s2">        and product of depth-averaged velocity with depth-averaged tracer</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">check_tracer_overshoot</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Compute tracer overshoots at every export</span>
@@ -619,11 +653,6 @@
     <span class="n">solve_temperature</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Solve temperature transport&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_implicit_vertical_diffusion</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Solve vertical diffusion and viscosity implicitly&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_bottom_friction</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Apply log layer bottom stress in the 3D model&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">use_parabolic_viscosity</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
-        <span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Use idealized parabolic eddy viscosity</span>
-
-<span class="s2">        See :class:`.ParabolicViscosity`&quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_ale_moving_mesh</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use ALE formulation where 3D mesh tracks free surface&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_baroclinic_formulation</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
@@ -705,6 +734,8 @@
 <span class="s2">        equation of state.</span>
 <span class="s2">        If False, density is computed point-wise in the tracer space.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">bottom_roughness</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Bottom roughness length in meters.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">horizontal_diffusivity</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Horizontal diffusivity for tracers&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">vertical_diffusivity</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
@@ -720,7 +751,15 @@
     <span class="n">constant_temperature</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
         <span class="n">Constant</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Constant temperature if temperature is not solved&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">constant_salinity</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
-        <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Constant salinity if salinity is not solved&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Constant salinity if salinity is not solved&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">sipg_parameter_vertical</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Penalty parameter used for vertical viscosity terms.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">sipg_parameter_vertical_tracer</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Penalty parameter used for vertical diffusivity terms.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">sipg_parameter_turb</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">1.5</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Penalty parameter used for horizontal diffusivity terms of the turbulence model.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">sipg_parameter_vertical_turb</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Penalty parameter used for vertical diffusivity terms of the turbulence model.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
@@ -730,8 +769,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2019, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+        &#169; Copyright 2016-2020, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
     </div>
   </body>
 </html>

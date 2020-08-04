@@ -1,18 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>thetis.limiter &#8212; Thetis 0+untagged.1409.g7b98a42 documentation</title>
+    <title>thetis.limiter &#8212; Thetis 0+untagged.1562.gc08033a documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -56,11 +56,11 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Slope limiters for discontinuous fields</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">.utility</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.firedrake</span> <span class="k">import</span> <span class="n">VertexBasedLimiter</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">firedrake</span> <span class="kn">import</span> <span class="n">VertexBasedLimiter</span>
 <span class="kn">import</span> <span class="nn">ufl</span>
-<span class="kn">from</span> <span class="nn">pyop2.profiling</span> <span class="k">import</span> <span class="n">timed_region</span><span class="p">,</span> <span class="n">timed_function</span><span class="p">,</span> <span class="n">timed_stage</span>  <span class="c1"># NOQA</span>
+<span class="kn">from</span> <span class="nn">pyop2.profiling</span> <span class="kn">import</span> <span class="n">timed_region</span><span class="p">,</span> <span class="n">timed_function</span><span class="p">,</span> <span class="n">timed_stage</span>  <span class="c1"># NOQA</span>
 
 
 <div class="viewcode-block" id="assert_function_space"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.assert_function_space">[docs]</a><span class="k">def</span> <span class="nf">assert_function_space</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
@@ -113,7 +113,7 @@
 <span class="sd">    and Applied Mathematics, 233(12):3077-3085.</span>
 <span class="sd">    http://dx.doi.org/10.1016/j.cam.2009.05.028</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1dg_space</span><span class="p">,</span> <span class="n">time_dependent_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1dg_space</span><span class="p">,</span> <span class="n">time_dependent_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg p1dg_space: P1DG function space</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -165,7 +165,7 @@
         <span class="c1"># NOTE this just computes the arithmetic mean of nodal values on the facet,</span>
         <span class="c1"># which in general is not equivalent to the mean of the field over the bnd facet.</span>
         <span class="c1"># This is OK for P1DG triangles, but not exact for the extruded case (quad facets)</span>
-        <span class="kn">from</span> <span class="nn">finat.finiteelementbase</span> <span class="k">import</span> <span class="n">entity_support_dofs</span>
+        <span class="kn">from</span> <span class="nn">finat.finiteelementbase</span> <span class="kn">import</span> <span class="n">entity_support_dofs</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span><span class="p">:</span>
             <span class="n">entity_dim</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># get 1D facets</span>
@@ -259,8 +259,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2019, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+        &#169; Copyright 2016-2020, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
     </div>
   </body>
 </html>

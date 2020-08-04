@@ -1,18 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>3D tidal channel demo &#8212; Thetis 0+untagged.1409.g7b98a42 documentation</title>
+    <title>3D tidal channel demo &#8212; Thetis 0+untagged.1562.gc08033a documentation</title>
     <link rel="stylesheet" href="../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <!--[if lte IE 6]>
@@ -91,28 +91,28 @@ direction using a constant number of layers:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">options</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span>
 <span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="o">=</span> <span class="s1">&#39;dg-dg&#39;</span>
 <span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;SSPRK22&#39;</span>
-<span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span> <span class="o">=</span> <span class="bp">False</span>
-<span class="n">options</span><span class="o">.</span><span class="n">use_bottom_friction</span> <span class="o">=</span> <span class="bp">False</span>
-<span class="n">options</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span> <span class="o">=</span> <span class="bp">True</span>
-<span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">options</span><span class="o">.</span><span class="n">use_bottom_friction</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">options</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span> <span class="o">=</span> <span class="mf">900.0</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span>
 <span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;uv_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;elev_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;elev_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;uv_3d&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;w_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;w_mesh_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;salt_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;baroc_head_3d&#39;</span><span class="p">,</span>
-                            <span class="s1">&#39;uv_dav_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;uv_bottom_2d&#39;</span><span class="p">]</span>
+                            <span class="s1">&#39;uv_dav_2d&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>We set this simulation to be barotropic (i.e. salinity and temperature do not
 affect water density), but we still wish to simulate salinity as a passive
 tracer:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">use_baroclinic_formulation</span> <span class="o">=</span> <span class="bp">False</span>
-<span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span> <span class="o">=</span> <span class="bp">True</span>
-<span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span> <span class="o">=</span> <span class="bp">False</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">use_baroclinic_formulation</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">options</span><span class="o">.</span><span class="n">solve_temperature</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>We also want to see how much the salinity value deviates from its initial
 value:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">check_salinity_overshoot</span> <span class="o">=</span> <span class="bp">True</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">check_salinity_overshoot</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </div>
 <p>In this simulation we do not set the time step manually but instead use the
@@ -166,8 +166,8 @@ use them as boundary conditions for the 2D shallow water model:</p>
 <p>The volume fluxes are now defined in the 2D mode, so there’s no need to impose
 anything in the 3D momentum equation. We therefore only use symmetry condition
 for 3D horizontal velocity:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ocean_funcs_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;symm&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
-<span class="n">river_funcs_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;symm&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ocean_funcs_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;symm&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+<span class="n">river_funcs_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;symm&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
 
 <span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;momentum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ocean_bnd_id</span><span class="p">:</span> <span class="n">ocean_funcs_3d</span><span class="p">,</span>
                                         <span class="n">river_bnd_id</span><span class="p">:</span> <span class="n">river_funcs_3d</span><span class="p">}</span>
@@ -237,8 +237,8 @@ horizontal velocity field (3D velocity minus its vertical average).</p>
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2019, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+        &#169; Copyright 2016-2020, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
     </div>
   </body>
 </html>

@@ -1,18 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>thetis.rungekutta &#8212; Thetis 0+untagged.1409.g7b98a42 documentation</title>
+    <title>thetis.rungekutta &#8212; Thetis 0+untagged.1562.gc08033a documentation</title>
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -59,9 +59,9 @@
 <span class="sd">The abstract class :class:`~.AbstractRKScheme` defines the Runge-Kutta</span>
 <span class="sd">coefficients, and can be used to implement generic time integrators.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">.timeintegrator</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractproperty</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">.timeintegrator</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractproperty</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">import</span> <span class="nn">operator</span>
 
 
@@ -177,7 +177,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
@@ -259,7 +259,7 @@
 <span class="sd">                &amp;       1/2 &amp;     1/2</span>
 <span class="sd">        \end{array}</span>
 
-<span class="sd">    with :math:`\gamma = (2 + \sqrt{2})/2`.</span>
+<span class="sd">    with :math:`\gamma = (2 - \sqrt{2})/2`.</span>
 
 <span class="sd">    From DIRK(2,3,2) IMEX scheme in Ascher et al. (1997)</span>
 
@@ -267,7 +267,7 @@
 <span class="sd">    time-dependent partial differential equations. Applied Numerical</span>
 <span class="sd">    Mathematics, 25:151-167. http://dx.doi.org/10.1137/0732037</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">gamma</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="p">))</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="p">))</span><span class="o">/</span><span class="mf">2.0</span>
     <span class="n">a</span> <span class="o">=</span> <span class="p">[[</span><span class="n">gamma</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
          <span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">gamma</span><span class="p">,</span> <span class="n">gamma</span><span class="p">]]</span>
     <span class="n">b</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">gamma</span><span class="p">,</span> <span class="n">gamma</span><span class="p">]</span>
@@ -501,7 +501,7 @@
 <span class="sd">    All derived classes must define the Butcher tableau coefficients :attr:`a`,</span>
 <span class="sd">    :attr:`b`, :attr:`c`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
                  <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
@@ -613,6 +613,136 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update_solution</span><span class="p">(</span><span class="n">i_stage</span><span class="p">)</span></div></div>
 
 
+<div class="viewcode-block" id="DIRKGenericUForm"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGenericUForm">[docs]</a><span class="k">class</span> <span class="nc">DIRKGenericUForm</span><span class="p">(</span><span class="n">RungeKuttaTimeIntegrator</span><span class="p">):</span>
+    <span class="n">cfl_coeff</span> <span class="o">=</span> <span class="n">CFL_UNCONDITIONALLY_STABLE</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
+                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>
+                 <span class="n">semi_implicit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg equation: the equation to solve</span>
+<span class="sd">        :type equation: :class:`Equation` object</span>
+<span class="sd">        :arg solution: :class:`Function` where solution will be stored</span>
+<span class="sd">        :arg fields: Dictionary of fields that are passed to the equation</span>
+<span class="sd">        :type fields: dict of :class:`Function` or :class:`Constant` objects</span>
+<span class="sd">        :arg float dt: time step in seconds</span>
+<span class="sd">        :kwarg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
+<span class="sd">        :kwarg dict solver_parameters: PETSc solver options</span>
+<span class="sd">        :kwarg terms_to_add: Defines which terms of the equation are to be</span>
+<span class="sd">            added to this solver. Default &#39;all&#39; implies [&#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;].</span>
+<span class="sd">        :type terms_to_add: &#39;all&#39; or list of &#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;.</span>
+<span class="sd">        :kwarg bool semi_implicit: If True use a linearized semi-implicit scheme</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">semi_implicit</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;newtonls&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;solution_old&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+
+        <span class="c1"># assume final stage is trivial</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+
+        <span class="n">fs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">function_space</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">test</span>
+
+        <span class="c1"># Allocate tendency fields</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:}</span><span class="s1">_k</span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Function</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">fname</span><span class="p">))</span>
+
+        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span>
+        <span class="n">u_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span>
+        <span class="k">if</span> <span class="n">semi_implicit</span><span class="p">:</span>
+            <span class="c1"># linearize around last timestep using the fact that all terms are</span>
+            <span class="c1"># written in the form A(u_nl) u</span>
+            <span class="n">u_nl</span> <span class="o">=</span> <span class="n">u_old</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># solve the full nonlinear residual form</span>
+            <span class="n">u_nl</span> <span class="o">=</span> <span class="n">u</span>
+        <span class="n">bnd</span> <span class="o">=</span> <span class="n">bnd_conditions</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span>
+
+        <span class="c1"># construct variational problems for each stage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">F</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span><span class="p">):</span>
+            <span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">mass_term</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">mass_term</span><span class="p">(</span><span class="n">u_old</span><span class="p">)</span>
+            <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">u_nl</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">bnd</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                <span class="n">rhs</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">test</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mass</span> <span class="o">-</span> <span class="n">rhs</span><span class="p">)</span>
+
+        <span class="c1"># construct variational problems to evaluate tendencies</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k_form</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">kf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">test</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">mass_term</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">mass_term</span><span class="p">(</span><span class="n">u_old</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                <span class="n">kf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_const</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">test</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k_form</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kf</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_solver</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DIRKGenericUForm.update_solver"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGenericUForm.update_solver">[docs]</a>    <span class="k">def</span> <span class="nf">update_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create solver objects&quot;&quot;&quot;</span>
+        <span class="c1"># Ensure LU assembles monolithic matrices</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pc_type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;lu&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">[</span><span class="s1">&#39;mat_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;aij&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span><span class="p">):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">NonlinearVariationalProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span>
+            <span class="n">sname</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:}</span><span class="s1">_stage</span><span class="si">{:}</span><span class="s1">_&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">NonlinearVariationalSolver</span><span class="p">(</span>
+                <span class="n">p</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">,</span>
+                <span class="n">options_prefix</span><span class="o">=</span><span class="n">sname</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k_solver</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">k_solver_parameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;snes_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;cg&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ksp_rtol&#39;</span><span class="p">:</span> <span class="mf">1e-8</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">NonlinearVariationalProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_form</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">sname</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:}</span><span class="s1">_k_stage</span><span class="si">{:}</span><span class="s1">_&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">NonlinearVariationalSolver</span><span class="p">(</span>
+                <span class="n">p</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">k_solver_parameters</span><span class="p">,</span>
+                <span class="n">options_prefix</span><span class="o">=</span><span class="n">sname</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k_solver</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DIRKGenericUForm.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGenericUForm.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_cond</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Assigns initial conditions to all required fields.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">init_cond</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="DIRKGenericUForm.get_final_solution"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGenericUForm.get_final_solution">[docs]</a>    <span class="k">def</span> <span class="nf">get_final_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">additive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates the final solution</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="DIRKGenericUForm.solve_stage"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGenericUForm.solve_stage">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solves a single stage of step from t to t+dt.</span>
+<span class="sd">        All functions that the equation depends on must be at right state</span>
+<span class="sd">        corresponding to each sub-step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">i_stage</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># NOTE solution may have changed in coupled system</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+            <span class="n">error</span><span class="p">(</span><span class="s1">&#39;Time integrator </span><span class="si">{:}</span><span class="s1"> is not initialized&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">update_forcings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">update_forcings</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">i_stage</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">[</span><span class="n">i_stage</span><span class="p">]</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">i_stage</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k_solver</span><span class="p">[</span><span class="n">i_stage</span><span class="p">]</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
+
+
 <div class="viewcode-block" id="BackwardEuler"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.BackwardEuler">[docs]</a><span class="k">class</span> <span class="nc">BackwardEuler</span><span class="p">(</span><span class="n">DIRKGeneric</span><span class="p">,</span> <span class="n">BackwardEulerAbstract</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
@@ -649,13 +779,25 @@
     <span class="k">pass</span></div>
 
 
+<div class="viewcode-block" id="BackwardEulerUForm"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.BackwardEulerUForm">[docs]</a><span class="k">class</span> <span class="nc">BackwardEulerUForm</span><span class="p">(</span><span class="n">DIRKGenericUForm</span><span class="p">,</span> <span class="n">BackwardEulerAbstract</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="DIRK22UForm"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRK22UForm">[docs]</a><span class="k">class</span> <span class="nc">DIRK22UForm</span><span class="p">(</span><span class="n">DIRKGenericUForm</span><span class="p">,</span> <span class="n">DIRK22Abstract</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="DIRK33UForm"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRK33UForm">[docs]</a><span class="k">class</span> <span class="nc">DIRK33UForm</span><span class="p">(</span><span class="n">DIRKGenericUForm</span><span class="p">,</span> <span class="n">DIRK33Abstract</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
 <div class="viewcode-block" id="ERKGeneric"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKGeneric">[docs]</a><span class="k">class</span> <span class="nc">ERKGeneric</span><span class="p">(</span><span class="n">RungeKuttaTimeIntegrator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic explicit Runge-Kutta time integrator.</span>
 
 <span class="sd">    Implements the Butcher form. All terms in the equation are treated explicitly.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
@@ -756,7 +898,7 @@
 
 <span class="sd">    Implements the Shu-Osher form.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -865,8 +1007,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2019, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+        &#169; Copyright 2016-2020, Tuomas Karna et al..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
     </div>
   </body>
 </html>
