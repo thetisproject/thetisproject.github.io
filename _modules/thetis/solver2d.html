@@ -4,15 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>thetis.solver2d &#8212; Thetis 0+untagged.1565.gce988c6 documentation</title>
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>thetis.solver2d &#8212; Thetis 0+untagged.1636.g63e82af documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -65,6 +65,8 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">coupled_timeintegrator_2d</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">tracer_eq_2d</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">conservative_tracer_eq_2d</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">sediment_eq_2d</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">exner_eq</span>
 <span class="kn">import</span> <span class="nn">weakref</span>
 <span class="kn">import</span> <span class="nn">time</span> <span class="k">as</span> <span class="nn">time_mod</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -185,7 +187,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">export_initial_state</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="sd">&quot;&quot;&quot;Do export initial state. False if continuing a simulation&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;tracer&#39;</span><span class="p">:</span> <span class="p">{}}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="sd">&quot;&quot;&quot;set up option for sediment model&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;tracer&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;sediment&#39;</span><span class="p">:</span> <span class="p">{}}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -245,61 +250,59 @@
             <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;dt = </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="FlowSolver2d.set_sipg_parameter"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.set_sipg_parameter">[docs]</a>    <span class="k">def</span> <span class="nf">set_sipg_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowSolver2d.set_wetting_and_drying_alpha"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.set_wetting_and_drying_alpha">[docs]</a>    <span class="k">def</span> <span class="nf">set_wetting_and_drying_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute a penalty parameter which ensures stability of the Interior Penalty method</span>
-<span class="sd">        used for viscosity and diffusivity terms, from Epshteyn et al. 2007</span>
-<span class="sd">        (http://dx.doi.org/10.1016/j.cam.2006.08.029).</span>
+<span class="sd">        Compute a wetting and drying parameter :math:`\alpha` which ensures positive water</span>
+<span class="sd">        depth using the approximate method suggested by Karna et al. (2011).</span>
 
-<span class="sd">        The scheme is stable if</span>
+<span class="sd">        This method takes</span>
 
-<span class="sd">        ..math::</span>
-<span class="sd">            \alpha|_K &gt; 3*X*p*(p+1)*\cot(\theta_K),</span>
+<span class="sd">      ..math::</span>
+<span class="sd">            \alpha \approx |L_x \nabla h|,</span>
 
-<span class="sd">        for all elements :math:`K`, where</span>
+<span class="sd">        where :math:`L_x` is the horizontal length scale of the mesh elements at the wet-dry</span>
+<span class="sd">        front and :math:`h` is the bathymetry profile.</span>
 
-<span class="sd">        ..math::</span>
-<span class="sd">            X = \frac{\max_{x\in K}(\nu(x))}{\min_{x\in K}(\nu(x))},</span>
+<span class="sd">        This expression is interpolated into :math:`\mathbb P1` space in order to remove noise. Note</span>
+<span class="sd">        that we use the `interpolate` method, rather than the `project` method, in order to avoid</span>
+<span class="sd">        introducing new extrema.</span>
 
-<span class="sd">        :math:`p` the degree, and :math:`\theta_K` is the minimum angle in the element.</span>
+<span class="sd">        NOTE: The minimum and maximum values at which to cap the alpha parameter may be specified via</span>
+<span class="sd">        :attr:`ModelOptions2d.wetting_and_drying_alpha_min` and</span>
+<span class="sd">        :attr:`ModelOptions2d.wetting_and_drying_alpha_max`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">degree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U_2d</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
-        <span class="n">alpha</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">5.0</span><span class="o">*</span><span class="n">degree</span><span class="o">*</span><span class="p">(</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">degree</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1.5</span><span class="p">)</span>
-        <span class="n">degree_tracer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">Q_2d</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
-        <span class="n">alpha_tracer</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">5.0</span><span class="o">*</span><span class="n">degree_tracer</span><span class="o">*</span><span class="p">(</span><span class="n">degree_tracer</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">degree_tracer</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1.5</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_wetting_and_drying</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_automatic_wetting_and_drying_alpha</span><span class="p">:</span>
+            <span class="n">min_alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wetting_and_drying_alpha_min</span>
+            <span class="n">max_alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wetting_and_drying_alpha_max</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_automatic_sipg_parameter</span><span class="p">:</span>
-            <span class="n">P0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P0_2d</span>
-            <span class="n">theta</span> <span class="o">=</span> <span class="n">get_minimum_angles_2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">)</span>
-            <span class="n">min_angle</span> <span class="o">=</span> <span class="n">theta</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">gather</span><span class="p">()</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-            <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Minimum angle in mesh: </span><span class="si">{:.2f}</span><span class="s2"> degrees&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">min_angle</span><span class="p">)))</span>
-            <span class="n">cot_theta</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">tan</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+            <span class="c1"># Take the dot product and threshold it</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">get_cell_widths_2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">max_alpha</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="n">min_value</span><span class="p">(</span><span class="n">max_alpha</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">min_alpha</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="n">max_value</span><span class="p">(</span><span class="n">min_alpha</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
 
-            <span class="c1"># Penalty parameter for shallow water</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">tracer_only</span><span class="p">:</span>
-                <span class="n">nu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">horizontal_viscosity</span>
-                <span class="k">if</span> <span class="n">nu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">get_sipg_ratio</span><span class="p">(</span><span class="n">nu</span><span class="p">)</span><span class="o">*</span><span class="n">cot_theta</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_parameter</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">P0</span><span class="p">)</span>
-                    <span class="n">max_sipg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_parameter</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">gather</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-                    <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Maximum SIPG value:        </span><span class="si">{:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_sipg</span><span class="p">))</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Using default SIPG parameter for shallow water equations&quot;</span><span class="p">)</span>
+            <span class="c1"># Interpolate into P1 space</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wetting_and_drying_alpha</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1_2d</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wetting_and_drying_alpha</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
 
-            <span class="c1"># Penalty parameter for tracers</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_tracer</span><span class="p">:</span>
-                <span class="n">nu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">horizontal_diffusivity</span>
-                <span class="k">if</span> <span class="n">nu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">alpha_tracer</span> <span class="o">=</span> <span class="n">alpha_tracer</span><span class="o">*</span><span class="n">get_sipg_ratio</span><span class="p">(</span><span class="n">nu</span><span class="p">)</span><span class="o">*</span><span class="n">cot_theta</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_parameter_tracer</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">alpha_tracer</span><span class="p">,</span> <span class="n">P0</span><span class="p">)</span>
-                    <span class="n">max_sipg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_parameter_tracer</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">gather</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-                    <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Maximum tracer SIPG value: </span><span class="si">{:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_sipg</span><span class="p">))</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Using default SIPG parameter for tracer equation&quot;</span><span class="p">)</span>
+        <span class="c1"># Print to screen and check validity</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wetting_and_drying_alpha</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">Constant</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Using constant wetting and drying parameter (value </span><span class="si">{:.2f}</span><span class="s2">)&quot;</span>
+            <span class="k">assert</span> <span class="n">alpha</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alpha</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Using spatially varying wetting and drying parameter (min </span><span class="si">{:.2f}</span><span class="s2"> max </span><span class="si">{:.2f}</span><span class="s2">)&quot;</span>
+            <span class="k">with</span> <span class="n">alpha</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">vec_ro</span> <span class="k">as</span> <span class="n">v</span><span class="p">:</span>
+                <span class="n">alpha_min</span><span class="p">,</span> <span class="n">alpha_max</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">min</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="o">.</span><span class="n">max</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">alpha_min</span> <span class="o">&gt;=</span> <span class="mf">0.0</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alpha_min</span><span class="p">,</span> <span class="n">alpha_max</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Using default SIPG parameters&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_parameter</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_parameter_tracer</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">alpha_tracer</span><span class="p">)</span></div>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Wetting and drying parameter of type &#39;</span><span class="si">{:}</span><span class="s2">&#39; not supported&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alpha</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="FlowSolver2d.create_function_spaces"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_function_spaces">[docs]</a>    <span class="k">def</span> <span class="nf">create_function_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -309,6 +312,11 @@
 <span class="sd">        object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">on_the_sphere</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="k">if</span> <span class="n">on_the_sphere</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;rt-dg&#39;</span><span class="p">,</span> <span class="s1">&#39;bdm-dg&#39;</span><span class="p">],</span> \
+                <span class="s1">&#39;Spherical mesh requires </span><span class="se">\&#39;</span><span class="s1">rt-dg</span><span class="se">\&#39;</span><span class="s1"> or </span><span class="se">\&#39;</span><span class="s1">bdm-dg</span><span class="se">\&#39;</span><span class="s1"> &#39;</span> \
+                <span class="s1">&#39;element family.&#39;</span>
         <span class="c1"># ----- function spaces: elev in H, uv in U, mixed is W</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P0_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;P0_2d&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s1">&#39;CG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;P1_2d&#39;</span><span class="p">)</span>
@@ -316,8 +324,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1DG_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;P1DG_2d&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1DGv_2d</span> <span class="o">=</span> <span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;P1DGv_2d&#39;</span><span class="p">)</span>
         <span class="c1"># 2D velocity space</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="o">==</span> <span class="s1">&#39;rt-dg&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s1">&#39;RT&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;U_2d&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;rt-dg&#39;</span><span class="p">,</span> <span class="s1">&#39;bdm-dg&#39;</span><span class="p">]:</span>
+            <span class="n">family_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">element_family</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="n">family_suffix</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;triangle&#39;</span><span class="p">:</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;quadrilateral&#39;</span><span class="p">:</span> <span class="s1">&#39;CF&#39;</span><span class="p">}</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">()</span><span class="o">.</span><span class="n">cellname</span><span class="p">()</span>
+            <span class="n">fam</span> <span class="o">=</span> <span class="n">family_prefix</span> <span class="o">+</span> <span class="n">family_suffix</span><span class="p">[</span><span class="n">cell</span><span class="p">]</span>
+            <span class="n">degree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">fam</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;U_2d&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">H_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;H_2d&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="o">==</span> <span class="s1">&#39;dg-cg&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U_2d</span> <span class="o">=</span> <span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;U_2d&#39;</span><span class="p">)</span>
@@ -344,7 +357,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">V_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;solution_2d&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">h_elem_size_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1_2d</span><span class="p">)</span>
         <span class="n">get_horizontal_elem_size_2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">h_elem_size_2d</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_sipg_parameter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_wetting_and_drying_alpha</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="n">DepthExpression</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="p">,</span>
                                      <span class="n">use_nonlinear_equations</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_nonlinear_equations</span><span class="p">,</span>
                                      <span class="n">use_wetting_and_drying</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_wetting_and_drying</span><span class="p">,</span>
@@ -354,7 +367,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">eq_sw</span> <span class="o">=</span> <span class="n">shallowwater_eq</span><span class="o">.</span><span class="n">ShallowWaterEquations</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eq_sw</span><span class="o">.</span><span class="n">bnd_functions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_tracer</span><span class="p">:</span>
@@ -363,16 +376,39 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">eq_tracer</span> <span class="o">=</span> <span class="n">conservative_tracer_eq_2d</span><span class="o">.</span><span class="n">ConservativeTracerEquation2D</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">Q_2d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">,</span>
                     <span class="n">use_lax_friedrichs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_lax_friedrichs_tracer</span><span class="p">,</span>
-                    <span class="n">sipg_parameter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_parameter_tracer</span><span class="p">)</span>
+                    <span class="n">sipg_factor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_factor_tracer</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">eq_tracer</span> <span class="o">=</span> <span class="n">tracer_eq_2d</span><span class="o">.</span><span class="n">TracerEquation2D</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">Q_2d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">,</span>
                     <span class="n">use_lax_friedrichs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_lax_friedrichs_tracer</span><span class="p">,</span>
-                    <span class="n">sipg_parameter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_parameter_tracer</span><span class="p">)</span>
+                    <span class="n">sipg_factor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_factor_tracer</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tracer_limiter</span> <span class="o">=</span> <span class="n">limiter</span><span class="o">.</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">Q_2d</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tracer_limiter</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">sediment_options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sediment_model_options</span>
+        <span class="k">if</span> <span class="n">sediment_options</span><span class="o">.</span><span class="n">solve_suspended_sediment</span> <span class="ow">or</span> <span class="n">sediment_options</span><span class="o">.</span><span class="n">solve_exner</span><span class="p">:</span>
+            <span class="n">uv_2d</span><span class="p">,</span> <span class="n">elev_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">sediment_model_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">sediment_model_class</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span> <span class="o">=</span> <span class="n">sediment_model_class</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">uv_2d</span><span class="p">,</span> <span class="n">elev_2d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sediment_options</span><span class="o">.</span><span class="n">solve_suspended_sediment</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">sediment_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">Q_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sediment_2d&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eq_sediment</span> <span class="o">=</span> <span class="n">sediment_eq_2d</span><span class="o">.</span><span class="n">SedimentEquation2D</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">Q_2d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span><span class="p">,</span>
+                <span class="n">use_lax_friedrichs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_lax_friedrichs_tracer</span><span class="p">,</span>
+                <span class="n">sipg_factor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_factor_tracer</span><span class="p">,</span>
+                <span class="n">conservative</span><span class="o">=</span><span class="n">sediment_options</span><span class="o">.</span><span class="n">use_sediment_conservative_form</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tracer_limiter</span> <span class="o">=</span> <span class="n">limiter</span><span class="o">.</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">Q_2d</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tracer_limiter</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">sediment_options</span><span class="o">.</span><span class="n">solve_exner</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eq_exner</span> <span class="o">=</span> <span class="n">exner_eq</span><span class="o">.</span><span class="n">ExnerEquation</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">,</span>
+                <span class="n">depth_integrated_sediment</span><span class="o">=</span><span class="n">sediment_options</span><span class="o">.</span><span class="n">use_sediment_conservative_form</span><span class="p">,</span> <span class="n">sediment_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># disallow creating new attributes</span></div>
 
@@ -384,6 +420,7 @@
             <span class="s1">&#39;linear_drag_coefficient&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">linear_drag_coefficient</span><span class="p">,</span>
             <span class="s1">&#39;quadratic_drag_coefficient&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">quadratic_drag_coefficient</span><span class="p">,</span>
             <span class="s1">&#39;manning_drag_coefficient&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">manning_drag_coefficient</span><span class="p">,</span>
+            <span class="s1">&#39;nikuradse_bed_roughness&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nikuradse_bed_roughness</span><span class="p">,</span>
             <span class="s1">&#39;viscosity_h&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">horizontal_viscosity</span><span class="p">,</span>
             <span class="s1">&#39;lax_friedrichs_velocity_scaling_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">lax_friedrichs_velocity_scaling_factor</span><span class="p">,</span>
             <span class="s1">&#39;coriolis&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">coriolis_frequency</span><span class="p">,</span>
@@ -453,6 +490,56 @@
             <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">implicitness_theta</span>
         <span class="k">return</span> <span class="n">integrator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="FlowSolver2d.get_sediment_timestepper"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.get_sediment_timestepper">[docs]</a>    <span class="k">def</span> <span class="nf">get_sediment_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">integrator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets sediment timestepper object with appropriate parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uv</span><span class="p">,</span> <span class="n">elev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;elev_2d&#39;</span><span class="p">:</span> <span class="n">elev</span><span class="p">,</span>
+            <span class="s1">&#39;uv_2d&#39;</span><span class="p">:</span> <span class="n">uv</span><span class="p">,</span>
+            <span class="s1">&#39;diffusivity_h&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">horizontal_diffusivity</span><span class="p">,</span>
+            <span class="s1">&#39;lax_friedrichs_tracer_scaling_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">lax_friedrichs_tracer_scaling_factor</span><span class="p">,</span>
+            <span class="s1">&#39;tracer_advective_velocity_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span><span class="o">.</span><span class="n">get_advective_velocity_correction_factor</span><span class="p">(),</span>
+        <span class="p">}</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eq_sediment</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">sediment_2d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;bnd_conditions&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;sediment&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;solver_parameters&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_sediment</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="p">,</span> <span class="s1">&#39;use_semi_implicit_linearization&#39;</span><span class="p">):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;semi_implicit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">use_semi_implicit_linearization</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="p">,</span> <span class="s1">&#39;implicitness_theta&#39;</span><span class="p">):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">implicitness_theta</span>
+        <span class="k">return</span> <span class="n">integrator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FlowSolver2d.get_exner_timestepper"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.get_exner_timestepper">[docs]</a>    <span class="k">def</span> <span class="nf">get_exner_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">integrator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets exner timestepper object with appropriate parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uv</span><span class="p">,</span> <span class="n">elev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">solve_suspended_sediment</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">sediment_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">elev</span><span class="o">.</span><span class="n">function_space</span><span class="p">())</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">))</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;elev_2d&#39;</span><span class="p">:</span> <span class="n">elev</span><span class="p">,</span>
+            <span class="s1">&#39;sediment&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">sediment_2d</span><span class="p">,</span>
+            <span class="s1">&#39;morfac&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">morphological_acceleration_factor</span><span class="p">,</span>
+            <span class="s1">&#39;porosity&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">porosity</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eq_exner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="c1"># only pass SWE bcs, used to determine closed boundaries in bedload term</span>
+            <span class="s1">&#39;bnd_conditions&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;solver_parameters&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">solver_parameters_exner</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="p">,</span> <span class="s1">&#39;use_semi_implicit_linearization&#39;</span><span class="p">):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;semi_implicit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">use_semi_implicit_linearization</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="p">,</span> <span class="s1">&#39;implicitness_theta&#39;</span><span class="p">):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">implicitness_theta</span>
+        <span class="k">return</span> <span class="n">integrator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="FlowSolver2d.create_timestepper"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_timestepper">[docs]</a>    <span class="k">def</span> <span class="nf">create_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates time stepper instance</span>
@@ -488,9 +575,17 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unknown time integrator type: </span><span class="si">{:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_tracer</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;PressureProjectionPicard&#39;</span><span class="p">,</span> <span class="s1">&#39;SSPIMEX&#39;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;2D tracer model currently only supports SSPRK33, ForwardEuler, SteadyState, BackwardEuler, DIRK22, DIRK33 and CrankNicolson time integrators.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">coupled_timeintegrator_2d</span><span class="o">.</span><span class="n">CoupledMatchingTimeIntegrator2D</span><span class="p">(</span>
+                <span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">steppers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">solve_suspended_sediment</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">solve_exner</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;PressureProjectionPicard&#39;</span><span class="p">,</span> <span class="s1">&#39;SSPIMEX&#39;</span><span class="p">,</span> <span class="s1">&#39;SteadyState&#39;</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;2D tracer model currently only supports SSPRK33, ForwardEuler, BackwardEuler, DIRK22, DIRK33 and CrankNicolson time integrators.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;2D sediment model currently only supports SSPRK33, ForwardEuler, BackwardEuler, DIRK22, DIRK33 and CrankNicolson time integrators.&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">coupled_timeintegrator_2d</span><span class="o">.</span><span class="n">CoupledMatchingTimeIntegrator2D</span><span class="p">(</span>
                 <span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">steppers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span><span class="p">],</span>
             <span class="p">)</span>
@@ -544,7 +639,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">create_exporters</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="FlowSolver2d.assign_initial_conditions"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.assign_initial_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">assign_initial_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tracer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowSolver2d.assign_initial_conditions"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.assign_initial_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">assign_initial_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tracer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sediment</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assigns initial conditions</span>
 
@@ -562,6 +657,19 @@
             <span class="n">uv_2d</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">uv</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">tracer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_tracer</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">tracer_2d</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">tracer</span><span class="p">)</span>
+
+        <span class="n">sediment_options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sediment_model_options</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># update sediment model based on initial conditions for uv and elev</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">sediment_options</span><span class="o">.</span><span class="n">solve_suspended_sediment</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sediment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">sediment_2d</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">sediment</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sediment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span><span class="o">.</span><span class="n">get_equilibrium_tracer</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">sediment_options</span><span class="o">.</span><span class="n">use_sediment_conservative_form</span><span class="p">:</span>
+                    <span class="n">sediment</span> <span class="o">=</span> <span class="n">sediment</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">elev_2d</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">sediment_2d</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">sediment</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="p">)</span></div>
 
@@ -701,14 +809,38 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">check_tracer_conservation</span><span class="p">:</span>
-            <span class="n">c</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="n">TracerMassConservation2DCallback</span><span class="p">(</span><span class="s1">&#39;tracer_2d&#39;</span><span class="p">,</span>
-                                                          <span class="bp">self</span><span class="p">,</span>
-                                                          <span class="n">export_to_hdf5</span><span class="o">=</span><span class="n">dump_hdf5</span><span class="p">,</span>
-                                                          <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_tracer_conservative_form</span><span class="p">:</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="n">ConservativeTracerMassConservation2DCallback</span><span class="p">(</span><span class="s1">&#39;tracer_2d&#39;</span><span class="p">,</span>
+                                                                          <span class="bp">self</span><span class="p">,</span>
+                                                                          <span class="n">export_to_hdf5</span><span class="o">=</span><span class="n">dump_hdf5</span><span class="p">,</span>
+                                                                          <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="n">TracerMassConservation2DCallback</span><span class="p">(</span><span class="s1">&#39;tracer_2d&#39;</span><span class="p">,</span>
+                                                              <span class="bp">self</span><span class="p">,</span>
+                                                              <span class="n">export_to_hdf5</span><span class="o">=</span><span class="n">dump_hdf5</span><span class="p">,</span>
+                                                              <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">eval_interval</span><span class="o">=</span><span class="s1">&#39;export&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">check_sediment_conservation</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">use_sediment_conservative_form</span><span class="p">:</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="n">ConservativeTracerMassConservation2DCallback</span><span class="p">(</span><span class="s1">&#39;sediment_2d&#39;</span><span class="p">,</span>
+                                                                          <span class="bp">self</span><span class="p">,</span>
+                                                                          <span class="n">export_to_hdf5</span><span class="o">=</span><span class="n">dump_hdf5</span><span class="p">,</span>
+                                                                          <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="n">TracerMassConservation2DCallback</span><span class="p">(</span><span class="s1">&#39;sediment_2d&#39;</span><span class="p">,</span>
+                                                              <span class="bp">self</span><span class="p">,</span>
+                                                              <span class="n">export_to_hdf5</span><span class="o">=</span><span class="n">dump_hdf5</span><span class="p">,</span>
+                                                              <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">eval_interval</span><span class="o">=</span><span class="s1">&#39;export&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">check_tracer_overshoot</span><span class="p">:</span>
             <span class="n">c</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="n">TracerOvershootCallBack</span><span class="p">(</span><span class="s1">&#39;tracer_2d&#39;</span><span class="p">,</span>
+                                                 <span class="bp">self</span><span class="p">,</span>
+                                                 <span class="n">export_to_hdf5</span><span class="o">=</span><span class="n">dump_hdf5</span><span class="p">,</span>
+                                                 <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">eval_interval</span><span class="o">=</span><span class="s1">&#39;export&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">check_sediment_overshoot</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="n">TracerOvershootCallBack</span><span class="p">(</span><span class="s1">&#39;sediment_2d&#39;</span><span class="p">,</span>
                                                  <span class="bp">self</span><span class="p">,</span>
                                                  <span class="n">export_to_hdf5</span><span class="o">=</span><span class="n">dump_hdf5</span><span class="p">,</span>
                                                  <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -727,7 +859,6 @@
         <span class="n">internal_iteration</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">-</span> <span class="n">t_epsilon</span><span class="p">:</span>
-
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span>
 
             <span class="c1"># Move to next time step</span>
@@ -751,6 +882,7 @@
                     <span class="n">export_func</span><span class="p">()</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -759,7 +891,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>

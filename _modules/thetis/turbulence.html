@@ -4,15 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>thetis.turbulence &#8212; Thetis 0+untagged.1565.gce988c6 documentation</title>
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>thetis.turbulence &#8212; Thetis 0+untagged.1636.g63e82af documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -808,7 +808,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">schmidt_nb</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">sipg_parameter</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)):</span>
+                 <span class="n">sipg_factor</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
 <span class="sd">        :arg schmidt_nb: the Schmidt number of TKE or Psi</span>
@@ -818,10 +818,12 @@
 <span class="sd">            element size</span>
 <span class="sd">        :kwarg h_elem_size: scalar :class:`Function` that defines the horizontal</span>
 <span class="sd">            element size</span>
+<span class="sd">        :kwarg sipg_factor: :class: `Constant` or :class: `Function` vertical SIPG penalty scaling factor</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">GLSVerticalDiffusionTerm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span>
                                                        <span class="n">bathymetry</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="p">,</span>
-                                                       <span class="n">sipg_parameter_vertical</span><span class="o">=</span><span class="n">sipg_parameter</span><span class="p">)</span>
+                                                       <span class="n">sipg_factor_vertical</span><span class="o">=</span><span class="n">sipg_factor</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schmidt_nb</span> <span class="o">=</span> <span class="n">schmidt_nb</span>
 
 <div class="viewcode-block" id="GLSVerticalDiffusionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GLSVerticalDiffusionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -998,6 +1000,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">diffusivity</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">viscosity</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span><span class="o">/</span><span class="n">denom</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1006,7 +1009,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>

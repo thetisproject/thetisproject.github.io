@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>thetis.sediment_eq_2d &#8212; Thetis 0+untagged.1636.g63e82af documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="../../_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="../../_static/icon_thetis.ico" />
+
+
+  </head><body>
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetis/branches" title="Thetis build status">Jenkins</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/thetis/sediment_eq_2d">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for thetis.sediment_eq_2d</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">2D advection diffusion equation for sediment transport.</span>
+
+<span class="sd">This can be either conservative :math:`q=HT` or non-conservative :math:`T` sediment and allows</span>
+<span class="sd">for a separate source and sink term. The equation reads</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    \frac{\partial S}{\partial t}</span>
+<span class="sd">    + \nabla_h \cdot (\textbf{u} S)</span>
+<span class="sd">    = \nabla_h \cdot (\mu_h \nabla_h S) + F_{source} - (F_{sink} S)</span>
+<span class="sd">    :label: sediment_eq_2d</span>
+
+<span class="sd">where :math:`S` is :math:`q` for conservative and :math:`T` for non-conservative,</span>
+<span class="sd">:math:`\nabla_h` denotes horizontal gradient, :math:`\textbf{u}` are the horizontal</span>
+<span class="sd">velocities, and :math:`\mu_h` denotes horizontal diffusivity.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.equation</span> <span class="kn">import</span> <span class="n">Equation</span>
+<span class="kn">from</span> <span class="nn">.tracer_eq_2d</span> <span class="kn">import</span> <span class="n">HorizontalDiffusionTerm</span><span class="p">,</span> <span class="n">HorizontalAdvectionTerm</span><span class="p">,</span> <span class="n">TracerTerm</span>
+<span class="kn">from</span> <span class="nn">.conservative_tracer_eq_2d</span> <span class="kn">import</span> <span class="n">ConservativeHorizontalAdvectionTerm</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;SedimentEquation2D&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SedimentTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ConservativeSedimentAdvectionTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SedimentAdvectionTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SedimentErosionTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SedimentDepositionTerm&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="SedimentTerm"><a class="viewcode-back" href="../../thetis.html#thetis.sediment_eq_2d.SedimentTerm">[docs]</a><span class="k">class</span> <span class="nc">SedimentTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic sediment term that provides commonly used members.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">sediment_model</span><span class="p">,</span>
+                 <span class="n">use_lax_friedrichs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sipg_factor</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">conservative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
+<span class="sd">        :arg depth: :class:`DepthExpression` containing depth info</span>
+<span class="sd">        :kwarg bool use_lax_friedrichs: whether to use Lax Friedrichs stabilisation</span>
+<span class="sd">        :kwarg sipg_factor: :class:`Constant` or :class:`Function` SIPG penalty scaling factor</span>
+<span class="sd">        :kwarg bool conservative: whether to use conservative tracer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SedimentTerm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span> <span class="o">=</span> <span class="n">sediment_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conservative</span> <span class="o">=</span> <span class="n">conservative</span>
+
+<div class="viewcode-block" id="SedimentTerm.get_bnd_functions"><a class="viewcode-back" href="../../thetis.html#thetis.sediment_eq_2d.SedimentTerm.get_bnd_functions">[docs]</a>    <span class="k">def</span> <span class="nf">get_bnd_functions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c_in</span><span class="p">,</span> <span class="n">uv_in</span><span class="p">,</span> <span class="n">elev_in</span><span class="p">,</span> <span class="n">bnd_id</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
+        <span class="n">funcs</span> <span class="o">=</span> <span class="n">bnd_conditions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bnd_id</span><span class="p">)</span>
+        <span class="n">c_ext</span><span class="p">,</span> <span class="n">uv_ext</span><span class="p">,</span> <span class="n">elev_ext</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_bnd_functions</span><span class="p">(</span><span class="n">c_in</span><span class="p">,</span> <span class="n">uv_in</span><span class="p">,</span> <span class="n">elev_in</span><span class="p">,</span> <span class="n">bnd_id</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;equilibrium&#39;</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot specify both equilibrium and value for sediment bcs.&quot;</span><span class="p">)</span>
+            <span class="n">c_ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span><span class="o">.</span><span class="n">get_equilibrium_tracer</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conservative</span><span class="p">:</span>
+                <span class="n">c_ext</span> <span class="o">=</span> <span class="n">c_ext</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">elev_ext</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">c_ext</span><span class="p">,</span> <span class="n">uv_ext</span><span class="p">,</span> <span class="n">elev_ext</span></div></div>
+
+
+<div class="viewcode-block" id="ConservativeSedimentAdvectionTerm"><a class="viewcode-back" href="../../thetis.html#thetis.sediment_eq_2d.ConservativeSedimentAdvectionTerm">[docs]</a><span class="k">class</span> <span class="nc">ConservativeSedimentAdvectionTerm</span><span class="p">(</span><span class="n">SedimentTerm</span><span class="p">,</span> <span class="n">ConservativeHorizontalAdvectionTerm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Advection term for sediment equation</span>
+
+<span class="sd">    Same as :class:`ConservativeHorizontalAdvectionTerm` but allows for equilibrium boundary condition</span>
+<span class="sd">    through get_bnd_conditions() inherited from :class:`SedimentTerm`.&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SedimentAdvectionTerm"><a class="viewcode-back" href="../../thetis.html#thetis.sediment_eq_2d.SedimentAdvectionTerm">[docs]</a><span class="k">class</span> <span class="nc">SedimentAdvectionTerm</span><span class="p">(</span><span class="n">SedimentTerm</span><span class="p">,</span> <span class="n">HorizontalAdvectionTerm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Advection term for sediment equation</span>
+
+<span class="sd">    Same as :class:`HorizontalAdvectionTerm` but allows for equilibrium boundary condition</span>
+<span class="sd">    through get_bnd_conditions() inherited from :class:`SedimentTerm`.&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<span class="k">class</span> <span class="nc">SedimentDiffusionTerm</span><span class="p">(</span><span class="n">SedimentTerm</span><span class="p">,</span> <span class="n">HorizontalDiffusionTerm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Diffusion term for sediment equation</span>
+
+<span class="sd">    Same as :class:`HorizontalDiffusionTerm` but allows for equilibrium boundary condition</span>
+<span class="sd">    through get_bnd_conditions() inherited from :class:`SedimentTerm`.&quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="SedimentErosionTerm"><a class="viewcode-back" href="../../thetis.html#thetis.sediment_eq_2d.SedimentErosionTerm">[docs]</a><span class="k">class</span> <span class="nc">SedimentErosionTerm</span><span class="p">(</span><span class="n">SedimentTerm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Erosion term for sediment equation&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SedimentErosionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.sediment_eq_2d.SedimentErosionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">ero</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span><span class="o">.</span><span class="n">get_erosion_term</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">conservative</span><span class="p">:</span>
+            <span class="n">elev</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="s1">&#39;elev_2d&#39;</span><span class="p">]</span>
+            <span class="n">ero</span> <span class="o">=</span> <span class="n">ero</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">elev</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">*</span> <span class="n">ero</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
+        <span class="k">return</span> <span class="n">f</span></div></div>
+
+
+<div class="viewcode-block" id="SedimentDepositionTerm"><a class="viewcode-back" href="../../thetis.html#thetis.sediment_eq_2d.SedimentDepositionTerm">[docs]</a><span class="k">class</span> <span class="nc">SedimentDepositionTerm</span><span class="p">(</span><span class="n">SedimentTerm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deposition term for sediment equation&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SedimentDepositionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.sediment_eq_2d.SedimentDepositionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">depo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span><span class="o">.</span><span class="n">get_deposition_coefficient</span><span class="p">()</span>
+        <span class="n">elev</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="s1">&#39;elev_2d&#39;</span><span class="p">]</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">elev</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">*</span> <span class="n">depo</span><span class="o">/</span><span class="n">H</span> <span class="o">*</span> <span class="n">solution</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
+        <span class="k">return</span> <span class="n">f</span></div></div>
+
+
+<div class="viewcode-block" id="SedimentEquation2D"><a class="viewcode-back" href="../../thetis.html#thetis.sediment_eq_2d.SedimentEquation2D">[docs]</a><span class="k">class</span> <span class="nc">SedimentEquation2D</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    2D sediment advection-diffusion equation: :eq:`tracer_eq_2d` or :eq:`conservative_tracer_eq_2d`</span>
+<span class="sd">    with sediment source and sink term</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">sediment_model</span><span class="p">,</span>
+                 <span class="n">use_lax_friedrichs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">sipg_factor</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span>
+                 <span class="n">conservative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
+<span class="sd">        :arg depth: :class:`DepthExpression` containing depth info</span>
+<span class="sd">        :kwarg bool use_lax_friedrichs: whether to use Lax Friedrichs stabilisation</span>
+<span class="sd">        :kwarg sipg_factor: :class:`Constant` or :class:`Function` SIPG penalty scaling factor</span>
+<span class="sd">        :kwarg bool conservative: whether to use conservative tracer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SedimentEquation2D</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">sediment_model</span><span class="p">,</span> <span class="n">use_lax_friedrichs</span><span class="p">,</span> <span class="n">sipg_factor</span><span class="p">,</span> <span class="n">conservative</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">conservative</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">ConservativeSedimentAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">SedimentAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">SedimentDiffusionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">SedimentErosionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">SedimentDepositionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;implicit&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2020, Tuomas Karna et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+    </div>
+  </body>
+</html>

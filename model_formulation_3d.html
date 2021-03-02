@@ -4,15 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Baroclinic model formulation &#8212; Thetis 0+untagged.1565.gce988c6 documentation</title>
-    <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Baroclinic model formulation &#8212; Thetis 0+untagged.1636.g63e82af documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
 <!--[if lte IE 6]>
@@ -62,16 +62,16 @@ and hydrostatic assumptions.</p>
 velocity <span class="math notranslate nohighlight">\(\mathbf{u}\)</span> is split into a depth average
 <span class="math notranslate nohighlight">\(\bar{\mathbf{u}}\)</span> and a deviation
 <span class="math notranslate nohighlight">\(\mathbf{u}' = \mathbf{u} - \bar{\mathbf{u}}\)</span>.
-We use the 2D shallow water equations <a class="reference internal" href="thetis.html#equation-swe-freesurf-modesplit">(10)</a>-
-<a class="reference internal" href="thetis.html#equation-swe-momentum-modesplit">(11)</a> to solve <span class="math notranslate nohighlight">\(\bar{\mathbf{u}}\)</span>, and the
-3D momentum equation <a class="reference internal" href="thetis.html#equation-mom-eq-split">(5)</a> to solve <span class="math notranslate nohighlight">\(\mathbf{u}'\)</span>.
+We use the 2D shallow water equations <a class="reference internal" href="thetis.html#equation-swe-freesurf-modesplit">(12)</a>-
+<a class="reference internal" href="thetis.html#equation-swe-momentum-modesplit">(13)</a> to solve <span class="math notranslate nohighlight">\(\bar{\mathbf{u}}\)</span>, and the
+3D momentum equation <a class="reference internal" href="thetis.html#equation-mom-eq-split">(6)</a> to solve <span class="math notranslate nohighlight">\(\mathbf{u}'\)</span>.
 See modules
 <a class="reference internal" href="thetis.html#module-thetis.shallowwater_eq" title="thetis.shallowwater_eq"><code class="xref py py-mod docutils literal notranslate"><span class="pre">shallowwater_eq</span></code></a> and <a class="reference internal" href="thetis.html#module-thetis.momentum_eq" title="thetis.momentum_eq"><code class="xref py py-mod docutils literal notranslate"><span class="pre">momentum_eq</span></code></a> for more information.</p>
 <p>Since the model is hydrostatic, the vertical velocity is solved diagnostically
-from the continuity equation <a class="reference internal" href="thetis.html#equation-continuity-eq-3d">(19)</a>.
+from the continuity equation <a class="reference internal" href="thetis.html#equation-continuity-eq-3d">(21)</a>.
 The solver is implemented in <a class="reference internal" href="thetis.html#thetis.utility.VerticalVelocitySolver" title="thetis.utility.VerticalVelocitySolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">VerticalVelocitySolver</span></code></a>.</p>
 <p>Water temperature and salinity are modeled as tracers by the means of the
-tracer advection-diffusion equation <a class="reference internal" href="thetis.html#equation-tracer-eq">(14)</a>.
+tracer advection-diffusion equation <a class="reference internal" href="thetis.html#equation-tracer-eq">(16)</a>.
 Options <a class="reference internal" href="model_options_3d.html#model-options-3d"><span class="std std-ref">ModelOptions3d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions3d.solve_temperature" title="thetis.options.ModelOptions3d.solve_temperature"><code class="xref py py-attr docutils literal notranslate"><span class="pre">solve_temperature</span></code></a>, <a class="reference internal" href="model_options_3d.html#model-options-3d"><span class="std std-ref">ModelOptions3d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions3d.solve_salinity" title="thetis.options.ModelOptions3d.solve_salinity"><code class="xref py py-attr docutils literal notranslate"><span class="pre">solve_salinity</span></code></a>
 determine whether the dynamic equations are solved at run time.
 If not, we treat these variables as constants whose value is set with
@@ -85,7 +85,7 @@ The equation of state is set by the option
 <a class="reference internal" href="model_options_3d.html#model-options-3d"><span class="std std-ref">ModelOptions3d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions3d.equation_of_state_type" title="thetis.options.ModelOptions3d.equation_of_state_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">equation_of_state_type</span></code></a>, and
 <span class="math notranslate nohighlight">\(\rho_0\)</span> is defined in the <a class="reference internal" href="thetis.html#module-thetis.physical_constants" title="thetis.physical_constants"><code class="xref py py-mod docutils literal notranslate"><span class="pre">physical_constants</span></code></a> module.
 Water density affects the internal pressure gradient through the baroclinic
-head, <span class="math notranslate nohighlight">\(r\)</span>, which we can solve diagnostically from <a class="reference internal" href="thetis.html#equation-baroc-head">(3)</a>.
+head, <span class="math notranslate nohighlight">\(r\)</span>, which we can solve diagnostically from <a class="reference internal" href="thetis.html#equation-baroc-head">(4)</a>.
 The internal pressure gradient, <span class="math notranslate nohighlight">\(\mathbf{F}_{pg} = g\nabla_h r\)</span>, is
 computed weakly as separate field.
 The solver is implemented in <a class="reference internal" href="thetis.html#thetis.momentum_eq.InternalPressureGradientCalculator" title="thetis.momentum_eq.InternalPressureGradientCalculator"><code class="xref py py-class docutils literal notranslate"><span class="pre">InternalPressureGradientCalculator</span></code></a>.</p>
@@ -112,27 +112,27 @@ salinity may still be simulated, but they are treated as passive tracers.</p>
 <tbody>
 <tr class="row-even"><td><p>Water elevation</p></td>
 <td><p><span class="math notranslate nohighlight">\(\eta\)</span></p></td>
-<td><p><a class="reference internal" href="thetis.html#equation-swe-freesurf-modesplit">(10)</a></p></td>
+<td><p><a class="reference internal" href="thetis.html#equation-swe-freesurf-modesplit">(12)</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">elev_2d</span></code>, <code class="docutils literal notranslate"><span class="pre">elev_3d</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Depth av. velocity</p></td>
 <td><p><span class="math notranslate nohighlight">\(\bar{\mathbf{u}}\)</span></p></td>
-<td><p><a class="reference internal" href="thetis.html#equation-swe-momentum-modesplit">(11)</a></p></td>
+<td><p><a class="reference internal" href="thetis.html#equation-swe-momentum-modesplit">(13)</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">uv_2d</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>3D velocity</p></td>
 <td><p><span class="math notranslate nohighlight">\(\mathbf{u}'\)</span></p></td>
-<td><p><a class="reference internal" href="thetis.html#equation-mom-eq-split">(5)</a></p></td>
+<td><p><a class="reference internal" href="thetis.html#equation-mom-eq-split">(6)</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">uv_3d</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Water temperature</p></td>
 <td><p><span class="math notranslate nohighlight">\(T\)</span></p></td>
-<td><p><a class="reference internal" href="thetis.html#equation-tracer-eq">(14)</a></p></td>
+<td><p><a class="reference internal" href="thetis.html#equation-tracer-eq">(16)</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">temp_3d</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Water salinity</p></td>
 <td><p><span class="math notranslate nohighlight">\(S\)</span></p></td>
-<td><p><a class="reference internal" href="thetis.html#equation-tracer-eq">(14)</a></p></td>
+<td><p><a class="reference internal" href="thetis.html#equation-tracer-eq">(16)</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">salt_3d</span></code></p></td>
 </tr>
 </tbody>
@@ -155,22 +155,22 @@ salinity may still be simulated, but they are treated as passive tracers.</p>
 <tbody>
 <tr class="row-even"><td><p>Vertical velocity</p></td>
 <td><p><span class="math notranslate nohighlight">\(w\)</span></p></td>
-<td><p><a class="reference internal" href="thetis.html#equation-continuity-eq-3d">(19)</a></p></td>
+<td><p><a class="reference internal" href="thetis.html#equation-continuity-eq-3d">(21)</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">w_3d</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Water density</p></td>
 <td><p><span class="math notranslate nohighlight">\(\rho\)</span></p></td>
-<td><p><a class="reference internal" href="thetis.html#equation-equation-of-state">(18)</a></p></td>
+<td><p><a class="reference internal" href="thetis.html#equation-equation-of-state">(20)</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">rho_3d</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Baroclinic head</p></td>
 <td><p><span class="math notranslate nohighlight">\(r\)</span></p></td>
-<td><p><a class="reference internal" href="thetis.html#equation-baroc-head">(3)</a></p></td>
+<td><p><a class="reference internal" href="thetis.html#equation-baroc-head">(4)</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">baroc_head_3d</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Pressure gradient</p></td>
 <td><p><span class="math notranslate nohighlight">\(\mathbf{F}_{pg}\)</span></p></td>
-<td><p><a class="reference internal" href="thetis.html#equation-int-pg-eq">(4)</a></p></td>
+<td><p><a class="reference internal" href="thetis.html#equation-int-pg-eq">(5)</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">int_pg_3d</span></code></p></td>
 </tr>
 </tbody>
@@ -365,6 +365,7 @@ step:</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -373,7 +374,7 @@ step:</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>

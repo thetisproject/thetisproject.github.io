@@ -4,15 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>thetis.conservative_tracer_eq_2d &#8212; Thetis 0+untagged.1565.gce988c6 documentation</title>
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>thetis.conservative_tracer_eq_2d &#8212; Thetis 0+untagged.1636.g63e82af documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -85,16 +85,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span>
                  <span class="n">use_lax_friedrichs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">sipg_parameter</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">10.0</span><span class="p">)):</span>
+                 <span class="n">sipg_factor</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
 <span class="sd">        :arg depth: :class: `DepthExpression` containing depth info</span>
 <span class="sd">        :kwarg bool use_lax_friedrichs: whether to use Lax Friedrichs stabilisation</span>
-<span class="sd">        :kwarg sipg_parameter: :class: `Constant` or :class: `Function` penalty parameter for SIPG</span>
+<span class="sd">        :kwarg sipg_factor: :class:`Constant` or :class:`Function` SIPG penalty scaling factor</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span>
                          <span class="n">use_lax_friedrichs</span><span class="o">=</span><span class="n">use_lax_friedrichs</span><span class="p">,</span>
-                         <span class="n">sipg_parameter</span><span class="o">=</span><span class="n">sipg_parameter</span><span class="p">)</span>
+                         <span class="n">sipg_factor</span><span class="o">=</span><span class="n">sipg_factor</span><span class="p">)</span>
 
     <span class="c1"># TODO: at the moment this is the same as TracerTerm, but we probably want to overload its</span>
     <span class="c1"># get_bnd_functions method</span>
@@ -157,7 +157,7 @@
                     <span class="n">funcs</span> <span class="o">=</span> <span class="n">bnd_conditions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bnd_marker</span><span class="p">)</span>
                     <span class="n">ds_bnd</span> <span class="o">=</span> <span class="n">ds</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bnd_marker</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span><span class="p">)</span>
                     <span class="n">c_in</span> <span class="o">=</span> <span class="n">solution</span>
-                    <span class="k">if</span> <span class="n">funcs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">funcs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">c_ext</span><span class="p">,</span> <span class="n">uv_ext</span><span class="p">,</span> <span class="n">eta_ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bnd_functions</span><span class="p">(</span><span class="n">c_in</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">elev</span><span class="p">,</span> <span class="n">bnd_marker</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
                         <span class="n">uv_av</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">uv</span> <span class="o">+</span> <span class="n">uv_ext</span><span class="p">)</span>
                         <span class="n">un_av</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">uv_av</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">uv_av</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -189,13 +189,12 @@
 <span class="sd">            \text{jump}(\phi \textbf{n}_h) dS \\</span>
 <span class="sd">        &amp;- \int_\Gamma \mu_h (\nabla_h \phi) \cdot \textbf{n}_h ds</span>
 
-<span class="sd">    where :math:`\sigma` is a penalty parameter,</span>
-<span class="sd">    see Epshteyn and Riviere (2007).</span>
+<span class="sd">    where :math:`\sigma` is a penalty parameter, see Hillewaert (2013).</span>
 
-<span class="sd">    Epshteyn and Riviere (2007). Estimation of penalty parameters for symmetric</span>
-<span class="sd">    interior penalty Galerkin methods. Journal of Computational and Applied</span>
-<span class="sd">    Mathematics, 206(2):843-872. http://dx.doi.org/10.1016/j.cam.2006.08.029</span>
-
+<span class="sd">    Hillewaert, Koen (2013). Development of the discontinuous Galerkin method</span>
+<span class="sd">    for high-resolution, large scale CFD and acoustics in industrial</span>
+<span class="sd">    geometries. PhD Thesis. Université catholique de Louvain.</span>
+<span class="sd">    https://dial.uclouvain.be/pr/boreal/object/boreal:128254/</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO: at the moment the same as HorizontalDiffusionTerm</span>
     <span class="c1"># do we need additional H-derivative term?</span>
@@ -229,20 +228,21 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span>
                  <span class="n">use_lax_friedrichs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">sipg_parameter</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">10.0</span><span class="p">)):</span>
+                 <span class="n">sipg_factor</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
 <span class="sd">        :arg depth: :class: `DepthExpression` containing depth info</span>
 <span class="sd">        :kwarg bool use_lax_friedrichs: whether to use Lax Friedrichs stabilisation</span>
-<span class="sd">        :kwarg sipg_parameter: :class: `Constant` or :class: `Function` penalty parameter for SIPG</span>
+<span class="sd">        :kwarg sipg_factor: :class:`Constant` or :class:`Function` SIPG penalty scaling factor</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ConservativeTracerEquation2D</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">use_lax_friedrichs</span><span class="p">,</span> <span class="n">sipg_parameter</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">use_lax_friedrichs</span><span class="p">,</span> <span class="n">sipg_factor</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">ConservativeHorizontalAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">ConservativeHorizontalDiffusionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">ConservativeSourceTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -251,7 +251,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>

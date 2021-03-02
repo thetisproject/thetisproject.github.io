@@ -4,15 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>thetis.utility &#8212; Thetis 0+untagged.1565.gce988c6 documentation</title>
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>thetis.utility &#8212; Thetis 0+untagged.1636.g63e82af documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -166,18 +166,25 @@
 
 
 <div class="viewcode-block" id="get_functionspace"><a class="viewcode-back" href="../../thetis.html#thetis.utility.get_functionspace">[docs]</a><span class="k">def</span> <span class="nf">get_functionspace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">h_family</span><span class="p">,</span> <span class="n">h_degree</span><span class="p">,</span> <span class="n">v_family</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_degree</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                      <span class="n">vector</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hdiv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="n">gdim</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span>
-    <span class="k">assert</span> <span class="n">gdim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+                      <span class="n">vector</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hdiv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_variant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">cell_dim</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">cell_dimension</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">cell_dim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="s1">&#39;Unsupported cell dimension&#39;</span>
+    <span class="n">hdiv_families</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;RT&#39;</span><span class="p">,</span> <span class="s1">&#39;RTF&#39;</span><span class="p">,</span> <span class="s1">&#39;RTCF&#39;</span><span class="p">,</span> <span class="s1">&#39;RAVIART-THOMAS&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;BDM&#39;</span><span class="p">,</span> <span class="s1">&#39;BDMF&#39;</span><span class="p">,</span> <span class="s1">&#39;BDMCF&#39;</span><span class="p">,</span> <span class="s1">&#39;BREZZI-DOUGLAS-MARINI&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
     <span class="k">if</span> <span class="n">variant</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">h_family</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;RT&#39;</span> <span class="ow">or</span> <span class="n">h_family</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;raviart-thomas&#39;</span><span class="p">:</span>
-            <span class="n">variant</span> <span class="o">=</span> <span class="s1">&#39;point&#39;</span>
+        <span class="k">if</span> <span class="n">h_family</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">hdiv_families</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">h_family</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;RTCF&#39;</span><span class="p">,</span> <span class="s1">&#39;BDMCF&#39;</span><span class="p">]:</span>
+                <span class="n">variant</span> <span class="o">=</span> <span class="s1">&#39;equispaced&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">variant</span> <span class="o">=</span> <span class="s1">&#39;integral&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">variant</span> <span class="o">=</span> <span class="s1">&#39;equispaced&#39;</span>
+    <span class="k">if</span> <span class="n">v_variant</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">v_variant</span> <span class="o">=</span> <span class="s1">&#39;equispaced&#39;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">v_variant</span> <span class="o">=</span> <span class="n">variant</span>
-    <span class="k">if</span> <span class="n">gdim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">cell_dim</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">v_family</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">v_family</span> <span class="o">=</span> <span class="n">h_family</span>
         <span class="k">if</span> <span class="n">v_degree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -216,6 +223,9 @@
         <span class="s1">&#39;Discontinuous Lagrange&#39;</span><span class="p">:</span> <span class="s1">&#39;dg&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Lagrange&#39;</span><span class="p">:</span> <span class="s1">&#39;cg&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Raviart-Thomas&#39;</span><span class="p">:</span> <span class="s1">&#39;hdiv&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;RTCF&#39;</span><span class="p">:</span> <span class="s1">&#39;hdiv&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Brezzi-Douglas-Marini&#39;</span><span class="p">:</span> <span class="s1">&#39;hdiv&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;BDMCF&#39;</span><span class="p">:</span> <span class="s1">&#39;hdiv&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Q&#39;</span><span class="p">:</span> <span class="s1">&#39;cg&#39;</span><span class="p">,</span>
         <span class="s1">&#39;DQ&#39;</span><span class="p">:</span> <span class="s1">&#39;dg&#39;</span><span class="p">,</span>
     <span class="p">}</span>
@@ -224,6 +234,8 @@
         <span class="n">elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">finiteelement</span><span class="o">.</span><span class="n">mixedelement</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">):</span>
         <span class="n">elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># take the elem of first component</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">finiteelement</span><span class="o">.</span><span class="n">enrichedelement</span><span class="o">.</span><span class="n">EnrichedElement</span><span class="p">):</span>
+        <span class="n">elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">_elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">finiteelement</span><span class="o">.</span><span class="n">tensorproductelement</span><span class="o">.</span><span class="n">TensorProductElement</span><span class="p">):</span>
         <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()</span>
         <span class="n">horiz_type</span> <span class="o">=</span> <span class="n">elem_types</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">family</span><span class="p">()]</span>
@@ -379,13 +391,15 @@
     <span class="k">return</span> <span class="n">val</span></div>
 
 
-<div class="viewcode-block" id="get_zcoord_from_mesh"><a class="viewcode-back" href="../../thetis.html#thetis.utility.get_zcoord_from_mesh">[docs]</a><span class="k">def</span> <span class="nf">get_zcoord_from_mesh</span><span class="p">(</span><span class="n">zcoord</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
+<div class="viewcode-block" id="get_zcoord_from_mesh"><a class="viewcode-back" href="../../thetis.html#thetis.utility.get_zcoord_from_mesh">[docs]</a><span class="k">def</span> <span class="nf">get_zcoord_from_mesh</span><span class="p">(</span><span class="n">zcoord</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluates z coordinates from the 3D mesh</span>
 
 <span class="sd">    :arg zcoord: scalar :class:`Function` where coordinates will be stored</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO coordinates should probably be interpolated instead</span>
+    <span class="k">if</span> <span class="n">solver_parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">solver_parameters</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_atol&#39;</span><span class="p">,</span> <span class="mf">1e-12</span><span class="p">)</span>
     <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_rtol&#39;</span><span class="p">,</span> <span class="mf">1e-16</span><span class="p">)</span>
     <span class="n">fs</span> <span class="o">=</span> <span class="n">zcoord</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
@@ -428,7 +442,7 @@
 <span class="sd">    condition.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span> <span class="n">boundary_funcs</span><span class="o">=</span><span class="p">{},</span>
-                 <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
+                 <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solution: w :class:`Function`</span>
 <span class="sd">        :arg uv: horizontal velocity :class:`Function`</span>
@@ -437,11 +451,15 @@
 <span class="sd">            equation. Provides external values of uv (if any).</span>
 <span class="sd">        :kwarg dict solver_parameters: PETSc solver options</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">solver_parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">solver_parameters</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">)</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_type&#39;</span><span class="p">,</span> <span class="s1">&#39;preonly&#39;</span><span class="p">)</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;pc_type&#39;</span><span class="p">,</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">)</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">,</span> <span class="s1">&#39;preonly&#39;</span><span class="p">)</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;sub_pc_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ilu&#39;</span><span class="p">)</span>
+        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;sub_pc_factor_shift_type&#39;</span><span class="p">,</span> <span class="s1">&#39;inblocks&#39;</span><span class="p">)</span>
+
         <span class="n">fs</span> <span class="o">=</span> <span class="n">solution</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
         <span class="n">mesh</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
         <span class="n">test</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
@@ -503,7 +521,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">bottom_to_top</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">bnd_value</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elevation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
+                 <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elevation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg input: 3D field to integrate</span>
 <span class="sd">        :arg output: 3D field where the integral is stored</span>
@@ -514,16 +532,21 @@
 <span class="sd">        :kwarg elevation: 3D field defining the free surface elevation</span>
 <span class="sd">        :kwarg dict solver_parameters: PETSc solver options</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">)</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_type&#39;</span><span class="p">,</span> <span class="s1">&#39;preonly&#39;</span><span class="p">)</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;pc_type&#39;</span><span class="p">,</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">)</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">,</span> <span class="s1">&#39;preonly&#39;</span><span class="p">)</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;sub_pc_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ilu&#39;</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
         <span class="n">space</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
         <span class="n">mesh</span> <span class="o">=</span> <span class="n">space</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
-        <span class="n">vertical_is_dg</span> <span class="o">=</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span><span class="o">.</span><span class="n">vertical</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;dg&#39;</span><span class="p">,</span> <span class="s1">&#39;hdiv&#39;</span><span class="p">]</span>
+        <span class="n">e_continuity</span> <span class="o">=</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span>
+        <span class="n">vertical_is_dg</span> <span class="o">=</span> <span class="n">e_continuity</span><span class="o">.</span><span class="n">vertical</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;dg&#39;</span><span class="p">,</span> <span class="s1">&#39;hdiv&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">solver_parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">solver_parameters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">e_continuity</span><span class="o">.</span><span class="n">vertical</span> <span class="o">!=</span> <span class="s1">&#39;hdiv&#39;</span><span class="p">:</span>
+            <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_type&#39;</span><span class="p">,</span> <span class="s1">&#39;preonly&#39;</span><span class="p">)</span>
+            <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;pc_type&#39;</span><span class="p">,</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">)</span>
+            <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">,</span> <span class="s1">&#39;preonly&#39;</span><span class="p">)</span>
+            <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;sub_pc_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ilu&#39;</span><span class="p">)</span>
+
         <span class="n">tri</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">space</span><span class="p">)</span>
         <span class="n">phi</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">space</span><span class="p">)</span>
         <span class="n">normal</span> <span class="o">=</span> <span class="n">FacetNormal</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
@@ -705,7 +728,7 @@
 <span class="sd">    Computes magnitude of (u[0],u[1],w) and stores it in solution</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_val</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
-                 <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
+                 <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solution: scalar field for velocity magnitude scalar :class:`Function`</span>
 <span class="sd">        :type solution: :class:`Function`</span>
@@ -927,10 +950,10 @@
             <span class="c1"># a normal tensorproduct element</span>
             <span class="n">family_3dh</span> <span class="o">=</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">family</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">family_2d</span> <span class="o">!=</span> <span class="n">family_3dh</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;2D and 3D spaces do not match: &quot;</span><span class="si">{0:s}</span><span class="s1">&quot; != &quot;</span><span class="si">{1:s}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family_2d</span><span class="p">,</span> <span class="n">family_3dh</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">family_2d</span> <span class="o">==</span> <span class="s1">&#39;Raviart-Thomas&#39;</span> <span class="ow">and</span> <span class="n">elem_height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;elem_height must be provided for Raviart-Thomas spaces&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">do_rt_scaling</span> <span class="o">=</span> <span class="n">family_2d</span> <span class="o">==</span> <span class="s1">&#39;Raviart-Thomas&#39;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;2D and 3D spaces do not match: </span><span class="si">{0:s}</span><span class="s1"> </span><span class="si">{1:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family_2d</span><span class="p">,</span> <span class="n">family_3dh</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_hdiv_scaling</span> <span class="o">=</span> <span class="n">family_2d</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Raviart-Thomas&#39;</span><span class="p">,</span> <span class="s1">&#39;RTCF&#39;</span><span class="p">,</span> <span class="s1">&#39;Brezzi-Douglas-Marini&#39;</span><span class="p">,</span> <span class="s1">&#39;BDMCF&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_hdiv_scaling</span> <span class="ow">and</span> <span class="n">elem_height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;elem_height must be provided for HDiv spaces&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">iter_domain</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">ALL</span>
 
@@ -954,7 +977,7 @@
                     <span class="s1">&#39;v_nodes&#39;</span><span class="p">:</span> <span class="n">n_vert_nodes</span><span class="p">},</span>
             <span class="s1">&#39;my_kernel&#39;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_rt_scaling</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_hdiv_scaling</span><span class="p">:</span>
             <span class="n">solver_parameters</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_atol&#39;</span><span class="p">,</span> <span class="mf">1e-12</span><span class="p">)</span>
             <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_rtol&#39;</span><span class="p">,</span> <span class="mf">1e-16</span><span class="p">)</span>
@@ -976,7 +999,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">),</span>
                 <span class="n">iterate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_domain</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_rt_scaling</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_hdiv_scaling</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">rt_scale_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
 
 
@@ -1054,9 +1077,9 @@
             <span class="n">family_3dh</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">family</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">family_2d</span> <span class="o">!=</span> <span class="n">family_3dh</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;2D and 3D spaces do not match: </span><span class="si">{0:s}</span><span class="s1"> </span><span class="si">{1:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family_2d</span><span class="p">,</span> <span class="n">family_3dh</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">family_2d</span> <span class="o">==</span> <span class="s1">&#39;Raviart-Thomas&#39;</span> <span class="ow">and</span> <span class="n">elem_height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;elem_height must be provided for Raviart-Thomas spaces&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">do_rt_scaling</span> <span class="o">=</span> <span class="n">family_2d</span> <span class="o">==</span> <span class="s1">&#39;Raviart-Thomas&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_hdiv_scaling</span> <span class="o">=</span> <span class="n">family_2d</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Raviart-Thomas&#39;</span><span class="p">,</span> <span class="s1">&#39;RTCF&#39;</span><span class="p">,</span> <span class="s1">&#39;Brezzi-Douglas-Marini&#39;</span><span class="p">,</span> <span class="s1">&#39;BDMCF&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_hdiv_scaling</span> <span class="ow">and</span> <span class="n">elem_height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;elem_height must be provided for HDiv spaces&#39;</span><span class="p">)</span>
 
         <span class="k">assert</span> <span class="n">elem_facet</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="s1">&#39;average&#39;</span><span class="p">],</span> <span class="s1">&#39;Unsupported elem_facet: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">elem_facet</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">elem_facet</span> <span class="o">==</span> <span class="s1">&#39;average&#39;</span><span class="p">:</span>
@@ -1105,7 +1128,7 @@
                         <span class="s1">&#39;func3d_dim&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_3d</span><span class="o">.</span><span class="n">value_size</span><span class="p">},</span>
                 <span class="s1">&#39;my_kernel&#39;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_rt_scaling</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_hdiv_scaling</span><span class="p">:</span>
             <span class="n">solver_parameters</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_atol&#39;</span><span class="p">,</span> <span class="mf">1e-12</span><span class="p">)</span>
             <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_rtol&#39;</span><span class="p">,</span> <span class="mf">1e-16</span><span class="p">)</span>
@@ -1126,7 +1149,7 @@
                          <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">),</span>
                          <span class="n">iterate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_domain</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_rt_scaling</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_hdiv_scaling</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">rt_scale_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
 
 
@@ -1286,6 +1309,25 @@
 <span class="s2">                  angle[0] = acos(numerator/denominator);</span>
 <span class="s2">                }&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;edges&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">edge_lengths</span><span class="p">,</span> <span class="n">READ</span><span class="p">),</span> <span class="s1">&#39;angle&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">min_angles</span><span class="p">,</span> <span class="n">RW</span><span class="p">)})</span>
     <span class="k">return</span> <span class="n">min_angles</span></div>
+
+
+<div class="viewcode-block" id="get_cell_widths_2d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.get_cell_widths_2d">[docs]</a><span class="k">def</span> <span class="nf">get_cell_widths_2d</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute widths of mesh elements in each coordinate direction as the maximum distance</span>
+<span class="sd">    between components of vertex coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">topological_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="k">assert</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">()</span> <span class="o">==</span> <span class="n">ufl</span><span class="o">.</span><span class="n">triangle</span>
+    <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Cell widths only currently implemented for triangles.&quot;</span><span class="p">)</span>
+    <span class="n">cell_widths</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
+    <span class="n">par_loop</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;for (int i=0; i&lt;coords.dofs; i++) {</span>
+<span class="s2">                  widths[0] = fmax(widths[0], fabs(coords[2*i] - coords[(2*i+2)%6]));</span>
+<span class="s2">                  widths[1] = fmax(widths[1], fabs(coords[2*i+1] - coords[(2*i+3)%6]));</span>
+<span class="s2">                }&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;coords&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">READ</span><span class="p">),</span> <span class="s1">&#39;widths&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">cell_widths</span><span class="p">,</span> <span class="n">RW</span><span class="p">)})</span>
+    <span class="k">assert</span> <span class="n">cell_widths</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">gather</span><span class="p">()</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mf">0.0</span>  <span class="c1"># TODO: TEMPORARY</span>
+    <span class="k">return</span> <span class="n">cell_widths</span></div>
 
 
 <div class="viewcode-block" id="get_sipg_ratio"><a class="viewcode-back" href="../../thetis.html#thetis.utility.get_sipg_ratio">[docs]</a><span class="k">def</span> <span class="nf">get_sipg_ratio</span><span class="p">(</span><span class="n">nu</span><span class="p">):</span>
@@ -1572,7 +1614,7 @@
 <span class="sd">    http://dx.doi.org/10.1175/1520-0493(2000)128%3C2935:BFWASL%3E2.0.CO;2</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">c_s</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="p">,</span> <span class="n">max_val</span><span class="p">,</span> <span class="n">min_val</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>
-                 <span class="n">weak_form</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
+                 <span class="n">weak_form</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg uv_3d: horizontal velocity</span>
 <span class="sd">        :type uv_3d: 3D vector :class:`Function`</span>
@@ -1590,6 +1632,8 @@
 <span class="sd">            Necessary for some function spaces (e.g. P0).</span>
 <span class="sd">        :kwarg dict solver_parameters: PETSc solver options</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">solver_parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">solver_parameters</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_atol&#39;</span><span class="p">,</span> <span class="mf">1e-12</span><span class="p">)</span>
         <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_rtol&#39;</span><span class="p">,</span> <span class="mf">1e-16</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">max_val</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span> <span class="o">==</span> <span class="n">output</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span> \
@@ -1951,6 +1995,7 @@
         <span class="k">return</span> <span class="n">total_h</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1959,7 +2004,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>

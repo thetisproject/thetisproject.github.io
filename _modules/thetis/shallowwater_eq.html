@@ -4,15 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>thetis.shallowwater_eq &#8212; Thetis 0+untagged.1565.gce988c6 documentation</title>
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>thetis.shallowwater_eq &#8212; Thetis 0+untagged.1636.g63e82af documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -274,6 +274,9 @@
         <span class="c1"># mesh dependent variables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cellsize</span> <span class="o">=</span> <span class="n">CellSize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
 
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">cell_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_the_sphere</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span>
+
         <span class="c1"># define measures with a reasonable quadrature degree</span>
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span>
@@ -501,24 +504,12 @@
         <span class="n">horiz_advection_by_parts</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">if</span> <span class="n">horiz_advection_by_parts</span><span class="p">:</span>
-            <span class="c1"># f = -inner(nabla_div(outer(uv, self.u_test)), uv)</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">Dx</span><span class="p">(</span><span class="n">uv_old</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">uv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                  <span class="o">+</span> <span class="n">Dx</span><span class="p">(</span><span class="n">uv_old</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">uv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                  <span class="o">+</span> <span class="n">Dx</span><span class="p">(</span><span class="n">uv_old</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">uv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                  <span class="o">+</span> <span class="n">Dx</span><span class="p">(</span><span class="n">uv_old</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">uv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="o">-</span><span class="n">inner</span><span class="p">(</span><span class="n">div</span><span class="p">(</span><span class="n">outer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">,</span> <span class="n">uv</span><span class="p">)),</span> <span class="n">uv</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_continuity</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;dg&#39;</span><span class="p">,</span> <span class="s1">&#39;hdiv&#39;</span><span class="p">]:</span>
                 <span class="n">un_av</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">avg</span><span class="p">(</span><span class="n">uv_old</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">))</span>
-                <span class="c1"># NOTE solver can stagnate</span>
-                <span class="c1"># s = 0.5*(sign(un_av) + 1.0)</span>
-                <span class="c1"># NOTE smooth sign change between [-0.02, 0.02], slow</span>
-                <span class="c1"># s = 0.5*tanh(100.0*un_av) + 0.5</span>
-                <span class="c1"># uv_up = uv(&#39;-&#39;)*s + uv(&#39;+&#39;)*(1-s)</span>
                 <span class="c1"># NOTE mean flux</span>
-                <span class="n">uv_up</span> <span class="o">=</span> <span class="n">avg</span><span class="p">(</span><span class="n">uv</span><span class="p">)</span>
-                <span class="n">f</span> <span class="o">+=</span> <span class="p">(</span><span class="n">uv_up</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">uv_old</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                      <span class="o">+</span> <span class="n">uv_up</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">uv_old</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                      <span class="o">+</span> <span class="n">uv_up</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">uv_old</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                      <span class="o">+</span> <span class="n">uv_up</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">uv_old</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS</span>
+                <span class="n">uv_avg</span> <span class="o">=</span> <span class="n">avg</span><span class="p">(</span><span class="n">uv</span><span class="p">)</span>
+                <span class="n">f</span> <span class="o">+=</span> <span class="n">inner</span><span class="p">(</span><span class="n">uv_avg</span><span class="p">,</span> <span class="n">jump</span><span class="p">(</span><span class="n">outer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">,</span> <span class="n">uv</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS</span>
                 <span class="c1"># Lax-Friedrichs stabilization</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_lax_friedrichs_velocity</span><span class="p">:</span>
                     <span class="n">uv_lax_friedrichs</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lax_friedrichs_velocity_scaling_factor&#39;</span><span class="p">)</span>
@@ -544,8 +535,7 @@
                     <span class="n">total_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">eta_old</span><span class="p">)</span>
                     <span class="n">un_rie</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="n">uv_old</span> <span class="o">+</span> <span class="n">uv_ext_old</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">)</span> <span class="o">+</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">g_grav</span><span class="o">/</span><span class="n">total_h</span><span class="p">)</span><span class="o">*</span><span class="n">eta_jump</span>
                     <span class="n">uv_av</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">uv_ext</span> <span class="o">+</span> <span class="n">uv</span><span class="p">)</span>
-                    <span class="n">f</span> <span class="o">+=</span> <span class="p">(</span><span class="n">uv_av</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">un_rie</span>
-                          <span class="o">+</span> <span class="n">uv_av</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">un_rie</span><span class="p">)</span><span class="o">*</span><span class="n">ds_bnd</span>
+                    <span class="n">f</span> <span class="o">+=</span> <span class="n">un_rie</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="n">uv_av</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">)</span><span class="o">*</span><span class="n">ds_bnd</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
 
 
@@ -564,8 +554,7 @@
 <span class="sd">        - \int_\Gamma \text{avg}(\nu_h)\big(\text{jump}(\bar{\textbf{u}} \textbf{n}) + \text{jump}(\bar{\textbf{u}} \textbf{n})^T\big) \cdot \text{avg}(\nabla \boldsymbol{\psi}) dS \\</span>
 <span class="sd">        &amp;+ \int_\Gamma \sigma \text{avg}(\nu_h) \big(\text{jump}(\bar{\textbf{u}} \textbf{n}) + \text{jump}(\bar{\textbf{u}} \textbf{n})^T\big) \cdot \text{jump}(\boldsymbol{\psi} \textbf{n}) dS</span>
 
-<span class="sd">    where :math:`\sigma` is a penalty parameter,</span>
-<span class="sd">    see Epshteyn and Riviere (2007).</span>
+<span class="sd">    where :math:`\sigma` is a penalty parameter, see Hillewaert (2013).</span>
 
 <span class="sd">    If option :attr:`.ModelOptions.use_grad_div_viscosity_term` is ``False``,</span>
 <span class="sd">    we use viscous stress :math:`\boldsymbol{\tau}_\nu = \nu_h \nabla \bar{\textbf{u}}`.</span>
@@ -586,19 +575,20 @@
 
 <span class="sd">    as a source term.</span>
 
-<span class="sd">    Epshteyn and Riviere (2007). Estimation of penalty parameters for symmetric</span>
-<span class="sd">    interior penalty Galerkin methods. Journal of Computational and Applied</span>
-<span class="sd">    Mathematics, 206(2):843-872. http://dx.doi.org/10.1016/j.cam.2006.08.029</span>
+<span class="sd">    Hillewaert, Koen (2013). Development of the discontinuous Galerkin method</span>
+<span class="sd">    for high-resolution, large scale CFD and acoustics in industrial</span>
+<span class="sd">    geometries. PhD Thesis. Université catholique de Louvain.</span>
+<span class="sd">    https://dial.uclouvain.be/pr/boreal/object/boreal:128254/</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="HorizontalViscosityTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.HorizontalViscosityTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">total_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">eta_old</span><span class="p">)</span>
 
         <span class="n">nu</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;viscosity_h&#39;</span><span class="p">)</span>
+        <span class="n">sipg_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_factor</span>
         <span class="k">if</span> <span class="n">nu</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
 
         <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span>
-        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellsize</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_grad_div_viscosity_term</span><span class="p">:</span>
             <span class="n">stress</span> <span class="o">=</span> <span class="n">nu</span><span class="o">*</span><span class="mf">2.</span><span class="o">*</span><span class="n">sym</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="n">uv</span><span class="p">))</span>
@@ -610,10 +600,17 @@
         <span class="n">f</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">),</span> <span class="n">stress</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_continuity</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;dg&#39;</span><span class="p">,</span> <span class="s1">&#39;hdiv&#39;</span><span class="p">]:</span>
-            <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_parameter</span>
-            <span class="k">assert</span> <span class="n">alpha</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">()</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
+            <span class="n">cp</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">cell</span> <span class="o">==</span> <span class="n">triangle</span> <span class="k">else</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+            <span class="n">l_normal</span> <span class="o">=</span> <span class="n">CellVolume</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span> <span class="o">/</span> <span class="n">FacetArea</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
+            <span class="c1"># by default the factor is multiplied by 2 to ensure convergence</span>
+            <span class="n">sigma</span> <span class="o">=</span> <span class="n">sipg_factor</span> <span class="o">*</span> <span class="n">cp</span> <span class="o">/</span> <span class="n">l_normal</span>
+            <span class="n">sp</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)</span>
+            <span class="n">sm</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+            <span class="n">sigma_max</span> <span class="o">=</span> <span class="n">conditional</span><span class="p">(</span><span class="n">sp</span> <span class="o">&gt;</span> <span class="n">sm</span><span class="p">,</span> <span class="n">sp</span><span class="p">,</span> <span class="n">sm</span><span class="p">)</span>
             <span class="n">f</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="o">+</span> <span class="n">avg</span><span class="p">(</span><span class="n">alpha</span><span class="o">/</span><span class="n">h</span><span class="p">)</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="n">tensor_jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">stress_jump</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS</span>
+                <span class="o">+</span> <span class="n">sigma_max</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="n">tensor_jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">stress_jump</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS</span>
                 <span class="o">-</span> <span class="n">inner</span><span class="p">(</span><span class="n">avg</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">)),</span> <span class="n">stress_jump</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS</span>
                 <span class="o">-</span> <span class="n">inner</span><span class="p">(</span><span class="n">tensor_jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">avg</span><span class="p">(</span><span class="n">stress</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS</span>
             <span class="p">)</span>
@@ -637,7 +634,7 @@
                         <span class="n">stress_jump</span> <span class="o">=</span> <span class="n">nu</span><span class="o">*</span><span class="n">outer</span><span class="p">(</span><span class="n">delta_uv</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 
                     <span class="n">f</span> <span class="o">+=</span> <span class="p">(</span>
-                        <span class="n">alpha</span><span class="o">/</span><span class="n">h</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="n">outer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">stress_jump</span><span class="p">)</span><span class="o">*</span><span class="n">ds_bnd</span>
+                        <span class="n">sigma</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="n">outer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">stress_jump</span><span class="p">)</span><span class="o">*</span><span class="n">ds_bnd</span>
                         <span class="o">-</span> <span class="n">inner</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">),</span> <span class="n">stress_jump</span><span class="p">)</span><span class="o">*</span><span class="n">ds_bnd</span>
                         <span class="o">-</span> <span class="n">inner</span><span class="p">(</span><span class="n">outer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">stress</span><span class="p">)</span><span class="o">*</span><span class="n">ds_bnd</span>
                     <span class="p">)</span>
@@ -656,7 +653,13 @@
         <span class="n">coriolis</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;coriolis&#39;</span><span class="p">)</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">coriolis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">+=</span> <span class="n">coriolis</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">uv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">uv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_the_sphere</span><span class="p">:</span>
+                <span class="n">outward_normals</span> <span class="o">=</span> <span class="n">CellNormal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">cross</span><span class="p">(</span><span class="n">outward_normals</span><span class="p">,</span> <span class="n">uv</span><span class="p">)</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">coriolis</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ez_x_uv</span> <span class="o">=</span> <span class="o">-</span><span class="n">uv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">uv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">f</span> <span class="o">+=</span> <span class="n">coriolis</span><span class="o">*</span><span class="n">ez_x_uv</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
 
 
@@ -705,12 +708,22 @@
 <div class="viewcode-block" id="QuadraticDragTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.shallowwater_eq.QuadraticDragTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">total_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">eta_old</span><span class="p">)</span>
         <span class="n">manning_drag_coefficient</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;manning_drag_coefficient&#39;</span><span class="p">)</span>
+        <span class="n">nikuradse_bed_roughness</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;nikuradse_bed_roughness&#39;</span><span class="p">)</span>
         <span class="n">C_D</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;quadratic_drag_coefficient&#39;</span><span class="p">)</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">manning_drag_coefficient</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">C_D</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot set both dimensionless and Manning drag parameter&#39;</span><span class="p">)</span>
             <span class="n">C_D</span> <span class="o">=</span> <span class="n">g_grav</span> <span class="o">*</span> <span class="n">manning_drag_coefficient</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">total_h</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">nikuradse_bed_roughness</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">manning_drag_coefficient</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot set both Nikuradse drag and Manning drag parameter&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">C_D</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot set both dimensionless and Nikuradse drag parameter&#39;</span><span class="p">)</span>
+
+            <span class="n">kappa</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;von_karman&#39;</span><span class="p">]</span>
+            <span class="n">C_D</span> <span class="o">=</span> <span class="n">conditional</span><span class="p">(</span><span class="n">total_h</span> <span class="o">&gt;</span> <span class="n">nikuradse_bed_roughness</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">kappa</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">ln</span><span class="p">(</span><span class="mf">11.036</span><span class="o">*</span><span class="n">total_h</span><span class="o">/</span><span class="n">nikuradse_bed_roughness</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">C_D</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">f</span> <span class="o">+=</span> <span class="n">C_D</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">uv_old</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">norm_smoother</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_test</span><span class="p">,</span> <span class="n">uv</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_h</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
@@ -1008,6 +1021,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">residual_uv_eta</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">uv_old</span><span class="p">,</span> <span class="n">eta_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1016,7 +1030,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>

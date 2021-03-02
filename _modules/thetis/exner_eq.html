@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>thetis.exner_eq &#8212; Thetis 0+untagged.1636.g63e82af documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="../../_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="../../_static/icon_thetis.ico" />
+
+
+  </head><body>
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetis/branches" title="Thetis build status">Jenkins</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/thetis/exner_eq">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for thetis.exner_eq</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Exner equation</span>
+
+<span class="sd">2D conservation of mass equation describing bed evolution due to sediment transport</span>
+
+<span class="sd">The equation reads</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    \frac{\partial z_b}{\partial t} + (m/(1-p)) \nabla_h \cdot \textbf{Q_b}</span>
+<span class="sd">    = (m/(1-p)) H ((F_{sink} S) - F_{source})</span>
+<span class="sd">    :label: exner_eq</span>
+
+<span class="sd">where :math:`z_b` is the bedlevel, :math:`S` is :math:`HT` for conservative (where H is depth</span>
+<span class="sd">and T is the sediment field) and :math:`T` for non-conservative (where T is the sediment field),</span>
+<span class="sd">:math:`\nabla_h` denotes horizontal gradient, :math:`m` is the morphological scale factor,</span>
+<span class="sd">:math:`p` is the porosity and :math:`\textbf{Q_b}` is the bedload transport vector</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">.equation</span> <span class="kn">import</span> <span class="n">Term</span><span class="p">,</span> <span class="n">Equation</span>
+<span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;ExnerEquation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ExnerTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ExnerSourceTerm&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ExnerBedloadTerm&#39;</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="ExnerTerm"><a class="viewcode-back" href="../../thetis.html#thetis.exner_eq.ExnerTerm">[docs]</a><span class="k">class</span> <span class="nc">ExnerTerm</span><span class="p">(</span><span class="n">Term</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic term in the Exner equations that provides commonly used members</span>
+<span class="sd">    There are no boundary conditions for the Exner equation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">sediment_model</span><span class="p">,</span> <span class="n">depth_integrated_sediment</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
+<span class="sd">        :arg depth: :class:`DepthExpression` containing depth info</span>
+<span class="sd">        :arg sediment_model: :class:`SedimentModel` containing sediment info</span>
+<span class="sd">        :kwarg bool depth_integrated_sediment: whether the sediment field is depth-integrated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ExnerTerm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">FacetNormal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span> <span class="o">=</span> <span class="n">sediment_model</span>
+
+        <span class="c1"># define measures with a reasonable quadrature degree</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">=</span> <span class="n">dx</span><span class="p">(</span><span class="n">degree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dS</span> <span class="o">=</span> <span class="n">dS</span><span class="p">(</span><span class="n">degree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="p">(</span><span class="n">degree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depth_integrated_sediment</span> <span class="o">=</span> <span class="n">depth_integrated_sediment</span></div>
+
+
+<div class="viewcode-block" id="ExnerSourceTerm"><a class="viewcode-back" href="../../thetis.html#thetis.exner_eq.ExnerSourceTerm">[docs]</a><span class="k">class</span> <span class="nc">ExnerSourceTerm</span><span class="p">(</span><span class="n">ExnerTerm</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Source term accounting for suspended sediment transport</span>
+
+<span class="sd">    The weak form reads</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        F_s = \int_\Omega (\sigma - sediment * \phi) * depth \psi dx</span>
+
+<span class="sd">    where :math:`\sigma` is a user defined source scalar field :class:`Function`</span>
+<span class="sd">    and :math:`\phi` is a user defined source scalar field :class:`Function`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ExnerSourceTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.exner_eq.ExnerSourceTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">sediment</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sediment&#39;</span><span class="p">)</span>
+        <span class="n">morfac</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;morfac&#39;</span><span class="p">)</span>
+        <span class="n">porosity</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;porosity&#39;</span><span class="p">)</span>
+
+        <span class="n">fac</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">morfac</span><span class="o">/</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">porosity</span><span class="p">))</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;elev_2d&#39;</span><span class="p">])</span>
+
+        <span class="n">erosion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span><span class="o">.</span><span class="n">get_erosion_term</span><span class="p">()</span>
+        <span class="n">deposition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span><span class="o">.</span><span class="n">get_deposition_coefficient</span><span class="p">()</span> <span class="o">*</span> <span class="n">sediment</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth_integrated_sediment</span><span class="p">:</span>
+            <span class="n">deposition</span> <span class="o">=</span> <span class="n">deposition</span><span class="o">/</span><span class="n">H</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">*</span><span class="n">fac</span><span class="o">*</span><span class="p">(</span><span class="n">erosion</span> <span class="o">-</span> <span class="n">deposition</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
+
+        <span class="k">return</span> <span class="n">f</span></div></div>
+
+
+<div class="viewcode-block" id="ExnerBedloadTerm"><a class="viewcode-back" href="../../thetis.html#thetis.exner_eq.ExnerBedloadTerm">[docs]</a><span class="k">class</span> <span class="nc">ExnerBedloadTerm</span><span class="p">(</span><span class="n">ExnerTerm</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Bedload transport term, \nabla_h \cdot \textbf{Q_b}</span>
+
+<span class="sd">    The weak form is</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_\Omega  \nabla_h \cdot \textbf{Q_b} \psi  dx</span>
+<span class="sd">        = - \int_\Omega (\textbf{Q_b} \cdot \nabla) \psi dx</span>
+<span class="sd">        + \int_\Gamma \psi \textbf{Q_b} \cdot \textbf{n} dS</span>
+
+<span class="sd">    where :math:`\textbf{n}` is the unit normal of the element interfaces.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ExnerBedloadTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.exner_eq.ExnerBedloadTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">qbx</span><span class="p">,</span> <span class="n">qby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span><span class="o">.</span><span class="n">get_bedload_term</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
+
+        <span class="n">morfac</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;morfac&#39;</span><span class="p">)</span>
+        <span class="n">porosity</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;porosity&#39;</span><span class="p">)</span>
+
+        <span class="n">fac</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">morfac</span><span class="o">/</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">porosity</span><span class="p">))</span>
+
+        <span class="c1"># bnd_conditions are the shallow water bcs, any boundary for which</span>
+        <span class="c1"># nothing is specified is assumed closed</span>
+        <span class="k">for</span> <span class="n">bnd_marker</span> <span class="ow">in</span> <span class="p">(</span><span class="n">bnd_conditions</span> <span class="ow">or</span> <span class="p">[]):</span>
+            <span class="n">f</span> <span class="o">+=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">*</span><span class="p">(</span><span class="n">fac</span><span class="o">*</span><span class="n">qbx</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">fac</span><span class="o">*</span><span class="n">qby</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">(</span><span class="n">bnd_marker</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">+=</span> <span class="p">(</span><span class="n">fac</span><span class="o">*</span><span class="n">qbx</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">dx</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">fac</span><span class="o">*</span><span class="n">qby</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">dx</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
+
+        <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
+
+
+<div class="viewcode-block" id="ExnerEquation"><a class="viewcode-back" href="../../thetis.html#thetis.exner_eq.ExnerEquation">[docs]</a><span class="k">class</span> <span class="nc">ExnerEquation</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exner equation</span>
+
+<span class="sd">    2D conservation of mass equation describing bed evolution due to sediment transport</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">sediment_model</span><span class="p">,</span> <span class="n">depth_integrated_sediment</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
+<span class="sd">        :arg depth: :class: `DepthExpression` containing depth info</span>
+<span class="sd">        :arg sediment_model: :class: `SedimentModel` containing sediment info</span>
+<span class="sd">        :kwarg bool depth_integrated_sediment: whether to use conservative tracer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sediment_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;To use the exner equation must define a sediment model&#39;</span><span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">sediment_model</span><span class="p">,</span> <span class="n">depth_integrated_sediment</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sediment_model</span><span class="o">.</span><span class="n">solve_suspended_sediment</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">ExnerSourceTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sediment_model</span><span class="o">.</span><span class="n">use_bedload</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">ExnerBedloadTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;implicit&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2020, Tuomas Karna et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+    </div>
+  </body>
+</html>

@@ -4,15 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>thetis.callback &#8212; Thetis 0+untagged.1565.gce988c6 documentation</title>
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>thetis.callback &#8212; Thetis 0+untagged.1636.g63e82af documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -405,15 +405,33 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">tracer_name</span> <span class="o">+</span> <span class="s1">&#39; mass&#39;</span>  <span class="c1"># override name for given tracer</span>
 
-        <span class="k">if</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_tracer_conservative_form</span><span class="p">:</span>
-            <span class="k">def</span> <span class="nf">mass</span><span class="p">():</span>
-                <span class="c1"># tracer is depth-integrated already, so just integrate over domain</span>
-                <span class="k">return</span> <span class="n">assemble</span><span class="p">(</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">tracer_name</span><span class="p">]</span><span class="o">*</span><span class="n">dx</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">def</span> <span class="nf">mass</span><span class="p">():</span>
-                <span class="n">H</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_2d</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">comp_tracer_mass_2d</span><span class="p">(</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">tracer_name</span><span class="p">],</span> <span class="n">H</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">mass</span><span class="p">():</span>
+            <span class="n">H</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">get_total_depth</span><span class="p">(</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_2d</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">comp_tracer_mass_2d</span><span class="p">(</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">tracer_name</span><span class="p">],</span> <span class="n">H</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TracerMassConservation2DCallback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConservativeTracerMassConservation2DCallback"><a class="viewcode-back" href="../../thetis.html#thetis.callback.ConservativeTracerMassConservation2DCallback">[docs]</a><span class="k">class</span> <span class="nc">ConservativeTracerMassConservation2DCallback</span><span class="p">(</span><span class="n">ScalarConservationCallback</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks conservation of conservative tracer mass which is depth integrated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;tracer mass&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tracer_name</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg tracer_name: Name of the tracer. Use canonical field names as in</span>
+<span class="sd">            :class:`.FieldDict`.</span>
+<span class="sd">        :arg solver_obj: Thetis solver object</span>
+<span class="sd">        :arg kwargs: any additional keyword arguments, see</span>
+<span class="sd">            :class:`.DiagnosticCallback`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">tracer_name</span> <span class="o">+</span> <span class="s1">&#39; mass&#39;</span>  <span class="c1"># override name for given tracer</span>
+
+        <span class="k">def</span> <span class="nf">mass</span><span class="p">():</span>
+            <span class="c1"># tracer is depth-integrated already, so just integrate over domain</span>
+            <span class="k">return</span> <span class="n">assemble</span><span class="p">(</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">tracer_name</span><span class="p">]</span><span class="o">*</span><span class="n">dx</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">ConservativeTracerMassConservation2DCallback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TracerMassConservationCallback"><a class="viewcode-back" href="../../thetis.html#thetis.callback.TracerMassConservationCallback">[docs]</a><span class="k">class</span> <span class="nc">TracerMassConservationCallback</span><span class="p">(</span><span class="n">ScalarConservationCallback</span><span class="p">):</span>
@@ -901,6 +919,7 @@
         <span class="k">return</span> <span class="n">out</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -909,7 +928,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>

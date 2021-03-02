@@ -4,15 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>thetis.timeintegrator &#8212; Thetis 0+untagged.1565.gce988c6 documentation</title>
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>thetis.timeintegrator &#8212; Thetis 0+untagged.1636.g63e82af documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -99,7 +99,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for all time integrator objects that march a single equation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -121,7 +121,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
                               <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">solver_parameters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">solver_parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">solver_parameters</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TimeIntegrator.set_dt"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.TimeIntegrator.set_dt">[docs]</a>    <span class="k">def</span> <span class="nf">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Update time step&quot;&quot;&quot;</span>
@@ -133,7 +134,7 @@
     <span class="sd">&quot;&quot;&quot;Standard forward Euler time integration scheme.&quot;&quot;&quot;</span>
     <span class="n">cfl_coeff</span> <span class="o">=</span> <span class="mf">1.0</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -193,7 +194,7 @@
     <span class="sd">&quot;&quot;&quot;Standard Crank-Nicolson time integration scheme.&quot;&quot;&quot;</span>
     <span class="n">cfl_coeff</span> <span class="o">=</span> <span class="n">CFL_UNCONDITIONALLY_STABLE</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">semi_implicit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">semi_implicit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -280,7 +281,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cfl_coeff</span> <span class="o">=</span> <span class="n">CFL_UNCONDITIONALLY_STABLE</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -328,8 +329,8 @@
 
     <span class="c1"># TODO add more documentation</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">equation_mom</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
-                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span>
-                 <span class="n">solver_parameters_mom</span><span class="o">=</span><span class="p">{},</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">semi_implicit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">solver_parameters_mom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">semi_implicit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: free surface equation</span>
@@ -350,7 +351,9 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">PressureProjectionPicard</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">equation_mom</span> <span class="o">=</span> <span class="n">equation_mom</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters_mom</span> <span class="o">=</span> <span class="n">solver_parameters_mom</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters_mom</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">solver_parameters_mom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters_mom</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">solver_parameters_mom</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">semi_implicit</span><span class="p">:</span>
             <span class="c1"># solve a preliminary linearized momentum equation before</span>
             <span class="c1"># solving the linearized wave equation terms in a coupled system</span>
@@ -503,7 +506,7 @@
     <span class="n">cfl_coeff</span> <span class="o">=</span> <span class="mf">1.5874</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+                 <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -638,7 +641,7 @@
     <span class="n">cfl_coeff</span> <span class="o">=</span> <span class="mf">1.0</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+                 <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -777,6 +780,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">solve_stage</span><span class="p">(</span><span class="n">i_stage</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -785,7 +789,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>
