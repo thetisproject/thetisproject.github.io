@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>2D model options &#8212; Thetis 0+untagged.1636.g63e82af documentation</title>
+    <title>2D model options &#8212; Thetis 0+untagged.1652.g469c17b.dirty documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -78,9 +78,9 @@ Prints deviation from the initial volume to stdout.</p>
 <p>Default:</p>
 <p>UFL scalar expression</p>
 </dd>
-<dt>CommonModelOptions.<strong>element_family</strong><span class="classifier">‘dg-dg’|’rt-dg’|’dg-cg’</span></dt><dd><p>Finite element family</p>
-<p>2D solver supports ‘dg-dg’, ‘rt-dg’, or ‘dg-cg’ velocity-pressure pairs.
-3D solver supports ‘dg-dg’, or ‘rt-dg’ velocity-pressure pairs.</p>
+<dt>CommonModelOptions.<strong>element_family</strong><span class="classifier">‘dg-dg’|’rt-dg’|’bdm-dg’|’dg-cg’</span></dt><dd><p>Finite element family</p>
+<p>2D solver supports ‘dg-dg’, ‘rt-dg’, ‘bdm-dg’, or ‘dg-cg’ velocity-pressure pairs.
+3D solver supports ‘dg-dg’, ‘rt-dg’, or ‘bdm-dg’ velocity-pressure pairs.</p>
 <p>Default:</p>
 <p>‘dg-dg’</p>
 </dd>
@@ -96,7 +96,7 @@ Prints deviation from the initial volume to stdout.</p>
 <p>Default:</p>
 <p>[]</p>
 </dd>
-<dt>CommonModelOptions.<strong>horizontal_diffusivity</strong><span class="classifier">FiredrakeCoefficient</span></dt><dd><p>Horizontal diffusivity for tracers</p>
+<dt>CommonModelOptions.<strong>horizontal_diffusivity</strong><span class="classifier">FiredrakeCoefficient</span></dt><dd><p>Horizontal diffusivity for tracers and sediment</p>
 <p>Default:</p>
 <p>Function</p>
 </dd>
@@ -140,11 +140,22 @@ Prints deviation from the initial volume to stdout.</p>
 <p>Default:</p>
 <p>UFL vector expression</p>
 </dd>
+<dt>CommonModelOptions.<strong>nikuradse_bed_roughness</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Nikuradse bed roughness length used to construct the 2D quadratic drag parameter <span class="math notranslate nohighlight">\(C_D\)</span>.</p>
+<p>In sediment transport this term is usually three times the average sediment diameter size.</p>
+<p>Default:</p>
+<p>UFL scalar expression</p>
+</dd>
 <dt>CommonModelOptions.<strong>no_exports</strong><span class="classifier">Bool</span></dt><dd><p>Do not store any outputs to disk</p>
 <p>Disables VTK and HDF5 field outputs. and HDF5 diagnostic outputs.
 Used in CI test suite.</p>
 <p>Default:</p>
 <p>False</p>
+</dd>
+<dt>CommonModelOptions.<strong>norm_smoother</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Coefficient used to avoid non-differentiable functions in the continuous formulation of the velocity norm in
+the quadratic bottom drag term in the momentum equation. This replaces the velocity norm in the quadratic
+bottom drag term with <span class="math notranslate nohighlight">\(\|u\| \approx \sqrt{\|u\|^2 + \alpha^2}\)</span></p>
+<p>Default:</p>
+<p>Constant(0.0)</p>
 </dd>
 <dt>CommonModelOptions.<strong>output_directory</strong><span class="classifier">Unicode</span></dt><dd><p>Directory where model output files are stored</p>
 <p>Default:</p>
@@ -168,6 +179,14 @@ Used in CI test suite.</p>
 diagnostics will be computed</p>
 <p>Default:</p>
 <p>100.0</p>
+</dd>
+<dt>CommonModelOptions.<strong>sipg_factor</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Penalty parameter scaling factor for horizontal viscosity terms.</p>
+<p>Default:</p>
+<p>Constant(1.0)</p>
+</dd>
+<dt>CommonModelOptions.<strong>sipg_factor_tracer</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Penalty parameter scaling factor for horizontal diffusivity terms.</p>
+<p>Default:</p>
+<p>Constant(1.0)</p>
 </dd>
 <dt>CommonModelOptions.<strong>timestep</strong><span class="classifier">PositiveFloat</span></dt><dd><p>Time step</p>
 <p>Default:</p>
@@ -225,6 +244,10 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p>False</p>
 </dd>
+<dt>ModelOptions2d.<strong>sediment_model_options</strong><span class="classifier">Instance</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>&lt;thetis.options.SedimentModelOptions object at 0x7f33a5bd8490&gt;</p>
+</dd>
 <dt>ModelOptions2d.<strong>solve_tracer</strong><span class="classifier">Bool</span></dt><dd><p>Solve tracer transport</p>
 <p>Default:</p>
 <p>False</p>
@@ -240,6 +263,10 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p>{‘snes_type’: ‘ksponly’, ‘ksp_type’: ‘cg’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’, ‘mat_type’: ‘aij’}</p>
 </dd>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_tracer</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
 </dl>
 </div></blockquote>
 <p>‘ForwardEuler’:</p>
@@ -248,6 +275,10 @@ diagnostics will be computed</p>
 <dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘snes_type’: ‘ksponly’, ‘ksp_type’: ‘cg’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’, ‘mat_type’: ‘aij’}</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_tracer</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -258,9 +289,21 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’}</p>
 </dd>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_exner</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_sediment</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
 <dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_tracer</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>use_semi_implicit_linearization</strong><span class="classifier">Bool</span></dt><dd><p>Use linearized semi-implicit time integration</p>
+<p>Default:</p>
+<p>False</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -271,10 +314,6 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p>0.5</p>
 </dd>
-<dt>ModelOptions2d.timestepper_options.<strong>use_semi_implicit_linearization</strong><span class="classifier">Bool</span></dt><dd><p>Use linearized semi-implicit time integration</p>
-<p>Default:</p>
-<p>False</p>
-</dd>
 </dl>
 </div></blockquote>
 <p>‘DIRK22’:</p>
@@ -284,9 +323,21 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’}</p>
 </dd>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_exner</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_sediment</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
 <dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_tracer</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>use_semi_implicit_linearization</strong><span class="classifier">Bool</span></dt><dd><p>Use linearized semi-implicit time integration</p>
+<p>Default:</p>
+<p>False</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -297,9 +348,21 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’}</p>
 </dd>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_exner</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_sediment</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
 <dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_tracer</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>use_semi_implicit_linearization</strong><span class="classifier">Bool</span></dt><dd><p>Use linearized semi-implicit time integration</p>
+<p>Default:</p>
+<p>False</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -307,6 +370,10 @@ diagnostics will be computed</p>
 <blockquote>
 <div><dl>
 <dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘preonly’, ‘pc_type’: ‘lu’, ‘mat_type’: ‘aij’}</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_tracer</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘preonly’, ‘pc_type’: ‘lu’, ‘mat_type’: ‘aij’}</p>
 </dd>
@@ -321,11 +388,11 @@ diagnostics will be computed</p>
 </dd>
 <dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_momentum</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
-<p>{‘ksp_type’: ‘gmres’, ‘ksp_converged_reason’: False, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘sor’}</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘sor’}</p>
 </dd>
 <dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_pressure</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
-<p>{‘ksp_type’: ‘preonly’, ‘mat_type’: ‘matfree’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘schur’, ‘pc_fieldsplit_schur_fact_type’: ‘full’, ‘fieldsplit_U_2d’: {‘ksp_type’: ‘gmres’, ‘pc_type’: ‘python’, ‘pc_python_type’: ‘firedrake.AssembledPC’, ‘assembled_ksp_type’: ‘preonly’, ‘assembled_pc_type’: ‘bjacobi’, ‘assembled_sub_pc_type’: ‘ilu’}, ‘fieldsplit_H_2d’: {‘ksp_type’: ‘preonly’, ‘pc_type’: ‘python’, ‘pc_python_type’: ‘thetis.AssembledSchurPC’, ‘schur_ksp_type’: ‘gmres’, ‘schur_ksp_max_it’: 100, ‘schur_ksp_converged_reason’: False, ‘schur_pc_type’: ‘gamg’}}</p>
+<p>{‘ksp_type’: ‘preonly’, ‘mat_type’: ‘matfree’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘schur’, ‘pc_fieldsplit_schur_fact_type’: ‘full’, ‘fieldsplit_U_2d’: {‘ksp_type’: ‘gmres’, ‘pc_type’: ‘python’, ‘pc_python_type’: ‘firedrake.AssembledPC’, ‘assembled_ksp_type’: ‘preonly’, ‘assembled_pc_type’: ‘bjacobi’, ‘assembled_sub_pc_type’: ‘ilu’}, ‘fieldsplit_H_2d’: {‘ksp_type’: ‘preonly’, ‘pc_type’: ‘python’, ‘pc_python_type’: ‘thetis.AssembledSchurPC’, ‘schur_ksp_type’: ‘gmres’, ‘schur_ksp_max_it’: 100, ‘schur_pc_type’: ‘gamg’}}</p>
 </dd>
 <dt>ModelOptions2d.timestepper_options.<strong>use_semi_implicit_linearization</strong><span class="classifier">Bool</span></dt><dd><p>Use linearized semi-implicit time integration</p>
 <p>Default:</p>
@@ -340,15 +407,44 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’}</p>
 </dd>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_exner</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_sediment</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
 <dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_tracer</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
 </dd>
+<dt>ModelOptions2d.timestepper_options.<strong>use_semi_implicit_linearization</strong><span class="classifier">Bool</span></dt><dd><p>Use linearized semi-implicit time integration</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
 </dl>
 </div></blockquote>
 </dd>
+<dt>ModelOptions2d.<strong>tracer_advective_velocity_factor</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Custom factor multiplied to the velocity variable in tracer advection equation.</p>
+<p>Used to account for mismatch between depth-averaged product of velocity with tracer
+and product of depth-averaged velocity with depth-averaged tracer</p>
+<p>Default:</p>
+<p>Constant(1.0)</p>
+</dd>
 <dt>ModelOptions2d.<strong>tracer_only</strong><span class="classifier">Bool</span></dt><dd><p>Hold shallow water variables in initial state</p>
 <p>Advects tracer in the associated (constant) velocity field.</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>ModelOptions2d.<strong>use_automatic_wetting_and_drying_alpha</strong><span class="classifier">Bool</span></dt><dd><p>Toggle automatic computation of the alpha parameter used in wetting and drying schemes.</p>
+<p>By default, this parameter is set to 0.5.</p>
+<p>For problems whose bathymetry varies wildly in coastal regions, it is advisable to use the
+automatic wetting and drying parameter, rather than the default.</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>ModelOptions2d.<strong>use_tracer_conservative_form</strong><span class="classifier">Bool</span></dt><dd><p>Solve 2D tracer transport in the conservative form</p>
 <p>Default:</p>
 <p>False</p>
 </dd>
@@ -358,10 +454,20 @@ If <code class="docutils literal notranslate"><span class="pre">True</span></cod
 <p>Default:</p>
 <p>False</p>
 </dd>
-<dt>ModelOptions2d.<strong>wetting_and_drying_alpha</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Coefficient: Wetting and drying parameter <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
+<dt>ModelOptions2d.<strong>wetting_and_drying_alpha</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Coefficient: Wetting and drying parameter <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
 <p>Used in bathymetry displacement function that ensures positive water depths. Unit is meters.</p>
 <p>Default:</p>
 <p>Constant(0.5)</p>
+</dd>
+<dt>ModelOptions2d.<strong>wetting_and_drying_alpha_max</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Maximum value to be taken by wetting and drying parameter <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
+<p>Note this is only relevant if <cite>use_automatic_wetting_and_drying_alpha</cite> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>Default:</p>
+<p>Constant(2.0)</p>
+</dd>
+<dt>ModelOptions2d.<strong>wetting_and_drying_alpha_min</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Minimum value to be taken by wetting and drying parameter <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
+<p>Note this is only relevant if <cite>use_automatic_wetting_and_drying_alpha</cite> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>Default:</p>
+<p>UFL scalar expression</p>
 </dd>
 </dl>
 </div>
@@ -376,7 +482,7 @@ If <code class="docutils literal notranslate"><span class="pre">True</span></cod
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
     </div>
   </body>
 </html>
