@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2D tracer formulation &#8212; Thetis 0+untagged.1662.ge27ddd4 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="_static/icon_thetis.ico" />
+
+
+  </head><body>
+<div class="wrapper">
+  <a href="index.html"><img src="_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetis/branches" title="Thetis build status">Jenkins</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="tracer_formulation_2d">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="d-tracer-formulation">
+<h1>2D tracer formulation<a class="headerlink" href="#d-tracer-formulation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="governing-equation">
+<h2>Governing equation<a class="headerlink" href="#governing-equation" title="Permalink to this headline">¶</a></h2>
+<p>The two dimensional tracer model solves an advection-diffusion
+equation
+<a class="reference internal" href="thetis.html#equation-tracer-eq-2d">(17)</a>.
+If solved in non-conservative form, the prognostic variable
+is the passive tracer concentration,
+<span class="math notranslate nohighlight">\(T\)</span>. The corresponding field in Thetis is called
+<code class="docutils literal notranslate"><span class="pre">'tracer_2d'</span></code>.</p>
+<p>A conservative tracer model is also available, given by
+<a class="reference internal" href="thetis.html#equation-cons-tracer-eq-2d">(1)</a>.
+In this case, the equation is solved for <span class="math notranslate nohighlight">\(q=HT\)</span>, where
+<span class="math notranslate nohighlight">\(H\)</span> is the total water depth.
+The conservative tracer model is specified using the
+<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.use_tracer_conservative_form" title="thetis.options.ModelOptions2d.use_tracer_conservative_form"><code class="xref py py-attr docutils literal notranslate"><span class="pre">use_tracer_conservative_form</span></code></a>
+option.</p>
+<p>To activate the 2D tracer model, set the
+<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.solve_tracer" title="thetis.options.ModelOptions2d.solve_tracer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">solve_tracer</span></code></a>
+option to
+<code class="docutils literal notranslate"><span class="pre">True</span></code>. The tracer model may also be run independently
+by setting the
+<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.tracer_only" title="thetis.options.ModelOptions2d.tracer_only"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tracer_only</span></code></a>
+option to
+<code class="docutils literal notranslate"><span class="pre">True</span></code>. The hydrodynamics will be defined by any initial
+conditions specified for the horizontal velocity, or any updates
+imposed by the user.</p>
+</div>
+<div class="section" id="spatial-discretization">
+<h2>Spatial discretization<a class="headerlink" href="#spatial-discretization" title="Permalink to this headline">¶</a></h2>
+<p>Thetis’ 2D model formulation currently only supports tracers in
+P1DG space.</p>
+<p>Lax-Friedrichs stabilization is used by default and may be
+controlled using the
+<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.use_lax_friedrichs_tracer" title="thetis.options.CommonModelOptions.use_lax_friedrichs_tracer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">use_lax_friedrichs_tracer</span></code></a>
+option. The scaling parameter used by this scheme may be controlled
+using the
+<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.lax_friedrichs_tracer_scaling_factor" title="thetis.options.CommonModelOptions.lax_friedrichs_tracer_scaling_factor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">lax_friedrichs_tracer_scaling_factor</span></code></a>
+option.</p>
+</div>
+<div class="section" id="temporal-discretization">
+<h2>Temporal discretization<a class="headerlink" href="#temporal-discretization" title="Permalink to this headline">¶</a></h2>
+<p>Thetis supports different time integration methods, set by the
+<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.timestepper_type" title="thetis.options.ModelOptions2d.timestepper_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">timestepper_type</span></code></a> option.
+Note that the same time integration method will be used for both the shallow
+water equations and the 2D tracer model.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 31%" />
+<col style="width: 18%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Time integrator</p></th>
+<th class="head"><p>Thetis class</p></th>
+<th class="head"><p>Unconditionally stable</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'ForwardEuler'</span></code></p></td>
+<td><p><a class="reference internal" href="thetis.html#thetis.timeintegrator.ForwardEuler" title="thetis.timeintegrator.ForwardEuler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardEuler</span></code></a></p></td>
+<td><p>No</p></td>
+<td><p>Forward Euler method</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">'BackwardEuler'</span></code></p></td>
+<td><p><a class="reference internal" href="thetis.html#thetis.rungekutta.BackwardEuler" title="thetis.rungekutta.BackwardEuler"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackwardEuler</span></code></a></p></td>
+<td><p>Yes</p></td>
+<td><p>Backward Euler method</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'CrankNicolson'</span></code></p></td>
+<td><p><a class="reference internal" href="thetis.html#thetis.timeintegrator.CrankNicolson" title="thetis.timeintegrator.CrankNicolson"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrankNicolson</span></code></a></p></td>
+<td><p>Yes</p></td>
+<td><p>Crank-Nicolson method</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">'DIRK22'</span></code></p></td>
+<td><p><a class="reference internal" href="thetis.html#thetis.rungekutta.DIRK22" title="thetis.rungekutta.DIRK22"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIRK22</span></code></a></p></td>
+<td><p>Yes</p></td>
+<td><p>DIRK(2,3,2) method</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'DIRK33'</span></code></p></td>
+<td><p><a class="reference internal" href="thetis.html#thetis.rungekutta.DIRK33" title="thetis.rungekutta.DIRK33"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIRK33</span></code></a></p></td>
+<td><p>Yes</p></td>
+<td><p>DIRK(3,4,3) method</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">'SSPRK33'</span></code></p></td>
+<td><p><a class="reference internal" href="thetis.html#thetis.rungekutta.SSPRK33" title="thetis.rungekutta.SSPRK33"><code class="xref py py-class docutils literal notranslate"><span class="pre">SSPRK33</span></code></a></p></td>
+<td><p>No</p></td>
+<td><p>SSPRK(3,3) method</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'SteadyState'</span></code></p></td>
+<td><p><a class="reference internal" href="thetis.html#thetis.timeintegrator.SteadyState" title="thetis.timeintegrator.SteadyState"><code class="xref py py-class docutils literal notranslate"><span class="pre">SteadyState</span></code></a></p></td>
+<td><p>–</p></td>
+<td><p>Solves equations in steady state</p></td>
+</tr>
+</tbody>
+</table>
+<p>Table 1. <em>Time integration methods for 2D tracer model.</em></p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2020, Tuomas Karna et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

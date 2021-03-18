@@ -5,14 +5,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.exner_eq &#8212; Thetis 0+untagged.1636.g63e82af documentation</title>
+    <title>thetis.exner_eq &#8212; Thetis 0+untagged.1662.ge27ddd4 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -166,8 +165,17 @@
 
         <span class="c1"># bnd_conditions are the shallow water bcs, any boundary for which</span>
         <span class="c1"># nothing is specified is assumed closed</span>
+
         <span class="k">for</span> <span class="n">bnd_marker</span> <span class="ow">in</span> <span class="p">(</span><span class="n">bnd_conditions</span> <span class="ow">or</span> <span class="p">[]):</span>
-            <span class="n">f</span> <span class="o">+=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">*</span><span class="p">(</span><span class="n">fac</span><span class="o">*</span><span class="n">qbx</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">fac</span><span class="o">*</span><span class="n">qby</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">(</span><span class="n">bnd_marker</span><span class="p">)</span>
+            <span class="n">no_contr</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">bnd_conditions</span><span class="p">[</span><span class="n">bnd_marker</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">bnd_conditions</span><span class="p">[</span><span class="n">bnd_marker</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;elev&#39;</span> <span class="ow">and</span> <span class="nb">float</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="n">no_contr</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">no_contr</span><span class="p">:</span>
+                <span class="n">f</span> <span class="o">+=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">*</span><span class="p">(</span><span class="n">fac</span><span class="o">*</span><span class="n">qbx</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">fac</span><span class="o">*</span><span class="n">qby</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">(</span><span class="n">bnd_marker</span><span class="p">)</span>
 
         <span class="n">f</span> <span class="o">+=</span> <span class="p">(</span><span class="n">fac</span><span class="o">*</span><span class="n">qbx</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">dx</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">fac</span><span class="o">*</span><span class="n">qby</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">dx</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
 
@@ -208,7 +216,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
     </div>
   </body>
 </html>

@@ -5,14 +5,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.solver2d &#8212; Thetis 0+untagged.1636.g63e82af documentation</title>
+    <title>thetis.solver2d &#8212; Thetis 0+untagged.1662.ge27ddd4 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -406,10 +405,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">tracer_limiter</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">sediment_options</span><span class="o">.</span><span class="n">solve_exner</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">eq_exner</span> <span class="o">=</span> <span class="n">exner_eq</span><span class="o">.</span><span class="n">ExnerEquation</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">,</span>
-                <span class="n">depth_integrated_sediment</span><span class="o">=</span><span class="n">sediment_options</span><span class="o">.</span><span class="n">use_sediment_conservative_form</span><span class="p">,</span> <span class="n">sediment_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span><span class="p">)</span>
-
+            <span class="k">if</span> <span class="n">element_continuity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span><span class="o">.</span><span class="n">horizontal</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cg&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">eq_exner</span> <span class="o">=</span> <span class="n">exner_eq</span><span class="o">.</span><span class="n">ExnerEquation</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">,</span>
+                    <span class="n">depth_integrated_sediment</span><span class="o">=</span><span class="n">sediment_options</span><span class="o">.</span><span class="n">use_sediment_conservative_form</span><span class="p">,</span> <span class="n">sediment_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sediment_model</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Exner equation can currently only be implemented if the bathymetry is defined on a continuous space&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># disallow creating new attributes</span></div>
 
 <div class="viewcode-block" id="FlowSolver2d.get_swe_timestepper"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.get_swe_timestepper">[docs]</a>    <span class="k">def</span> <span class="nf">get_swe_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">integrator</span><span class="p">):</span>
@@ -891,7 +892,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
     </div>
   </body>
 </html>
