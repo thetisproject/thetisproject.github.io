@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>2D model options &#8212; Thetis 0+untagged.1662.ge27ddd4 documentation</title>
+    <title>2D model options &#8212; Thetis 0+untagged.1674.g37aab4c documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -99,6 +99,12 @@ Prints deviation from the initial volume to stdout.</p>
 <dt>CommonModelOptions.<strong>horizontal_diffusivity</strong><span class="classifier">FiredrakeCoefficient</span></dt><dd><p>Horizontal diffusivity for tracers and sediment</p>
 <p>Default:</p>
 <p>Function</p>
+</dd>
+<dt>CommonModelOptions.<strong>horizontal_diffusivity_scale</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Maximum horizontal diffusivity</p>
+<p>Used to compute the mesh Peclet number in
+the 2D tracer SUPG stabilization scheme.</p>
+<p>Default:</p>
+<p>Constant(1.0)</p>
 </dd>
 <dt>CommonModelOptions.<strong>horizontal_velocity_scale</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Maximum horizontal velocity magnitude</p>
 <p>Used to compute max stable advection time step.</p>
@@ -246,7 +252,7 @@ diagnostics will be computed</p>
 </dd>
 <dt>ModelOptions2d.<strong>sediment_model_options</strong><span class="classifier">Instance</span></dt><dd><p>No description</p>
 <p>Default:</p>
-<p>&lt;thetis.options.SedimentModelOptions object at 0x7f33a5bd8490&gt;</p>
+<p>&lt;thetis.options.SedimentModelOptions object at 0x7f9f380d5d60&gt;</p>
 </dd>
 <dt>ModelOptions2d.<strong>solve_tracer</strong><span class="classifier">Bool</span></dt><dd><p>Solve tracer transport</p>
 <p>Default:</p>
@@ -432,6 +438,11 @@ and product of depth-averaged velocity with depth-averaged tracer</p>
 <p>Default:</p>
 <p>Constant(1.0)</p>
 </dd>
+<dt>ModelOptions2d.<strong>tracer_element_family</strong><span class="classifier">‘dg’|’cg’</span></dt><dd><p>Finite element family for tracer transport</p>
+<p>2D solver supports ‘dg’ or ‘cg’.</p>
+<p>Default:</p>
+<p>‘dg’</p>
+</dd>
 <dt>ModelOptions2d.<strong>tracer_only</strong><span class="classifier">Bool</span></dt><dd><p>Hold shallow water variables in initial state</p>
 <p>Advects tracer in the associated (constant) velocity field.</p>
 <p>Default:</p>
@@ -441,6 +452,10 @@ and product of depth-averaged velocity with depth-averaged tracer</p>
 <p>By default, this parameter is set to 0.5.</p>
 <p>For problems whose bathymetry varies wildly in coastal regions, it is advisable to use the
 automatic wetting and drying parameter, rather than the default.</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>ModelOptions2d.<strong>use_supg_tracer</strong><span class="classifier">Bool</span></dt><dd><p>Use SUPG stabilisation in tracer advection</p>
 <p>Default:</p>
 <p>False</p>
 </dd>
@@ -482,7 +497,7 @@ If <code class="docutils literal notranslate"><span class="pre">True</span></cod
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
     </div>
   </body>
 </html>

@@ -82,6 +82,16 @@ CommonModelOptions.\ **horizontal_diffusivity** : FiredrakeCoefficient
 
     Function
 
+CommonModelOptions.\ **horizontal_diffusivity_scale** : FiredrakeConstantTraitlet
+    Maximum horizontal diffusivity
+    
+    Used to compute the mesh Peclet number in
+    the 2D tracer SUPG stabilization scheme.
+
+    Default:
+
+    Constant(1.0)
+
 CommonModelOptions.\ **horizontal_velocity_scale** : FiredrakeConstantTraitlet
     Maximum horizontal velocity magnitude
     
@@ -339,7 +349,7 @@ ModelOptions2d.\ **sediment_model_options** : Instance
 
     Default:
 
-    <thetis.options.SedimentModelOptions object at 0x7f33a5bd8490>
+    <thetis.options.SedimentModelOptions object at 0x7f9f380d5d60>
 
 ModelOptions2d.\ **solve_tracer** : Bool
     Solve tracer transport
@@ -603,6 +613,15 @@ ModelOptions2d.\ **tracer_advective_velocity_factor** : FiredrakeScalarExpressio
 
     Constant(1.0)
 
+ModelOptions2d.\ **tracer_element_family** : 'dg'|'cg'
+    Finite element family for tracer transport
+    
+    2D solver supports 'dg' or 'cg'.
+
+    Default:
+
+    'dg'
+
 ModelOptions2d.\ **tracer_only** : Bool
     Hold shallow water variables in initial state
     
@@ -619,6 +638,13 @@ ModelOptions2d.\ **use_automatic_wetting_and_drying_alpha** : Bool
     
     For problems whose bathymetry varies wildly in coastal regions, it is advisable to use the
     automatic wetting and drying parameter, rather than the default.
+
+    Default:
+
+    False
+
+ModelOptions2d.\ **use_supg_tracer** : Bool
+    Use SUPG stabilisation in tracer advection
 
     Default:
 
