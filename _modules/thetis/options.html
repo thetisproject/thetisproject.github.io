@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.options &#8212; Thetis 0+untagged.1662.ge27ddd4 documentation</title>
+    <title>thetis.options &#8212; Thetis 0+untagged.1675.g2c5c7fa documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -491,6 +491,13 @@
 
 <span class="s2">        Used to compute max stable diffusion time step.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">horizontal_diffusivity_scale</span> <span class="o">=</span> <span class="n">FiredrakeConstantTraitlet</span><span class="p">(</span>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Maximum horizontal diffusivity</span>
+
+<span class="s2">        Used to compute the mesh Peclet number in</span>
+<span class="s2">        the 2D tracer SUPG stabilization scheme.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">output_directory</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span>
         <span class="s1">&#39;outputs&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Directory where model output files are stored&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">no_exports</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
@@ -707,7 +714,15 @@
         <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Hold shallow water variables in initial state</span>
 
 <span class="s2">        Advects tracer in the associated (constant) velocity field.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">tracer_element_family</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span>
+        <span class="p">[</span><span class="s1">&#39;dg&#39;</span><span class="p">,</span> <span class="s1">&#39;cg&#39;</span><span class="p">],</span>
+        <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;dg&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Finite element family for tracer transport</span>
+
+<span class="s2">        2D solver supports &#39;dg&#39; or &#39;cg&#39;.&quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">use_supg_tracer</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use SUPG stabilisation in tracer advection&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ModelOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ModelOptions3d">[docs]</a><span class="nd">@attach_paired_options</span><span class="p">(</span><span class="s2">&quot;timestepper_type&quot;</span><span class="p">,</span>
@@ -859,7 +874,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
     </div>
   </body>
 </html>

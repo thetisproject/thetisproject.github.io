@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.tracer_eq_2d &#8212; Thetis 0+untagged.1662.ge27ddd4 documentation</title>
+    <title>thetis.tracer_eq_2d &#8212; Thetis 0+untagged.1675.g2c5c7fa documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -85,21 +85,20 @@
 <span class="sd">    Generic tracer term that provides commonly used members and mapping for</span>
 <span class="sd">    boundary functions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span>
-                 <span class="n">use_lax_friedrichs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sipg_factor</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">test_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
-<span class="sd">        :arg depth: :class: `DepthExpression` containing depth info</span>
-<span class="sd">        :kwarg bool use_lax_friedrichs: whether to use Lax Friedrichs stabilisation</span>
-<span class="sd">        :kwarg sipg_factor: :class: `Constant` or :class: `Function` SIPG penalty scaling factor</span>
+<span class="sd">        :arg depth: :class:`DepthExpression` containing depth info</span>
+<span class="sd">        :arg options: :class`ModelOptions2d` containing parameters</span>
+<span class="sd">        :kwarg test_function: custom :class:`TestFunction`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span>
+                                         <span class="n">test_function</span><span class="o">=</span><span class="n">test_function</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">options</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cellsize</span> <span class="o">=</span> <span class="n">CellSize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
         <span class="n">continuity</span> <span class="o">=</span> <span class="n">element_continuity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_dg</span> <span class="o">=</span> <span class="n">continuity</span><span class="o">.</span><span class="n">horizontal</span> <span class="o">==</span> <span class="s1">&#39;dg&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_lax_friedrichs</span> <span class="o">=</span> <span class="n">use_lax_friedrichs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sipg_factor</span> <span class="o">=</span> <span class="n">sipg_factor</span>
 
         <span class="c1"># define measures with a reasonable quadrature degree</span>
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
@@ -164,6 +163,12 @@
 <span class="sd">    :math:`\textbf{n}` is the unit normal of</span>
 <span class="sd">    the element interfaces, and :math:`\text{jump}` and :math:`\text{avg}` denote the</span>
 <span class="sd">    jump and average operators across the interface.</span>
+
+<span class="sd">    For the continuous Galerkin method we use</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \int_\Omega \bar{\textbf{u}} \cdot \boldsymbol{\psi} \cdot \nabla T  dx</span>
+<span class="sd">        = - \int_\Omega \nabla_h \cdot (\bar{\textbf{u}} \boldsymbol{\psi}) \cdot T dx.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="HorizontalAdvectionTerm.residual"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq_2d.HorizontalAdvectionTerm.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_2d&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -190,25 +195,26 @@
             <span class="n">f</span> <span class="o">+=</span> <span class="n">c_up</span><span class="o">*</span><span class="p">(</span><span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">uv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                        <span class="o">+</span> <span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">uv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dS</span>
             <span class="c1"># Lax-Friedrichs stabilization</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_lax_friedrichs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_lax_friedrichs_tracer</span><span class="p">:</span>
                 <span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">un_av</span><span class="p">)</span><span class="o">*</span><span class="n">lax_friedrichs_factor</span>
                 <span class="n">f</span> <span class="o">+=</span> <span class="n">gamma</span><span class="o">*</span><span class="n">dot</span><span class="p">(</span><span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">),</span> <span class="n">jump</span><span class="p">(</span><span class="n">solution</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS</span>
-            <span class="k">if</span> <span class="n">bnd_conditions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">bnd_marker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_markers</span><span class="p">:</span>
-                    <span class="n">funcs</span> <span class="o">=</span> <span class="n">bnd_conditions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bnd_marker</span><span class="p">)</span>
-                    <span class="n">ds_bnd</span> <span class="o">=</span> <span class="n">ds</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bnd_marker</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span><span class="p">)</span>
-                    <span class="n">c_in</span> <span class="o">=</span> <span class="n">solution</span>
-                    <span class="k">if</span> <span class="n">funcs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">c_ext</span><span class="p">,</span> <span class="n">uv_ext</span><span class="p">,</span> <span class="n">eta_ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bnd_functions</span><span class="p">(</span><span class="n">c_in</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">elev</span><span class="p">,</span> <span class="n">bnd_marker</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
-                        <span class="n">uv_av</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">uv</span> <span class="o">+</span> <span class="n">uv_ext</span><span class="p">)</span>
-                        <span class="n">un_av</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">uv_av</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">uv_av</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                        <span class="n">s</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">sign</span><span class="p">(</span><span class="n">un_av</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
-                        <span class="n">c_up</span> <span class="o">=</span> <span class="n">c_in</span><span class="o">*</span><span class="n">s</span> <span class="o">+</span> <span class="n">c_ext</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">)</span>
-                        <span class="n">f</span> <span class="o">+=</span> <span class="n">c_up</span><span class="o">*</span><span class="p">(</span><span class="n">uv_av</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                                   <span class="o">+</span> <span class="n">uv_av</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">*</span><span class="n">ds_bnd</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">f</span> <span class="o">+=</span> <span class="n">c_in</span> <span class="o">*</span> <span class="p">(</span><span class="n">uv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                                     <span class="o">+</span> <span class="n">uv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">*</span><span class="n">ds_bnd</span>
+
+        <span class="k">if</span> <span class="n">bnd_conditions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">bnd_marker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_markers</span><span class="p">:</span>
+                <span class="n">funcs</span> <span class="o">=</span> <span class="n">bnd_conditions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bnd_marker</span><span class="p">)</span>
+                <span class="n">ds_bnd</span> <span class="o">=</span> <span class="n">ds</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bnd_marker</span><span class="p">),</span> <span class="n">degree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quad_degree</span><span class="p">)</span>
+                <span class="n">c_in</span> <span class="o">=</span> <span class="n">solution</span>
+                <span class="k">if</span> <span class="n">funcs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">c_ext</span><span class="p">,</span> <span class="n">uv_ext</span><span class="p">,</span> <span class="n">eta_ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bnd_functions</span><span class="p">(</span><span class="n">c_in</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">elev</span><span class="p">,</span> <span class="n">bnd_marker</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
+                    <span class="n">uv_av</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">uv</span> <span class="o">+</span> <span class="n">uv_ext</span><span class="p">)</span>
+                    <span class="n">un_av</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">uv_av</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">uv_av</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">sign</span><span class="p">(</span><span class="n">un_av</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+                    <span class="n">c_up</span> <span class="o">=</span> <span class="n">c_in</span><span class="o">*</span><span class="n">s</span> <span class="o">+</span> <span class="n">c_ext</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">)</span>
+                    <span class="n">f</span> <span class="o">+=</span> <span class="n">c_up</span><span class="o">*</span><span class="p">(</span><span class="n">uv_av</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                               <span class="o">+</span> <span class="n">uv_av</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">*</span><span class="n">ds_bnd</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">f</span> <span class="o">+=</span> <span class="n">c_in</span> <span class="o">*</span> <span class="p">(</span><span class="n">uv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                                 <span class="o">+</span> <span class="n">uv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">*</span><span class="n">ds_bnd</span>
 
         <span class="k">return</span> <span class="o">-</span><span class="n">f</span></div></div>
 
@@ -232,6 +238,11 @@
 
 <span class="sd">    where :math:`\sigma` is a penalty parameter, see Hillewaert (2013).</span>
 
+<span class="sd">    For the continuous Galerkin method we use</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        -\int_\Omega \nabla_h \cdot (\mu_h \nabla_h T) \phi dx</span>
+<span class="sd">        = \int_\Omega \mu_h (\nabla_h \phi) \cdot (\nabla_h T) dx.</span>
+
 <span class="sd">    Hillewaert, Koen (2013). Development of the discontinuous Galerkin method</span>
 <span class="sd">    for high-resolution, large scale CFD and acoustics in industrial</span>
 <span class="sd">    geometries. PhD Thesis. Université catholique de Louvain.</span>
@@ -245,7 +256,7 @@
                                  <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">diffusivity_h</span><span class="p">,</span> <span class="p">]])</span>
         <span class="n">grad_test</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">)</span>
         <span class="n">diff_flux</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">diff_tensor</span><span class="p">,</span> <span class="n">grad</span><span class="p">(</span><span class="n">solution</span><span class="p">))</span>
-        <span class="n">sipg_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sipg_factor</span>
+        <span class="n">sipg_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">sipg_factor_tracer</span>
 
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">f</span> <span class="o">+=</span> <span class="n">inner</span><span class="p">(</span><span class="n">grad_test</span><span class="p">,</span> <span class="n">diff_flux</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
@@ -316,21 +327,33 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    2D tracer advection-diffusion equation :eq:`tracer_eq` in conservative form</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span>
-                 <span class="n">use_lax_friedrichs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">sipg_factor</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">velocity</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
 <span class="sd">        :arg depth: :class: `DepthExpression` containing depth info</span>
-<span class="sd">        :kwarg bool use_lax_friedrichs: whether to use Lax Friedrichs stabilisation</span>
-<span class="sd">        :kwarg sipg_factor: :class: `Constant` or :class: `Function` SIPG penalty scaling factor</span>
+<span class="sd">        :arg options: :class`ModelOptions2d` containing parameters</span>
+<span class="sd">        :arg velocity: velocity field associated with the shallow water model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TracerEquation2D</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
 
-        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">use_lax_friedrichs</span><span class="p">,</span> <span class="n">sipg_factor</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalDiffusionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">SourceTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span></div>
+        <span class="c1"># Apply SUPG stabilisation</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">use_supg_tracer</span><span class="p">:</span>
+            <span class="n">unorm</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">horizontal_velocity_scale</span>
+            <span class="k">if</span> <span class="n">unorm</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">cellsize</span> <span class="o">=</span> <span class="n">anisotropic_cell_size</span><span class="p">(</span><span class="n">function_space</span><span class="o">.</span><span class="n">mesh</span><span class="p">())</span>
+                <span class="n">tau</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">cellsize</span><span class="o">/</span><span class="n">unorm</span>
+                <span class="n">D</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">horizontal_diffusivity_scale</span>
+                <span class="k">if</span> <span class="n">D</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">Pe</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">unorm</span><span class="o">*</span><span class="n">cellsize</span><span class="o">/</span><span class="n">D</span>
+                    <span class="n">tau</span> <span class="o">=</span> <span class="n">min_value</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">Pe</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">+</span> <span class="n">tau</span><span class="o">*</span><span class="n">dot</span><span class="p">(</span><span class="n">velocity</span><span class="p">,</span> <span class="n">grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">))</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;test_function&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalDiffusionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">SourceTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -342,7 +365,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
     </div>
   </body>
 </html>

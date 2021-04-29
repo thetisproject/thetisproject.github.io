@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2D tracer transport &#8212; Thetis 0+untagged.1675.g2c5c7fa documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/thetis.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="../_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="../_static/icon_thetis.ico" />
+
+
+  </head><body>
+<div class="wrapper">
+  <a href="../index.html"><img src="../_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetis/branches" title="Thetis build status">Jenkins</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="demos/demo_2d_tracer.py">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="d-tracer-transport">
+<h1>2D tracer transport<a class="headerlink" href="#d-tracer-transport" title="Permalink to this headline">¶</a></h1>
+<p>This demo shows how the Firedrake DG advection equation
+<a class="reference external" href="https://firedrakeproject.org/demos/DG_advection.py.html">demo</a>
+can be implemented in Thetis.</p>
+<p>The test case is the classic cosine-bell–cone–slotted-cylinder
+advection test case of <span id="id1">[<a class="reference internal" href="#id3">LeV96</a>]</span>. The domain is the unit
+square <span class="math notranslate nohighlight">\(\Omega=[0,1]^2\)</span> and the velocity corresponds to the
+solid body rotation <span class="math notranslate nohighlight">\(\vec{u} = (0.5 - y, x - 0.5)\)</span>.</p>
+<p>As usual, we start by importing Thetis.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">thetis</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>Define a 40-by-40 mesh of squares.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mesh2d</span> <span class="o">=</span> <span class="n">UnitSquareMesh</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="n">quadrilateral</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We will solve a pure advection problem in non-conservative form,
+with no hydrodynamics. Therefore, bathymetry is not actually
+important. We set an arbitrary postive value, as this is required
+by Thetis to construct the solver object.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">P1_2d</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">bathymetry2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">)</span>
+<span class="n">bathymetry2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">solver_obj</span> <span class="o">=</span> <span class="n">solver2d</span><span class="o">.</span><span class="n">FlowSolver2d</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">bathymetry2d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To activate the tracer functionality, we set the option
+<code class="docutils literal notranslate"><span class="pre">solve_tracer</span> <span class="pre">=</span> <span class="pre">True</span></code>. As mentioned above, we are only solving
+the tracer equation, which can be specified by setting
+<code class="docutils literal notranslate"><span class="pre">tracer_only</span> <span class="pre">=</span> <span class="pre">True</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span>
+<span class="n">options</span><span class="o">.</span><span class="n">solve_tracer</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">options</span><span class="o">.</span><span class="n">tracer_only</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tracer_2d&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>We will run for time <span class="math notranslate nohighlight">\(2\pi\)</span> – a full rotation – using a
+strong stability preserving third order Runge-Kutta method (SSPRK33).
+For consistency with the Firedrake demo, Thetis’ automatic timestep
+computation functionality is switched off and the simulation time is
+split into 600 steps, giving a timestep close to the CFL limit.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;SSPRK33&#39;</span>
+<span class="n">options</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">300.0</span>
+<span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span>
+<span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">15.0</span>
+<span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">use_automatic_timestep</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>We have a pure advection problem with no diffusivity or source terms. However,
+such terms can be specified by replacing the <code class="docutils literal notranslate"><span class="pre">None</span></code> values below. For
+consistency with the Firedrake demo, we do not use stabilization or slope
+limiters, both of which are used by default in Thetis. Slope limiters are used
+to obtain non-oscillatory solutions.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">horizontal_diffusivity</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">options</span><span class="o">.</span><span class="n">tracer_source_2d</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">options</span><span class="o">.</span><span class="n">use_lax_friedrichs_tracer</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>The background tracer value is imposed as an upwind inflow condition.
+In general, this would be a <code class="docutils literal notranslate"><span class="pre">Function</span></code>, but here we just use a <code class="docutils literal notranslate"><span class="pre">Constant</span></code>
+value.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;tracer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;on_boundary&#39;</span><span class="p">:</span>  <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)}}</span>
+</pre></div>
+</div>
+<p>The velocity field is set up using a simple analytic expression.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vP1_2d</span> <span class="o">=</span> <span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">SpatialCoordinate</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">)</span>
+<span class="n">uv_init</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">as_vector</span><span class="p">([</span><span class="mf">0.5</span> <span class="o">-</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">]),</span> <span class="n">vP1_2d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, we set up the cosine-bell–cone–slotted-cylinder initial condition. The
+first four lines declare various parameters relating to the positions of these
+objects, while the analytic expressions appear in the last three lines. This
+code is simply copied from the Firedrake version of the demo.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bell_r0</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">;</span> <span class="n">bell_x0</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">;</span> <span class="n">bell_y0</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">cone_r0</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">;</span> <span class="n">cone_x0</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">;</span> <span class="n">cone_y0</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">cyl_r0</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">;</span> <span class="n">cyl_x0</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">;</span> <span class="n">cyl_y0</span> <span class="o">=</span> <span class="mf">0.75</span>
+<span class="n">slot_left</span> <span class="o">=</span> <span class="mf">0.475</span><span class="p">;</span> <span class="n">slot_right</span> <span class="o">=</span> <span class="mf">0.525</span><span class="p">;</span> <span class="n">slot_top</span> <span class="o">=</span> <span class="mf">0.85</span>
+
+<span class="n">bell</span> <span class="o">=</span> <span class="mf">0.25</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">cos</span><span class="p">(</span><span class="n">pi</span><span class="o">*</span><span class="n">min_value</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">pow</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">bell_x0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nb">pow</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">bell_y0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="n">bell_r0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
+<span class="n">cone</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">min_value</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">pow</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">cone_x0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nb">pow</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">cone_y0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="n">cone_r0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">slot_cyl</span> <span class="o">=</span> <span class="n">conditional</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">pow</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">cyl_x0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nb">pow</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">cyl_y0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">cyl_r0</span><span class="p">,</span>
+             <span class="n">conditional</span><span class="p">(</span><span class="n">And</span><span class="p">(</span><span class="n">And</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">slot_left</span><span class="p">,</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">slot_right</span><span class="p">),</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">slot_top</span><span class="p">),</span>
+               <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We then declare the inital condition, <code class="docutils literal notranslate"><span class="pre">q_init</span></code>, to be the sum of these fields.
+Furthermore, we add 1 to this, so that the initial field lies between 1 and 2,
+rather than between 0 and 1.  This ensures that we can’t get away with
+neglecting the inflow boundary condition.  We also save the initial state so
+that we can check the <span class="math notranslate nohighlight">\(L^2\)</span>-norm error at the end.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">q_init</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">bell</span> <span class="o">+</span> <span class="n">cone</span> <span class="o">+</span> <span class="n">slot_cyl</span><span class="p">,</span> <span class="n">P1_2d</span><span class="p">)</span>
+<span class="n">solver_obj</span><span class="o">.</span><span class="n">assign_initial_conditions</span><span class="p">(</span><span class="n">uv</span><span class="o">=</span><span class="n">uv_init</span><span class="p">,</span> <span class="n">tracer</span><span class="o">=</span><span class="n">q_init</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we are in a position to run the time loop.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">iterate</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Finally, we display the normalised <span class="math notranslate nohighlight">\(L^2\)</span> error, by comparing to the initial condition.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">q</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">tracer_2d</span>
+<span class="n">L2_err</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">assemble</span><span class="p">((</span><span class="n">q</span> <span class="o">-</span> <span class="n">q_init</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="n">q_init</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span><span class="p">))</span>
+<span class="n">L2_init</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">assemble</span><span class="p">(</span><span class="n">q_init</span><span class="o">*</span><span class="n">q_init</span><span class="o">*</span><span class="n">dx</span><span class="p">))</span>
+<span class="n">print_output</span><span class="p">(</span><span class="n">L2_err</span><span class="o">/</span><span class="n">L2_init</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This tutorial can be dowloaded as a Python script <a class="reference external" href="demo_2d_tracer.py">here</a>.</p>
+<p class="rubric">References</p>
+<p id="id2"><dl class="citation">
+<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id1">LeV96</a></span></dt>
+<dd><p>Randall J. LeVeque. High-Resolution Conservative Algorithms for Advection in Incompressible Flow. <em>SIAM Journal on Numerical Analysis</em>, 33(2):627–665, 1996. <a class="reference external" href="https://doi.org/10.1137/0733033">doi:10.1137/0733033</a>.</p>
+</dd>
+</dl>
+</p>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2020, Tuomas Karna et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>
