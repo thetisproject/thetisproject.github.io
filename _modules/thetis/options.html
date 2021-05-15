@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.options &#8212; Thetis 0+untagged.1675.g2c5c7fa documentation</title>
+    <title>thetis.options &#8212; Thetis 0+untagged.1676.g1d09a98 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -722,7 +722,32 @@
 
 <span class="s2">        2D solver supports &#39;dg&#39; or &#39;cg&#39;.&quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_supg_tracer</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
-        <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use SUPG stabilisation in tracer advection&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use SUPG stabilisation in tracer advection&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracer_metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ModelOptions2d</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ModelOptions2d.add_tracer_2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ModelOptions2d.add_tracer_2d">[docs]</a>    <span class="k">def</span> <span class="nf">add_tracer_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">shortname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define a 2D tracer field</span>
+
+<span class="sd">        :arg label: field label used internally by Thetis, e.g. &#39;tracer_2d&#39;</span>
+<span class="sd">        :arg name: human readable name for the tracer field, e.g. &#39;Tracer concentration&#39;</span>
+<span class="sd">        :arg filename: file name for outputs, e.g. &#39;Tracer2d&#39;</span>
+<span class="sd">        :kwarg shortname: short version of name, e.g. &#39;Tracer&#39;</span>
+<span class="sd">        :kwarg unit: units for field, e.g. &#39;-&#39;</span>
+<span class="sd">        :kwarg source: associated source term</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="s1">&#39; &#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">label</span><span class="p">,</span> <span class="s2">&quot;Labels cannot contain spaces&quot;</span>
+        <span class="k">assert</span> <span class="s1">&#39; &#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;Filenames cannot contain spaces&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracer_metadata</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s1">&#39;shortname&#39;</span><span class="p">:</span> <span class="n">shortname</span> <span class="ow">or</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="n">unit</span><span class="p">,</span>
+            <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+            <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span>  <span class="c1"># TODO: Validate input</span>
+        <span class="p">}</span></div></div>
 
 
 <div class="viewcode-block" id="ModelOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ModelOptions3d">[docs]</a><span class="nd">@attach_paired_options</span><span class="p">(</span><span class="s2">&quot;timestepper_type&quot;</span><span class="p">,</span>

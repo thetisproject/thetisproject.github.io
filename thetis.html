@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis package &#8212; Thetis 0+untagged.1675.g2c5c7fa documentation</title>
+    <title>thetis package &#8212; Thetis 0+untagged.1676.g1d09a98 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -143,8 +143,7 @@ the trapezium rule.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>scalar_callback</strong> – Python function that returns a list of values of an objective functional.</p></li>
 <li><p><strong>solver_obj</strong> – Thetis solver object</p></li>
-<li><p><strong>**kwargs</strong> – <p>any additional keyword arguments, see DiagnosticCallback</p>
-</p></li>
+<li><p><strong>kwargs</strong> – any additional keyword arguments, see DiagnosticCallback</p></li>
 </ul>
 </dd>
 </dl>
@@ -1202,10 +1201,168 @@ or by using the traitlet instance’s .metadata dictionary.</p>
 velocities, and
 <span class="math notranslate nohighlight">\(\mu_h\)</span> denotes horizontal diffusivity.</p>
 <dl class="py class">
+<dt id="thetis.conservative_tracer_eq_2d.ConservativeHorizontalAdvectionTerm">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thetis.conservative_tracer_eq_2d.</span></code><code class="sig-name descname"><span class="pre">ConservativeHorizontalAdvectionTerm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/conservative_tracer_eq_2d.html#ConservativeHorizontalAdvectionTerm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.conservative_tracer_eq_2d.ConservativeHorizontalAdvectionTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.conservative_tracer_eq_2d.ConservativeTracerTerm" title="thetis.conservative_tracer_eq_2d.ConservativeTracerTerm"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.conservative_tracer_eq_2d.ConservativeTracerTerm</span></code></a></p>
+<p>Advection of tracer term, <span class="math notranslate nohighlight">\(\nabla \cdot \bar{\textbf{u}} \nabla q\)</span></p>
+<p>The weak form is</p>
+<div class="math notranslate nohighlight">
+\[\int_\Omega \boldsymbol{\psi} \nabla\cdot \bar{\textbf{u}} \nabla q  dx
+= - \int_\Omega \left(\nabla_h \boldsymbol{\psi})\right) \cdot \bar{\textbf{u}} \cdot q dx
++ \int_\Gamma \text{avg}(q\bar{\textbf{u}}\cdot\textbf{n}) \cdot \text{jump}(\boldsymbol{\psi}) dS\]</div>
+<p>where the right hand side has been integrated by parts;
+<span class="math notranslate nohighlight">\(\textbf{n}\)</span> is the unit normal of
+the element interfaces, and <span class="math notranslate nohighlight">\(\text{jump}\)</span> and <span class="math notranslate nohighlight">\(\text{avg}\)</span> denote the
+jump and average operators across the interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>function_space</strong> – <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionSpace</span></code> where the solution belongs</p></li>
+<li><p><strong>depth</strong> – <dl class="field-list simple">
+<dt class="field-odd">class</dt>
+<dd class="field-odd"><p><cite>DepthExpression</cite> containing depth info</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>options</strong> – :class`ModelOptions2d` containing parameters</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="thetis.conservative_tracer_eq_2d.ConservativeHorizontalAdvectionTerm.residual">
+<code class="sig-name descname"><span class="pre">residual</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bnd_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/conservative_tracer_eq_2d.html#ConservativeHorizontalAdvectionTerm.residual"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.conservative_tracer_eq_2d.ConservativeHorizontalAdvectionTerm.residual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an UFL form of the term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solution</strong> – solution <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code> of the corresponding equation</p></li>
+<li><p><strong>solution_old</strong> – a time lagged solution <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></p></li>
+<li><p><strong>fields</strong> – a dictionary that provides all the remaining fields that the term depends on.
+The keys of the dictionary should standard field names in <cite>field_metadata</cite></p></li>
+<li><p><strong>fields_old</strong> – Time lagged dictionary of fields</p></li>
+<li><p><strong>bnd_conditions</strong> – A dictionary describing boundary conditions.
+E.g. {3: {‘elev_2d’: Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="thetis.conservative_tracer_eq_2d.ConservativeHorizontalDiffusionTerm">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thetis.conservative_tracer_eq_2d.</span></code><code class="sig-name descname"><span class="pre">ConservativeHorizontalDiffusionTerm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/conservative_tracer_eq_2d.html#ConservativeHorizontalDiffusionTerm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.conservative_tracer_eq_2d.ConservativeHorizontalDiffusionTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.conservative_tracer_eq_2d.ConservativeTracerTerm" title="thetis.conservative_tracer_eq_2d.ConservativeTracerTerm"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.conservative_tracer_eq_2d.ConservativeTracerTerm</span></code></a>, <a class="reference internal" href="#thetis.tracer_eq_2d.HorizontalDiffusionTerm" title="thetis.tracer_eq_2d.HorizontalDiffusionTerm"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.tracer_eq_2d.HorizontalDiffusionTerm</span></code></a></p>
+<p>Horizontal diffusion term <span class="math notranslate nohighlight">\(-\nabla_h \cdot (\mu_h \nabla_h q)\)</span></p>
+<p>Using the symmetric interior penalty method the weak form becomes</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}-\int_\Omega \nabla_h \cdot (\mu_h \nabla_h q) \phi dx
+=&amp; \int_\Omega \mu_h (\nabla_h \phi) \cdot (\nabla_h q) dx \\
+&amp;- \int_{\mathcal{I}_h\cup\mathcal{I}_v} \text{jump}(\phi \textbf{n}_h)
+\cdot \text{avg}(\mu_h \nabla_h q) dS
+- \int_{\mathcal{I}_h\cup\mathcal{I}_v} \text{jump}(q \textbf{n}_h)
+\cdot \text{avg}(\mu_h  \nabla \phi) dS \\
+&amp;+ \int_{\mathcal{I}_h\cup\mathcal{I}_v} \sigma \text{avg}(\mu_h) \text{jump}(q \textbf{n}_h) \cdot
+    \text{jump}(\phi \textbf{n}_h) dS \\
+&amp;- \int_\Gamma \mu_h (\nabla_h \phi) \cdot \textbf{n}_h ds\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma\)</span> is a penalty parameter, see Hillewaert (2013).</p>
+<p>Hillewaert, Koen (2013). Development of the discontinuous Galerkin method
+for high-resolution, large scale CFD and acoustics in industrial
+geometries. PhD Thesis. Université catholique de Louvain.
+<a class="reference external" href="https://dial.uclouvain.be/pr/boreal/object/boreal:128254/">https://dial.uclouvain.be/pr/boreal/object/boreal:128254/</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>function_space</strong> – <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionSpace</span></code> where the solution belongs</p></li>
+<li><p><strong>depth</strong> – <dl class="field-list simple">
+<dt class="field-odd">class</dt>
+<dd class="field-odd"><p><cite>DepthExpression</cite> containing depth info</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>options</strong> – :class`ModelOptions2d` containing parameters</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="thetis.conservative_tracer_eq_2d.ConservativeSourceTerm">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thetis.conservative_tracer_eq_2d.</span></code><code class="sig-name descname"><span class="pre">ConservativeSourceTerm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/conservative_tracer_eq_2d.html#ConservativeSourceTerm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.conservative_tracer_eq_2d.ConservativeSourceTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.conservative_tracer_eq_2d.ConservativeTracerTerm" title="thetis.conservative_tracer_eq_2d.ConservativeTracerTerm"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.conservative_tracer_eq_2d.ConservativeTracerTerm</span></code></a></p>
+<p>Generic source term</p>
+<p>The weak form reads</p>
+<div class="math notranslate nohighlight">
+\[F_s = \int_\Omega \sigma \phi dx\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma\)</span> is a user defined scalar <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>function_space</strong> – <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionSpace</span></code> where the solution belongs</p></li>
+<li><p><strong>depth</strong> – <dl class="field-list simple">
+<dt class="field-odd">class</dt>
+<dd class="field-odd"><p><cite>DepthExpression</cite> containing depth info</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>options</strong> – :class`ModelOptions2d` containing parameters</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="thetis.conservative_tracer_eq_2d.ConservativeSourceTerm.residual">
+<code class="sig-name descname"><span class="pre">residual</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bnd_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/conservative_tracer_eq_2d.html#ConservativeSourceTerm.residual"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.conservative_tracer_eq_2d.ConservativeSourceTerm.residual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an UFL form of the term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solution</strong> – solution <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code> of the corresponding equation</p></li>
+<li><p><strong>solution_old</strong> – a time lagged solution <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></p></li>
+<li><p><strong>fields</strong> – a dictionary that provides all the remaining fields that the term depends on.
+The keys of the dictionary should standard field names in <cite>field_metadata</cite></p></li>
+<li><p><strong>fields_old</strong> – Time lagged dictionary of fields</p></li>
+<li><p><strong>bnd_conditions</strong> – A dictionary describing boundary conditions.
+E.g. {3: {‘elev_2d’: Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="thetis.conservative_tracer_eq_2d.ConservativeTracerEquation2D">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thetis.conservative_tracer_eq_2d.</span></code><code class="sig-name descname"><span class="pre">ConservativeTracerEquation2D</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/conservative_tracer_eq_2d.html#ConservativeTracerEquation2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.conservative_tracer_eq_2d.ConservativeTracerEquation2D" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#thetis.equation.Equation" title="thetis.equation.Equation"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.equation.Equation</span></code></a></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thetis.conservative_tracer_eq_2d.</span></code><code class="sig-name descname"><span class="pre">ConservativeTracerEquation2D</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/conservative_tracer_eq_2d.html#ConservativeTracerEquation2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.conservative_tracer_eq_2d.ConservativeTracerEquation2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.tracer_eq_2d.TracerEquation2D" title="thetis.tracer_eq_2d.TracerEquation2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.tracer_eq_2d.TracerEquation2D</span></code></a></p>
 <p>2D tracer advection-diffusion equation <a class="reference internal" href="#equation-tracer-eq">(16)</a> in conservative form</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>function_space</strong> – <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionSpace</span></code> where the solution belongs</p></li>
+<li><p><strong>depth</strong> – <dl class="field-list simple">
+<dt class="field-odd">class</dt>
+<dd class="field-odd"><p><cite>DepthExpression</cite> containing depth info</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>options</strong> – :class`ModelOptions2d` containing parameters</p></li>
+<li><p><strong>velocity</strong> – velocity field associated with the shallow water model</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="thetis.conservative_tracer_eq_2d.ConservativeTracerEquation2D.add_terms">
+<code class="sig-name descname"><span class="pre">add_terms</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/conservative_tracer_eq_2d.html#ConservativeTracerEquation2D.add_terms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.conservative_tracer_eq_2d.ConservativeTracerEquation2D.add_terms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="thetis.conservative_tracer_eq_2d.ConservativeTracerTerm">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thetis.conservative_tracer_eq_2d.</span></code><code class="sig-name descname"><span class="pre">ConservativeTracerTerm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/conservative_tracer_eq_2d.html#ConservativeTracerTerm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.conservative_tracer_eq_2d.ConservativeTracerTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#thetis.tracer_eq_2d.TracerTerm" title="thetis.tracer_eq_2d.TracerTerm"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.tracer_eq_2d.TracerTerm</span></code></a></p>
+<p>Generic depth-integrated tracer term that provides commonly used members and mapping for
+boundary functions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -4961,6 +5118,24 @@ f_wall, k_min, psi_min</p>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thetis.options.</span></code><code class="sig-name descname"><span class="pre">ModelOptions2d</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/options.html#ModelOptions2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.options.ModelOptions2d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#thetis.options.CommonModelOptions" title="thetis.options.CommonModelOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.options.CommonModelOptions</span></code></a></p>
 <p>Options for 2D depth-averaged shallow water model</p>
+<dl class="py method">
+<dt id="thetis.options.ModelOptions2d.add_tracer_2d">
+<code class="sig-name descname"><span class="pre">add_tracer_2d</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shortname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/options.html#ModelOptions2d.add_tracer_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.options.ModelOptions2d.add_tracer_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a 2D tracer field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> – field label used internally by Thetis, e.g. ‘tracer_2d’</p></li>
+<li><p><strong>name</strong> – human readable name for the tracer field, e.g. ‘Tracer concentration’</p></li>
+<li><p><strong>filename</strong> – file name for outputs, e.g. ‘Tracer2d’</p></li>
+<li><p><strong>shortname</strong> – short version of name, e.g. ‘Tracer’</p></li>
+<li><p><strong>unit</strong> – units for field, e.g. ‘-‘</p></li>
+<li><p><strong>source</strong> – associated source term</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt id="thetis.options.ModelOptions2d.check_tracer_conservation">
 <code class="sig-name descname"><span class="pre">check_tracer_conservation</span></code><a class="headerlink" href="#thetis.options.ModelOptions2d.check_tracer_conservation" title="Permalink to this definition">¶</a></dt>
@@ -6936,7 +7111,7 @@ velocities, and <span class="math notranslate nohighlight">\(\mu_h\)</span> deno
 <dl class="py class">
 <dt id="thetis.sediment_eq_2d.ConservativeSedimentAdvectionTerm">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thetis.sediment_eq_2d.</span></code><code class="sig-name descname"><span class="pre">ConservativeSedimentAdvectionTerm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sediment_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conservative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/sediment_eq_2d.html#ConservativeSedimentAdvectionTerm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.sediment_eq_2d.ConservativeSedimentAdvectionTerm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#thetis.sediment_eq_2d.SedimentTerm" title="thetis.sediment_eq_2d.SedimentTerm"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.sediment_eq_2d.SedimentTerm</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.conservative_tracer_eq_2d.ConservativeHorizontalAdvectionTerm</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#thetis.sediment_eq_2d.SedimentTerm" title="thetis.sediment_eq_2d.SedimentTerm"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.sediment_eq_2d.SedimentTerm</span></code></a>, <a class="reference internal" href="#thetis.conservative_tracer_eq_2d.ConservativeHorizontalAdvectionTerm" title="thetis.conservative_tracer_eq_2d.ConservativeHorizontalAdvectionTerm"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.conservative_tracer_eq_2d.ConservativeHorizontalAdvectionTerm</span></code></a></p>
 <p>Advection term for sediment equation</p>
 <p>Same as <code class="xref py py-class docutils literal notranslate"><span class="pre">ConservativeHorizontalAdvectionTerm</span></code> but allows for equilibrium boundary condition
 through get_bnd_conditions() inherited from <a class="reference internal" href="#thetis.sediment_eq_2d.SedimentTerm" title="thetis.sediment_eq_2d.SedimentTerm"><code class="xref py py-class docutils literal notranslate"><span class="pre">SedimentTerm</span></code></a>.</p>
@@ -7011,7 +7186,7 @@ E.g. {3: {‘elev_2d’: Constant(1.0)}} replaces elev_2d function by a constant
 <dt id="thetis.sediment_eq_2d.SedimentEquation2D">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thetis.sediment_eq_2d.</span></code><code class="sig-name descname"><span class="pre">SedimentEquation2D</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sediment_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conservative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/sediment_eq_2d.html#SedimentEquation2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.sediment_eq_2d.SedimentEquation2D" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#thetis.equation.Equation" title="thetis.equation.Equation"><code class="xref py py-class docutils literal notranslate"><span class="pre">thetis.equation.Equation</span></code></a></p>
-<p>2D sediment advection-diffusion equation: <a class="reference internal" href="#equation-tracer-eq-2d">(17)</a> or <code class="xref eq docutils literal notranslate"><span class="pre">conservative_tracer_eq_2d</span></code>
+<p>2D sediment advection-diffusion equation: <a class="reference internal" href="#equation-tracer-eq-2d">(17)</a> or <a class="reference internal" href="#equation-cons-tracer-eq-2d">(1)</a>
 with sediment source and sink term</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -8562,15 +8737,40 @@ time step.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="thetis.solver2d.FlowSolver2d.add_new_field">
+<code class="sig-name descname"><span class="pre">add_new_field</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shortname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/solver2d.html#FlowSolver2d.add_new_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.solver2d.FlowSolver2d.add_new_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a field to <a class="reference internal" href="#thetis.solver2d.FlowSolver2d.fields" title="thetis.solver2d.FlowSolver2d.fields"><code class="xref py py-attr docutils literal notranslate"><span class="pre">fields</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>function</strong> – representation of the field as a <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></p></li>
+<li><p><strong>label</strong> – field label used internally by Thetis, e.g. ‘tracer_2d’</p></li>
+<li><p><strong>name</strong> – human readable name for the tracer field, e.g. ‘Tracer concentration’</p></li>
+<li><p><strong>filename</strong> – file name for outputs, e.g. ‘Tracer2d’</p></li>
+<li><p><strong>shortname</strong> – short version of name, e.g. ‘Tracer’</p></li>
+<li><p><strong>unit</strong> – units for field, e.g. ‘-‘</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="thetis.solver2d.FlowSolver2d.assign_initial_conditions">
-<code class="sig-name descname"><span class="pre">assign_initial_conditions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sediment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/solver2d.html#FlowSolver2d.assign_initial_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.solver2d.FlowSolver2d.assign_initial_conditions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">assign_initial_conditions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sediment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">tracers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/solver2d.html#FlowSolver2d.assign_initial_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.solver2d.FlowSolver2d.assign_initial_conditions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assigns initial conditions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>elev</strong> (scalar <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Constant</span></code>, or an expression) – Initial condition for water elevation</p></li>
 <li><p><strong>uv</strong> (vector valued <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Constant</span></code>, or an expression) – Initial condition for depth averaged velocity</p></li>
+<li><p><strong>sediment</strong> (scalar valued <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Constant</span></code>, or an expression) – Initial condition for sediment concantration</p></li>
 </ul>
+</dd>
+<dt class="field-even">Kwargs tracers</dt>
+<dd class="field-even"><p>Initial conditions for tracer fields</p>
+</dd>
+<dt class="field-odd">Types tracers</dt>
+<dd class="field-odd"><p>scalar valued :class:<a href="#id1"><span class="problematic" id="id2">`</span></a>Function`s, :class:<a href="#id3"><span class="problematic" id="id4">`</span></a>Constant`s, or an expressions</p>
 </dd>
 </dl>
 </dd></dl>
@@ -8675,7 +8875,7 @@ solver object</p>
 
 <dl class="py method">
 <dt id="thetis.solver2d.FlowSolver2d.get_tracer_timestepper">
-<code class="sig-name descname"><span class="pre">get_tracer_timestepper</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">integrator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/solver2d.html#FlowSolver2d.get_tracer_timestepper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.solver2d.FlowSolver2d.get_tracer_timestepper" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_tracer_timestepper</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">integrator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/solver2d.html#FlowSolver2d.get_tracer_timestepper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.solver2d.FlowSolver2d.get_tracer_timestepper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets tracer timestepper object with appropriate parameters</p>
 </dd></dl>
 
@@ -8776,7 +8976,7 @@ depth using the approximate method suggested by Karna et al. (2011).</p>
 </div></blockquote>
 <dl>
 <dt>..math::</dt><dd><blockquote>
-<div><p>alpha approx <a href="#id3"><span class="problematic" id="id4">|L_x \nabla h|</span></a>,</p>
+<div><p>alpha approx mid L_x nabla h mid,</p>
 </div></blockquote>
 <p>where <span class="math notranslate nohighlight">\(L_x\)</span> is the horizontal length scale of the mesh elements at the wet-dry
 front and <span class="math notranslate nohighlight">\(h\)</span> is the bathymetry profile.</p>
@@ -10529,16 +10729,14 @@ E.g. {3: {‘elev_2d’: Constant(1.0)}} replaces elev_2d function by a constant
 \cdot \text{avg}(\mu_h \nabla_h T) dS
 - \int_{\mathcal{I}_h\cup\mathcal{I}_v} \text{jump}(T \textbf{n}_h)
 \cdot \text{avg}(\mu_h  \nabla \phi) dS \\
-&amp;+ \int_{\mathcal{I}_h\cup\mathcal{I}_v} \sigma \text{avg}(\mu_h) \text{jump}(T \textbf{n}_h) \cdot
-    \text{jump}(\phi \textbf{n}_h) dS \\
+&amp;+ \int_{\mathcal{I}_h\cup\mathcal{I}_v} \sigma \text{avg}(\mu_h) \text{jump}(T \textbf{n}_h)
+\cdot \text{jump}(\phi \textbf{n}_h) dS \\
 &amp;- \int_\Gamma \mu_h (\nabla_h \phi) \cdot \textbf{n}_h ds\end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(\sigma\)</span> is a penalty parameter, see Hillewaert (2013).</p>
-<p>For the continuous Galerkin method we use
-.. math:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span>\<span class="n">int_</span>\<span class="n">Omega</span> \<span class="n">nabla_h</span> \<span class="n">cdot</span> <span class="p">(</span>\<span class="n">mu_h</span> \<span class="n">nabla_h</span> <span class="n">T</span><span class="p">)</span> \<span class="n">phi</span> <span class="n">dx</span>
-<span class="o">=</span> \<span class="n">int_</span>\<span class="n">Omega</span> \<span class="n">mu_h</span> <span class="p">(</span>\<span class="n">nabla_h</span> \<span class="n">phi</span><span class="p">)</span> \<span class="n">cdot</span> <span class="p">(</span>\<span class="n">nabla_h</span> <span class="n">T</span><span class="p">)</span> <span class="n">dx</span><span class="o">.</span>
-</pre></div>
-</div>
+<p>For the continuous Galerkin method we use</p>
+<div class="math notranslate nohighlight">
+\[-\int_\Omega \nabla_h \cdot (\mu_h \nabla_h T) \phi dx
+= \int_\Omega \mu_h (\nabla_h \phi) \cdot (\nabla_h T) dx.\]</div>
 <p>Hillewaert, Koen (2013). Development of the discontinuous Galerkin method
 for high-resolution, large scale CFD and acoustics in industrial
 geometries. PhD Thesis. Université catholique de Louvain.
@@ -10634,6 +10832,11 @@ E.g. {3: {‘elev_2d’: Constant(1.0)}} replaces elev_2d function by a constant
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt id="thetis.tracer_eq_2d.TracerEquation2D.add_terms">
+<code class="sig-name descname"><span class="pre">add_terms</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/tracer_eq_2d.html#TracerEquation2D.add_terms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.tracer_eq_2d.TracerEquation2D.add_terms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -11551,27 +11754,37 @@ on the density field.</p>
 <dt id="thetis.utility.DepthExpression">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thetis.utility.</span></code><code class="sig-name descname"><span class="pre">DepthExpression</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bathymetry_2d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_nonlinear_equations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_wetting_and_drying</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wetting_and_drying_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/utility.html#DepthExpression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.utility.DepthExpression" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Construct expression for depth depending on options</p>
-<dl class="simple">
-<dt>If <cite>not use_nonlinear_equations</cite>, then the depth is simply the bathymetry:</dt><dd><p><span class="math notranslate nohighlight">\(H = h\)</span></p>
+<blockquote>
+<div><p>Construct expression for depth depending on options</p>
+<p>If <cite>not use_nonlinear_equations</cite>, then the depth is simply the bathymetry:</p>
+</div></blockquote>
+<dl>
+<dt>..math::</dt><dd><blockquote>
+<div><p>H = h</p>
+</div></blockquote>
+<p>Otherwise we include the free surface elevation:</p>
 </dd>
-<dt>Otherwise we include the free surface elevation:</dt><dd><p><span class="math notranslate nohighlight">\(H = h + \eta\)</span></p>
-</dd>
-</dl>
+<dt>..math::</dt><dd><blockquote>
+<div><p>H = h + eta</p>
+</div></blockquote>
 <p>and if <cite>use_wetting_and_drying</cite>, includes a bathymetry displacement term
 to ensure a positive depth (see Karna et al. 2011):</p>
-<blockquote>
-<div><p><span class="math notranslate nohighlight">\(H = h + f(h+\eta) + \eta\)</span></p>
-</div></blockquote>
-<dl class="simple">
-<dt>where</dt><dd><p><span class="math notranslate nohighlight">\(f(h+\eta) = (\sqrt{(h+\eta)^2 +\alpha^2} - (h+\eta))/2\)</span></p>
 </dd>
-</dl>
+<dt>..math::</dt><dd><blockquote>
+<div><p>H = h + f(h+eta) + eta</p>
+</div></blockquote>
+<p>where</p>
+</dd>
+<dt>..math::</dt><dd><blockquote>
+<div><p>f(h+eta) = (sqrt{(h+eta)^2 +alpha^2} - (h+eta))/2</p>
+</div></blockquote>
 <p>This introduces a wetting-drying parameter <span class="math notranslate nohighlight">\(\alpha\)</span>, with dimensions
 of length. The value for <span class="math notranslate nohighlight">\(\alpha\)</span> is specified by
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">ModelOptions.wetting_and_drying_alpha</span></code>, in units of meters. The
 default value is 0.5, but the appropriate value is problem specific and
 should be set by the user.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="thetis.utility.DepthExpression.get_total_depth">
 <code class="sig-name descname"><span class="pre">get_total_depth</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/thetis/utility.html#DepthExpression.get_total_depth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#thetis.utility.DepthExpression.get_total_depth" title="Permalink to this definition">¶</a></dt>

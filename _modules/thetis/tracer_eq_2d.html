@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.tracer_eq_2d &#8212; Thetis 0+untagged.1675.g2c5c7fa documentation</title>
+    <title>thetis.tracer_eq_2d &#8212; Thetis 0+untagged.1676.g1d09a98 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -232,13 +232,14 @@
 <span class="sd">        \cdot \text{avg}(\mu_h \nabla_h T) dS</span>
 <span class="sd">        - \int_{\mathcal{I}_h\cup\mathcal{I}_v} \text{jump}(T \textbf{n}_h)</span>
 <span class="sd">        \cdot \text{avg}(\mu_h  \nabla \phi) dS \\</span>
-<span class="sd">        &amp;+ \int_{\mathcal{I}_h\cup\mathcal{I}_v} \sigma \text{avg}(\mu_h) \text{jump}(T \textbf{n}_h) \cdot</span>
-<span class="sd">            \text{jump}(\phi \textbf{n}_h) dS \\</span>
+<span class="sd">        &amp;+ \int_{\mathcal{I}_h\cup\mathcal{I}_v} \sigma \text{avg}(\mu_h) \text{jump}(T \textbf{n}_h)</span>
+<span class="sd">        \cdot \text{jump}(\phi \textbf{n}_h) dS \\</span>
 <span class="sd">        &amp;- \int_\Gamma \mu_h (\nabla_h \phi) \cdot \textbf{n}_h ds</span>
 
 <span class="sd">    where :math:`\sigma` is a penalty parameter, see Hillewaert (2013).</span>
 
 <span class="sd">    For the continuous Galerkin method we use</span>
+
 <span class="sd">    .. math::</span>
 <span class="sd">        -\int_\Omega \nabla_h \cdot (\mu_h \nabla_h T) \phi dx</span>
 <span class="sd">        = \int_\Omega \mu_h (\nabla_h \phi) \cdot (\nabla_h T) dx.</span>
@@ -351,9 +352,12 @@
                 <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;test_function&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span>
 
         <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_terms</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TracerEquation2D.add_terms"><a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq_2d.TracerEquation2D.add_terms">[docs]</a>    <span class="k">def</span> <span class="nf">add_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalDiffusionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">SourceTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">SourceTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
