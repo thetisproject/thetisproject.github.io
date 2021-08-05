@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.solver &#8212; Thetis 0+untagged.1676.g1d09a98 documentation</title>
+    <title>thetis.solver &#8212; Thetis 0+untagged.1720.g734247e documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -37,7 +37,6 @@
         <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
         <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
         <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
-        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetis/branches" title="Thetis build status">Jenkins</a></li>
       </ul>
     </div><!-- .menu -->
   </div><!-- #access -->
@@ -57,6 +56,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.utility3d</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">shallowwater_eq</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">momentum_eq</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">tracer_eq</span>
@@ -64,7 +64,6 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">coupled_timeintegrator</span>
 <span class="kn">import</span> <span class="nn">thetis.limiter</span> <span class="k">as</span> <span class="nn">limiter</span>
 <span class="kn">import</span> <span class="nn">time</span> <span class="k">as</span> <span class="nn">time_mod</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mpi4py</span> <span class="kn">import</span> <span class="n">MPI</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">exporter</span>
 <span class="kn">import</span> <span class="nn">weakref</span>
@@ -208,6 +207,7 @@
         <span class="sd">&quot;&quot;&quot;Do export initial state. False if continuing a simulation&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_continued</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_field_preproc_funcs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="FlowSolver.compute_dx_factor"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.compute_dx_factor">[docs]</a>    <span class="k">def</span> <span class="nf">compute_dx_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -284,7 +284,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">u</span> <span class="o">=</span> <span class="n">u_scale</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">u_scale</span><span class="p">,</span> <span class="n">Constant</span><span class="p">):</span>
-            <span class="n">u</span> <span class="o">=</span> <span class="n">u_scale</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">u_scale</span><span class="p">)</span>
         <span class="n">min_dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">h_elem_size_2d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
         <span class="c1"># alpha = 0.5 if self.options.element_family == &#39;rt-dg&#39; else 1.0</span>
         <span class="c1"># dt = alpha*1.0/10.0/(self.options.polynomial_degree + 1)*min_dx/u</span>
@@ -306,7 +306,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">w</span> <span class="o">=</span> <span class="n">w_scale</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">w_scale</span><span class="p">,</span> <span class="n">Constant</span><span class="p">):</span>
-            <span class="n">w</span> <span class="o">=</span> <span class="n">w_scale</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">w_scale</span><span class="p">)</span>
         <span class="n">min_dz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">v_elem_size_2d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
         <span class="c1"># alpha = 0.5 if self.options.element_family == &#39;rt-dg&#39; else 1.0</span>
         <span class="c1"># dt = alpha*1.0/1.5/(self.options.polynomial_degree + 1)*min_dz/w</span>
@@ -325,7 +325,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">nu</span> <span class="o">=</span> <span class="n">nu_scale</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nu_scale</span><span class="p">,</span> <span class="n">Constant</span><span class="p">):</span>
-            <span class="n">nu</span> <span class="o">=</span> <span class="n">nu_scale</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">nu</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">nu_scale</span><span class="p">)</span>
         <span class="n">min_dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">h_elem_size_2d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
         <span class="n">factor</span> <span class="o">=</span> <span class="mf">2.0</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="o">==</span> <span class="s1">&#39;bdm-dg&#39;</span><span class="p">:</span>
@@ -342,24 +342,34 @@
 <span class="sd">        Computes number of elements, nodes etc and prints to sdtout</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">nnodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1_2d</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span>
-        <span class="n">ntriangles</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1DG_2d</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">P1DG_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1DG_2d</span>
+        <span class="n">nelem2d</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">P1DG_2d</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span><span class="o">/</span><span class="n">P1DG_2d</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">()</span><span class="o">.</span><span class="n">num_vertices</span><span class="p">())</span>
         <span class="n">nlayers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">layers</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="n">nprisms</span> <span class="o">=</span> <span class="n">ntriangles</span><span class="o">*</span><span class="n">nlayers</span>
-        <span class="n">dofs_per_elem</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">finat_element</span><span class="o">.</span><span class="n">entity_dofs</span><span class="p">())</span>
-        <span class="n">ntracer_dofs</span> <span class="o">=</span> <span class="n">dofs_per_elem</span><span class="o">*</span><span class="n">nprisms</span>
+        <span class="n">nprisms</span> <span class="o">=</span> <span class="n">nelem2d</span><span class="o">*</span><span class="n">nlayers</span>
+        <span class="n">dofs_elev2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">H_2d</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span>
+        <span class="n">dofs_u2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U_2d</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span>
+        <span class="n">dofs_u3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span>
+        <span class="n">dofs_w3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span>
+        <span class="n">dofs_t3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span>
+        <span class="n">dofs_t3d_core</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dofs_t3d</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
         <span class="n">min_h_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">h_elem_size_2d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">MPI</span><span class="o">.</span><span class="n">MIN</span><span class="p">)</span>
         <span class="n">max_h_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">h_elem_size_2d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">MPI</span><span class="o">.</span><span class="n">MAX</span><span class="p">)</span>
         <span class="n">min_v_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">v_elem_size_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">MPI</span><span class="o">.</span><span class="n">MIN</span><span class="p">)</span>
         <span class="n">max_v_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">v_elem_size_3d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">MPI</span><span class="o">.</span><span class="n">MAX</span><span class="p">)</span>
 
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;2D mesh: </span><span class="si">{:}</span><span class="s1"> nodes, </span><span class="si">{:}</span><span class="s1"> triangles&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nnodes</span><span class="p">,</span> <span class="n">ntriangles</span><span class="p">))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;3D mesh: </span><span class="si">{:}</span><span class="s1"> layers, </span><span class="si">{:}</span><span class="s1"> prisms&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nlayers</span><span class="p">,</span> <span class="n">nprisms</span><span class="p">))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Horizontal element size: </span><span class="si">{:.2f}</span><span class="s1"> ... </span><span class="si">{:.2f}</span><span class="s1"> m&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_h_size</span><span class="p">,</span> <span class="n">max_h_size</span><span class="p">))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Vertical element size: </span><span class="si">{:.3f}</span><span class="s1"> ... </span><span class="si">{:.3f}</span><span class="s1"> m&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_v_size</span><span class="p">,</span> <span class="n">max_v_size</span><span class="p">))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Element family: </span><span class="si">{:}</span><span class="s1">, degree: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">element_family</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span><span class="p">))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Number of tracer DOFs: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ntracer_dofs</span><span class="p">))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Number of cores: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Tracer DOFs per core: ~</span><span class="si">{:.1f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">ntracer_dofs</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">size</span><span class="p">))</span></div>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Element family: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">element_family</span><span class="si">}</span><span class="s1">, degree: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;2D cell type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;2D mesh: </span><span class="si">{</span><span class="n">nnodes</span><span class="si">}</span><span class="s1"> vertices, </span><span class="si">{</span><span class="n">nelem2d</span><span class="si">}</span><span class="s1"> elements&#39;</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;3D mesh: </span><span class="si">{</span><span class="n">nlayers</span><span class="si">}</span><span class="s1"> layers, </span><span class="si">{</span><span class="n">nprisms</span><span class="si">}</span><span class="s1"> prisms&#39;</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Horizontal element size: </span><span class="si">{</span><span class="n">min_h_size</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1"> ... </span><span class="si">{</span><span class="n">max_h_size</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1"> m&#39;</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Vertical element size: </span><span class="si">{</span><span class="n">min_v_size</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> ... </span><span class="si">{</span><span class="n">max_v_size</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> m&#39;</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of 2D elevation DOFs: </span><span class="si">{</span><span class="n">dofs_elev2d</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of 2D velocity DOFs: </span><span class="si">{</span><span class="n">dofs_u2d</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of 3D h. velocity DOFs: </span><span class="si">{</span><span class="n">dofs_u3d</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of 3D v. velocity DOFs: </span><span class="si">{</span><span class="n">dofs_w3d</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of 3D tracer DOFs: </span><span class="si">{</span><span class="n">dofs_t3d</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of cores: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Tracer DOFs per core: ~</span><span class="si">{</span><span class="n">dofs_t3d_core</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FlowSolver.set_time_step"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.set_time_step">[docs]</a>    <span class="k">def</span> <span class="nf">set_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -647,9 +657,41 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span></div>
 
+<div class="viewcode-block" id="FlowSolver.add_new_field"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.add_new_field">[docs]</a>    <span class="k">def</span> <span class="nf">add_new_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">shortname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">preproc_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a field to :attr:`fields`.</span>
+
+<span class="sd">        :arg function: representation of the field as a :class:`Function`</span>
+<span class="sd">        :arg label: field label used internally by Thetis, e.g. &#39;tracer_3d&#39;</span>
+<span class="sd">        :arg name: human readable name for the tracer field, e.g. &#39;Tracer concentration&#39;</span>
+<span class="sd">        :arg filename: file name for outputs, e.g. &#39;Tracer3d&#39;</span>
+<span class="sd">        :kwarg shortname: short version of name, e.g. &#39;Tracer&#39;</span>
+<span class="sd">        :kwarg unit: units for field, e.g. &#39;-&#39;</span>
+<span class="sd">        :kwarg preproc_func: optional pre-processor function which will be called before exporting</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">Function</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">shortname</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shortname</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">preproc_func</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">callable</span><span class="p">(</span><span class="n">preproc_func</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">field_metadata</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Field &#39;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&#39; already exists.&quot;</span>
+        <span class="k">assert</span> <span class="s1">&#39; &#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">label</span><span class="p">,</span> <span class="s2">&quot;Labels cannot contain spaces&quot;</span>
+        <span class="k">assert</span> <span class="s1">&#39; &#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;Filenames cannot contain spaces&quot;</span>
+        <span class="n">field_metadata</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s1">&#39;shortname&#39;</span><span class="p">:</span> <span class="n">shortname</span> <span class="ow">or</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="n">unit</span><span class="p">,</span>
+            <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">function</span>
+        <span class="k">if</span> <span class="n">preproc_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_field_preproc_funcs</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">preproc_func</span></div>
+
 <div class="viewcode-block" id="FlowSolver.create_equations"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.create_equations">[docs]</a>    <span class="k">def</span> <span class="nf">create_equations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates all dynamic equations and time integrators</span>
+<span class="sd">        Creates equation instances</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s1">&#39;uv_3d&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">create_fields</span><span class="p">()</span>
@@ -770,35 +812,6 @@
                 <span class="n">v_elem_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">v_elem_size_3d</span><span class="p">,</span>
                 <span class="n">h_elem_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">h_elem_size_3d</span><span class="p">)</span>
 
-        <span class="c1"># ----- Time integrators</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dt_mode</span> <span class="o">=</span> <span class="s1">&#39;3d&#39;</span>  <span class="c1"># &#39;split&#39;|&#39;2d&#39;|&#39;3d&#39; use constant 2d/3d dt, or split</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">==</span> <span class="s1">&#39;LeapFrog&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">coupled_timeintegrator</span><span class="o">.</span><span class="n">CoupledLeapFrogAM3</span><span class="p">(</span><span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">==</span> <span class="s1">&#39;SSPRK22&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">coupled_timeintegrator</span><span class="o">.</span><span class="n">CoupledTwoStageRK</span><span class="p">(</span><span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unknown time integrator type: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span><span class="p">))</span>
-
-        <span class="c1"># ----- File exporters</span>
-        <span class="c1"># create export_managers and store in a list</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">no_exports</span><span class="p">:</span>
-            <span class="n">e</span> <span class="o">=</span> <span class="n">exporter</span><span class="o">.</span><span class="n">ExportManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span>
-                                       <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span><span class="p">,</span>
-                                       <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span>
-                                       <span class="n">field_metadata</span><span class="p">,</span>
-                                       <span class="n">export_type</span><span class="o">=</span><span class="s1">&#39;vtk&#39;</span><span class="p">,</span>
-                                       <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;vtk&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
-            <span class="n">hdf5_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">)</span>
-            <span class="n">e</span> <span class="o">=</span> <span class="n">exporter</span><span class="o">.</span><span class="n">ExportManager</span><span class="p">(</span><span class="n">hdf5_dir</span><span class="p">,</span>
-                                       <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">fields_to_export_hdf5</span><span class="p">,</span>
-                                       <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span>
-                                       <span class="n">field_metadata</span><span class="p">,</span>
-                                       <span class="n">export_type</span><span class="o">=</span><span class="s1">&#39;hdf5&#39;</span><span class="p">,</span>
-                                       <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;hdf5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
-
         <span class="c1"># ----- Operators</span>
         <span class="n">tot_uv_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_dav_3d</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">w_solver</span> <span class="o">=</span> <span class="n">VerticalVelocitySolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">w_3d</span><span class="p">,</span>
@@ -863,12 +876,32 @@
                                                                 <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">max_h_diff</span><span class="p">,</span>
                                                                 <span class="n">weak_form</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="c1"># ----- set initial values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="FlowSolver.create_timestepper"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.create_timestepper">[docs]</a>    <span class="k">def</span> <span class="nf">create_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates time stepper instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;equations&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_equations</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt_mode</span> <span class="o">=</span> <span class="s1">&#39;3d&#39;</span>  <span class="c1"># &#39;split&#39;|&#39;2d&#39;|&#39;3d&#39; use constant 2d/3d dt, or split</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">==</span> <span class="s1">&#39;LeapFrog&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">coupled_timeintegrator</span><span class="o">.</span><span class="n">CoupledLeapFrogAM3</span><span class="p">(</span><span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">==</span> <span class="s1">&#39;SSPRK22&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span> <span class="o">=</span> <span class="n">coupled_timeintegrator</span><span class="o">.</span><span class="n">CoupledTwoStageRK</span><span class="p">(</span><span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unknown time integrator type: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span><span class="p">))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bathymetry_cg_2d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh_updater</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compute_mesh_stats</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_time_step</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_2d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_export_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span>
+
         <span class="c1"># compute maximal diffusivity for explicit schemes</span>
         <span class="n">degree_h</span><span class="p">,</span> <span class="n">degree_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
         <span class="n">max_diff_alpha</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="mf">60.0</span><span class="o">/</span><span class="nb">max</span><span class="p">((</span><span class="n">degree_h</span><span class="o">*</span><span class="p">(</span><span class="n">degree_h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span> <span class="mf">1.0</span><span class="p">)</span>  <span class="c1"># FIXME depends on element type and order</span>
@@ -876,9 +909,53 @@
         <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">max_h_diff</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span>
         <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;max h diff </span><span class="si">{:}</span><span class="s1"> - </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">d</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">next_export_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="FlowSolver.create_exporters"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.create_exporters">[docs]</a>    <span class="k">def</span> <span class="nf">create_exporters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates file exporters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;timestepper&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_timestepper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># ----- File exporters</span>
+        <span class="c1"># create export_managers and store in a list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">no_exports</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">exporter</span><span class="o">.</span><span class="n">ExportManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span>
+                                       <span class="n">field_metadata</span><span class="p">,</span>
+                                       <span class="n">export_type</span><span class="o">=</span><span class="s1">&#39;vtk&#39;</span><span class="p">,</span>
+                                       <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+                                       <span class="n">preproc_funcs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_field_preproc_funcs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;vtk&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+            <span class="n">hdf5_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">)</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">exporter</span><span class="o">.</span><span class="n">ExportManager</span><span class="p">(</span><span class="n">hdf5_dir</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">fields_to_export_hdf5</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span>
+                                       <span class="n">field_metadata</span><span class="p">,</span>
+                                       <span class="n">export_type</span><span class="o">=</span><span class="s1">&#39;hdf5&#39;</span><span class="p">,</span>
+                                       <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+                                       <span class="n">preproc_funcs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_field_preproc_funcs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;hdf5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="FlowSolver.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates function spaces, equations, time stepper and exporters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="p">,</span> <span class="s1">&#39;U&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_function_spaces</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;equations&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_equations</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;timestepper&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_timestepper</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;exporters&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_exporters</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="FlowSolver.assign_initial_conditions"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.assign_initial_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">assign_initial_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">salt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                   <span class="n">uv_2d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uv_3d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tke</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">psi</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -901,7 +978,7 @@
 <span class="sd">        :type psi: scalar 3D :class:`Function`, :class:`Constant`, or an expression</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_equations</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">elev</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_2d</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">elev</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">uv_2d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -985,7 +1062,7 @@
 <span class="sd">        :kwarg int iteration: Overrides the iteration count in the hdf5 files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_equations</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">outputdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">outputdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_continued</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1117,7 +1194,7 @@
 <span class="sd">            be called on every export.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_equations</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">check_salinity_conservation</span> <span class="o">&amp;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">check_salinity_overshoot</span> <span class="o">&amp;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">solve_salinity</span>
@@ -1219,7 +1296,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2020, Tuomas Karna et al..
+        &#169; Copyright 2016-2021, Tuomas Kärnä et al..
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
     </div>
   </body>

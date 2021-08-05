@@ -46,11 +46,11 @@ CommonModelOptions.\ **coriolis_frequency** : FiredrakeScalarExpression
 
     UFL scalar expression
 
-CommonModelOptions.\ **element_family** : 'dg-dg'|'rt-dg'|'bdm-dg'|'dg-cg'
+CommonModelOptions.\ **element_family** : 'dg-dg'|'rt-dg'|'dg-cg'
     Finite element family
     
-    2D solver supports 'dg-dg', 'rt-dg', 'bdm-dg', or 'dg-cg' velocity-pressure pairs.
-    3D solver supports 'dg-dg', 'rt-dg', or 'bdm-dg' velocity-pressure pairs.
+    2D solver supports 'dg-dg', 'rt-dg', or 'dg-cg' velocity-pressure pairs.
+    3D solver supports 'dg-dg', or 'rt-dg' velocity-pressure pairs.
 
     Default:
 
@@ -78,21 +78,11 @@ CommonModelOptions.\ **fields_to_export_hdf5** : List
     []
 
 CommonModelOptions.\ **horizontal_diffusivity** : FiredrakeCoefficient
-    Horizontal diffusivity for tracers and sediment
+    Horizontal diffusivity for tracers
 
     Default:
 
     Function
-
-CommonModelOptions.\ **horizontal_diffusivity_scale** : FiredrakeConstantTraitlet
-    Maximum horizontal diffusivity
-    
-    Used to compute the mesh Peclet number in
-    the 2D tracer SUPG stabilization scheme.
-
-    Default:
-
-    Constant(1.0)
 
 CommonModelOptions.\ **horizontal_velocity_scale** : FiredrakeConstantTraitlet
     Maximum horizontal velocity magnitude
@@ -165,15 +155,6 @@ CommonModelOptions.\ **momentum_source_2d** : FiredrakeVectorExpression
 
     UFL vector expression
 
-CommonModelOptions.\ **nikuradse_bed_roughness** : FiredrakeScalarExpression
-    Nikuradse bed roughness length used to construct the 2D quadratic drag parameter :math:`C_D`.
-    
-    In sediment transport this term is usually three times the average sediment diameter size.
-
-    Default:
-
-    UFL scalar expression
-
 CommonModelOptions.\ **no_exports** : Bool
     Do not store any outputs to disk
     
@@ -183,15 +164,6 @@ CommonModelOptions.\ **no_exports** : Bool
     Default:
 
     False
-
-CommonModelOptions.\ **norm_smoother** : FiredrakeConstantTraitlet
-    Coefficient used to avoid non-differentiable functions in the continuous formulation of the velocity norm in
-    the quadratic bottom drag term in the momentum equation. This replaces the velocity norm in the quadratic
-    bottom drag term with :math:`\|u\| \approx \sqrt{\|u\|^2 + \alpha^2}`
-
-    Default:
-
-    Constant(0.0)
 
 CommonModelOptions.\ **output_directory** : Unicode
     Directory where model output files are stored
@@ -232,20 +204,6 @@ CommonModelOptions.\ **simulation_export_time** : PositiveFloat
     Default:
 
     100.0
-
-CommonModelOptions.\ **sipg_factor** : FiredrakeScalarExpression
-    Penalty parameter scaling factor for horizontal viscosity terms.
-
-    Default:
-
-    Constant(1.0)
-
-CommonModelOptions.\ **sipg_factor_tracer** : FiredrakeScalarExpression
-    Penalty parameter scaling factor for horizontal diffusivity terms.
-
-    Default:
-
-    Constant(1.0)
 
 CommonModelOptions.\ **timestep** : PositiveFloat
     Time step
@@ -327,13 +285,6 @@ CommonModelOptions.\ **wind_stress** : FiredrakeVectorExpression
     Default:
 
     UFL vector expression
-
-ModelOptions3d.\ **bottom_roughness** : FiredrakeScalarExpression
-    Bottom roughness length in meters.
-
-    Default:
-
-    UFL scalar expression
 
 ModelOptions3d.\ **check_salinity_conservation** : Bool
     Compute total salinity mass at every export
@@ -451,13 +402,6 @@ ModelOptions3d.\ **horizontal_diffusivity** : FiredrakeScalarExpression
 
     UFL scalar expression
 
-ModelOptions3d.\ **internal_pg_scalar** : FiredrakeConstantTraitlet
-    A constant to scale the internal pressure gradient. Used to ramp up the model.
-
-    Default:
-
-    None
-
 ModelOptions3d.\ **momentum_source_3d** : FiredrakeVectorExpression
     Source term for 3D momentum equation
 
@@ -471,34 +415,6 @@ ModelOptions3d.\ **salinity_source_3d** : FiredrakeScalarExpression
     Default:
 
     UFL scalar expression
-
-ModelOptions3d.\ **sipg_factor_turb** : FiredrakeScalarExpression
-    Penalty parameter scaling factor for horizontal diffusivity terms of the turbulence model.
-
-    Default:
-
-    Constant(1.0)
-
-ModelOptions3d.\ **sipg_factor_vertical** : FiredrakeScalarExpression
-    Penalty parameter scaling factor for vertical viscosity terms.
-
-    Default:
-
-    Constant(1.0)
-
-ModelOptions3d.\ **sipg_factor_vertical_tracer** : FiredrakeScalarExpression
-    Penalty parameter scaling factor for vertical diffusivity terms.
-
-    Default:
-
-    Constant(1.0)
-
-ModelOptions3d.\ **sipg_factor_vertical_turb** : FiredrakeScalarExpression
-    Penalty parameter scaling factor for vertical diffusivity terms of the turbulence model.
-
-    Default:
-
-    Constant(1.0)
 
 ModelOptions3d.\ **smagorinsky_coefficient** : FiredrakeConstantTraitlet
     Smagorinsky viscosity coefficient :math:`C_S`
@@ -665,7 +581,7 @@ ModelOptions3d.\ **turbulence_model_type** : 'gls'|'pacanowski'
     
             1.0
     
-        ModelOptions3d.turbulence_model_options.\ **closure_name** : 'k-epsilon'|'k-omega'|'Generic Length Scale'
+        ModelOptions3d.turbulence_model_options.\ **closure_name** : 'k-epsilon'|'k-omega'|'Generic Lenght Scale'
             Name of two-equation closure
     
             Default:
@@ -695,36 +611,22 @@ ModelOptions3d.\ **turbulence_model_type** : 'gls'|'pacanowski'
     
             True
     
-        ModelOptions3d.turbulence_model_options.\ **compute_galperin_clim** : Bool
-            bool: compute c_lim length scale limiting factor
-    
-            Default:
-    
-            True
-    
         ModelOptions3d.turbulence_model_options.\ **compute_kappa** : Bool
             bool: compute von Karman constant from :attr:`schmidt_nb_psi`
     
             Default:
     
-            False
+            True
     
         ModelOptions3d.turbulence_model_options.\ **compute_len_min** : Bool
             bool: compute min_len from k_min and psi_min
     
             Default:
     
-            False
+            True
     
         ModelOptions3d.turbulence_model_options.\ **compute_psi_min** : Bool
             bool: compute psi_len from k_min and eps_min
-    
-            Default:
-    
-            False
-    
-        ModelOptions3d.turbulence_model_options.\ **compute_schmidt_nb_psi** : Bool
-            bool: compute psi Schmidt number
     
             Default:
     
@@ -742,7 +644,7 @@ ModelOptions3d.\ **turbulence_model_type** : 'gls'|'pacanowski'
     
             Default:
     
-            1e-14
+            1e-10
     
         ModelOptions3d.turbulence_model_options.\ **f_wall** : Float
             float: wall function parameter
@@ -751,19 +653,19 @@ ModelOptions3d.\ **turbulence_model_type** : 'gls'|'pacanowski'
     
             1.0
     
-        ModelOptions3d.turbulence_model_options.\ **galperin_clim** : PositiveFloat
-            float: Galperin length scale limitation parameter
+        ModelOptions3d.turbulence_model_options.\ **galperin_lim** : PositiveFloat
+            float: Galperin lenght scale limitation parameter
     
             Default:
     
-            0.3
+            0.56
     
         ModelOptions3d.turbulence_model_options.\ **k_min** : PositiveFloat
             float: minimum value for turbulent kinetic energy
     
             Default:
     
-            1e-06
+            3.7e-08
     
         ModelOptions3d.turbulence_model_options.\ **kappa** : Float
             float: von Karman constant
@@ -775,21 +677,21 @@ ModelOptions3d.\ **turbulence_model_type** : 'gls'|'pacanowski'
             0.4
     
         ModelOptions3d.turbulence_model_options.\ **len_min** : PositiveFloat
-            float: minimum value for turbulent length scale
+            float: minimum value for turbulent lenght scale
     
             Default:
     
-            1e-12
+            1e-10
     
         ModelOptions3d.turbulence_model_options.\ **limit_eps** : Bool
-            bool: apply Galperin length scale limit on epsilon
+            bool: apply Galperin lenght scale limit on epsilon
     
             Default:
     
             False
     
         ModelOptions3d.turbulence_model_options.\ **limit_len** : Bool
-            bool: apply Galperin length scale limit
+            bool: apply Galperin lenght scale limit
     
             Default:
     
@@ -803,11 +705,11 @@ ModelOptions3d.\ **turbulence_model_type** : 'gls'|'pacanowski'
             True
     
         ModelOptions3d.turbulence_model_options.\ **limit_psi** : Bool
-            bool: apply Galperin length scale limit on psi
+            bool: apply Galperin lenght scale limit on psi
     
             Default:
     
-            True
+            False
     
         ModelOptions3d.turbulence_model_options.\ **m** : Float
             float: parameter m for the definition of psi
@@ -835,7 +737,7 @@ ModelOptions3d.\ **turbulence_model_type** : 'gls'|'pacanowski'
     
             Default:
     
-            1e-14
+            1e-10
     
         ModelOptions3d.turbulence_model_options.\ **ri_st** : Float
             steady state gradient Richardson number
@@ -931,6 +833,15 @@ ModelOptions3d.\ **use_limiter_for_velocity** : Bool
 
     True
 
+ModelOptions3d.\ **use_parabolic_viscosity** : Bool
+    Use idealized parabolic eddy viscosity
+    
+    See :class:`.ParabolicViscosity`
+
+    Default:
+
+    False
+
 ModelOptions3d.\ **use_quadratic_density** : Bool
     Water density is projected to P2DGxP2 space.
     
@@ -958,6 +869,13 @@ ModelOptions3d.\ **use_quadratic_pressure** : Bool
 
 ModelOptions3d.\ **use_smagorinsky_viscosity** : Bool
     Use Smagorinsky horisontal viscosity parametrization
+
+    Default:
+
+    False
+
+ModelOptions3d.\ **use_smooth_eddy_viscosity** : Bool
+    Cast eddy viscosity to p1 space instead of p0
 
     Default:
 

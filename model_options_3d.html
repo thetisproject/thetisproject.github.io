@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>3D model options &#8212; Thetis 0+untagged.1676.g1d09a98 documentation</title>
+    <title>3D model options &#8212; Thetis 0+untagged.1720.g734247e documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -38,7 +38,6 @@
         <li class="page_item"><a href="funding.html" title="Our financial supporters">Funding</a></li>
         <li class="page_item"><a href="contact.html" title="Getting in touch">Contact</a></li>
         <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
-        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetis/branches" title="Thetis build status">Jenkins</a></li>
       </ul>
     </div><!-- .menu -->
   </div><!-- #access -->
@@ -79,9 +78,9 @@ Prints deviation from the initial volume to stdout.</p>
 <p>Default:</p>
 <p>UFL scalar expression</p>
 </dd>
-<dt>CommonModelOptions.<strong>element_family</strong><span class="classifier">‘dg-dg’|’rt-dg’|’bdm-dg’|’dg-cg’</span></dt><dd><p>Finite element family</p>
-<p>2D solver supports ‘dg-dg’, ‘rt-dg’, ‘bdm-dg’, or ‘dg-cg’ velocity-pressure pairs.
-3D solver supports ‘dg-dg’, ‘rt-dg’, or ‘bdm-dg’ velocity-pressure pairs.</p>
+<dt>CommonModelOptions.<strong>element_family</strong><span class="classifier">‘dg-dg’|’rt-dg’|’dg-cg’</span></dt><dd><p>Finite element family</p>
+<p>2D solver supports ‘dg-dg’, ‘rt-dg’, or ‘dg-cg’ velocity-pressure pairs.
+3D solver supports ‘dg-dg’, or ‘rt-dg’ velocity-pressure pairs.</p>
 <p>Default:</p>
 <p>‘dg-dg’</p>
 </dd>
@@ -97,15 +96,9 @@ Prints deviation from the initial volume to stdout.</p>
 <p>Default:</p>
 <p>[]</p>
 </dd>
-<dt>CommonModelOptions.<strong>horizontal_diffusivity</strong><span class="classifier">FiredrakeCoefficient</span></dt><dd><p>Horizontal diffusivity for tracers and sediment</p>
+<dt>CommonModelOptions.<strong>horizontal_diffusivity</strong><span class="classifier">FiredrakeCoefficient</span></dt><dd><p>Horizontal diffusivity for tracers</p>
 <p>Default:</p>
 <p>Function</p>
-</dd>
-<dt>CommonModelOptions.<strong>horizontal_diffusivity_scale</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Maximum horizontal diffusivity</p>
-<p>Used to compute the mesh Peclet number in
-the 2D tracer SUPG stabilization scheme.</p>
-<p>Default:</p>
-<p>Constant(1.0)</p>
 </dd>
 <dt>CommonModelOptions.<strong>horizontal_velocity_scale</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Maximum horizontal velocity magnitude</p>
 <p>Used to compute max stable advection time step.</p>
@@ -147,22 +140,11 @@ the 2D tracer SUPG stabilization scheme.</p>
 <p>Default:</p>
 <p>UFL vector expression</p>
 </dd>
-<dt>CommonModelOptions.<strong>nikuradse_bed_roughness</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Nikuradse bed roughness length used to construct the 2D quadratic drag parameter <span class="math notranslate nohighlight">\(C_D\)</span>.</p>
-<p>In sediment transport this term is usually three times the average sediment diameter size.</p>
-<p>Default:</p>
-<p>UFL scalar expression</p>
-</dd>
 <dt>CommonModelOptions.<strong>no_exports</strong><span class="classifier">Bool</span></dt><dd><p>Do not store any outputs to disk</p>
 <p>Disables VTK and HDF5 field outputs. and HDF5 diagnostic outputs.
 Used in CI test suite.</p>
 <p>Default:</p>
 <p>False</p>
-</dd>
-<dt>CommonModelOptions.<strong>norm_smoother</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Coefficient used to avoid non-differentiable functions in the continuous formulation of the velocity norm in
-the quadratic bottom drag term in the momentum equation. This replaces the velocity norm in the quadratic
-bottom drag term with <span class="math notranslate nohighlight">\(\|u\| \approx \sqrt{\|u\|^2 + \alpha^2}\)</span></p>
-<p>Default:</p>
-<p>Constant(0.0)</p>
 </dd>
 <dt>CommonModelOptions.<strong>output_directory</strong><span class="classifier">Unicode</span></dt><dd><p>Directory where model output files are stored</p>
 <p>Default:</p>
@@ -186,14 +168,6 @@ bottom drag term with <span class="math notranslate nohighlight">\(\|u\| \approx
 diagnostics will be computed</p>
 <p>Default:</p>
 <p>100.0</p>
-</dd>
-<dt>CommonModelOptions.<strong>sipg_factor</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Penalty parameter scaling factor for horizontal viscosity terms.</p>
-<p>Default:</p>
-<p>Constant(1.0)</p>
-</dd>
-<dt>CommonModelOptions.<strong>sipg_factor_tracer</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Penalty parameter scaling factor for horizontal diffusivity terms.</p>
-<p>Default:</p>
-<p>Constant(1.0)</p>
 </dd>
 <dt>CommonModelOptions.<strong>timestep</strong><span class="classifier">PositiveFloat</span></dt><dd><p>Time step</p>
 <p>Default:</p>
@@ -240,10 +214,6 @@ diagnostics will be computed</p>
 <dt>CommonModelOptions.<strong>wind_stress</strong><span class="classifier">FiredrakeVectorExpression</span></dt><dd><p>Stress at free surface (2D vector function)</p>
 <p>Default:</p>
 <p>UFL vector expression</p>
-</dd>
-<dt>ModelOptions3d.<strong>bottom_roughness</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Bottom roughness length in meters.</p>
-<p>Default:</p>
-<p>UFL scalar expression</p>
 </dd>
 <dt>ModelOptions3d.<strong>check_salinity_conservation</strong><span class="classifier">Bool</span></dt><dd><p>Compute total salinity mass at every export</p>
 <p>Prints deviation from the initial mass to stdout.</p>
@@ -313,10 +283,6 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p>UFL scalar expression</p>
 </dd>
-<dt>ModelOptions3d.<strong>internal_pg_scalar</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>A constant to scale the internal pressure gradient. Used to ramp up the model.</p>
-<p>Default:</p>
-<p>None</p>
-</dd>
 <dt>ModelOptions3d.<strong>momentum_source_3d</strong><span class="classifier">FiredrakeVectorExpression</span></dt><dd><p>Source term for 3D momentum equation</p>
 <p>Default:</p>
 <p>UFL vector expression</p>
@@ -325,24 +291,8 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p>UFL scalar expression</p>
 </dd>
-<dt>ModelOptions3d.<strong>sipg_factor_turb</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Penalty parameter scaling factor for horizontal diffusivity terms of the turbulence model.</p>
-<p>Default:</p>
-<p>Constant(1.0)</p>
-</dd>
-<dt>ModelOptions3d.<strong>sipg_factor_vertical</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Penalty parameter scaling factor for vertical viscosity terms.</p>
-<p>Default:</p>
-<p>Constant(1.0)</p>
-</dd>
-<dt>ModelOptions3d.<strong>sipg_factor_vertical_tracer</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Penalty parameter scaling factor for vertical diffusivity terms.</p>
-<p>Default:</p>
-<p>Constant(1.0)</p>
-</dd>
-<dt>ModelOptions3d.<strong>sipg_factor_vertical_turb</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Penalty parameter scaling factor for vertical diffusivity terms of the turbulence model.</p>
-<p>Default:</p>
-<p>Constant(1.0)</p>
-</dd>
 <dt>ModelOptions3d.<strong>smagorinsky_coefficient</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Smagorinsky viscosity coefficient <span class="math notranslate nohighlight">\(C_S\)</span></p>
-<p>See <a class="reference internal" href="thetis.html#thetis.utility.SmagorinskyViscosity" title="thetis.utility.SmagorinskyViscosity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SmagorinskyViscosity</span></code></a>.</p>
+<p>See <a class="reference internal" href="thetis.html#thetis.utility3d.SmagorinskyViscosity" title="thetis.utility3d.SmagorinskyViscosity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SmagorinskyViscosity</span></code></a>.</p>
 <p>Default:</p>
 <p>Constant(0.1)</p>
 </dd>
@@ -443,7 +393,7 @@ explicitly.</p>
 <p>Default:</p>
 <p>1.0</p>
 </dd>
-<dt>ModelOptions3d.turbulence_model_options.<strong>closure_name</strong><span class="classifier">‘k-epsilon’|’k-omega’|’Generic Length Scale’</span></dt><dd><p>Name of two-equation closure</p>
+<dt>ModelOptions3d.turbulence_model_options.<strong>closure_name</strong><span class="classifier">‘k-epsilon’|’k-omega’|’Generic Lenght Scale’</span></dt><dd><p>Name of two-equation closure</p>
 <p>Default:</p>
 <p>‘k-epsilon’</p>
 </dd>
@@ -460,23 +410,15 @@ explicitly.</p>
 <p>Default:</p>
 <p>True</p>
 </dd>
-<dt>ModelOptions3d.turbulence_model_options.<strong>compute_galperin_clim</strong><span class="classifier">Bool</span></dt><dd><p>bool: compute c_lim length scale limiting factor</p>
+<dt>ModelOptions3d.turbulence_model_options.<strong>compute_kappa</strong><span class="classifier">Bool</span></dt><dd><p>bool: compute von Karman constant from <code class="xref py py-attr docutils literal notranslate"><span class="pre">schmidt_nb_psi</span></code></p>
 <p>Default:</p>
 <p>True</p>
 </dd>
-<dt>ModelOptions3d.turbulence_model_options.<strong>compute_kappa</strong><span class="classifier">Bool</span></dt><dd><p>bool: compute von Karman constant from <code class="xref py py-attr docutils literal notranslate"><span class="pre">schmidt_nb_psi</span></code></p>
-<p>Default:</p>
-<p>False</p>
-</dd>
 <dt>ModelOptions3d.turbulence_model_options.<strong>compute_len_min</strong><span class="classifier">Bool</span></dt><dd><p>bool: compute min_len from k_min and psi_min</p>
 <p>Default:</p>
-<p>False</p>
+<p>True</p>
 </dd>
 <dt>ModelOptions3d.turbulence_model_options.<strong>compute_psi_min</strong><span class="classifier">Bool</span></dt><dd><p>bool: compute psi_len from k_min and eps_min</p>
-<p>Default:</p>
-<p>False</p>
-</dd>
-<dt>ModelOptions3d.turbulence_model_options.<strong>compute_schmidt_nb_psi</strong><span class="classifier">Bool</span></dt><dd><p>bool: compute psi Schmidt number</p>
 <p>Default:</p>
 <p>True</p>
 </dd>
@@ -486,34 +428,34 @@ explicitly.</p>
 </dd>
 <dt>ModelOptions3d.turbulence_model_options.<strong>eps_min</strong><span class="classifier">PositiveFloat</span></dt><dd><p>float: minimum value for epsilon</p>
 <p>Default:</p>
-<p>1e-14</p>
+<p>1e-10</p>
 </dd>
 <dt>ModelOptions3d.turbulence_model_options.<strong>f_wall</strong><span class="classifier">Float</span></dt><dd><p>float: wall function parameter</p>
 <p>Default:</p>
 <p>1.0</p>
 </dd>
-<dt>ModelOptions3d.turbulence_model_options.<strong>galperin_clim</strong><span class="classifier">PositiveFloat</span></dt><dd><p>float: Galperin length scale limitation parameter</p>
+<dt>ModelOptions3d.turbulence_model_options.<strong>galperin_lim</strong><span class="classifier">PositiveFloat</span></dt><dd><p>float: Galperin lenght scale limitation parameter</p>
 <p>Default:</p>
-<p>0.3</p>
+<p>0.56</p>
 </dd>
 <dt>ModelOptions3d.turbulence_model_options.<strong>k_min</strong><span class="classifier">PositiveFloat</span></dt><dd><p>float: minimum value for turbulent kinetic energy</p>
 <p>Default:</p>
-<p>1e-06</p>
+<p>3.7e-08</p>
 </dd>
 <dt>ModelOptions3d.turbulence_model_options.<strong>kappa</strong><span class="classifier">Float</span></dt><dd><p>float: von Karman constant</p>
 <p>If <code class="xref py py-attr docutils literal notranslate"><span class="pre">compute_kappa</span></code> is True this value will be overriden</p>
 <p>Default:</p>
 <p>0.4</p>
 </dd>
-<dt>ModelOptions3d.turbulence_model_options.<strong>len_min</strong><span class="classifier">PositiveFloat</span></dt><dd><p>float: minimum value for turbulent length scale</p>
+<dt>ModelOptions3d.turbulence_model_options.<strong>len_min</strong><span class="classifier">PositiveFloat</span></dt><dd><p>float: minimum value for turbulent lenght scale</p>
 <p>Default:</p>
-<p>1e-12</p>
+<p>1e-10</p>
 </dd>
-<dt>ModelOptions3d.turbulence_model_options.<strong>limit_eps</strong><span class="classifier">Bool</span></dt><dd><p>bool: apply Galperin length scale limit on epsilon</p>
+<dt>ModelOptions3d.turbulence_model_options.<strong>limit_eps</strong><span class="classifier">Bool</span></dt><dd><p>bool: apply Galperin lenght scale limit on epsilon</p>
 <p>Default:</p>
 <p>False</p>
 </dd>
-<dt>ModelOptions3d.turbulence_model_options.<strong>limit_len</strong><span class="classifier">Bool</span></dt><dd><p>bool: apply Galperin length scale limit</p>
+<dt>ModelOptions3d.turbulence_model_options.<strong>limit_len</strong><span class="classifier">Bool</span></dt><dd><p>bool: apply Galperin lenght scale limit</p>
 <p>Default:</p>
 <p>False</p>
 </dd>
@@ -521,9 +463,9 @@ explicitly.</p>
 <p>Default:</p>
 <p>True</p>
 </dd>
-<dt>ModelOptions3d.turbulence_model_options.<strong>limit_psi</strong><span class="classifier">Bool</span></dt><dd><p>bool: apply Galperin length scale limit on psi</p>
+<dt>ModelOptions3d.turbulence_model_options.<strong>limit_psi</strong><span class="classifier">Bool</span></dt><dd><p>bool: apply Galperin lenght scale limit on psi</p>
 <p>Default:</p>
-<p>True</p>
+<p>False</p>
 </dd>
 <dt>ModelOptions3d.turbulence_model_options.<strong>m</strong><span class="classifier">Float</span></dt><dd><p>float: parameter m for the definition of psi</p>
 <p>Default:</p>
@@ -539,7 +481,7 @@ explicitly.</p>
 </dd>
 <dt>ModelOptions3d.turbulence_model_options.<strong>psi_min</strong><span class="classifier">PositiveFloat</span></dt><dd><p>float: minimum value for psi</p>
 <p>Default:</p>
-<p>1e-14</p>
+<p>1e-10</p>
 </dd>
 <dt>ModelOptions3d.turbulence_model_options.<strong>ri_st</strong><span class="classifier">Float</span></dt><dd><p>steady state gradient Richardson number</p>
 <p>Default:</p>
@@ -601,6 +543,11 @@ explicitly.</p>
 <p>Default:</p>
 <p>True</p>
 </dd>
+<dt>ModelOptions3d.<strong>use_parabolic_viscosity</strong><span class="classifier">Bool</span></dt><dd><p>Use idealized parabolic eddy viscosity</p>
+<p>See <code class="xref py py-class docutils literal notranslate"><span class="pre">ParabolicViscosity</span></code></p>
+<p>Default:</p>
+<p>False</p>
+</dd>
 <dt>ModelOptions3d.<strong>use_quadratic_density</strong><span class="classifier">Bool</span></dt><dd><p>Water density is projected to P2DGxP2 space.</p>
 <p>This reduces pressure gradient errors associated with nonlinear
 equation of state.
@@ -618,6 +565,10 @@ pressure gradient is in the velocity space.</p>
 <p>False</p>
 </dd>
 <dt>ModelOptions3d.<strong>use_smagorinsky_viscosity</strong><span class="classifier">Bool</span></dt><dd><p>Use Smagorinsky horisontal viscosity parametrization</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>ModelOptions3d.<strong>use_smooth_eddy_viscosity</strong><span class="classifier">Bool</span></dt><dd><p>Cast eddy viscosity to p1 space instead of p0</p>
 <p>Default:</p>
 <p>False</p>
 </dd>
@@ -654,7 +605,7 @@ pressure gradient is in the velocity space.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2020, Tuomas Karna et al..
+        &#169; Copyright 2016-2021, Tuomas Kärnä et al..
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
     </div>
   </body>

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.rungekutta &#8212; Thetis 0+untagged.1675.g2c5c7fa documentation</title>
+    <title>thetis.rungekutta &#8212; Thetis 0+untagged.1720.g734247e documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -37,7 +37,6 @@
         <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
         <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
         <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
-        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetis/branches" title="Thetis build status">Jenkins</a></li>
       </ul>
     </div><!-- .menu -->
   </div><!-- #access -->
@@ -500,8 +499,8 @@
 <span class="sd">    All derived classes must define the Butcher tableau coefficients :attr:`a`,</span>
 <span class="sd">    :attr:`b`, :attr:`c`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
-                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span>
+                 <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -509,13 +508,14 @@
 <span class="sd">        :arg fields: Dictionary of fields that are passed to the equation</span>
 <span class="sd">        :type fields: dict of :class:`Function` or :class:`Constant` objects</span>
 <span class="sd">        :arg float dt: time step in seconds</span>
-<span class="sd">        :kwarg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
+<span class="sd">        :arg options: :class:`TimeStepperOptions` instance containing parameter values.</span>
+<span class="sd">        :arg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
 <span class="sd">        :kwarg dict solver_parameters: PETSc solver options</span>
 <span class="sd">        :kwarg terms_to_add: Defines which terms of the equation are to be</span>
 <span class="sd">            added to this solver. Default &#39;all&#39; implies [&#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;].</span>
 <span class="sd">        :type terms_to_add: &#39;all&#39; or list of &#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">DIRKGeneric</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DIRKGeneric</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;newtonls&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -615,9 +615,8 @@
 <div class="viewcode-block" id="DIRKGenericUForm"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGenericUForm">[docs]</a><span class="k">class</span> <span class="nc">DIRKGenericUForm</span><span class="p">(</span><span class="n">RungeKuttaTimeIntegrator</span><span class="p">):</span>
     <span class="n">cfl_coeff</span> <span class="o">=</span> <span class="n">CFL_UNCONDITIONALLY_STABLE</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
-                 <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>
-                 <span class="n">semi_implicit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span>
+                 <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -625,14 +624,15 @@
 <span class="sd">        :arg fields: Dictionary of fields that are passed to the equation</span>
 <span class="sd">        :type fields: dict of :class:`Function` or :class:`Constant` objects</span>
 <span class="sd">        :arg float dt: time step in seconds</span>
-<span class="sd">        :kwarg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
+<span class="sd">        :arg options: :class:`TimeStepperOptions` instance containing parameter values.</span>
+<span class="sd">        :arg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
 <span class="sd">        :kwarg dict solver_parameters: PETSc solver options</span>
 <span class="sd">        :kwarg terms_to_add: Defines which terms of the equation are to be</span>
 <span class="sd">            added to this solver. Default &#39;all&#39; implies [&#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;].</span>
 <span class="sd">        :type terms_to_add: &#39;all&#39; or list of &#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;.</span>
-<span class="sd">        :kwarg bool semi_implicit: If True use a linearized semi-implicit scheme</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
+        <span class="n">semi_implicit</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">use_semi_implicit_linearization</span>
         <span class="k">if</span> <span class="n">semi_implicit</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -796,7 +796,7 @@
 
 <span class="sd">    Implements the Butcher form. All terms in the equation are treated explicitly.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span>
                  <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
@@ -805,13 +805,14 @@
 <span class="sd">        :arg fields: Dictionary of fields that are passed to the equation</span>
 <span class="sd">        :type fields: dict of :class:`Function` or :class:`Constant` objects</span>
 <span class="sd">        :arg float dt: time step in seconds</span>
-<span class="sd">        :kwarg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
+<span class="sd">        :arg options: :class:`TimeStepperOptions` instance containing parameter values.</span>
+<span class="sd">        :arg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
 <span class="sd">        :kwarg dict solver_parameters: PETSc solver options</span>
 <span class="sd">        :kwarg terms_to_add: Defines which terms of the equation are to be</span>
 <span class="sd">            added to this solver. Default &#39;all&#39; implies [&#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;].</span>
 <span class="sd">        :type terms_to_add: &#39;all&#39; or list of &#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ERKGeneric</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ERKGeneric</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;old solution&#39;</span><span class="p">)</span>
 
@@ -897,7 +898,8 @@
 
 <span class="sd">    Implements the Shu-Osher form.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span>
+                 <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -905,13 +907,14 @@
 <span class="sd">        :arg fields: Dictionary of fields that are passed to the equation</span>
 <span class="sd">        :type fields: dict of :class:`Function` or :class:`Constant` objects</span>
 <span class="sd">        :arg float dt: time step in seconds</span>
-<span class="sd">        :kwarg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
+<span class="sd">        :arg options: :class:`TimeStepperOptions` instance containing parameter values.</span>
+<span class="sd">        :arg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
 <span class="sd">        :kwarg dict solver_parameters: PETSc solver options</span>
 <span class="sd">        :kwarg terms_to_add: Defines which terms of the equation are to be</span>
 <span class="sd">            added to this solver. Default &#39;all&#39; implies [&#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;].</span>
 <span class="sd">        :type terms_to_add: &#39;all&#39; or list of &#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ERKGenericShuOsher</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ERKGenericShuOsher</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">tendency</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;tendency&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stage_sol</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1007,7 +1010,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2020, Tuomas Karna et al..
+        &#169; Copyright 2016-2021, Tuomas Kärnä et al..
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
     </div>
   </body>
