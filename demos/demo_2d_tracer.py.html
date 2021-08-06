@@ -4,15 +4,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>2D tracer transport &#8212; Thetis 0+untagged.1720.g734247e documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/thetis.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>2D tracer transport &#8212; Thetis 0+untagged.1736.gc23b50a documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/thetis.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <!--[if lte IE 6]>
@@ -51,13 +52,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="d-tracer-transport">
+  <section id="d-tracer-transport">
 <h1>2D tracer transport<a class="headerlink" href="#d-tracer-transport" title="Permalink to this headline">¶</a></h1>
 <p>This demo shows how the Firedrake DG advection equation
 <a class="reference external" href="https://firedrakeproject.org/demos/DG_advection.py.html">demo</a>
 can be implemented in Thetis.</p>
 <p>The test case is the classic cosine-bell–cone–slotted-cylinder
-advection test case of <span id="id1">[<a class="reference internal" href="#id3">LeV96</a>]</span>. The domain is the unit
+advection test case of <span id="id1">[<a class="reference internal" href="#id3" title="Randall J. LeVeque. High-Resolution Conservative Algorithms for Advection in Incompressible Flow. SIAM Journal on Numerical Analysis, 33(2):627–665, 1996. doi:10.1137/0733033.">LeV96</a>]</span>. The domain is the unit
 square <span class="math notranslate nohighlight">\(\Omega=[0,1]^2\)</span> and the velocity corresponds to the
 solid body rotation <span class="math notranslate nohighlight">\(\vec{u} = (0.5 - y, x - 0.5)\)</span>.</p>
 <p>As usual, we start by importing Thetis.</p>
@@ -78,14 +79,34 @@ by Thetis to construct the solver object.</p>
 <span class="n">solver_obj</span> <span class="o">=</span> <span class="n">solver2d</span><span class="o">.</span><span class="n">FlowSolver2d</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">bathymetry2d</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To activate the tracer functionality, we set the option
-<code class="docutils literal notranslate"><span class="pre">solve_tracer</span> <span class="pre">=</span> <span class="pre">True</span></code>. As mentioned above, we are only solving
-the tracer equation, which can be specified by setting
-<code class="docutils literal notranslate"><span class="pre">tracer_only</span> <span class="pre">=</span> <span class="pre">True</span></code>.</p>
+<p>To activate the tracer functionality of the 2D model, we need to
+add tracer fields. This is done using the
+<a class="reference internal" href="../model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="../thetis.html#thetis.options.ModelOptions2d.add_tracer_2d" title="thetis.options.ModelOptions2d.add_tracer_2d"><code class="xref py py-attr docutils literal notranslate"><span class="pre">add_tracer_2d</span></code></a>
+method.</p>
+<p>The ‘label’ identifies the field inside Thetis.
+It should not contain spaces and typically ends with ‘_2d’
+for 2D problems. The ‘name’ exists for users to identify
+the field and may contain spaces. It will appear in the
+colourbar of any vtk outputs. Finally, the ‘filename’
+is used when storing outputs, so cannot contain spaces.
+The usual Thetis convention is to use CamelCase with a
+trailing ‘2d’.</p>
+<p>Source terms and diffusivity coefficients should also be provided
+through this interface. We have a pure advection problem with no
+diffusivity or source terms. However, such terms can be specified
+by replacing the <code class="docutils literal notranslate"><span class="pre">None</span></code> values below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span>
-<span class="n">options</span><span class="o">.</span><span class="n">solve_tracer</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">options</span><span class="o">.</span><span class="n">tracer_only</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tracer_2d&#39;</span><span class="p">]</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tracer_2d&#39;</span><span class="p">]</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Depth averaged tracer&#39;</span><span class="p">]</span>
+<span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Tracer2d&#39;</span><span class="p">]</span>
+<span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="n">labels</span>
+<span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">filenames</span><span class="p">):</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">add_tracer_2d</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">diffusivity</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As mentioned above, we are only solving the tracer equation, which
+can be specified by setting <code class="docutils literal notranslate"><span class="pre">tracer_only</span> <span class="pre">=</span> <span class="pre">True</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">tracer_only</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </div>
 <p>We will run for time <span class="math notranslate nohighlight">\(2\pi\)</span> – a full rotation – using a
@@ -93,28 +114,24 @@ strong stability preserving third order Runge-Kutta method (SSPRK33).
 For consistency with the Firedrake demo, Thetis’ automatic timestep
 computation functionality is switched off and the simulation time is
 split into 600 steps, giving a timestep close to the CFL limit.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;SSPRK33&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">tracer_timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;SSPRK33&#39;</span>
 <span class="n">options</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">300.0</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">15.0</span>
-<span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">use_automatic_timestep</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">options</span><span class="o">.</span><span class="n">tracer_timestepper_options</span><span class="o">.</span><span class="n">use_automatic_timestep</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
-<p>We have a pure advection problem with no diffusivity or source terms. However,
-such terms can be specified by replacing the <code class="docutils literal notranslate"><span class="pre">None</span></code> values below. For
-consistency with the Firedrake demo, we do not use stabilization or slope
+<p>For consistency with the Firedrake demo, we do not use stabilization or slope
 limiters, both of which are used by default in Thetis. Slope limiters are used
 to obtain non-oscillatory solutions.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">horizontal_diffusivity</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">options</span><span class="o">.</span><span class="n">tracer_source_2d</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">options</span><span class="o">.</span><span class="n">use_lax_friedrichs_tracer</span> <span class="o">=</span> <span class="kc">False</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">use_lax_friedrichs_tracer</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>The background tracer value is imposed as an upwind inflow condition.
 In general, this would be a <code class="docutils literal notranslate"><span class="pre">Function</span></code>, but here we just use a <code class="docutils literal notranslate"><span class="pre">Constant</span></code>
 value.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;tracer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;on_boundary&#39;</span><span class="p">:</span>  <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)}}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;tracer_2d&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;on_boundary&#39;</span><span class="p">:</span>  <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)}}</span>
 </pre></div>
 </div>
 <p>The velocity field is set up using a simple analytic expression.</p>
@@ -167,7 +184,7 @@ that we can check the <span class="math notranslate nohighlight">\(L^2\)</span>-
 </dd>
 </dl>
 </p>
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -179,7 +196,7 @@ that we can check the <span class="math notranslate nohighlight">\(L^2\)</span>-
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

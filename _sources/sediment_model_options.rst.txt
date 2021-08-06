@@ -1,0 +1,319 @@
+
+.. _sediment_model_options:
+
+2D sediment model options
+=========================
+
+This page lists all available options for the 2D sediment model.
+
+SedimentModelOptions.\ **average_sediment_size** : FiredrakeScalarExpression
+    Average sediment size
+
+    Default:
+
+    UFL scalar expression
+
+SedimentModelOptions.\ **bed_reference_height** : FiredrakeScalarExpression
+    Bottom bed reference height
+
+    Default:
+
+    UFL scalar expression
+
+SedimentModelOptions.\ **check_sediment_conservation** : Bool
+    Compute total sediment mass at every export
+    
+    Prints deviation from the initial mass to stdout.
+
+    Default:
+
+    False
+
+SedimentModelOptions.\ **check_sediment_overshoot** : Bool
+    Compute sediment overshoots at every export
+    
+    Prints overshoot values that exceed the initial range to stdout.
+
+    Default:
+
+    False
+
+SedimentModelOptions.\ **exner_timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'|'CrankNicolson'|'DIRK22'|'DIRK33'
+    Name of the exner time integrator
+
+    Default:
+
+    'CrankNicolson'
+    
+    Setting value implies configuration of sub-tree SedimentModelOptions.exner_timestepper_options:
+    
+    'SSPRK33':
+    
+        SedimentModelOptions.exner_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'ForwardEuler':
+    
+        SedimentModelOptions.exner_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'BackwardEuler':
+    
+        SedimentModelOptions.exner_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'CrankNicolson':
+    
+        SedimentModelOptions.exner_timestepper_options.\ **implicitness_theta** : BoundedFloat
+            implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.
+    
+            Default:
+    
+            0.5
+    
+    'DIRK22':
+    
+        SedimentModelOptions.exner_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'DIRK33':
+    
+        SedimentModelOptions.exner_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+
+
+SedimentModelOptions.\ **horizontal_diffusivity** : FiredrakeCoefficient
+    Horizontal diffusivity for sediment
+
+    Default:
+
+    Function
+
+SedimentModelOptions.\ **max_angle** : FiredrakeConstantTraitlet
+    Angle of repose for sediment slide mechanism in degrees
+
+    Default:
+
+    Constant(32.0)
+
+SedimentModelOptions.\ **morphological_acceleration_factor** : FiredrakeConstantTraitlet
+    Rate at which timestep in exner equation is accelerated compared to timestep for model
+    
+    timestep in exner = morphological_acceleration_factor * timestep
+
+    Default:
+
+    Constant(1.0)
+
+SedimentModelOptions.\ **morphological_viscosity** : FiredrakeScalarExpression
+    Viscosity used to derive morphology terms.
+    
+    Usually equal to horizontal viscosity but can be set to have a different value
+
+    Default:
+
+    UFL scalar expression
+
+SedimentModelOptions.\ **porosity** : FiredrakeCoefficient
+    Bed porosity for exner equation
+
+    Default:
+
+    Constant(0.4)
+
+SedimentModelOptions.\ **secondary_current_parameter** : FiredrakeConstantTraitlet
+    Parameter controlling secondary current
+
+    Default:
+
+    Constant(0.75)
+
+SedimentModelOptions.\ **sed_slide_length_scale** : FiredrakeConstantTraitlet
+    Length scale for sediment slide mechanism.
+    
+    This should normally be the average meshgrid size.
+
+    Default:
+
+    Constant(0.0)
+
+SedimentModelOptions.\ **sediment_density** : FiredrakeScalarExpression
+    Density of sediment
+
+    Default:
+
+    Constant(2650.0)
+
+SedimentModelOptions.\ **sediment_timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'|'CrankNicolson'|'DIRK22'|'DIRK33'
+    Name of the sediment time integrator
+
+    Default:
+
+    'CrankNicolson'
+    
+    Setting value implies configuration of sub-tree SedimentModelOptions.sediment_timestepper_options:
+    
+    'SSPRK33':
+    
+        SedimentModelOptions.sediment_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'ForwardEuler':
+    
+        SedimentModelOptions.sediment_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'BackwardEuler':
+    
+        SedimentModelOptions.sediment_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'CrankNicolson':
+    
+        SedimentModelOptions.sediment_timestepper_options.\ **implicitness_theta** : BoundedFloat
+            implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.
+    
+            Default:
+    
+            0.5
+    
+    'DIRK22':
+    
+        SedimentModelOptions.sediment_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'DIRK33':
+    
+        SedimentModelOptions.sediment_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+
+
+SedimentModelOptions.\ **slide_region** : FiredrakeScalarExpression
+    Region where sediment slide occurs.
+    
+    If None then sediment slide is applied over whole domain.
+
+    Default:
+
+    UFL scalar expression
+
+SedimentModelOptions.\ **slope_effect_angle_parameter** : FiredrakeConstantTraitlet
+    Parameter controlling angle of slope effect
+
+    Default:
+
+    Constant(0.6666666666666666)
+
+SedimentModelOptions.\ **slope_effect_parameter** : FiredrakeConstantTraitlet
+    Parameter controlling magnitude of slope effect
+
+    Default:
+
+    Constant(1.3)
+
+SedimentModelOptions.\ **solve_exner** : Bool
+    Solve exner equation for bed morphology
+
+    Default:
+
+    False
+
+SedimentModelOptions.\ **solve_suspended_sediment** : Bool
+    Solve suspended sediment transport equation
+
+    Default:
+
+    False
+
+SedimentModelOptions.\ **use_advective_velocity_correction** : Bool
+    Switch to apply correction to advective velocity used in sediment equation
+    
+    Accounts for mismatch between depth-averaged product of velocity with sediment
+    and product of depth-averaged velocity with depth-averaged sediment
+
+    Default:
+
+    True
+
+SedimentModelOptions.\ **use_angle_correction** : Bool
+    Switch to use slope effect angle correction
+
+    Default:
+
+    True
+
+SedimentModelOptions.\ **use_bedload** : Bool
+    Use bedload transport in sediment model
+
+    Default:
+
+    False
+
+SedimentModelOptions.\ **use_secondary_current** : Bool
+    Switch to use secondary current for helical flow effect
+
+    Default:
+
+    False
+
+SedimentModelOptions.\ **use_sediment_conservative_form** : Bool
+    Solve 2D sediment transport in the conservative form
+
+    Default:
+
+    False
+
+SedimentModelOptions.\ **use_sediment_slide** : Bool
+    Use sediment slide mechanism in sediment model
+
+    Default:
+
+    False
+
+SedimentModelOptions.\ **use_slope_mag_correction** : Bool
+    Switch to use slope effect magnitude correction
+
+    Default:
+
+    True
+

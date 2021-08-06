@@ -44,11 +44,11 @@ CommonModelOptions.\ **coriolis_frequency** : FiredrakeScalarExpression
 
     UFL scalar expression
 
-CommonModelOptions.\ **element_family** : 'dg-dg'|'rt-dg'|'dg-cg'
+CommonModelOptions.\ **element_family** : 'dg-dg'|'rt-dg'|'bdm-dg'|'dg-cg'
     Finite element family
     
-    2D solver supports 'dg-dg', 'rt-dg', or 'dg-cg' velocity-pressure pairs.
-    3D solver supports 'dg-dg', or 'rt-dg' velocity-pressure pairs.
+    2D solver supports 'dg-dg', 'rt-dg', 'bdm-dg', or 'dg-cg' velocity-pressure pairs.
+    3D solver supports 'dg-dg', 'rt-dg', or 'bdm-dg' velocity-pressure pairs.
 
     Default:
 
@@ -75,12 +75,15 @@ CommonModelOptions.\ **fields_to_export_hdf5** : List
 
     []
 
-CommonModelOptions.\ **horizontal_diffusivity** : FiredrakeCoefficient
-    Horizontal diffusivity for tracers
+CommonModelOptions.\ **horizontal_diffusivity_scale** : FiredrakeConstantTraitlet
+    Maximum horizontal diffusivity
+    
+    Used to compute the mesh Peclet number in
+    the 2D tracer SUPG stabilization scheme.
 
     Default:
 
-    Function
+    Constant(1.0)
 
 CommonModelOptions.\ **horizontal_velocity_scale** : FiredrakeConstantTraitlet
     Maximum horizontal velocity magnitude
@@ -153,6 +156,22 @@ CommonModelOptions.\ **momentum_source_2d** : FiredrakeVectorExpression
 
     UFL vector expression
 
+CommonModelOptions.\ **nh_model_options** : Instance
+    No description
+
+    Default:
+
+    <thetis.options.NonhydrostaticModelOptions object at 0x7f7703af7f10>
+
+CommonModelOptions.\ **nikuradse_bed_roughness** : FiredrakeScalarExpression
+    Nikuradse bed roughness length used to construct the 2D quadratic drag parameter :math:`C_D`.
+    
+    In sediment transport this term is usually three times the average sediment diameter size.
+
+    Default:
+
+    UFL scalar expression
+
 CommonModelOptions.\ **no_exports** : Bool
     Do not store any outputs to disk
     
@@ -162,6 +181,15 @@ CommonModelOptions.\ **no_exports** : Bool
     Default:
 
     False
+
+CommonModelOptions.\ **norm_smoother** : FiredrakeConstantTraitlet
+    Coefficient used to avoid non-differentiable functions in the continuous formulation of the velocity norm in
+    the quadratic bottom drag term in the momentum equation. This replaces the velocity norm in the quadratic
+    bottom drag term with :math:`\|u\| \approx \sqrt{\|u\|^2 + \alpha^2}`
+
+    Default:
+
+    Constant(0.0)
 
 CommonModelOptions.\ **output_directory** : Unicode
     Directory where model output files are stored
@@ -203,19 +231,26 @@ CommonModelOptions.\ **simulation_export_time** : PositiveFloat
 
     100.0
 
+CommonModelOptions.\ **sipg_factor** : FiredrakeScalarExpression
+    Penalty parameter scaling factor for horizontal viscosity terms.
+
+    Default:
+
+    Constant(1.0)
+
+CommonModelOptions.\ **sipg_factor_tracer** : FiredrakeScalarExpression
+    Penalty parameter scaling factor for horizontal diffusivity terms.
+
+    Default:
+
+    Constant(1.0)
+
 CommonModelOptions.\ **timestep** : PositiveFloat
     Time step
 
     Default:
 
     10.0
-
-CommonModelOptions.\ **tracer_source_2d** : FiredrakeScalarExpression
-    Source term for 2D tracer equation
-
-    Default:
-
-    UFL scalar expression
 
 CommonModelOptions.\ **use_grad_depth_viscosity_term** : Bool
     Include :math:`\nabla H` term in the depth-averaged viscosity
@@ -302,25 +337,25 @@ ModelOptions2d.\ **check_tracer_overshoot** : Bool
 
     False
 
-ModelOptions2d.\ **solve_tracer** : Bool
-    Solve tracer transport
+ModelOptions2d.\ **sediment_model_options** : Instance
+    No description
 
     Default:
 
-    False
+    <thetis.options.SedimentModelOptions object at 0x7f7703af7880>
 
-ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'|'CrankNicolson'|'DIRK22'|'DIRK33'|'SteadyState'|'PressureProjectionPicard'|'SSPIMEX'
+ModelOptions2d.\ **swe_timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'|'CrankNicolson'|'DIRK22'|'DIRK33'|'SteadyState'|'PressureProjectionPicard'|'SSPIMEX'
     Name of the time integrator
 
     Default:
 
     'CrankNicolson'
     
-    Setting value implies configuration of sub-tree ModelOptions2d.timestepper_options:
+    Setting value implies configuration of sub-tree ModelOptions2d.swe_timestepper_options:
     
     'SSPRK33':
     
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+        ModelOptions2d.swe_timestepper_options.\ **solver_parameters** : PETScSolverParameters
             No description
     
             Default:
@@ -329,7 +364,7 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'
     
     'ForwardEuler':
     
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+        ModelOptions2d.swe_timestepper_options.\ **solver_parameters** : PETScSolverParameters
             No description
     
             Default:
@@ -338,71 +373,43 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'
     
     'BackwardEuler':
     
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+        ModelOptions2d.swe_timestepper_options.\ **solver_parameters** : PETScSolverParameters
             No description
     
             Default:
     
             {'ksp_type': 'gmres', 'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative'}
     
-        ModelOptions2d.timestepper_options.\ **solver_parameters_tracer** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'ksp_type': 'gmres', 'pc_type': 'sor'}
-    
     'CrankNicolson':
     
-        ModelOptions2d.timestepper_options.\ **implicitness_theta** : BoundedFloat
+        ModelOptions2d.swe_timestepper_options.\ **implicitness_theta** : BoundedFloat
             implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.
     
             Default:
     
             0.5
     
-        ModelOptions2d.timestepper_options.\ **use_semi_implicit_linearization** : Bool
-            Use linearized semi-implicit time integration
-    
-            Default:
-    
-            False
-    
     'DIRK22':
     
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+        ModelOptions2d.swe_timestepper_options.\ **solver_parameters** : PETScSolverParameters
             No description
     
             Default:
     
             {'ksp_type': 'gmres', 'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative'}
-    
-        ModelOptions2d.timestepper_options.\ **solver_parameters_tracer** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'ksp_type': 'gmres', 'pc_type': 'sor'}
     
     'DIRK33':
     
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+        ModelOptions2d.swe_timestepper_options.\ **solver_parameters** : PETScSolverParameters
             No description
     
             Default:
     
             {'ksp_type': 'gmres', 'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative'}
     
-        ModelOptions2d.timestepper_options.\ **solver_parameters_tracer** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'ksp_type': 'gmres', 'pc_type': 'sor'}
-    
     'SteadyState':
     
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+        ModelOptions2d.swe_timestepper_options.\ **solver_parameters** : PETScSolverParameters
             No description
     
             Default:
@@ -411,28 +418,28 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'
     
     'PressureProjectionPicard':
     
-        ModelOptions2d.timestepper_options.\ **implicitness_theta** : BoundedFloat
+        ModelOptions2d.swe_timestepper_options.\ **implicitness_theta** : BoundedFloat
             implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.
     
             Default:
     
             0.5
     
-        ModelOptions2d.timestepper_options.\ **solver_parameters_momentum** : PETScSolverParameters
+        ModelOptions2d.swe_timestepper_options.\ **solver_parameters_momentum** : PETScSolverParameters
             No description
     
             Default:
     
-            {'ksp_type': 'gmres', 'ksp_converged_reason': False, 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'sub_pc_type': 'sor'}
+            {'ksp_type': 'gmres', 'pc_type': 'bjacobi', 'sub_ksp_type': 'preonly', 'sub_pc_type': 'sor'}
     
-        ModelOptions2d.timestepper_options.\ **solver_parameters_pressure** : PETScSolverParameters
+        ModelOptions2d.swe_timestepper_options.\ **solver_parameters_pressure** : PETScSolverParameters
             No description
     
             Default:
     
-            {'ksp_type': 'preonly', 'mat_type': 'matfree', 'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'schur', 'pc_fieldsplit_schur_fact_type': 'full', 'fieldsplit_U_2d': {'ksp_type': 'gmres', 'pc_type': 'python', 'pc_python_type': 'firedrake.AssembledPC', 'assembled_ksp_type': 'preonly', 'assembled_pc_type': 'bjacobi', 'assembled_sub_pc_type': 'ilu'}, 'fieldsplit_H_2d': {'ksp_type': 'preonly', 'pc_type': 'python', 'pc_python_type': 'thetis.AssembledSchurPC', 'schur_ksp_type': 'gmres', 'schur_ksp_max_it': 100, 'schur_ksp_converged_reason': False, 'schur_pc_type': 'gamg'}}
+            {'ksp_type': 'preonly', 'mat_type': 'matfree', 'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'schur', 'pc_fieldsplit_schur_fact_type': 'full', 'fieldsplit_U_2d': {'ksp_type': 'gmres', 'pc_type': 'python', 'pc_python_type': 'firedrake.AssembledPC', 'assembled_ksp_type': 'preonly', 'assembled_pc_type': 'bjacobi', 'assembled_sub_pc_type': 'ilu'}, 'fieldsplit_H_2d': {'ksp_type': 'preonly', 'pc_type': 'python', 'pc_python_type': 'thetis.AssembledSchurPC', 'schur_ksp_type': 'gmres', 'schur_ksp_max_it': 100, 'schur_pc_type': 'gamg'}}
     
-        ModelOptions2d.timestepper_options.\ **use_semi_implicit_linearization** : Bool
+        ModelOptions2d.swe_timestepper_options.\ **use_semi_implicit_linearization** : Bool
             Use linearized semi-implicit time integration
     
             Default:
@@ -441,25 +448,143 @@ ModelOptions2d.\ **timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'
     
     'SSPIMEX':
     
-        ModelOptions2d.timestepper_options.\ **solver_parameters** : PETScSolverParameters
+        ModelOptions2d.swe_timestepper_options.\ **solver_parameters** : PETScSolverParameters
             No description
     
             Default:
     
             {'ksp_type': 'gmres', 'pc_type': 'fieldsplit', 'pc_fieldsplit_type': 'multiplicative'}
-    
-        ModelOptions2d.timestepper_options.\ **solver_parameters_tracer** : PETScSolverParameters
-            No description
-    
-            Default:
-    
-            {'ksp_type': 'gmres', 'pc_type': 'sor'}
 
+
+ModelOptions2d.\ **tracer_advective_velocity_factor** : FiredrakeScalarExpression
+    Custom factor multiplied to the velocity variable in tracer advection equation.
+    
+    Used to account for mismatch between depth-averaged product of velocity with tracer
+    and product of depth-averaged velocity with depth-averaged tracer
+
+    Default:
+
+    Constant(1.0)
+
+ModelOptions2d.\ **tracer_element_family** : 'dg'|'cg'
+    Finite element family for tracer transport
+    
+    2D solver supports 'dg' or 'cg'.
+
+    Default:
+
+    'dg'
 
 ModelOptions2d.\ **tracer_only** : Bool
     Hold shallow water variables in initial state
     
     Advects tracer in the associated (constant) velocity field.
+
+    Default:
+
+    False
+
+ModelOptions2d.\ **tracer_picard_iterations** : PositiveInteger
+    Number of Picard iterations taken for tracer equations.
+
+    Default:
+
+    1
+
+ModelOptions2d.\ **tracer_timestepper_type** : 'SSPRK33'|'ForwardEuler'|'BackwardEuler'|'CrankNicolson'|'DIRK22'|'DIRK33'|'SteadyState'
+    Name of the tracer time integrator
+
+    Default:
+
+    'CrankNicolson'
+    
+    Setting value implies configuration of sub-tree ModelOptions2d.tracer_timestepper_options:
+    
+    'SSPRK33':
+    
+        ModelOptions2d.tracer_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'ForwardEuler':
+    
+        ModelOptions2d.tracer_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'BackwardEuler':
+    
+        ModelOptions2d.tracer_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'CrankNicolson':
+    
+        ModelOptions2d.tracer_timestepper_options.\ **implicitness_theta** : BoundedFloat
+            implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.
+    
+            Default:
+    
+            0.5
+    
+    'DIRK22':
+    
+        ModelOptions2d.tracer_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'DIRK33':
+    
+        ModelOptions2d.tracer_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'gmres', 'pc_type': 'sor'}
+    
+    'SteadyState':
+    
+        ModelOptions2d.tracer_timestepper_options.\ **solver_parameters** : PETScSolverParameters
+            No description
+    
+            Default:
+    
+            {'ksp_type': 'preonly', 'pc_type': 'lu', 'mat_type': 'aij'}
+
+
+ModelOptions2d.\ **use_automatic_wetting_and_drying_alpha** : Bool
+    Toggle automatic computation of the alpha parameter used in wetting and drying schemes.
+    
+    By default, this parameter is set to 0.5.
+    
+    For problems whose bathymetry varies wildly in coastal regions, it is advisable to use the
+    automatic wetting and drying parameter, rather than the default.
+
+    Default:
+
+    False
+
+ModelOptions2d.\ **use_supg_tracer** : Bool
+    Use SUPG stabilisation in tracer advection
+
+    Default:
+
+    False
+
+ModelOptions2d.\ **use_tracer_conservative_form** : Bool
+    Solve 2D tracer transport in the conservative form
 
     Default:
 
@@ -475,7 +600,7 @@ ModelOptions2d.\ **use_wetting_and_drying** : Bool
 
     False
 
-ModelOptions2d.\ **wetting_and_drying_alpha** : FiredrakeConstantTraitlet
+ModelOptions2d.\ **wetting_and_drying_alpha** : FiredrakeScalarExpression
     Coefficient: Wetting and drying parameter :math:`\alpha`.
     
     Used in bathymetry displacement function that ensures positive water depths. Unit is meters.
@@ -483,3 +608,21 @@ ModelOptions2d.\ **wetting_and_drying_alpha** : FiredrakeConstantTraitlet
     Default:
 
     Constant(0.5)
+
+ModelOptions2d.\ **wetting_and_drying_alpha_max** : FiredrakeScalarExpression
+    Maximum value to be taken by wetting and drying parameter :math:`\alpha`.
+    
+    Note this is only relevant if `use_automatic_wetting_and_drying_alpha` is set to ``True``.
+
+    Default:
+
+    Constant(2.0)
+
+ModelOptions2d.\ **wetting_and_drying_alpha_min** : FiredrakeScalarExpression
+    Minimum value to be taken by wetting and drying parameter :math:`\alpha`.
+    
+    Note this is only relevant if `use_automatic_wetting_and_drying_alpha` is set to ``True``.
+
+    Default:
+
+    UFL scalar expression

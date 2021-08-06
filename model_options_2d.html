@@ -4,15 +4,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>2D model options &#8212; Thetis 0+untagged.1720.g734247e documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>2D model options &#8212; Thetis 0+untagged.1736.gc23b50a documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/thetis.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
 <!--[if lte IE 6]>
@@ -51,7 +52,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="d-model-options">
+  <section id="d-model-options">
 <span id="model-options-2d"></span><h1>2D model options<a class="headerlink" href="#d-model-options" title="Permalink to this headline">¶</a></h1>
 <p>This page lists all available options for the 2D model.</p>
 <dl>
@@ -77,9 +78,9 @@ Prints deviation from the initial volume to stdout.</p>
 <p>Default:</p>
 <p>UFL scalar expression</p>
 </dd>
-<dt>CommonModelOptions.<strong>element_family</strong><span class="classifier">‘dg-dg’|’rt-dg’|’dg-cg’</span></dt><dd><p>Finite element family</p>
-<p>2D solver supports ‘dg-dg’, ‘rt-dg’, or ‘dg-cg’ velocity-pressure pairs.
-3D solver supports ‘dg-dg’, or ‘rt-dg’ velocity-pressure pairs.</p>
+<dt>CommonModelOptions.<strong>element_family</strong><span class="classifier">‘dg-dg’|’rt-dg’|’bdm-dg’|’dg-cg’</span></dt><dd><p>Finite element family</p>
+<p>2D solver supports ‘dg-dg’, ‘rt-dg’, ‘bdm-dg’, or ‘dg-cg’ velocity-pressure pairs.
+3D solver supports ‘dg-dg’, ‘rt-dg’, or ‘bdm-dg’ velocity-pressure pairs.</p>
 <p>Default:</p>
 <p>‘dg-dg’</p>
 </dd>
@@ -95,9 +96,11 @@ Prints deviation from the initial volume to stdout.</p>
 <p>Default:</p>
 <p>[]</p>
 </dd>
-<dt>CommonModelOptions.<strong>horizontal_diffusivity</strong><span class="classifier">FiredrakeCoefficient</span></dt><dd><p>Horizontal diffusivity for tracers</p>
+<dt>CommonModelOptions.<strong>horizontal_diffusivity_scale</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Maximum horizontal diffusivity</p>
+<p>Used to compute the mesh Peclet number in
+the 2D tracer SUPG stabilization scheme.</p>
 <p>Default:</p>
-<p>Function</p>
+<p>Constant(1.0)</p>
 </dd>
 <dt>CommonModelOptions.<strong>horizontal_velocity_scale</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Maximum horizontal velocity magnitude</p>
 <p>Used to compute max stable advection time step.</p>
@@ -139,11 +142,26 @@ Prints deviation from the initial volume to stdout.</p>
 <p>Default:</p>
 <p>UFL vector expression</p>
 </dd>
+<dt>CommonModelOptions.<strong>nh_model_options</strong><span class="classifier">Instance</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>&lt;thetis.options.NonhydrostaticModelOptions object at 0x7f7703af7f10&gt;</p>
+</dd>
+<dt>CommonModelOptions.<strong>nikuradse_bed_roughness</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Nikuradse bed roughness length used to construct the 2D quadratic drag parameter <span class="math notranslate nohighlight">\(C_D\)</span>.</p>
+<p>In sediment transport this term is usually three times the average sediment diameter size.</p>
+<p>Default:</p>
+<p>UFL scalar expression</p>
+</dd>
 <dt>CommonModelOptions.<strong>no_exports</strong><span class="classifier">Bool</span></dt><dd><p>Do not store any outputs to disk</p>
 <p>Disables VTK and HDF5 field outputs. and HDF5 diagnostic outputs.
 Used in CI test suite.</p>
 <p>Default:</p>
 <p>False</p>
+</dd>
+<dt>CommonModelOptions.<strong>norm_smoother</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Coefficient used to avoid non-differentiable functions in the continuous formulation of the velocity norm in
+the quadratic bottom drag term in the momentum equation. This replaces the velocity norm in the quadratic
+bottom drag term with <span class="math notranslate nohighlight">\(\|u\| \approx \sqrt{\|u\|^2 + \alpha^2}\)</span></p>
+<p>Default:</p>
+<p>Constant(0.0)</p>
 </dd>
 <dt>CommonModelOptions.<strong>output_directory</strong><span class="classifier">Unicode</span></dt><dd><p>Directory where model output files are stored</p>
 <p>Default:</p>
@@ -168,13 +186,17 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p>100.0</p>
 </dd>
+<dt>CommonModelOptions.<strong>sipg_factor</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Penalty parameter scaling factor for horizontal viscosity terms.</p>
+<p>Default:</p>
+<p>Constant(1.0)</p>
+</dd>
+<dt>CommonModelOptions.<strong>sipg_factor_tracer</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Penalty parameter scaling factor for horizontal diffusivity terms.</p>
+<p>Default:</p>
+<p>Constant(1.0)</p>
+</dd>
 <dt>CommonModelOptions.<strong>timestep</strong><span class="classifier">PositiveFloat</span></dt><dd><p>Time step</p>
 <p>Default:</p>
 <p>10.0</p>
-</dd>
-<dt>CommonModelOptions.<strong>tracer_source_2d</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Source term for 2D tracer equation</p>
-<p>Default:</p>
-<p>UFL scalar expression</p>
 </dd>
 <dt>CommonModelOptions.<strong>use_grad_depth_viscosity_term</strong><span class="classifier">Bool</span></dt><dd><p>Include <span class="math notranslate nohighlight">\(\nabla H\)</span> term in the depth-averaged viscosity</p>
 <p>See <a class="reference internal" href="thetis.html#thetis.shallowwater_eq.HorizontalViscosityTerm" title="thetis.shallowwater_eq.HorizontalViscosityTerm"><code class="xref py py-class docutils literal notranslate"><span class="pre">shallowwater_eq.HorizontalViscosityTerm</span></code></a> for details.</p>
@@ -224,18 +246,18 @@ diagnostics will be computed</p>
 <p>Default:</p>
 <p>False</p>
 </dd>
-<dt>ModelOptions2d.<strong>solve_tracer</strong><span class="classifier">Bool</span></dt><dd><p>Solve tracer transport</p>
+<dt>ModelOptions2d.<strong>sediment_model_options</strong><span class="classifier">Instance</span></dt><dd><p>No description</p>
 <p>Default:</p>
-<p>False</p>
+<p>&lt;thetis.options.SedimentModelOptions object at 0x7f7703af7880&gt;</p>
 </dd>
-<dt>ModelOptions2d.<strong>timestepper_type</strong><span class="classifier">‘SSPRK33’|’ForwardEuler’|’BackwardEuler’|’CrankNicolson’|’DIRK22’|’DIRK33’|’SteadyState’|’PressureProjectionPicard’|’SSPIMEX’</span></dt><dd><p>Name of the time integrator</p>
+<dt>ModelOptions2d.<strong>swe_timestepper_type</strong><span class="classifier">‘SSPRK33’|’ForwardEuler’|’BackwardEuler’|’CrankNicolson’|’DIRK22’|’DIRK33’|’SteadyState’|’PressureProjectionPicard’|’SSPIMEX’</span></dt><dd><p>Name of the time integrator</p>
 <p>Default:</p>
 <p>‘CrankNicolson’</p>
-<p>Setting value implies configuration of sub-tree ModelOptions2d.timestepper_options:</p>
+<p>Setting value implies configuration of sub-tree ModelOptions2d.swe_timestepper_options:</p>
 <p>‘SSPRK33’:</p>
 <blockquote>
 <div><dl>
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<dt>ModelOptions2d.swe_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘snes_type’: ‘ksponly’, ‘ksp_type’: ‘cg’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’, ‘mat_type’: ‘aij’}</p>
 </dd>
@@ -244,7 +266,7 @@ diagnostics will be computed</p>
 <p>‘ForwardEuler’:</p>
 <blockquote>
 <div><dl>
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<dt>ModelOptions2d.swe_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘snes_type’: ‘ksponly’, ‘ksp_type’: ‘cg’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘ilu’, ‘mat_type’: ‘aij’}</p>
 </dd>
@@ -253,59 +275,43 @@ diagnostics will be computed</p>
 <p>‘BackwardEuler’:</p>
 <blockquote>
 <div><dl>
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<dt>ModelOptions2d.swe_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’}</p>
-</dd>
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_tracer</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
-<p>Default:</p>
-<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
 </dd>
 </dl>
 </div></blockquote>
 <p>‘CrankNicolson’:</p>
 <blockquote>
 <div><dl>
-<dt>ModelOptions2d.timestepper_options.<strong>implicitness_theta</strong><span class="classifier">BoundedFloat</span></dt><dd><p>implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.</p>
+<dt>ModelOptions2d.swe_timestepper_options.<strong>implicitness_theta</strong><span class="classifier">BoundedFloat</span></dt><dd><p>implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.</p>
 <p>Default:</p>
 <p>0.5</p>
-</dd>
-<dt>ModelOptions2d.timestepper_options.<strong>use_semi_implicit_linearization</strong><span class="classifier">Bool</span></dt><dd><p>Use linearized semi-implicit time integration</p>
-<p>Default:</p>
-<p>False</p>
 </dd>
 </dl>
 </div></blockquote>
 <p>‘DIRK22’:</p>
 <blockquote>
 <div><dl>
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<dt>ModelOptions2d.swe_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’}</p>
-</dd>
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_tracer</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
-<p>Default:</p>
-<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
 </dd>
 </dl>
 </div></blockquote>
 <p>‘DIRK33’:</p>
 <blockquote>
 <div><dl>
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<dt>ModelOptions2d.swe_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’}</p>
-</dd>
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_tracer</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
-<p>Default:</p>
-<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
 </dd>
 </dl>
 </div></blockquote>
 <p>‘SteadyState’:</p>
 <blockquote>
 <div><dl>
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<dt>ModelOptions2d.swe_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘preonly’, ‘pc_type’: ‘lu’, ‘mat_type’: ‘aij’}</p>
 </dd>
@@ -314,19 +320,19 @@ diagnostics will be computed</p>
 <p>‘PressureProjectionPicard’:</p>
 <blockquote>
 <div><dl>
-<dt>ModelOptions2d.timestepper_options.<strong>implicitness_theta</strong><span class="classifier">BoundedFloat</span></dt><dd><p>implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.</p>
+<dt>ModelOptions2d.swe_timestepper_options.<strong>implicitness_theta</strong><span class="classifier">BoundedFloat</span></dt><dd><p>implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.</p>
 <p>Default:</p>
 <p>0.5</p>
 </dd>
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_momentum</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<dt>ModelOptions2d.swe_timestepper_options.<strong>solver_parameters_momentum</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
-<p>{‘ksp_type’: ‘gmres’, ‘ksp_converged_reason’: False, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘sor’}</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘bjacobi’, ‘sub_ksp_type’: ‘preonly’, ‘sub_pc_type’: ‘sor’}</p>
 </dd>
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_pressure</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<dt>ModelOptions2d.swe_timestepper_options.<strong>solver_parameters_pressure</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
-<p>{‘ksp_type’: ‘preonly’, ‘mat_type’: ‘matfree’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘schur’, ‘pc_fieldsplit_schur_fact_type’: ‘full’, ‘fieldsplit_U_2d’: {‘ksp_type’: ‘gmres’, ‘pc_type’: ‘python’, ‘pc_python_type’: ‘firedrake.AssembledPC’, ‘assembled_ksp_type’: ‘preonly’, ‘assembled_pc_type’: ‘bjacobi’, ‘assembled_sub_pc_type’: ‘ilu’}, ‘fieldsplit_H_2d’: {‘ksp_type’: ‘preonly’, ‘pc_type’: ‘python’, ‘pc_python_type’: ‘thetis.AssembledSchurPC’, ‘schur_ksp_type’: ‘gmres’, ‘schur_ksp_max_it’: 100, ‘schur_ksp_converged_reason’: False, ‘schur_pc_type’: ‘gamg’}}</p>
+<p>{‘ksp_type’: ‘preonly’, ‘mat_type’: ‘matfree’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘schur’, ‘pc_fieldsplit_schur_fact_type’: ‘full’, ‘fieldsplit_U_2d’: {‘ksp_type’: ‘gmres’, ‘pc_type’: ‘python’, ‘pc_python_type’: ‘firedrake.AssembledPC’, ‘assembled_ksp_type’: ‘preonly’, ‘assembled_pc_type’: ‘bjacobi’, ‘assembled_sub_pc_type’: ‘ilu’}, ‘fieldsplit_H_2d’: {‘ksp_type’: ‘preonly’, ‘pc_type’: ‘python’, ‘pc_python_type’: ‘thetis.AssembledSchurPC’, ‘schur_ksp_type’: ‘gmres’, ‘schur_ksp_max_it’: 100, ‘schur_pc_type’: ‘gamg’}}</p>
 </dd>
-<dt>ModelOptions2d.timestepper_options.<strong>use_semi_implicit_linearization</strong><span class="classifier">Bool</span></dt><dd><p>Use linearized semi-implicit time integration</p>
+<dt>ModelOptions2d.swe_timestepper_options.<strong>use_semi_implicit_linearization</strong><span class="classifier">Bool</span></dt><dd><p>Use linearized semi-implicit time integration</p>
 <p>Default:</p>
 <p>True</p>
 </dd>
@@ -335,19 +341,113 @@ diagnostics will be computed</p>
 <p>‘SSPIMEX’:</p>
 <blockquote>
 <div><dl>
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<dt>ModelOptions2d.swe_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘fieldsplit’, ‘pc_fieldsplit_type’: ‘multiplicative’}</p>
 </dd>
-<dt>ModelOptions2d.timestepper_options.<strong>solver_parameters_tracer</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+</dl>
+</div></blockquote>
+</dd>
+<dt>ModelOptions2d.<strong>tracer_advective_velocity_factor</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Custom factor multiplied to the velocity variable in tracer advection equation.</p>
+<p>Used to account for mismatch between depth-averaged product of velocity with tracer
+and product of depth-averaged velocity with depth-averaged tracer</p>
+<p>Default:</p>
+<p>Constant(1.0)</p>
+</dd>
+<dt>ModelOptions2d.<strong>tracer_element_family</strong><span class="classifier">‘dg’|’cg’</span></dt><dd><p>Finite element family for tracer transport</p>
+<p>2D solver supports ‘dg’ or ‘cg’.</p>
+<p>Default:</p>
+<p>‘dg’</p>
+</dd>
+<dt>ModelOptions2d.<strong>tracer_only</strong><span class="classifier">Bool</span></dt><dd><p>Hold shallow water variables in initial state</p>
+<p>Advects tracer in the associated (constant) velocity field.</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>ModelOptions2d.<strong>tracer_picard_iterations</strong><span class="classifier">PositiveInteger</span></dt><dd><p>Number of Picard iterations taken for tracer equations.</p>
+<p>Default:</p>
+<p>1</p>
+</dd>
+<dt>ModelOptions2d.<strong>tracer_timestepper_type</strong><span class="classifier">‘SSPRK33’|’ForwardEuler’|’BackwardEuler’|’CrankNicolson’|’DIRK22’|’DIRK33’|’SteadyState’</span></dt><dd><p>Name of the tracer time integrator</p>
+<p>Default:</p>
+<p>‘CrankNicolson’</p>
+<p>Setting value implies configuration of sub-tree ModelOptions2d.tracer_timestepper_options:</p>
+<p>‘SSPRK33’:</p>
+<blockquote>
+<div><dl>
+<dt>ModelOptions2d.tracer_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
 <p>Default:</p>
 <p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
 </dd>
 </dl>
 </div></blockquote>
+<p>‘ForwardEuler’:</p>
+<blockquote>
+<div><dl>
+<dt>ModelOptions2d.tracer_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
 </dd>
-<dt>ModelOptions2d.<strong>tracer_only</strong><span class="classifier">Bool</span></dt><dd><p>Hold shallow water variables in initial state</p>
-<p>Advects tracer in the associated (constant) velocity field.</p>
+</dl>
+</div></blockquote>
+<p>‘BackwardEuler’:</p>
+<blockquote>
+<div><dl>
+<dt>ModelOptions2d.tracer_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘CrankNicolson’:</p>
+<blockquote>
+<div><dl>
+<dt>ModelOptions2d.tracer_timestepper_options.<strong>implicitness_theta</strong><span class="classifier">BoundedFloat</span></dt><dd><p>implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.</p>
+<p>Default:</p>
+<p>0.5</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘DIRK22’:</p>
+<blockquote>
+<div><dl>
+<dt>ModelOptions2d.tracer_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘DIRK33’:</p>
+<blockquote>
+<div><dl>
+<dt>ModelOptions2d.tracer_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘SteadyState’:</p>
+<blockquote>
+<div><dl>
+<dt>ModelOptions2d.tracer_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘preonly’, ‘pc_type’: ‘lu’, ‘mat_type’: ‘aij’}</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd>
+<dt>ModelOptions2d.<strong>use_automatic_wetting_and_drying_alpha</strong><span class="classifier">Bool</span></dt><dd><p>Toggle automatic computation of the alpha parameter used in wetting and drying schemes.</p>
+<p>By default, this parameter is set to 0.5.</p>
+<p>For problems whose bathymetry varies wildly in coastal regions, it is advisable to use the
+automatic wetting and drying parameter, rather than the default.</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>ModelOptions2d.<strong>use_supg_tracer</strong><span class="classifier">Bool</span></dt><dd><p>Use SUPG stabilisation in tracer advection</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>ModelOptions2d.<strong>use_tracer_conservative_form</strong><span class="classifier">Bool</span></dt><dd><p>Solve 2D tracer transport in the conservative form</p>
 <p>Default:</p>
 <p>False</p>
 </dd>
@@ -357,13 +457,23 @@ If <code class="docutils literal notranslate"><span class="pre">True</span></cod
 <p>Default:</p>
 <p>False</p>
 </dd>
-<dt>ModelOptions2d.<strong>wetting_and_drying_alpha</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Coefficient: Wetting and drying parameter <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
+<dt>ModelOptions2d.<strong>wetting_and_drying_alpha</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Coefficient: Wetting and drying parameter <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
 <p>Used in bathymetry displacement function that ensures positive water depths. Unit is meters.</p>
 <p>Default:</p>
 <p>Constant(0.5)</p>
 </dd>
+<dt>ModelOptions2d.<strong>wetting_and_drying_alpha_max</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Maximum value to be taken by wetting and drying parameter <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
+<p>Note this is only relevant if <cite>use_automatic_wetting_and_drying_alpha</cite> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>Default:</p>
+<p>Constant(2.0)</p>
+</dd>
+<dt>ModelOptions2d.<strong>wetting_and_drying_alpha_min</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Minimum value to be taken by wetting and drying parameter <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
+<p>Note this is only relevant if <cite>use_automatic_wetting_and_drying_alpha</cite> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>Default:</p>
+<p>UFL scalar expression</p>
+</dd>
 </dl>
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -375,7 +485,7 @@ If <code class="docutils literal notranslate"><span class="pre">True</span></cod
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

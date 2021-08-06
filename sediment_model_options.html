@@ -1,0 +1,296 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>2D sediment model options &#8212; Thetis 0+untagged.1736.gc23b50a documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/thetis.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="_static/icon_thetis.ico" />
+
+
+  </head><body>
+<div class="wrapper">
+  <a href="index.html"><img src="_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="sediment_model_options">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="d-sediment-model-options">
+<span id="sediment-model-options"></span><h1>2D sediment model options<a class="headerlink" href="#d-sediment-model-options" title="Permalink to this headline">¶</a></h1>
+<p>This page lists all available options for the 2D sediment model.</p>
+<dl>
+<dt>SedimentModelOptions.<strong>average_sediment_size</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Average sediment size</p>
+<p>Default:</p>
+<p>UFL scalar expression</p>
+</dd>
+<dt>SedimentModelOptions.<strong>bed_reference_height</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Bottom bed reference height</p>
+<p>Default:</p>
+<p>UFL scalar expression</p>
+</dd>
+<dt>SedimentModelOptions.<strong>check_sediment_conservation</strong><span class="classifier">Bool</span></dt><dd><p>Compute total sediment mass at every export</p>
+<p>Prints deviation from the initial mass to stdout.</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>SedimentModelOptions.<strong>check_sediment_overshoot</strong><span class="classifier">Bool</span></dt><dd><p>Compute sediment overshoots at every export</p>
+<p>Prints overshoot values that exceed the initial range to stdout.</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>SedimentModelOptions.<strong>exner_timestepper_type</strong><span class="classifier">‘SSPRK33’|’ForwardEuler’|’BackwardEuler’|’CrankNicolson’|’DIRK22’|’DIRK33’</span></dt><dd><p>Name of the exner time integrator</p>
+<p>Default:</p>
+<p>‘CrankNicolson’</p>
+<p>Setting value implies configuration of sub-tree SedimentModelOptions.exner_timestepper_options:</p>
+<p>‘SSPRK33’:</p>
+<blockquote>
+<div><dl>
+<dt>SedimentModelOptions.exner_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘ForwardEuler’:</p>
+<blockquote>
+<div><dl>
+<dt>SedimentModelOptions.exner_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘BackwardEuler’:</p>
+<blockquote>
+<div><dl>
+<dt>SedimentModelOptions.exner_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘CrankNicolson’:</p>
+<blockquote>
+<div><dl>
+<dt>SedimentModelOptions.exner_timestepper_options.<strong>implicitness_theta</strong><span class="classifier">BoundedFloat</span></dt><dd><p>implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.</p>
+<p>Default:</p>
+<p>0.5</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘DIRK22’:</p>
+<blockquote>
+<div><dl>
+<dt>SedimentModelOptions.exner_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘DIRK33’:</p>
+<blockquote>
+<div><dl>
+<dt>SedimentModelOptions.exner_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd>
+<dt>SedimentModelOptions.<strong>horizontal_diffusivity</strong><span class="classifier">FiredrakeCoefficient</span></dt><dd><p>Horizontal diffusivity for sediment</p>
+<p>Default:</p>
+<p>Function</p>
+</dd>
+<dt>SedimentModelOptions.<strong>max_angle</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Angle of repose for sediment slide mechanism in degrees</p>
+<p>Default:</p>
+<p>Constant(32.0)</p>
+</dd>
+<dt>SedimentModelOptions.<strong>morphological_acceleration_factor</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Rate at which timestep in exner equation is accelerated compared to timestep for model</p>
+<p>timestep in exner = morphological_acceleration_factor * timestep</p>
+<p>Default:</p>
+<p>Constant(1.0)</p>
+</dd>
+<dt>SedimentModelOptions.<strong>morphological_viscosity</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Viscosity used to derive morphology terms.</p>
+<p>Usually equal to horizontal viscosity but can be set to have a different value</p>
+<p>Default:</p>
+<p>UFL scalar expression</p>
+</dd>
+<dt>SedimentModelOptions.<strong>porosity</strong><span class="classifier">FiredrakeCoefficient</span></dt><dd><p>Bed porosity for exner equation</p>
+<p>Default:</p>
+<p>Constant(0.4)</p>
+</dd>
+<dt>SedimentModelOptions.<strong>secondary_current_parameter</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Parameter controlling secondary current</p>
+<p>Default:</p>
+<p>Constant(0.75)</p>
+</dd>
+<dt>SedimentModelOptions.<strong>sed_slide_length_scale</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Length scale for sediment slide mechanism.</p>
+<p>This should normally be the average meshgrid size.</p>
+<p>Default:</p>
+<p>Constant(0.0)</p>
+</dd>
+<dt>SedimentModelOptions.<strong>sediment_density</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Density of sediment</p>
+<p>Default:</p>
+<p>Constant(2650.0)</p>
+</dd>
+<dt>SedimentModelOptions.<strong>sediment_timestepper_type</strong><span class="classifier">‘SSPRK33’|’ForwardEuler’|’BackwardEuler’|’CrankNicolson’|’DIRK22’|’DIRK33’</span></dt><dd><p>Name of the sediment time integrator</p>
+<p>Default:</p>
+<p>‘CrankNicolson’</p>
+<p>Setting value implies configuration of sub-tree SedimentModelOptions.sediment_timestepper_options:</p>
+<p>‘SSPRK33’:</p>
+<blockquote>
+<div><dl>
+<dt>SedimentModelOptions.sediment_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘ForwardEuler’:</p>
+<blockquote>
+<div><dl>
+<dt>SedimentModelOptions.sediment_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘BackwardEuler’:</p>
+<blockquote>
+<div><dl>
+<dt>SedimentModelOptions.sediment_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘CrankNicolson’:</p>
+<blockquote>
+<div><dl>
+<dt>SedimentModelOptions.sediment_timestepper_options.<strong>implicitness_theta</strong><span class="classifier">BoundedFloat</span></dt><dd><p>implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.</p>
+<p>Default:</p>
+<p>0.5</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘DIRK22’:</p>
+<blockquote>
+<div><dl>
+<dt>SedimentModelOptions.sediment_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘DIRK33’:</p>
+<blockquote>
+<div><dl>
+<dt>SedimentModelOptions.sediment_timestepper_options.<strong>solver_parameters</strong><span class="classifier">PETScSolverParameters</span></dt><dd><p>No description</p>
+<p>Default:</p>
+<p>{‘ksp_type’: ‘gmres’, ‘pc_type’: ‘sor’}</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd>
+<dt>SedimentModelOptions.<strong>slide_region</strong><span class="classifier">FiredrakeScalarExpression</span></dt><dd><p>Region where sediment slide occurs.</p>
+<p>If None then sediment slide is applied over whole domain.</p>
+<p>Default:</p>
+<p>UFL scalar expression</p>
+</dd>
+<dt>SedimentModelOptions.<strong>slope_effect_angle_parameter</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Parameter controlling angle of slope effect</p>
+<p>Default:</p>
+<p>Constant(0.6666666666666666)</p>
+</dd>
+<dt>SedimentModelOptions.<strong>slope_effect_parameter</strong><span class="classifier">FiredrakeConstantTraitlet</span></dt><dd><p>Parameter controlling magnitude of slope effect</p>
+<p>Default:</p>
+<p>Constant(1.3)</p>
+</dd>
+<dt>SedimentModelOptions.<strong>solve_exner</strong><span class="classifier">Bool</span></dt><dd><p>Solve exner equation for bed morphology</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>SedimentModelOptions.<strong>solve_suspended_sediment</strong><span class="classifier">Bool</span></dt><dd><p>Solve suspended sediment transport equation</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>SedimentModelOptions.<strong>use_advective_velocity_correction</strong><span class="classifier">Bool</span></dt><dd><p>Switch to apply correction to advective velocity used in sediment equation</p>
+<p>Accounts for mismatch between depth-averaged product of velocity with sediment
+and product of depth-averaged velocity with depth-averaged sediment</p>
+<p>Default:</p>
+<p>True</p>
+</dd>
+<dt>SedimentModelOptions.<strong>use_angle_correction</strong><span class="classifier">Bool</span></dt><dd><p>Switch to use slope effect angle correction</p>
+<p>Default:</p>
+<p>True</p>
+</dd>
+<dt>SedimentModelOptions.<strong>use_bedload</strong><span class="classifier">Bool</span></dt><dd><p>Use bedload transport in sediment model</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>SedimentModelOptions.<strong>use_secondary_current</strong><span class="classifier">Bool</span></dt><dd><p>Switch to use secondary current for helical flow effect</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>SedimentModelOptions.<strong>use_sediment_conservative_form</strong><span class="classifier">Bool</span></dt><dd><p>Solve 2D sediment transport in the conservative form</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>SedimentModelOptions.<strong>use_sediment_slide</strong><span class="classifier">Bool</span></dt><dd><p>Use sediment slide mechanism in sediment model</p>
+<p>Default:</p>
+<p>False</p>
+</dd>
+<dt>SedimentModelOptions.<strong>use_slope_mag_correction</strong><span class="classifier">Bool</span></dt><dd><p>Switch to use slope effect magnitude correction</p>
+<p>Default:</p>
+<p>True</p>
+</dd>
+</dl>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2021, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
+    </div>
+  </body>
+</html>

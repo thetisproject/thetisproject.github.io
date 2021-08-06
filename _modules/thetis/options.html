@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.options &#8212; Thetis 0+untagged.1720.g734247e documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <title>thetis.options &#8212; Thetis 0+untagged.1736.gc23b50a documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -65,60 +65,82 @@
 
 <div class="viewcode-block" id="TimeStepperOptions"><a class="viewcode-back" href="../../thetis.html#thetis.options.TimeStepperOptions">[docs]</a><span class="k">class</span> <span class="nc">TimeStepperOptions</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for all time stepper options&quot;&quot;&quot;</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Time stepper&#39;</span></div>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Time stepper&#39;</span>
+    <span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ExplicitTimestepperOptions"><a class="viewcode-back" href="../../thetis.html#thetis.options.ExplicitTimestepperOptions">[docs]</a><span class="k">class</span> <span class="nc">ExplicitTimestepperOptions</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">):</span>
+<div class="viewcode-block" id="ExplicitTimeStepperOptions"><a class="viewcode-back" href="../../thetis.html#thetis.options.ExplicitTimeStepperOptions">[docs]</a><span class="k">class</span> <span class="nc">ExplicitTimeStepperOptions</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Options for explicit time integrator&quot;&quot;&quot;</span>
     <span class="n">use_automatic_timestep</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Set time step automatically based on local CFL conditions.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SemiImplicitTimestepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.SemiImplicitTimestepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">SemiImplicitTimestepperOptions2d</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Options for 2d explicit time integrator&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ExplicitTimeStepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ExplicitTimeStepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">ExplicitTimeStepperOptions2d</span><span class="p">(</span><span class="n">ExplicitTimeStepperOptions</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Options for 2d explicit time integrator&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="SemiImplicitTimeStepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.SemiImplicitTimeStepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">SemiImplicitTimeStepperOptions2d</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Options for 2d semi-implicit time integrator&quot;&quot;&quot;</span>
+    <span class="n">use_semi_implicit_linearization</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use linearized semi-implicit time integration&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SemiImplicitSWETimeStepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.SemiImplicitSWETimeStepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">SemiImplicitSWETimeStepperOptions2d</span><span class="p">(</span><span class="n">SemiImplicitTimeStepperOptions2d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 2d semi-implicit time integrator</span>
+<span class="sd">    applied to shallow water equations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
         <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;gmres&#39;</span><span class="p">,</span>
         <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;fieldsplit&#39;</span><span class="p">,</span>
         <span class="s1">&#39;pc_fieldsplit_type&#39;</span><span class="p">:</span> <span class="s1">&#39;multiplicative&#39;</span><span class="p">,</span>
-    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">solver_parameters_tracer</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
-        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;gmres&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;sor&#39;</span><span class="p">,</span>
-    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">solver_parameters_sediment</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
-        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;gmres&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;sor&#39;</span><span class="p">,</span>
-    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">use_semi_implicit_linearization</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
-        <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use linearized semi-implicit time integration&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">solver_parameters_exner</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SemiImplicitTracerTimeStepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.SemiImplicitTracerTimeStepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">(</span><span class="n">SemiImplicitTimeStepperOptions2d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 2d semi-implicit time integrator</span>
+<span class="sd">    applied to tracer equations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
         <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;gmres&#39;</span><span class="p">,</span>
         <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;sor&#39;</span><span class="p">,</span>
     <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SteadyStateTimestepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.SteadyStateTimestepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">SteadyStateTimestepperOptions2d</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">):</span>
+<div class="viewcode-block" id="SteadyStateTimeStepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.SteadyStateTimeStepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">SteadyStateTimeStepperOptions2d</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Options for 2d steady state solver&quot;&quot;&quot;</span>
     <span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
         <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
         <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;lu&#39;</span><span class="p">,</span>
         <span class="s1">&#39;mat_type&#39;</span><span class="p">:</span> <span class="s1">&#39;aij&#39;</span>
-    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">solver_parameters_tracer</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
-        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;lu&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;mat_type&#39;</span><span class="p">:</span> <span class="s1">&#39;aij&#39;</span>
     <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CrankNicolsonTimestepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.CrankNicolsonTimestepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">CrankNicolsonTimestepperOptions2d</span><span class="p">(</span><span class="n">SemiImplicitTimestepperOptions2d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Options for 2d Crank-Nicolson time integrator&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="CrankNicolsonSWETimeStepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.CrankNicolsonSWETimeStepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">CrankNicolsonSWETimeStepperOptions2d</span><span class="p">(</span><span class="n">SemiImplicitSWETimeStepperOptions2d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 2d Crank-Nicolson time integrator</span>
+<span class="sd">    applied to shallow water equations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">implicitness_theta</span> <span class="o">=</span> <span class="n">BoundedFloat</span><span class="p">(</span>
         <span class="n">default_value</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="PressureProjectionTimestepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.PressureProjectionTimestepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">PressureProjectionTimestepperOptions2d</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Options for 2d pressure-projection time integrator&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="CrankNicolsonTracerTimeStepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.CrankNicolsonTracerTimeStepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">CrankNicolsonTracerTimeStepperOptions2d</span><span class="p">(</span><span class="n">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 2d Crank-Nicolson time integrator</span>
+<span class="sd">    applied to tracer equations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">implicitness_theta</span> <span class="o">=</span> <span class="n">BoundedFloat</span><span class="p">(</span>
+        <span class="n">default_value</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PressureProjectionSWETimeStepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.PressureProjectionSWETimeStepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">PressureProjectionSWETimeStepperOptions2d</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 2d pressure-projection time integrator</span>
+<span class="sd">    applied to shallow water equations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">solver_parameters_pressure</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
         <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>  <span class="c1"># we solve the full schur complement exactly, so no need for outer krylov</span>
         <span class="s1">&#39;mat_type&#39;</span><span class="p">:</span> <span class="s1">&#39;matfree&#39;</span><span class="p">,</span>
@@ -162,8 +184,11 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;number of Picard iterations to converge the nonlinearity in the equations.&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ExplicitTimestepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ExplicitTimestepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">ExplicitTimestepperOptions2d</span><span class="p">(</span><span class="n">ExplicitTimestepperOptions</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Options for 2d explicit time integrator&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ExplicitSWETimeStepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ExplicitSWETimeStepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">ExplicitSWETimeStepperOptions2d</span><span class="p">(</span><span class="n">ExplicitTimeStepperOptions2d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 2d explicit time integrator</span>
+<span class="sd">    applied to shallow water equations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
         <span class="s1">&#39;snes_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">,</span>
         <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;cg&#39;</span><span class="p">,</span>
@@ -171,70 +196,128 @@
         <span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
         <span class="s1">&#39;sub_pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ilu&#39;</span><span class="p">,</span>
         <span class="s1">&#39;mat_type&#39;</span><span class="p">:</span> <span class="s1">&#39;aij&#39;</span><span class="p">,</span>
-    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">solver_parameters_tracer</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ExplicitTracerTimeStepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ExplicitTracerTimeStepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">ExplicitTracerTimeStepperOptions2d</span><span class="p">(</span><span class="n">ExplicitTimeStepperOptions2d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 2d explicit time integrator</span>
+<span class="sd">    applied to tracer equations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
         <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;gmres&#39;</span><span class="p">,</span>
         <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;sor&#39;</span><span class="p">,</span>
     <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="IMEXTimestepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.IMEXTimestepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">IMEXTimestepperOptions2d</span><span class="p">(</span><span class="n">SemiImplicitTimestepperOptions2d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Options for 2d implicit-explicit time integrators&quot;&quot;&quot;</span>
-    <span class="c1"># TODO: Meaningful solver parameters</span>
+<div class="viewcode-block" id="IMEXSWETimeStepperOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.IMEXSWETimeStepperOptions2d">[docs]</a><span class="k">class</span> <span class="nc">IMEXSWETimeStepperOptions2d</span><span class="p">(</span><span class="n">SemiImplicitTimeStepperOptions2d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 2d implicit-explicit time integrators</span>
+<span class="sd">    applied to shallow water equations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: Meaningful solver parameters for DIRK</span>
     <span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
         <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;gmres&#39;</span><span class="p">,</span>
         <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;fieldsplit&#39;</span><span class="p">,</span>
         <span class="s1">&#39;pc_fieldsplit_type&#39;</span><span class="p">:</span> <span class="s1">&#39;multiplicative&#39;</span><span class="p">,</span>
-    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">solver_parameters_dirk</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeStepperOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.TimeStepperOptions3d">[docs]</a><span class="k">class</span> <span class="nc">TimeStepperOptions3d</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Options for 3d explicit time integrator&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="SWETimeStepperOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.SWETimeStepperOptions3d">[docs]</a><span class="k">class</span> <span class="nc">SWETimeStepperOptions3d</span><span class="p">(</span><span class="n">TimeStepperOptions3d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 3d time integrator</span>
+<span class="sd">    shallow water component</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
         <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;gmres&#39;</span><span class="p">,</span>
         <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;fieldsplit&#39;</span><span class="p">,</span>
         <span class="s1">&#39;pc_fieldsplit_type&#39;</span><span class="p">:</span> <span class="s1">&#39;multiplicative&#39;</span><span class="p">,</span>
     <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ExplicitTimestepperOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ExplicitTimestepperOptions3d">[docs]</a><span class="k">class</span> <span class="nc">ExplicitTimestepperOptions3d</span><span class="p">(</span><span class="n">ExplicitTimestepperOptions</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for all 3d time stepper options&quot;&quot;&quot;</span>
-    <span class="n">solver_parameters_2d_swe</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
-        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;gmres&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;fieldsplit&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;pc_fieldsplit_type&#39;</span><span class="p">:</span> <span class="s1">&#39;multiplicative&#39;</span><span class="p">,</span>
-    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">solver_parameters_momentum_explicit</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
-        <span class="s1">&#39;snes_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;cg&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;sub_pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ilu&#39;</span><span class="p">,</span>
-    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">solver_parameters_momentum_implicit</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
-        <span class="s1">&#39;snes_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;sub_pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ilu&#39;</span><span class="p">,</span>
-    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">solver_parameters_tracer_explicit</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
-        <span class="s1">&#39;snes_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;cg&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;sub_pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ilu&#39;</span><span class="p">,</span>
-    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">solver_parameters_tracer_implicit</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
-        <span class="s1">&#39;snes_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;sub_pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ilu&#39;</span><span class="p">,</span>
-    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="SemiImplicitTimestepperOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.SemiImplicitTimestepperOptions3d">[docs]</a><span class="k">class</span> <span class="nc">SemiImplicitTimestepperOptions3d</span><span class="p">(</span><span class="n">ExplicitTimestepperOptions3d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class for all 3d time steppers that have a configurable semi-implicit 2D solver&quot;&quot;&quot;</span>
-    <span class="n">implicitness_theta_2d</span> <span class="o">=</span> <span class="n">BoundedFloat</span><span class="p">(</span>
+<div class="viewcode-block" id="ImplicitSWETimeStepperOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ImplicitSWETimeStepperOptions3d">[docs]</a><span class="k">class</span> <span class="nc">ImplicitSWETimeStepperOptions3d</span><span class="p">(</span><span class="n">SWETimeStepperOptions3d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 3d implicit time integrator</span>
+<span class="sd">    shallow water component</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">implicitness_theta</span> <span class="o">=</span> <span class="n">BoundedFloat</span><span class="p">(</span>
         <span class="n">default_value</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;implicitness parameter theta for 2D solver. Value 1.0 implies fully implicit formulation.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;implicitness parameter theta. Value 0.5 implies Crank-Nicolson scheme, 1.0 implies fully implicit formulation.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ExplicitMomentumTimeStepperOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ExplicitMomentumTimeStepperOptions3d">[docs]</a><span class="k">class</span> <span class="nc">ExplicitMomentumTimeStepperOptions3d</span><span class="p">(</span><span class="n">TimeStepperOptions3d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 3d explicit time integrator</span>
+<span class="sd">    momentum component</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
+        <span class="s1">&#39;snes_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;cg&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sub_pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ilu&#39;</span><span class="p">,</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ImplicitMomentumTimeStepperOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ImplicitMomentumTimeStepperOptions3d">[docs]</a><span class="k">class</span> <span class="nc">ImplicitMomentumTimeStepperOptions3d</span><span class="p">(</span><span class="n">TimeStepperOptions3d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 3d implicit time integrator</span>
+<span class="sd">    momentum component</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
+        <span class="s1">&#39;snes_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sub_pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ilu&#39;</span><span class="p">,</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ExplicitTracerTimeStepperOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ExplicitTracerTimeStepperOptions3d">[docs]</a><span class="k">class</span> <span class="nc">ExplicitTracerTimeStepperOptions3d</span><span class="p">(</span><span class="n">TimeStepperOptions3d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 3d explicit time integrator</span>
+<span class="sd">    applied to tracer equations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
+        <span class="s1">&#39;snes_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;cg&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sub_pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ilu&#39;</span><span class="p">,</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ImplicitTracerTimeStepperOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ImplicitTracerTimeStepperOptions3d">[docs]</a><span class="k">class</span> <span class="nc">ImplicitTracerTimeStepperOptions3d</span><span class="p">(</span><span class="n">TimeStepperOptions3d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for 3d implicit time integrator</span>
+<span class="sd">    applied to tracer equations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">PETScSolverParameters</span><span class="p">({</span>
+        <span class="s1">&#39;snes_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">:</span> <span class="s1">&#39;preonly&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sub_pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ilu&#39;</span><span class="p">,</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SSPRKTimeStepperOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.SSPRKTimeStepperOptions3d">[docs]</a><span class="k">class</span> <span class="nc">SSPRKTimeStepperOptions3d</span><span class="p">(</span><span class="n">TimeStepperOptions3d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Options for 3d SSPRK coupled time integrator&quot;&quot;&quot;</span>
+    <span class="n">use_automatic_timestep</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Set time step automatically based on local CFL conditions.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">swe_options</span> <span class="o">=</span> <span class="n">SWETimeStepperOptions3d</span><span class="p">()</span>
+    <span class="n">implicit_momentum_options</span> <span class="o">=</span> <span class="n">ImplicitMomentumTimeStepperOptions3d</span><span class="p">()</span>
+    <span class="n">explicit_momentum_options</span> <span class="o">=</span> <span class="n">ExplicitMomentumTimeStepperOptions3d</span><span class="p">()</span>
+    <span class="n">implicit_tracer_options</span> <span class="o">=</span> <span class="n">ImplicitTracerTimeStepperOptions3d</span><span class="p">()</span>
+    <span class="n">explicit_tracer_options</span> <span class="o">=</span> <span class="n">ExplicitTracerTimeStepperOptions3d</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="LeapFrogTimeStepperOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.LeapFrogTimeStepperOptions3d">[docs]</a><span class="k">class</span> <span class="nc">LeapFrogTimeStepperOptions3d</span><span class="p">(</span><span class="n">SSPRKTimeStepperOptions3d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Options for 3d LeapFrog coupled time integrator&quot;&quot;&quot;</span>
+    <span class="n">swe_options</span> <span class="o">=</span> <span class="n">ImplicitSWETimeStepperOptions3d</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="TurbulenceModelOptions"><a class="viewcode-back" href="../../thetis.html#thetis.options.TurbulenceModelOptions">[docs]</a><span class="k">class</span> <span class="nc">TurbulenceModelOptions</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">):</span>
@@ -442,6 +525,8 @@
         <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Source term for the tracer equation&#39;</span><span class="p">)</span>
     <span class="n">diffusivity</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Diffusion coefficient for the tracer equation&#39;</span><span class="p">)</span>
+    <span class="n">use_conservative_form</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Should the tracer equation be solved in conservative form?&#39;</span><span class="p">)</span>
     <span class="n">metadata</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">({</span>
         <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;tracer_2d&#39;</span><span class="p">,</span>
         <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Depth averaged tracer&#39;</span><span class="p">,</span>
@@ -452,12 +537,12 @@
 
 
 <div class="viewcode-block" id="NonhydrostaticModelOptions"><a class="viewcode-back" href="../../thetis.html#thetis.options.NonhydrostaticModelOptions">[docs]</a><span class="nd">@attach_paired_options</span><span class="p">(</span><span class="s2">&quot;free_surface_timestepper_type&quot;</span><span class="p">,</span>
-                       <span class="n">PairedEnum</span><span class="p">([(</span><span class="s1">&#39;SSPRK33&#39;</span><span class="p">,</span> <span class="n">ExplicitTimestepperOptions2d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;ForwardEuler&#39;</span><span class="p">,</span> <span class="n">ExplicitTimestepperOptions2d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;BackwardEuler&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTimestepperOptions2d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;CrankNicolson&#39;</span><span class="p">,</span> <span class="n">CrankNicolsonTimestepperOptions2d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;DIRK22&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTimestepperOptions2d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;DIRK33&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTimestepperOptions2d</span><span class="p">),</span>
+                       <span class="n">PairedEnum</span><span class="p">([(</span><span class="s1">&#39;SSPRK33&#39;</span><span class="p">,</span> <span class="n">ExplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;ForwardEuler&#39;</span><span class="p">,</span> <span class="n">ExplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;BackwardEuler&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;CrankNicolson&#39;</span><span class="p">,</span> <span class="n">CrankNicolsonTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;DIRK22&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;DIRK33&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
                                    <span class="p">],</span>
                                   <span class="s2">&quot;free_surface_timestepper_options&quot;</span><span class="p">,</span>
                                   <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;CrankNicolson&#39;</span><span class="p">,</span>
@@ -621,22 +706,44 @@
         <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Source term for 2D momentum equation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">volume_source_2d</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Source term for 2D continuity equation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">tracer_source_2d</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Source term for 2D tracer equation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">horizontal_diffusivity</span> <span class="o">=</span> <span class="n">FiredrakeCoefficient</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Horizontal diffusivity for tracers and sediment&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">sipg_factor</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
         <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Penalty parameter scaling factor for horizontal viscosity terms.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">sipg_factor_tracer</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
         <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Penalty parameter scaling factor for horizontal diffusivity terms.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SedimentModelOptions"><a class="viewcode-back" href="../../thetis.html#thetis.options.SedimentModelOptions">[docs]</a><span class="k">class</span> <span class="nc">SedimentModelOptions</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">):</span>
+<div class="viewcode-block" id="SedimentModelOptions"><a class="viewcode-back" href="../../thetis.html#thetis.options.SedimentModelOptions">[docs]</a><span class="nd">@attach_paired_options</span><span class="p">(</span><span class="s2">&quot;sediment_timestepper_type&quot;</span><span class="p">,</span>
+                       <span class="n">PairedEnum</span><span class="p">([(</span><span class="s1">&#39;SSPRK33&#39;</span><span class="p">,</span> <span class="n">ExplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;ForwardEuler&#39;</span><span class="p">,</span> <span class="n">ExplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;BackwardEuler&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;CrankNicolson&#39;</span><span class="p">,</span> <span class="n">CrankNicolsonTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;DIRK22&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;DIRK33&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">],</span>
+                                  <span class="s2">&quot;sediment_timestepper_options&quot;</span><span class="p">,</span>
+                                  <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;CrankNicolson&#39;</span><span class="p">,</span>
+                                  <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Name of the sediment time integrator&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                       <span class="n">Instance</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">())</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nd">@attach_paired_options</span><span class="p">(</span><span class="s2">&quot;exner_timestepper_type&quot;</span><span class="p">,</span>
+                       <span class="n">PairedEnum</span><span class="p">([(</span><span class="s1">&#39;SSPRK33&#39;</span><span class="p">,</span> <span class="n">ExplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;ForwardEuler&#39;</span><span class="p">,</span> <span class="n">ExplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;BackwardEuler&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;CrankNicolson&#39;</span><span class="p">,</span> <span class="n">CrankNicolsonTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;DIRK22&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;DIRK33&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">],</span>
+                                  <span class="s2">&quot;exner_timestepper_options&quot;</span><span class="p">,</span>
+                                  <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;CrankNicolson&#39;</span><span class="p">,</span>
+                                  <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Name of the exner time integrator&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                       <span class="n">Instance</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">())</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">SedimentModelOptions</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">):</span>
     <span class="n">solve_exner</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Solve exner equation for bed morphology&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">solve_suspended_sediment</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Solve suspended sediment transport equation&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_sediment_conservative_form</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Solve 2D sediment transport in the conservative form&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_bedload</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Use bedload transport in sediment model&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_sediment_slide</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Use sediment slide mechanism in sediment model&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">horizontal_diffusivity</span> <span class="o">=</span> <span class="n">FiredrakeCoefficient</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Horizontal diffusivity for sediment&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_angle_correction</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Switch to use slope effect angle correction&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_slope_mag_correction</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Switch to use slope effect magnitude correction&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_secondary_current</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Switch to use secondary current for helical flow effect&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -707,28 +814,38 @@
 <span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span></div>
 
 
-<span class="c1"># NOTE all parameters are now case sensitive</span>
-<span class="c1"># TODO rename time stepper types? Allow capitals and spaces?</span>
-<div class="viewcode-block" id="ModelOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ModelOptions2d">[docs]</a><span class="nd">@attach_paired_options</span><span class="p">(</span><span class="s2">&quot;timestepper_type&quot;</span><span class="p">,</span>
-                       <span class="n">PairedEnum</span><span class="p">([(</span><span class="s1">&#39;SSPRK33&#39;</span><span class="p">,</span> <span class="n">ExplicitTimestepperOptions2d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;ForwardEuler&#39;</span><span class="p">,</span> <span class="n">ExplicitTimestepperOptions2d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;BackwardEuler&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTimestepperOptions2d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;CrankNicolson&#39;</span><span class="p">,</span> <span class="n">CrankNicolsonTimestepperOptions2d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;DIRK22&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTimestepperOptions2d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;DIRK33&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTimestepperOptions2d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;SteadyState&#39;</span><span class="p">,</span> <span class="n">SteadyStateTimestepperOptions2d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;PressureProjectionPicard&#39;</span><span class="p">,</span> <span class="n">PressureProjectionTimestepperOptions2d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;SSPIMEX&#39;</span><span class="p">,</span> <span class="n">IMEXTimestepperOptions2d</span><span class="p">),</span>
+<div class="viewcode-block" id="ModelOptions2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ModelOptions2d">[docs]</a><span class="nd">@attach_paired_options</span><span class="p">(</span><span class="s2">&quot;swe_timestepper_type&quot;</span><span class="p">,</span>
+                       <span class="n">PairedEnum</span><span class="p">([(</span><span class="s1">&#39;SSPRK33&#39;</span><span class="p">,</span> <span class="n">ExplicitSWETimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;ForwardEuler&#39;</span><span class="p">,</span> <span class="n">ExplicitSWETimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;BackwardEuler&#39;</span><span class="p">,</span> <span class="n">SemiImplicitSWETimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;CrankNicolson&#39;</span><span class="p">,</span> <span class="n">CrankNicolsonSWETimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;DIRK22&#39;</span><span class="p">,</span> <span class="n">SemiImplicitSWETimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;DIRK33&#39;</span><span class="p">,</span> <span class="n">SemiImplicitSWETimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;SteadyState&#39;</span><span class="p">,</span> <span class="n">SteadyStateTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;PressureProjectionPicard&#39;</span><span class="p">,</span> <span class="n">PressureProjectionSWETimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;SSPIMEX&#39;</span><span class="p">,</span> <span class="n">IMEXSWETimeStepperOptions2d</span><span class="p">),</span>
                                    <span class="p">],</span>
-                                  <span class="s2">&quot;timestepper_options&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;swe_timestepper_options&quot;</span><span class="p">,</span>
                                   <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;CrankNicolson&#39;</span><span class="p">,</span>
                                   <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Name of the time integrator&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                       <span class="n">Instance</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">())</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nd">@attach_paired_options</span><span class="p">(</span><span class="s2">&quot;tracer_timestepper_type&quot;</span><span class="p">,</span>
+                       <span class="n">PairedEnum</span><span class="p">([(</span><span class="s1">&#39;SSPRK33&#39;</span><span class="p">,</span> <span class="n">ExplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;ForwardEuler&#39;</span><span class="p">,</span> <span class="n">ExplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;BackwardEuler&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;CrankNicolson&#39;</span><span class="p">,</span> <span class="n">CrankNicolsonTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;DIRK22&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;DIRK33&#39;</span><span class="p">,</span> <span class="n">SemiImplicitTracerTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;SteadyState&#39;</span><span class="p">,</span> <span class="n">SteadyStateTimeStepperOptions2d</span><span class="p">),</span>
+                                   <span class="p">],</span>
+                                  <span class="s2">&quot;tracer_timestepper_options&quot;</span><span class="p">,</span>
+                                  <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;CrankNicolson&#39;</span><span class="p">,</span>
+                                  <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Name of the tracer time integrator&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
                        <span class="n">Instance</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">())</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 <span class="k">class</span> <span class="nc">ModelOptions2d</span><span class="p">(</span><span class="n">CommonModelOptions</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Options for 2D depth-averaged shallow water model&quot;&quot;&quot;</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Depth-averaged 2D model&#39;</span>
     <span class="n">sediment_model_options</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">SedimentModelOptions</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">())</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">solve_tracer</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Solve tracer transport&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_tracer_conservative_form</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Solve 2D tracer transport in the conservative form&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_wetting_and_drying</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;bool: Turn on wetting and drying</span>
@@ -796,14 +913,19 @@
 <span class="s2">        2D solver supports &#39;dg&#39; or &#39;cg&#39;.&quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">use_supg_tracer</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
         <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use SUPG stabilisation in tracer advection&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">tracer_picard_iterations</span> <span class="o">=</span> <span class="n">PositiveInteger</span><span class="p">(</span>
+        <span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of Picard iterations taken for tracer equations.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ModelOptions2d</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracer_priorities</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ModelOptions2d.add_tracer_2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ModelOptions2d.add_tracer_2d">[docs]</a>    <span class="k">def</span> <span class="nf">add_tracer_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">shortname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">diffusivity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelOptions2d.add_tracer_2d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ModelOptions2d.add_tracer_2d">[docs]</a>    <span class="k">def</span> <span class="nf">add_tracer_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">shortname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Define a 2D tracer field</span>
+<span class="sd">        Add a 2D tracer field to :attr:`tracer`.</span>
+
+<span class="sd">        Note that the tracer equations will be solved in the order in which they are added.</span>
 
 <span class="sd">        :arg label: field label used internally by Thetis, e.g. &#39;tracer_2d&#39;</span>
 <span class="sd">        :arg name: human readable name for the tracer field, e.g. &#39;Depth averaged tracer&#39;</span>
@@ -812,7 +934,13 @@
 <span class="sd">        :kwarg unit: units for field, e.g. &#39;-&#39;</span>
 <span class="sd">        :kwarg source: associated source term</span>
 <span class="sd">        :kwarg diffusivity: associated diffusivity coefficient</span>
+<span class="sd">        :kwarg use_conservative_form: should the tracer equation be solved in conservative form?</span>
+<span class="sd">        :kwarg priority: integer priority in which equation should be solved</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;source&#39;</span><span class="p">)</span>
+        <span class="n">diffusivity</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;diffusivity&#39;</span><span class="p">)</span>
+        <span class="n">conservative</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;conservative&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">priority</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;priority&#39;</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
@@ -821,6 +949,11 @@
         <span class="k">assert</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Field &#39;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&#39; already exists.&quot;</span>
         <span class="k">assert</span> <span class="s1">&#39; &#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">label</span><span class="p">,</span> <span class="s2">&quot;Labels cannot contain spaces&quot;</span>
         <span class="k">assert</span> <span class="s1">&#39; &#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;Filenames cannot contain spaces&quot;</span>
+        <span class="k">if</span> <span class="n">priority</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">priority</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">priority</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer_priorities</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Cannot currently solve coupled tracer equations as monolithic systems.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tracer_priorities</span><span class="p">[</span><span class="n">priority</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">TracerFieldOptions</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
@@ -829,17 +962,41 @@
             <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">diffusivity</span> <span class="o">=</span> <span class="n">diffusivity</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">diffusivity</span> <span class="o">=</span> <span class="n">diffusivity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">use_conservative_form</span> <span class="o">=</span> <span class="n">use_conservative_form</span></div>
+
+<div class="viewcode-block" id="ModelOptions2d.set_timestepper_type"><a class="viewcode-back" href="../../thetis.html#thetis.options.ModelOptions2d.set_timestepper_type">[docs]</a>    <span class="k">def</span> <span class="nf">set_timestepper_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timestepper_type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the same timestepper type for all components.</span>
+
+<span class="sd">        Any keyword arguments are passed through to the</span>
+<span class="sd">        associated :class:`TimeStepperOptions` object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">swe_timestepper_type</span> <span class="o">=</span> <span class="n">timestepper_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracer_timestepper_type</span> <span class="o">=</span> <span class="n">timestepper_type</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">swe_timestepper_options</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer_timestepper_options</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">solve_suspended_sediment</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">sediment_timestepper_type</span> <span class="o">=</span> <span class="n">timestepper_type</span>
+            <span class="n">options</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">sediment_timestepper_options</span><span class="p">,)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">solve_exner</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">exner_timestepper_type</span> <span class="o">=</span> <span class="n">timestepper_type</span>
+            <span class="n">options</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sediment_model_options</span><span class="o">.</span><span class="n">exner_timestepper_options</span><span class="p">,)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nh_model_options</span><span class="o">.</span><span class="n">solve_nonhydrostatic_pressure</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nh_model_options</span><span class="o">.</span><span class="n">free_surface_timestepper_type</span> <span class="o">=</span> <span class="n">timestepper_type</span>
+            <span class="n">options</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nh_model_options</span><span class="o">.</span><span class="n">free_surface_timestepper_options</span><span class="p">,)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="ModelOptions3d"><a class="viewcode-back" href="../../thetis.html#thetis.options.ModelOptions3d">[docs]</a><span class="nd">@attach_paired_options</span><span class="p">(</span><span class="s2">&quot;timestepper_type&quot;</span><span class="p">,</span>
-                       <span class="n">PairedEnum</span><span class="p">([(</span><span class="s1">&#39;LeapFrog&#39;</span><span class="p">,</span> <span class="n">ExplicitTimestepperOptions3d</span><span class="p">),</span>
-                                   <span class="p">(</span><span class="s1">&#39;SSPRK22&#39;</span><span class="p">,</span> <span class="n">ExplicitTimestepperOptions3d</span><span class="p">),</span>
+                       <span class="n">PairedEnum</span><span class="p">([(</span><span class="s1">&#39;LeapFrog&#39;</span><span class="p">,</span> <span class="n">LeapFrogTimeStepperOptions3d</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s1">&#39;SSPRK22&#39;</span><span class="p">,</span> <span class="n">SSPRKTimeStepperOptions3d</span><span class="p">),</span>
                                    <span class="p">],</span>
                                   <span class="s2">&quot;timestepper_options&quot;</span><span class="p">,</span>
                                   <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;SSPRK22&#39;</span><span class="p">,</span>
-                                  <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Name of the time integrator&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                       <span class="n">Instance</span><span class="p">(</span><span class="n">TimeStepperOptions</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">())</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+                                  <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Name of the 3D time integrator&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                       <span class="n">Instance</span><span class="p">(</span><span class="n">TimeStepperOptions3d</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">())</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 <span class="nd">@attach_paired_options</span><span class="p">(</span><span class="s2">&quot;turbulence_model_type&quot;</span><span class="p">,</span>
                        <span class="n">PairedEnum</span><span class="p">([(</span><span class="s1">&#39;gls&#39;</span><span class="p">,</span> <span class="n">GLSModelOptions</span><span class="p">),</span>
                                    <span class="p">(</span><span class="s1">&#39;pacanowski&#39;</span><span class="p">,</span> <span class="n">PacanowskiPhilanderModelOptions</span><span class="p">)</span>
@@ -981,7 +1138,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

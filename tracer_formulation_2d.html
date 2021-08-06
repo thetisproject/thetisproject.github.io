@@ -4,15 +4,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>2D tracer formulation &#8212; Thetis 0+untagged.1720.g734247e documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/thetis.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>2D tracer formulation &#8212; Thetis 0+untagged.1736.gc23b50a documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/thetis.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
 <!--[if lte IE 6]>
@@ -51,9 +52,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="d-tracer-formulation">
+  <section id="d-tracer-formulation">
 <h1>2D tracer formulation<a class="headerlink" href="#d-tracer-formulation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="governing-equation">
+<section id="governing-equation">
 <h2>Governing equation<a class="headerlink" href="#governing-equation" title="Permalink to this headline">¶</a></h2>
 <p>The two dimensional tracer model solves an advection-diffusion
 equation
@@ -62,25 +63,27 @@ If solved in non-conservative form, the prognostic variable
 is the passive tracer concentration,
 <span class="math notranslate nohighlight">\(T\)</span>. The corresponding field in Thetis is called
 <code class="docutils literal notranslate"><span class="pre">'tracer_2d'</span></code>.</p>
+<p>To activate the 2D tracer model, add tracers using the
+<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.add_tracer_2d" title="thetis.options.ModelOptions2d.add_tracer_2d"><code class="xref py py-attr docutils literal notranslate"><span class="pre">add_tracer_2d</span></code></a>
+method. An example of its usage is provided in the
+<a class="reference external" href="./demos/demo_2d_tracer.py.html">2D tracer demo</a>.</p>
 <p>A conservative tracer model is also available, given by
 <a class="reference internal" href="thetis.html#equation-cons-tracer-eq-2d">(1)</a>.
 In this case, the equation is solved for <span class="math notranslate nohighlight">\(q=HT\)</span>, where
 <span class="math notranslate nohighlight">\(H\)</span> is the total water depth.
-The conservative tracer model is specified using the
-<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.use_tracer_conservative_form" title="thetis.options.ModelOptions2d.use_tracer_conservative_form"><code class="xref py py-attr docutils literal notranslate"><span class="pre">use_tracer_conservative_form</span></code></a>
-option.</p>
-<p>To activate the 2D tracer model, set the
-<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.solve_tracer" title="thetis.options.ModelOptions2d.solve_tracer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">solve_tracer</span></code></a>
-option to
-<code class="docutils literal notranslate"><span class="pre">True</span></code>. The tracer model may also be run independently
+The conservative tracer model is specified by setting the
+<code class="docutils literal notranslate"><span class="pre">use_conservative_form</span></code> keyword argument of
+<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.add_tracer_2d" title="thetis.options.ModelOptions2d.add_tracer_2d"><code class="xref py py-attr docutils literal notranslate"><span class="pre">add_tracer_2d</span></code></a>
+to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>The tracer model may also be run independently
 by setting the
 <a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.tracer_only" title="thetis.options.ModelOptions2d.tracer_only"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tracer_only</span></code></a>
 option to
 <code class="docutils literal notranslate"><span class="pre">True</span></code>. The hydrodynamics will be defined by any initial
 conditions specified for the horizontal velocity, or any updates
 imposed by the user.</p>
-</div>
-<div class="section" id="spatial-discretization">
+</section>
+<section id="spatial-discretization">
 <h2>Spatial discretization<a class="headerlink" href="#spatial-discretization" title="Permalink to this headline">¶</a></h2>
 <p>Thetis supports two different tracer finite element discretizations
 and associated stabilization methods, summarised in the table below.</p>
@@ -131,13 +134,14 @@ diffusivities for your problem using the
 and
 <a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.CommonModelOptions.horizontal_diffusivity_scale" title="thetis.options.CommonModelOptions.horizontal_diffusivity_scale"><code class="xref py py-attr docutils literal notranslate"><span class="pre">horizontal_diffusivity_scale</span></code></a>
 options.</p>
-</div>
-<div class="section" id="temporal-discretization">
+</section>
+<section id="temporal-discretization">
 <h2>Temporal discretization<a class="headerlink" href="#temporal-discretization" title="Permalink to this headline">¶</a></h2>
 <p>Thetis supports different time integration methods, set by the
-<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.timestepper_type" title="thetis.options.ModelOptions2d.timestepper_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">timestepper_type</span></code></a> option.
-Note that the same time integration method will be used for both the shallow
-water equations and the 2D tracer model.</p>
+<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.tracer_timestepper_type" title="thetis.options.ModelOptions2d.tracer_timestepper_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tracer_timestepper_type</span></code></a> option.
+Use the
+<a class="reference internal" href="model_options_2d.html#model-options-2d"><span class="std std-ref">ModelOptions2d</span></a>.<a class="reference internal" href="thetis.html#thetis.options.ModelOptions2d.set_timestepper_type" title="thetis.options.ModelOptions2d.set_timestepper_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">set_timestepper_type</span></code></a>
+method to set the same timestepper for all 2D model components.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 20%" />
@@ -191,8 +195,8 @@ water equations and the 2D tracer model.</p>
 </tbody>
 </table>
 <p>Table 2. <em>Time integration methods for 2D tracer model.</em></p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -204,7 +208,7 @@ water equations and the 2D tracer model.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

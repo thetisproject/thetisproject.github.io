@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.implicitexplicit &#8212; Thetis 0+untagged.1720.g734247e documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <title>thetis.implicitexplicit &#8212; Thetis 0+untagged.1736.gc23b50a documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -83,8 +83,7 @@
         <span class="sd">&quot;&quot;&quot;Explicit Runge-Kutta class&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">IMEXGeneric</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -94,20 +93,17 @@
 <span class="sd">        :arg float dt: time step in seconds</span>
 <span class="sd">        :arg options: :class:`TimeStepperOptions` instance containing parameter values.</span>
 <span class="sd">        :arg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
-<span class="sd">        :kwarg solver_parameters: PETSc solver options</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">solver_parameters</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">solver_parameters</span>
-        <span class="n">solver_parameters_dirk</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">solver_parameters_dirk</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">IMEXGeneric</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+        <span class="c1"># NOTE: The same solver parameters are currently used for both implicit and explicit schemes</span>
 
         <span class="c1"># implicit scheme</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dirk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirk_class</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span>
                                     <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">bnd_conditions</span><span class="p">,</span>
-                                    <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters_dirk</span><span class="p">,</span>
                                     <span class="n">terms_to_add</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;implicit&#39;</span><span class="p">))</span>
         <span class="c1"># explicit scheme</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">erk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">erk_class</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span>
                                   <span class="n">bnd_conditions</span><span class="o">=</span><span class="n">bnd_conditions</span><span class="p">,</span>
-                                  <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">,</span>
                                   <span class="n">terms_to_add</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;explicit&#39;</span><span class="p">,</span> <span class="s1">&#39;source&#39;</span><span class="p">))</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">n_stages</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirk</span><span class="o">.</span><span class="n">n_stages</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">n_stages</span>
@@ -125,8 +121,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dirk</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">erk</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IMEXGeneric.advance"><a class="viewcode-back" href="../../thetis.html#thetis.implicitexplicit.IMEXGeneric.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="IMEXGeneric.advance"><a class="viewcode-back" href="../../thetis.html#thetis.implicitexplicit.IMEXGeneric.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_lagged</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">update_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Advances equations for one time step.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">update_lagged</span> <span class="ow">and</span> <span class="n">update_fields</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solve_stage</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_final_solution</span><span class="p">()</span></div>
@@ -226,7 +223,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

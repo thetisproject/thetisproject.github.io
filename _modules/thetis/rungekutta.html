@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.rungekutta &#8212; Thetis 0+untagged.1720.g734247e documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <title>thetis.rungekutta &#8212; Thetis 0+untagged.1736.gc23b50a documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -483,8 +483,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="RungeKuttaTimeIntegrator.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.RungeKuttaTimeIntegrator.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="RungeKuttaTimeIntegrator.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.RungeKuttaTimeIntegrator.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_lagged</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">update_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Advances equations for one time step.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">update_lagged</span> <span class="ow">and</span> <span class="n">update_fields</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span><span class="p">):</span>
@@ -499,8 +500,7 @@
 <span class="sd">    All derived classes must define the Butcher tableau coefficients :attr:`a`,</span>
 <span class="sd">    :attr:`b`, :attr:`c`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span>
-                 <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -510,12 +510,11 @@
 <span class="sd">        :arg float dt: time step in seconds</span>
 <span class="sd">        :arg options: :class:`TimeStepperOptions` instance containing parameter values.</span>
 <span class="sd">        :arg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
-<span class="sd">        :kwarg dict solver_parameters: PETSc solver options</span>
 <span class="sd">        :kwarg terms_to_add: Defines which terms of the equation are to be</span>
 <span class="sd">            added to this solver. Default &#39;all&#39; implies [&#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;].</span>
 <span class="sd">        :type terms_to_add: &#39;all&#39; or list of &#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">DIRKGeneric</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DIRKGeneric</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;newtonls&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -609,14 +608,23 @@
 <div class="viewcode-block" id="DIRKGeneric.solve_stage"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGeneric.solve_stage">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Solve i-th stage and assign solution to :attr:`self.solution`.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solve_tendency</span><span class="p">(</span><span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_solution</span><span class="p">(</span><span class="n">i_stage</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_solution</span><span class="p">(</span><span class="n">i_stage</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DIRKGeneric.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGeneric.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_lagged</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Advances equations for one time step.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">update_lagged</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>  <span class="c1"># TODO: Support Picard iteration for DIRK timesteppers</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solve_stage</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_final_solution</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="DIRKGenericUForm"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGenericUForm">[docs]</a><span class="k">class</span> <span class="nc">DIRKGenericUForm</span><span class="p">(</span><span class="n">RungeKuttaTimeIntegrator</span><span class="p">):</span>
     <span class="n">cfl_coeff</span> <span class="o">=</span> <span class="n">CFL_UNCONDITIONALLY_STABLE</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span>
-                 <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -626,12 +634,11 @@
 <span class="sd">        :arg float dt: time step in seconds</span>
 <span class="sd">        :arg options: :class:`TimeStepperOptions` instance containing parameter values.</span>
 <span class="sd">        :arg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
-<span class="sd">        :kwarg dict solver_parameters: PETSc solver options</span>
 <span class="sd">        :kwarg terms_to_add: Defines which terms of the equation are to be</span>
 <span class="sd">            added to this solver. Default &#39;all&#39; implies [&#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;].</span>
 <span class="sd">        :type terms_to_add: &#39;all&#39; or list of &#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
         <span class="n">semi_implicit</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">use_semi_implicit_linearization</span>
         <span class="k">if</span> <span class="n">semi_implicit</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">)</span>
@@ -796,8 +803,7 @@
 
 <span class="sd">    Implements the Butcher form. All terms in the equation are treated explicitly.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span>
-                 <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -807,12 +813,11 @@
 <span class="sd">        :arg float dt: time step in seconds</span>
 <span class="sd">        :arg options: :class:`TimeStepperOptions` instance containing parameter values.</span>
 <span class="sd">        :arg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
-<span class="sd">        :kwarg dict solver_parameters: PETSc solver options</span>
 <span class="sd">        :kwarg terms_to_add: Defines which terms of the equation are to be</span>
 <span class="sd">            added to this solver. Default &#39;all&#39; implies [&#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;].</span>
 <span class="sd">        :type terms_to_add: &#39;all&#39; or list of &#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ERKGeneric</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ERKGeneric</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;old solution&#39;</span><span class="p">)</span>
 
@@ -898,8 +903,7 @@
 
 <span class="sd">    Implements the Shu-Osher form.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span>
-                 <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
@@ -909,12 +913,11 @@
 <span class="sd">        :arg float dt: time step in seconds</span>
 <span class="sd">        :arg options: :class:`TimeStepperOptions` instance containing parameter values.</span>
 <span class="sd">        :arg dict bnd_conditions: Dictionary of boundary conditions passed to the equation</span>
-<span class="sd">        :kwarg dict solver_parameters: PETSc solver options</span>
 <span class="sd">        :kwarg terms_to_add: Defines which terms of the equation are to be</span>
 <span class="sd">            added to this solver. Default &#39;all&#39; implies [&#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;].</span>
 <span class="sd">        :type terms_to_add: &#39;all&#39; or list of &#39;implicit&#39;, &#39;explicit&#39;, &#39;source&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ERKGenericShuOsher</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ERKGenericShuOsher</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">tendency</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;tendency&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stage_sol</span> <span class="o">=</span> <span class="p">[]</span>
@@ -968,8 +971,9 @@
             <span class="k">if</span> <span class="n">i_stage</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">stage_sol</span><span class="p">[</span><span class="n">i_stage</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ERKGenericShuOsher.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKGenericShuOsher.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ERKGenericShuOsher.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKGenericShuOsher.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_lagged</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">update_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Advances equations for one time step.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">update_lagged</span> <span class="ow">and</span> <span class="n">update_fields</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solve_stage</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span></div></div>
 
@@ -1011,7 +1015,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>
