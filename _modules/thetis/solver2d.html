@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.solver2d &#8212; Thetis 0+untagged.1722.g494fc07 documentation</title>
+    <title>thetis.solver2d &#8212; Thetis 0+untagged.1731.g3dfe65d documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -447,7 +447,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">equations</span><span class="o">.</span><span class="n">sw</span><span class="o">.</span><span class="n">bnd_functions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">]</span>
         <span class="n">uv_2d</span><span class="p">,</span> <span class="n">elev_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">tracer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_new_field</span><span class="p">(</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">Q_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">label</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_new_field</span><span class="p">(</span><span class="n">tracer</span><span class="o">.</span><span class="n">function</span> <span class="ow">or</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">Q_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">label</span><span class="p">),</span>
                                <span class="n">label</span><span class="p">,</span>
                                <span class="n">tracer</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
                                <span class="n">tracer</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">],</span>
@@ -555,6 +555,7 @@
             <span class="n">bcs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">label</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">:</span>
             <span class="n">bcs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="n">label</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]]</span>
+        <span class="c1"># TODO: Different timestepper options for different tracers</span>
         <span class="k">return</span> <span class="n">integrator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">equations</span><span class="p">[</span><span class="n">label</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">label</span><span class="p">],</span> <span class="n">fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                           <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">tracer_timestepper_options</span><span class="p">,</span> <span class="n">bcs</span><span class="p">)</span></div>
 
@@ -971,7 +972,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.1.2.
     </div>
   </body>
 </html>
