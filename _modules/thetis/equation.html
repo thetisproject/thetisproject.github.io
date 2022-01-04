@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.equation &#8212; Thetis 0+untagged.1718.gf836c9a.dirty documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <title>thetis.equation &#8212; Thetis 0+untagged.1793.g290af40 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -37,7 +37,6 @@
         <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
         <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
         <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
-        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetis/branches" title="Thetis build status">Jenkins</a></li>
       </ul>
     </div><!-- .menu -->
   </div><!-- #access -->
@@ -56,7 +55,6 @@
 <span class="sd">Implements Equation and Term classes.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
@@ -134,7 +132,7 @@
 <span class="sd">    nonlinear</span>
 <span class="sd">        The term is nonlinear and should be treated fully implicitly</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.Equation.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: the :class:`FunctionSpace` the solution belongs to</span>
@@ -203,7 +201,8 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="Equation.residual"><a class="viewcode-back" href="../../thetis.html#thetis.equation.Equation.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
+<div class="viewcode-block" id="Equation.residual"><a class="viewcode-back" href="../../thetis.html#thetis.equation.Equation.residual">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.Equation.residual&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an UFL form of the residual by summing up all the terms with the desired label.</span>
 
@@ -225,7 +224,8 @@
             <span class="n">f</span> <span class="o">+=</span> <span class="n">term</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">f</span></div>
 
-<div class="viewcode-block" id="Equation.jacobian"><a class="viewcode-back" href="../../thetis.html#thetis.equation.Equation.jacobian">[docs]</a>    <span class="k">def</span> <span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
+<div class="viewcode-block" id="Equation.jacobian"><a class="viewcode-back" href="../../thetis.html#thetis.equation.Equation.jacobian">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.Equation.jacobian&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an UFL form of the Jacobian by summing up all the Jacobians of the terms.</span>
 
@@ -257,8 +257,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+        &#169; Copyright 2016-2021, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

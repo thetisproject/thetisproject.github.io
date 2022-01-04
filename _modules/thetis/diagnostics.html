@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>thetis.diagnostics &#8212; Thetis 0+untagged.1795.gcdcd32d documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="../../_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="../../_static/icon_thetis.ico" />
+
+
+  </head><body>
+<div class="wrapper">
+  <a href="../../index.html"><img src="../../_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../../documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="../../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../../team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="_modules/thetis/diagnostics">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for thetis.diagnostics</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Classes for computing diagnostics.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;VorticityCalculator2D&quot;</span><span class="p">,</span> <span class="s2">&quot;HessianRecoverer2D&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="VorticityCalculator2D"><a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.VorticityCalculator2D">[docs]</a><span class="k">class</span> <span class="nc">VorticityCalculator2D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Linear solver for recovering fluid vorticity.</span>
+
+<span class="sd">    It is recommended that the vorticity is sought</span>
+<span class="sd">    in :math:`\mathbb P1` space.</span>
+
+<span class="sd">    :arg uv_2d: horizontal velocity :class:`Function`.</span>
+<span class="sd">    :arg vorticity_2d: :class:`Function` to hold calculated vorticity.</span>
+<span class="sd">    :kwargs: to be passed to the :class:`LinearVariationalSolver`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VorticityCalculator2D.__init__&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv_2d</span><span class="p">,</span> <span class="n">vorticity_2d</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="n">vorticity_2d</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">topological_dimension</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">dim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Dimension </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s1"> not supported&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span><span class="o">.</span><span class="n">horizontal</span> <span class="o">!=</span> <span class="s1">&#39;cg&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Vorticity must be calculated in a continuous space&#39;</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">FacetNormal</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">())</span>
+
+        <span class="c1"># Weak formulation</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">TrialFunction</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span><span class="o">*</span><span class="n">test</span><span class="o">*</span><span class="n">dx</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="o">-</span><span class="n">inner</span><span class="p">(</span><span class="n">perp</span><span class="p">(</span><span class="n">uv_2d</span><span class="p">),</span> <span class="n">grad</span><span class="p">(</span><span class="n">test</span><span class="p">))</span><span class="o">*</span><span class="n">dx</span> \
+            <span class="o">+</span> <span class="n">dot</span><span class="p">(</span><span class="n">perp</span><span class="p">(</span><span class="n">uv_2d</span><span class="p">),</span> <span class="n">test</span><span class="o">*</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="n">ds</span> \
+            <span class="o">+</span> <span class="n">dot</span><span class="p">(</span><span class="n">avg</span><span class="p">(</span><span class="n">perp</span><span class="p">(</span><span class="n">uv_2d</span><span class="p">)),</span> <span class="n">jump</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span><span class="o">*</span><span class="n">dS</span>
+
+        <span class="c1"># Setup vorticity solver</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="n">LinearVariationalProblem</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">vorticity_2d</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;solver_parameters&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s2">&quot;ksp_type&quot;</span><span class="p">:</span> <span class="s2">&quot;cg&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pc_type&quot;</span><span class="p">:</span> <span class="s2">&quot;bjacobi&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;sub_pc_type&quot;</span><span class="p">:</span> <span class="s2">&quot;ilu&quot;</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">LinearVariationalSolver</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VorticityCalculator2D.solve"><a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.VorticityCalculator2D.solve">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VorticityCalculator2D.solve&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="HessianRecoverer2D"><a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.HessianRecoverer2D">[docs]</a><span class="k">class</span> <span class="nc">HessianRecoverer2D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Linear solver for recovering Hessians.</span>
+
+<span class="sd">    Hessians are recoved using double :math:`L^2`</span>
+<span class="sd">    projection, which is implemented using a</span>
+<span class="sd">    mixed finite element method.</span>
+
+<span class="sd">    It is recommended that gradients and Hessians</span>
+<span class="sd">    are sought in :math:`\mathbb P1` space of</span>
+<span class="sd">    appropriate dimension.</span>
+
+<span class="sd">    :arg field_2d: :class:`Function` to recover the Hessian of.</span>
+<span class="sd">    :arg hessian_2d: :class:`Function` to hold recovered Hessian.</span>
+<span class="sd">    :kwarg gradient_2d: :class:`Function` to hold recovered gradient.</span>
+<span class="sd">    :kwargs: to be passed to the :class:`LinearVariationalSolver`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HessianRecoverer2D.__init__&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_2d</span><span class="p">,</span> <span class="n">hessian_2d</span><span class="p">,</span> <span class="n">gradient_2d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hessian_2d</span> <span class="o">=</span> <span class="n">hessian_2d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_2d</span> <span class="o">=</span> <span class="n">gradient_2d</span>
+        <span class="n">Sigma</span> <span class="o">=</span> <span class="n">hessian_2d</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
+        <span class="n">mesh</span> <span class="o">=</span> <span class="n">Sigma</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">topological_dimension</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">dim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Dimension </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s1"> not supported&#39;</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">FacetNormal</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+
+        <span class="c1"># Extract function spaces</span>
+        <span class="k">if</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">Sigma</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span><span class="o">.</span><span class="n">horizontal</span> <span class="o">!=</span> <span class="s1">&#39;cg&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Hessians must be calculated in a continuous space&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Sigma</span><span class="o">.</span><span class="n">dof_dset</span><span class="o">.</span><span class="n">dim</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Expecting a square tensor function&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">gradient_2d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;CG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">gradient_2d</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">element_continuity</span><span class="p">(</span><span class="n">V</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span><span class="o">.</span><span class="n">horizontal</span> <span class="o">!=</span> <span class="s1">&#39;cg&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Gradients must be calculated in a continuous space&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">V</span><span class="o">.</span><span class="n">dof_dset</span><span class="o">.</span><span class="n">dim</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Expecting a 2D vector function&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Setup function spaces</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">V</span><span class="o">*</span><span class="n">Sigma</span>
+        <span class="n">g</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="n">TrialFunctions</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+        <span class="n">phi</span><span class="p">,</span> <span class="n">tau</span> <span class="o">=</span> <span class="n">TestFunctions</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+        <span class="n">sol</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gradient</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hessian</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+        <span class="c1"># The formulation is chosen such that f does not need to have any</span>
+        <span class="c1"># finite element derivatives</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">H</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span> \
+            <span class="o">+</span> <span class="n">inner</span><span class="p">(</span><span class="n">div</span><span class="p">(</span><span class="n">tau</span><span class="p">),</span> <span class="n">g</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span> \
+            <span class="o">+</span> <span class="n">inner</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span> \
+            <span class="o">-</span> <span class="n">dot</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">dot</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span><span class="o">*</span><span class="n">ds</span> \
+            <span class="o">-</span> <span class="n">dot</span><span class="p">(</span><span class="n">avg</span><span class="p">(</span><span class="n">g</span><span class="p">),</span> <span class="n">jump</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span><span class="o">*</span><span class="n">dS</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">field_2d</span><span class="o">*</span><span class="n">dot</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="n">ds</span> \
+            <span class="o">+</span> <span class="n">avg</span><span class="p">(</span><span class="n">field_2d</span><span class="p">)</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="n">dS</span> \
+            <span class="o">-</span> <span class="n">field_2d</span><span class="o">*</span><span class="n">div</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span>
+
+        <span class="c1"># Apply stationary preconditioners in the Schur complement to get away</span>
+        <span class="c1"># with applying GMRES to the whole mixed system</span>
+        <span class="n">sp</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;mat_type&quot;</span><span class="p">:</span> <span class="s2">&quot;aij&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ksp_type&quot;</span><span class="p">:</span> <span class="s2">&quot;gmres&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ksp_max_it&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+            <span class="s2">&quot;pc_type&quot;</span><span class="p">:</span> <span class="s2">&quot;fieldsplit&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pc_fieldsplit_type&quot;</span><span class="p">:</span> <span class="s2">&quot;schur&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pc_fieldsplit_0_fields&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pc_fieldsplit_1_fields&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pc_fieldsplit_schur_precondition&quot;</span><span class="p">:</span> <span class="s2">&quot;selfp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fieldsplit_0_ksp_type&quot;</span><span class="p">:</span> <span class="s2">&quot;preonly&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fieldsplit_1_ksp_type&quot;</span><span class="p">:</span> <span class="s2">&quot;preonly&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fieldsplit_1_pc_type&quot;</span><span class="p">:</span> <span class="s2">&quot;gamg&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fieldsplit_1_mg_levels_ksp_max_it&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">sp</span><span class="p">[</span><span class="s2">&quot;fieldsplit_0_pc_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ilu&quot;</span>
+            <span class="n">sp</span><span class="p">[</span><span class="s2">&quot;fieldsplit_1_mg_levels_pc_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ilu&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sp</span><span class="p">[</span><span class="s2">&quot;fieldsplit_0_pc_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bjacobi&quot;</span>
+            <span class="n">sp</span><span class="p">[</span><span class="s2">&quot;fieldsplit_0_sub_ksp_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;preonly&quot;</span>
+            <span class="n">sp</span><span class="p">[</span><span class="s2">&quot;fieldsplit_0_sub_pc_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ilu&quot;</span>
+            <span class="n">sp</span><span class="p">[</span><span class="s2">&quot;fieldsplit_1_mg_levels_pc_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bjacobi&quot;</span>
+            <span class="n">sp</span><span class="p">[</span><span class="s2">&quot;fieldsplit_1_mg_levels_sub_ksp_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;preonly&quot;</span>
+            <span class="n">sp</span><span class="p">[</span><span class="s2">&quot;fieldsplit_1_mg_levels_sub_pc_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ilu&quot;</span>
+
+        <span class="c1"># Setup solver</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="n">LinearVariationalProblem</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">sol</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;solver_parameters&#39;</span><span class="p">,</span> <span class="n">sp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">LinearVariationalSolver</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HessianRecoverer2D.solve"><a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.HessianRecoverer2D.solve">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HessianRecoverer2D.solve&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hessian_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hessian</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_2d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gradient_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gradient</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2021, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    </div>
+  </body>
+</html>

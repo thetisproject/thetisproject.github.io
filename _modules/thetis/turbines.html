@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.turbines &#8212; Thetis 0+untagged.1718.gf836c9a.dirty documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <title>thetis.turbines &#8212; Thetis 0+untagged.1793.g290af40 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -37,7 +37,6 @@
         <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
         <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
         <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
-        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetis/branches" title="Thetis build status">Jenkins</a></li>
       </ul>
     </div><!-- .menu -->
   </div><!-- #access -->
@@ -56,9 +55,11 @@
 <span class="sd">Classes related to tidal turbine farms in Thetis.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">firedrake</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">firedrake.petsc</span> <span class="kn">import</span> <span class="n">PETSc</span>
 <span class="kn">from</span> <span class="nn">.log</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.callback</span> <span class="kn">import</span> <span class="n">DiagnosticCallback</span>
 <span class="kn">from</span> <span class="nn">.optimisation</span> <span class="kn">import</span> <span class="n">DiagnosticOptimisationCallback</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
 
 
 <div class="viewcode-block" id="TurbineFarm"><a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineFarm">[docs]</a><span class="k">class</span> <span class="nc">TurbineFarm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -107,7 +108,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">average_profit</span> <span class="o">=</span> <span class="mf">0.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_period</span> <span class="o">=</span> <span class="mf">0.</span>
 
-<div class="viewcode-block" id="TurbineFarm.evaluate_timestep"><a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineFarm.evaluate_timestep">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_timestep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TurbineFarm.evaluate_timestep"><a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineFarm.evaluate_timestep">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.TurbineFarm.evaluate_timestep&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">evaluate_timestep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Perform time integration and return current power and time-averaged power and profit.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_period</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_period</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
         <span class="n">current_power</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">power_integral</span><span class="p">)</span>
@@ -124,6 +126,7 @@
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;turbine&#39;</span>  <span class="c1"># this name will be used in the hdf5 file</span>
     <span class="n">variable_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;current_power&#39;</span><span class="p">,</span> <span class="s1">&#39;average_power&#39;</span><span class="p">,</span> <span class="s1">&#39;average_profit&#39;</span><span class="p">]</span>
 
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.TurbineFunctionalCallback.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver_obj: a :class:`.FlowSolver2d` object containing the tidal_turbine_farms</span>
@@ -143,7 +146,7 @@
             <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Number of turbines = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">farm</span><span class="o">.</span><span class="n">evaluate_timestep</span><span class="p">()</span> <span class="k">for</span> <span class="n">farm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">farms</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">farm</span><span class="o">.</span><span class="n">evaluate_timestep</span><span class="p">()</span> <span class="k">for</span> <span class="n">farm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">farms</span><span class="p">])</span>
 
 <div class="viewcode-block" id="TurbineFunctionalCallback.message_str"><a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineFunctionalCallback.message_str">[docs]</a>    <span class="k">def</span> <span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_power</span><span class="p">,</span> <span class="n">average_power</span><span class="p">,</span> <span class="n">average_profit</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;Current power, average power and profit for each farm: </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_power</span><span class="p">,</span> <span class="n">average_power</span><span class="p">,</span> <span class="n">average_profit</span><span class="p">)</span></div>
@@ -198,8 +201,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+        &#169; Copyright 2016-2021, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

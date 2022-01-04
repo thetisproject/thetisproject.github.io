@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.limiter &#8212; Thetis 0+untagged.1718.gf836c9a.dirty documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <title>thetis.limiter &#8212; Thetis 0+untagged.1793.g290af40 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -37,7 +37,6 @@
         <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
         <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
         <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
-        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetis/branches" title="Thetis build status">Jenkins</a></li>
       </ul>
     </div><!-- .menu -->
   </div><!-- #access -->
@@ -55,11 +54,11 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Slope limiters for discontinuous fields</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">firedrake</span> <span class="kn">import</span> <span class="n">VertexBasedLimiter</span>
 <span class="kn">import</span> <span class="nn">ufl</span>
 <span class="kn">from</span> <span class="nn">pyop2.profiling</span> <span class="kn">import</span> <span class="n">timed_region</span><span class="p">,</span> <span class="n">timed_function</span><span class="p">,</span> <span class="n">timed_stage</span>  <span class="c1"># NOQA</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
 
 
 <div class="viewcode-block" id="assert_function_space"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.assert_function_space">[docs]</a><span class="k">def</span> <span class="nf">assert_function_space</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
@@ -151,7 +150,8 @@
             <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a_form</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid_solver</span><span class="o">.</span><span class="n">A</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">centroid_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centroids</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
-<div class="viewcode-block" id="VertexBasedP1DGLimiter.compute_bounds"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.compute_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">compute_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+<div class="viewcode-block" id="VertexBasedP1DGLimiter.compute_bounds"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.compute_bounds">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VertexBasedP1DGLimiter.compute_bounds&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">compute_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-compute min/max values of all neighbouring centroids</span>
 
@@ -171,9 +171,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">entity_dim</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># get vertical facets</span>
         <span class="n">boundary_dofs</span> <span class="o">=</span> <span class="n">entity_support_dofs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P1DG</span><span class="o">.</span><span class="n">finat_element</span><span class="p">,</span> <span class="n">entity_dim</span><span class="p">)</span>
-        <span class="n">local_facet_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">boundary_dofs</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">boundary_dofs</span><span class="o">.</span><span class="n">keys</span><span class="p">())])</span>
+        <span class="n">local_facet_nodes</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">boundary_dofs</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">boundary_dofs</span><span class="o">.</span><span class="n">keys</span><span class="p">())])</span>
         <span class="n">n_bnd_nodes</span> <span class="o">=</span> <span class="n">local_facet_nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">local_facet_idx</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="n">local_facet_nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">local_facet_nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;local_facet_idx&#39;</span><span class="p">)</span>
+        <span class="n">local_facet_idx</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="n">local_facet_nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">local_facet_nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;local_facet_idx&#39;</span><span class="p">)</span>
         <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">            void my_kernel(double *qmax, double *qmin, double *field, unsigned int *facet, unsigned int *local_facet_idx)</span>
 <span class="s2">            {</span>
@@ -202,8 +202,8 @@
             <span class="c1"># NOTE calling firedrake par_loop with measure=ds_t raises an error</span>
             <span class="n">bottom_nodes</span> <span class="o">=</span> <span class="n">get_facet_mask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P1CG</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
             <span class="n">top_nodes</span> <span class="o">=</span> <span class="n">get_facet_mask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P1CG</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">)</span>
-            <span class="n">bottom_idx</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bottom_nodes</span><span class="p">),</span> <span class="n">bottom_nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;node_idx&#39;</span><span class="p">)</span>
-            <span class="n">top_idx</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">top_nodes</span><span class="p">),</span> <span class="n">top_nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;node_idx&#39;</span><span class="p">)</span>
+            <span class="n">bottom_idx</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bottom_nodes</span><span class="p">),</span> <span class="n">bottom_nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;node_idx&#39;</span><span class="p">)</span>
+            <span class="n">top_idx</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Global</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">top_nodes</span><span class="p">),</span> <span class="n">top_nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;node_idx&#39;</span><span class="p">)</span>
             <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">                void my_kernel(double *qmax, double *qmin, double *field, int *idx) {</span>
 <span class="s2">                    double face_mean = 0;</span>
@@ -232,7 +232,8 @@
                          <span class="n">top_idx</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">),</span>
                          <span class="n">iterate</span><span class="o">=</span><span class="n">op2</span><span class="o">.</span><span class="n">ON_TOP</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="VertexBasedP1DGLimiter.apply"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+<div class="viewcode-block" id="VertexBasedP1DGLimiter.apply"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.apply">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VertexBasedP1DGLimiter.apply&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies the limiter on the given field (in place)</span>
 
@@ -259,8 +260,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+        &#169; Copyright 2016-2021, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

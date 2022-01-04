@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.solver &#8212; Thetis 0+untagged.1736.gc23b50a documentation</title>
+    <title>thetis.solver &#8212; Thetis 0+untagged.1793.g290af40 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -54,7 +54,6 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Module for three dimensional baroclinic solver</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.utility3d</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">shallowwater_eq</span>
@@ -72,6 +71,7 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">callback</span>
 <span class="kn">from</span> <span class="nn">.log</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
 
 
 <div class="viewcode-block" id="FlowSolver"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver">[docs]</a><span class="k">class</span> <span class="nc">FlowSolver</span><span class="p">(</span><span class="n">FrozenClass</span><span class="p">):</span>
@@ -129,6 +129,8 @@
 
 <span class="sd">    See the manual for more complex examples.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@unfrozen</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh2d</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">,</span>
                  <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extrude_options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -208,7 +210,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_continued</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_field_preproc_funcs</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="FlowSolver.compute_dx_factor"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.compute_dx_factor">[docs]</a>    <span class="k">def</span> <span class="nf">compute_dx_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -239,7 +240,8 @@
         <span class="n">factor</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="mf">0.25</span><span class="o">/</span><span class="n">l_r</span>
         <span class="k">return</span> <span class="n">factor</span></div>
 
-<div class="viewcode-block" id="FlowSolver.compute_dt_2d"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.compute_dt_2d">[docs]</a>    <span class="k">def</span> <span class="nf">compute_dt_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_scale</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowSolver.compute_dt_2d"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.compute_dt_2d">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.compute_dt_2d&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">compute_dt_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_scale</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes maximum explicit time step from CFL condition.</span>
 
@@ -265,7 +267,13 @@
         <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">g</span> <span class="o">*</span> <span class="n">bath_pos</span><span class="p">)</span> <span class="o">+</span> <span class="n">u_scale</span><span class="p">)</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">trial</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span>
         <span class="n">l</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">csize</span> <span class="o">/</span> <span class="n">u</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span>
-        <span class="n">solve</span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">l</span><span class="p">,</span> <span class="n">solution</span><span class="p">)</span>
+        <span class="n">sp</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;snes_type&quot;</span><span class="p">:</span> <span class="s2">&quot;ksponly&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ksp_type&quot;</span><span class="p">:</span> <span class="s2">&quot;cg&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pc_type&quot;</span><span class="p">:</span> <span class="s2">&quot;bjacobi&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;sub_pc_type&quot;</span><span class="p">:</span> <span class="s2">&quot;ilu&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">solve</span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">l</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">sp</span><span class="p">)</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">solution</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">MPI</span><span class="o">.</span><span class="n">MIN</span><span class="p">)</span>
         <span class="n">dt</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_dx_factor</span><span class="p">()</span>
@@ -371,7 +379,8 @@
         <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of cores: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Tracer DOFs per core: ~</span><span class="si">{</span><span class="n">dofs_t3d_core</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="FlowSolver.set_time_step"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.set_time_step">[docs]</a>    <span class="k">def</span> <span class="nf">set_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowSolver.set_time_step"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.set_time_step">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.set_time_step&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">set_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the model the model time step</span>
 
@@ -414,7 +423,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">max_dt_3d</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dt_2d</span> <span class="o">=</span> <span class="n">max_dt_2d</span>
             <span class="c1"># compute mode split ratio and force it to be integer</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">M_modesplit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dt_2d</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">M_modesplit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dt_2d</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dt_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">M_modesplit</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_mode</span> <span class="o">==</span> <span class="s1">&#39;2d&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">automatic_timestep</span><span class="p">:</span>
@@ -430,10 +439,10 @@
         <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  - chosen dt: 2D: </span><span class="si">{:}</span><span class="s1"> 3D: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dt_2d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
 
         <span class="c1"># fit dt to export time</span>
-        <span class="n">m_exp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
+        <span class="n">m_exp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span><span class="p">)</span><span class="o">/</span><span class="n">m_exp</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_mode</span> <span class="o">==</span> <span class="s1">&#39;split&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">M_modesplit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dt_2d</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">M_modesplit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dt_2d</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dt_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">M_modesplit</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dt_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
@@ -445,14 +454,15 @@
             <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;2D dt = </span><span class="si">{0:f}</span><span class="s1"> </span><span class="si">{1:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dt_2d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">M_modesplit</span><span class="p">))</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="FlowSolver.create_function_spaces"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.create_function_spaces">[docs]</a>    <span class="k">def</span> <span class="nf">create_function_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowSolver.create_function_spaces"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.create_function_spaces">[docs]</a>    <span class="nd">@unfrozen</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.create_function_spaces&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">create_function_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates function spaces</span>
 
 <span class="sd">        Function spaces are accessible via :attr:`.function_spaces`</span>
 <span class="sd">        object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># ----- function spaces: elev in H, uv in U, mixed is W</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P0</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;P0&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;CG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;CG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;P1&#39;</span><span class="p">)</span>
@@ -505,17 +515,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1DGxP2</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;CG&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;P1DGxP2&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">H_bhead</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1DGxP2</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">H_bhead_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1DG_2d</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U_int_pg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U_int_pg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U</span></div>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span></div>
-
-<div class="viewcode-block" id="FlowSolver.create_fields"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.create_fields">[docs]</a>    <span class="k">def</span> <span class="nf">create_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowSolver.create_fields"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.create_fields">[docs]</a>    <span class="nd">@unfrozen</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.create_fields&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">create_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates all fields</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;U_2d&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">create_function_spaces</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">log_output</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">no_exports</span><span class="p">:</span>
             <span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">create_directory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span><span class="p">),</span> <span class="s1">&#39;log&#39;</span><span class="p">)</span>
@@ -653,11 +662,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tot_h_diff</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">horizontal_diffusivity</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tot_v_diff</span> <span class="o">=</span> <span class="n">SumFunction</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tot_v_diff</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">vertical_diffusivity</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tot_v_diff</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;eddy_diff_3d&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tot_v_diff</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;eddy_diff_3d&#39;</span><span class="p">))</span></div>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span></div>
-
-<div class="viewcode-block" id="FlowSolver.add_new_field"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.add_new_field">[docs]</a>    <span class="k">def</span> <span class="nf">add_new_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">shortname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">preproc_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowSolver.add_new_field"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.add_new_field">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.add_new_field&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">add_new_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">shortname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">preproc_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a field to :attr:`fields`.</span>
 
@@ -689,13 +697,14 @@
         <span class="k">if</span> <span class="n">preproc_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_field_preproc_funcs</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">preproc_func</span></div>
 
-<div class="viewcode-block" id="FlowSolver.create_equations"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.create_equations">[docs]</a>    <span class="k">def</span> <span class="nf">create_equations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowSolver.create_equations"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.create_equations">[docs]</a>    <span class="nd">@unfrozen</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.create_equations&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">create_equations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates equation instances</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s1">&#39;uv_3d&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">create_fields</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">log_output</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">no_exports</span><span class="p">:</span>
             <span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">create_directory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span><span class="p">),</span> <span class="s1">&#39;log&#39;</span><span class="p">)</span>
@@ -874,18 +883,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">smagorinsky_diff_solver</span> <span class="o">=</span> <span class="n">SmagorinskyViscosity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">smag_visc_3d</span><span class="p">,</span>
                                                                 <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">smagorinsky_coefficient</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">h_elem_size_3d</span><span class="p">,</span>
                                                                 <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">max_h_diff</span><span class="p">,</span>
-                                                                <span class="n">weak_form</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                                                                <span class="n">weak_form</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span></div>
-
-<div class="viewcode-block" id="FlowSolver.create_timestepper"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.create_timestepper">[docs]</a>    <span class="k">def</span> <span class="nf">create_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowSolver.create_timestepper"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.create_timestepper">[docs]</a>    <span class="nd">@unfrozen</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.create_timestepper&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">create_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates time stepper instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;equations&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">create_equations</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">dt_mode</span> <span class="o">=</span> <span class="s1">&#39;3d&#39;</span>  <span class="c1"># &#39;split&#39;|&#39;2d&#39;|&#39;3d&#39; use constant 2d/3d dt, or split</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">==</span> <span class="s1">&#39;LeapFrog&#39;</span><span class="p">:</span>
@@ -907,17 +914,16 @@
         <span class="n">max_diff_alpha</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="mf">60.0</span><span class="o">/</span><span class="nb">max</span><span class="p">((</span><span class="n">degree_h</span><span class="o">*</span><span class="p">(</span><span class="n">degree_h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span> <span class="mf">1.0</span><span class="p">)</span>  <span class="c1"># FIXME depends on element type and order</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">max_h_diff</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">max_diff_alpha</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">h_elem_size_3d</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
         <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">max_h_diff</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;max h diff </span><span class="si">{:}</span><span class="s1"> - </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">d</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;max h diff </span><span class="si">{:}</span><span class="s1"> - </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">d</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span></div>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span></div>
-
-<div class="viewcode-block" id="FlowSolver.create_exporters"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.create_exporters">[docs]</a>    <span class="k">def</span> <span class="nf">create_exporters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowSolver.create_exporters"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.create_exporters">[docs]</a>    <span class="nd">@unfrozen</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.create_exporters&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">create_exporters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates file exporters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;timestepper&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">create_timestepper</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># ----- File exporters</span>
         <span class="c1"># create export_managers and store in a list</span>
@@ -939,9 +945,7 @@
                                        <span class="n">export_type</span><span class="o">=</span><span class="s1">&#39;hdf5&#39;</span><span class="p">,</span>
                                        <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
                                        <span class="n">preproc_funcs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_field_preproc_funcs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;hdf5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_isfrozen</span> <span class="o">=</span> <span class="kc">True</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;hdf5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span></div>
 
 <div class="viewcode-block" id="FlowSolver.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -957,7 +961,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">create_exporters</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="FlowSolver.assign_initial_conditions"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.assign_initial_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">assign_initial_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">salt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="FlowSolver.assign_initial_conditions"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.assign_initial_conditions">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.assign_initial_conditions&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">assign_initial_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">salt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                   <span class="n">uv_2d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uv_3d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tke</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">psi</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assigns initial conditions</span>
@@ -1025,7 +1030,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">eval_interval</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="FlowSolver.export"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowSolver.export"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.export">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.export&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Export all fields to disk</span>
 
@@ -1040,7 +1046,8 @@
         <span class="c1"># restore uv_3d</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_dav_3d</span></div>
 
-<div class="viewcode-block" id="FlowSolver.load_state"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.load_state">[docs]</a>    <span class="k">def</span> <span class="nf">load_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_export</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iteration</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowSolver.load_state"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.load_state">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.load_state&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">load_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_export</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iteration</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads simulation state from hdf5 outputs.</span>
 
@@ -1106,7 +1113,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">i_export</span> <span class="o">=</span> <span class="n">i_export</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">next_export_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_export</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span>
         <span class="k">if</span> <span class="n">iteration</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">iteration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_export_t</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
+            <span class="n">iteration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_export_t</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">t</span> <span class="o">=</span> <span class="n">iteration</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iteration</span> <span class="o">=</span> <span class="n">iteration</span>
@@ -1176,7 +1183,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_print_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">fieldname</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="FlowSolver.iterate"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.iterate">[docs]</a>    <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="FlowSolver.iterate"><a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.iterate">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.iterate&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">export_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs the simulation</span>
@@ -1297,7 +1305,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

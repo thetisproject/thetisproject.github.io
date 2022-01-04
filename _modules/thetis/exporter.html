@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.exporter &#8212; Thetis 0+untagged.1718.gf836c9a.dirty documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/thetis.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <title>thetis.exporter &#8212; Thetis 0+untagged.1793.g290af40 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -37,7 +37,6 @@
         <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
         <li class="page_item"><a href="../../contact.html" title="Getting in touch">Contact</a></li>
         <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
-        <li class="page_item"><a href="https://jenkins.ese.ic.ac.uk:1080/blue/organizations/jenkins/thetis/branches" title="Thetis build status">Jenkins</a></li>
       </ul>
     </div><!-- .menu -->
   </div><!-- #access -->
@@ -55,7 +54,6 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Routines for handling file exports.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">firedrake.output</span> <span class="kn">import</span> <span class="n">is_cg</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
@@ -67,20 +65,23 @@
     <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span></div>
 
 
-<div class="viewcode-block" id="get_visu_space"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.get_visu_space">[docs]</a><span class="k">def</span> <span class="nf">get_visu_space</span><span class="p">(</span><span class="n">fs</span><span class="p">):</span>
+<div class="viewcode-block" id="get_visu_space"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.get_visu_space">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.get_visu_space&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_visu_space</span><span class="p">(</span><span class="n">fs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an appropriate VTK visualization space for a function space</span>
 
 <span class="sd">    :arg fs: function space</span>
 <span class="sd">    :return: function space for VTK visualization</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">is_vector</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">value_shape</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="n">mesh</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
     <span class="n">family</span> <span class="o">=</span> <span class="s1">&#39;Lagrange&#39;</span> <span class="k">if</span> <span class="n">is_cg</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;Discontinuous Lagrange&#39;</span>
-    <span class="k">if</span> <span class="n">is_vector</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">value_shape</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">dim</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">value_shape</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">visu_fs</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
                                     <span class="n">vector</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">value_shape</span><span class="p">())</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">visu_fs</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+                                    <span class="n">tensor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">visu_fs</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="c1"># make sure that you always get the same temp work function</span>
@@ -115,7 +116,10 @@
 
 
 <div class="viewcode-block" id="VTKExporter"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter">[docs]</a><span class="k">class</span> <span class="nc">VTKExporter</span><span class="p">(</span><span class="n">ExporterBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class that handles Paraview VTK file exports&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class that handles Paraview VTK file exports</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VTKExporter.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fs_visu</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span>
                  <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">project_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -150,7 +154,8 @@
         <span class="c1"># FIXME hack to change correct output file count</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="VTKExporter.export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+<div class="viewcode-block" id="VTKExporter.export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter.export">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VTKExporter.export&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Exports given function to disk&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_visu</span><span class="o">.</span><span class="n">max_work_functions</span> <span class="o">==</span> <span class="mi">1</span>
         <span class="n">tmp_proj_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_visu</span><span class="o">.</span><span class="n">get_work_function</span><span class="p">()</span>
@@ -180,6 +185,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stores fields in disk in native discretization using HDF5 containers</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HDF5Exporter.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">filename_prefix</span><span class="p">,</span>
                  <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -222,7 +228,8 @@
             <span class="n">f</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span> <span class="o">=</span> <span class="n">iexport</span> <span class="o">+</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="HDF5Exporter.export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+<div class="viewcode-block" id="HDF5Exporter.export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.export">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HDF5Exporter.export&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Export function to disk.</span>
 
@@ -232,7 +239,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_as_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span><span class="p">,</span> <span class="n">function</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HDF5Exporter.load"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+<div class="viewcode-block" id="HDF5Exporter.load"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.load">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HDF5Exporter.load&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads nodal values from disk and assigns to the given function</span>
 
@@ -365,7 +373,8 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ExportManager.export_bathymetry"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.export_bathymetry">[docs]</a>    <span class="k">def</span> <span class="nf">export_bathymetry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">):</span>
+<div class="viewcode-block" id="ExportManager.export_bathymetry"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.export_bathymetry">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ExportManager.export_bathymetry&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">export_bathymetry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Special function to export 2D bathymetry data to disk</span>
 
@@ -384,8 +393,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2020, Tuomas Karna et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+        &#169; Copyright 2016-2021, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

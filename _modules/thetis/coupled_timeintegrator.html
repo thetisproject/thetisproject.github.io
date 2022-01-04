@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.coupled_timeintegrator &#8212; Thetis 0+untagged.1736.gc23b50a documentation</title>
+    <title>thetis.coupled_timeintegrator &#8212; Thetis 0+untagged.1793.g290af40 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -54,12 +54,12 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Time integrators for solving coupled 2D-3D system of equations.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">timeintegrator</span>
 <span class="kn">from</span> <span class="nn">.log</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rungekutta</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractproperty</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
 
 
 <div class="viewcode-block" id="CoupledTimeIntegratorBase"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTimeIntegratorBase">[docs]</a><span class="k">class</span> <span class="nc">CoupledTimeIntegratorBase</span><span class="p">(</span><span class="n">timeintegrator</span><span class="o">.</span><span class="n">TimeIntegratorBase</span><span class="p">):</span>
@@ -412,7 +412,7 @@
 <span class="sd">            :attr:`dt_2d` must be an integer fraction of :attr:`dt`.</span>
 <span class="sd">            If 2D solver is implicit set :attr:`dt_2d` equal to :attr:`dt`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">dt</span><span class="o">/</span><span class="n">dt_2d</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">dt</span><span class="o">/</span><span class="n">dt_2d</span><span class="p">)),</span> \
+        <span class="k">assert</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">dt</span><span class="o">/</span><span class="n">dt_2d</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">dt</span><span class="o">/</span><span class="n">dt_2d</span><span class="p">)),</span> \
             <span class="s1">&#39;dt_2d is not integer fraction of dt&#39;</span>
 
         <span class="k">if</span> <span class="n">dt</span> <span class="o">!=</span> <span class="n">dt_2d</span><span class="p">:</span>
@@ -465,13 +465,15 @@
     <span class="n">integrator_3d</span> <span class="o">=</span> <span class="n">timeintegrator</span><span class="o">.</span><span class="n">LeapFrogAM3</span>
     <span class="n">integrator_vert_3d</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">BackwardEuler</span>
 
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.CoupledLeapFrogAM3.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CoupledLeapFrogAM3</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elev_domain_old_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uv_old_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_2d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uv_new_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_2d</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CoupledLeapFrogAM3.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledLeapFrogAM3.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CoupledLeapFrogAM3.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledLeapFrogAM3.advance">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.CoupledLeapFrogAM3.advance&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Advances the equations for one time step</span>
 
@@ -625,6 +627,7 @@
     <span class="n">integrator_3d</span> <span class="o">=</span> <span class="n">timeintegrator</span><span class="o">.</span><span class="n">SSPRK22ALE</span>
     <span class="n">integrator_vert_3d</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">BackwardEuler</span>
 
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.CoupledTwoStageRK.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CoupledTwoStageRK</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver</span><span class="p">)</span>
         <span class="c1"># allocate CG elevation fields for storing mesh geometry</span>
@@ -633,7 +636,8 @@
             <span class="n">e</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_cg_2d</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">elev_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CoupledTwoStageRK.store_elevation"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTwoStageRK.store_elevation">[docs]</a>    <span class="k">def</span> <span class="nf">store_elevation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">istage</span><span class="p">):</span>
+<div class="viewcode-block" id="CoupledTwoStageRK.store_elevation"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTwoStageRK.store_elevation">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.CoupledTwoStageRK.store_elevation&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">store_elevation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">istage</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store current elevation field for computing mesh velocity</span>
 
@@ -646,7 +650,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">mesh_updater</span><span class="o">.</span><span class="n">compute_mesh_velocity_begin</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">elev_fields</span><span class="p">[</span><span class="n">istage</span><span class="p">]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_cg_2d</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CoupledTwoStageRK.compute_mesh_velocity"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTwoStageRK.compute_mesh_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">compute_mesh_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">istage</span><span class="p">):</span>
+<div class="viewcode-block" id="CoupledTwoStageRK.compute_mesh_velocity"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTwoStageRK.compute_mesh_velocity">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.CoupledTwoStageRK.compute_mesh_velocity&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">compute_mesh_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">istage</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes mesh velocity for stage i</span>
 
@@ -667,7 +672,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">mesh_updater</span><span class="o">.</span><span class="n">compute_mesh_velocity_finalize</span><span class="p">(</span>
                 <span class="n">w_mesh_surf_expr</span><span class="o">=</span><span class="n">w_s</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CoupledTwoStageRK.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTwoStageRK.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CoupledTwoStageRK.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTwoStageRK.advance">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.CoupledTwoStageRK.advance&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Advances the equations for one time step</span>
 
@@ -768,7 +774,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

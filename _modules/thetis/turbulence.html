@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.turbulence &#8212; Thetis 0+untagged.1736.gc23b50a documentation</title>
+    <title>thetis.turbulence &#8212; Thetis 0+untagged.1793.g290af40 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -191,13 +191,13 @@
 <span class="sd">    Journal of Marine Systems, 21(1-4):29-53.</span>
 <span class="sd">    http://dx.doi.org/10.1016/S0924-7963(99)00004-4</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.equation</span> <span class="kn">import</span> <span class="n">Equation</span>
 <span class="kn">from</span> <span class="nn">.tracer_eq</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.stability_functions</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.log</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.options</span> <span class="kn">import</span> <span class="n">GLSModelOptions</span><span class="p">,</span> <span class="n">PacanowskiPhilanderModelOptions</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
 
 
 <div class="viewcode-block" id="set_func_min_val"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.set_func_min_val">[docs]</a><span class="k">def</span> <span class="nf">set_func_min_val</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">minval</span><span class="p">):</span>
@@ -219,6 +219,7 @@
 <span class="sd">    Computes vertical gradient in the weak sense.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VerticalGradSolver.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg source: A :class:`Function` or expression to differentiate.</span>
@@ -252,7 +253,8 @@
         <span class="n">prob</span> <span class="o">=</span> <span class="n">LinearVariationalProblem</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="n">constant_jacobian</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">weak_grad_solver</span> <span class="o">=</span> <span class="n">LinearVariationalSolver</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="n">solver_parameters</span><span class="p">)</span>
 
-<div class="viewcode-block" id="VerticalGradSolver.solve"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.VerticalGradSolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="VerticalGradSolver.solve"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.VerticalGradSolver.solve">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VerticalGradSolver.solve&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Computes the gradient&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">weak_grad_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
 
@@ -266,6 +268,7 @@
 <span class="sd">        M^2 = \left(\frac{\partial u}{\partial z}\right)^2</span>
 <span class="sd">            + \left(\frac{\partial v}{\partial z}\right)^2</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ShearFrequencySolver.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">mv</span><span class="p">,</span> <span class="n">mu_tmp</span><span class="p">,</span> <span class="n">relaxation</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">minval</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg uv: horizontal velocity field</span>
@@ -293,7 +296,8 @@
         <span class="k">for</span> <span class="n">i_comp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">var_solvers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">VerticalGradSolver</span><span class="p">(</span><span class="n">uv</span><span class="p">[</span><span class="n">i_comp</span><span class="p">],</span> <span class="n">mu_tmp</span><span class="p">))</span>
 
-<div class="viewcode-block" id="ShearFrequencySolver.solve"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.ShearFrequencySolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solve</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ShearFrequencySolver.solve"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.ShearFrequencySolver.solve">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ShearFrequencySolver.solve&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solve</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes buoyancy frequency</span>
 
@@ -321,6 +325,7 @@
 <span class="sd">    .. math::</span>
 <span class="sd">        N^2 = -\frac{g}{\rho_0}\frac{\partial \rho}{\partial z}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.BuoyFrequencySolver.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n2_tmp</span><span class="p">,</span> <span class="n">relaxation</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">minval</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg rho: water density field</span>
@@ -349,7 +354,8 @@
             <span class="n">solver</span> <span class="o">=</span> <span class="n">VerticalGradSolver</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2_tmp</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">var_solver</span> <span class="o">=</span> <span class="n">solver</span>
 
-<div class="viewcode-block" id="BuoyFrequencySolver.solve"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.BuoyFrequencySolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solve</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BuoyFrequencySolver.solve"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.BuoyFrequencySolver.solve">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.BuoyFrequencySolver.solve&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solve</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes buoyancy frequency</span>
 
@@ -397,6 +403,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic Length Scale turbulence closure model implementation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GenericLengthScaleModel.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="n">k_field</span><span class="p">,</span> <span class="n">psi_field</span><span class="p">,</span> <span class="n">uv_field</span><span class="p">,</span> <span class="n">rho_field</span><span class="p">,</span>
                  <span class="n">l_field</span><span class="p">,</span> <span class="n">epsilon_field</span><span class="p">,</span>
                  <span class="n">eddy_diffusivity</span><span class="p">,</span> <span class="n">eddy_viscosity</span><span class="p">,</span>
@@ -503,7 +510,8 @@
         <span class="n">print_output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="GenericLengthScaleModel.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GenericLengthScaleModel.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l_init</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericLengthScaleModel.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GenericLengthScaleModel.initialize">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GenericLengthScaleModel.initialize&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l_init</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize turbulent fields.</span>
 
@@ -526,7 +534,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">init_solve</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">postprocess</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="GenericLengthScaleModel.preprocess"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GenericLengthScaleModel.preprocess">[docs]</a>    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solve</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericLengthScaleModel.preprocess"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GenericLengthScaleModel.preprocess">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GenericLengthScaleModel.preprocess&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solve</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes all diagnostic variables that depend on the mean flow model</span>
 <span class="sd">        variables.</span>
@@ -548,7 +557,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">n2_pos</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">pos_ix</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">pos_ix</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n2_neg</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">pos_ix</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">pos_ix</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="GenericLengthScaleModel.postprocess"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GenericLengthScaleModel.postprocess">[docs]</a>    <span class="k">def</span> <span class="nf">postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericLengthScaleModel.postprocess"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GenericLengthScaleModel.postprocess">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GenericLengthScaleModel.postprocess&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates all diagnostic variables that depend on the turbulence state</span>
 <span class="sd">        variables :math:`k,\psi`.</span>
@@ -572,21 +582,21 @@
             <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">limit_psi</span><span class="p">:</span>
                 <span class="c1"># impose Galperin limit on psi</span>
                 <span class="c1"># psi^(1/n) &lt;= sqrt(0.56)* (cmu0)^(p/n) *k^(m/n+0.5)* n2^(-0.5)</span>
-                <span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">galp_clim</span> <span class="o">*</span> <span class="p">(</span><span class="n">cmu0</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">k_arr</span><span class="o">**</span><span class="p">(</span><span class="n">m</span> <span class="o">/</span> <span class="n">n</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">n2_pos</span> <span class="o">+</span> <span class="n">n2_pos_eps</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">))</span><span class="o">**</span><span class="n">n</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">galp_clim</span> <span class="o">*</span> <span class="p">(</span><span class="n">cmu0</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">k_arr</span><span class="o">**</span><span class="p">(</span><span class="n">m</span> <span class="o">/</span> <span class="n">n</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">n2_pos</span> <span class="o">+</span> <span class="n">n2_pos_eps</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">))</span><span class="o">**</span><span class="n">n</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># impose max value</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                    <span class="n">numpy</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># impose min value</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                    <span class="n">numpy</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
             <span class="n">set_func_min_val</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">psi_min</span><span class="p">)</span>
 
             <span class="c1"># udpate epsilon</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">cmu0</span><span class="o">**</span><span class="p">(</span><span class="mf">3.0</span> <span class="o">+</span> <span class="n">p</span><span class="o">/</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">**</span><span class="p">(</span><span class="mf">3.0</span><span class="o">/</span><span class="mf">2.0</span> <span class="o">+</span> <span class="n">m</span><span class="o">/</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="o">/</span><span class="n">n</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">limit_eps</span><span class="p">:</span>
                 <span class="c1"># impose Galperin limit on eps</span>
-                <span class="n">eps_min</span> <span class="o">=</span> <span class="n">cmu0</span><span class="o">**</span><span class="mf">3.0</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">galp_clim</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n2_pos</span><span class="p">)</span><span class="o">*</span><span class="n">k_arr</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">eps_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">eps_min</span> <span class="o">=</span> <span class="n">cmu0</span><span class="o">**</span><span class="mf">3.0</span><span class="o">/</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">galp_clim</span><span class="p">)</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n2_pos</span><span class="p">)</span><span class="o">*</span><span class="n">k_arr</span>
+                <span class="n">numpy</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">eps_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
             <span class="c1"># impose minimum value</span>
             <span class="n">set_func_min_val</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">eps_min</span><span class="p">)</span>
 
@@ -596,8 +606,8 @@
                 <span class="n">set_func_min_val</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">len_min</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">limit_len</span><span class="p">:</span>
                 <span class="c1"># Galperin length scale limitation</span>
-                <span class="n">len_max</span> <span class="o">=</span> <span class="n">galp_clim</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">k_arr</span><span class="o">/</span><span class="p">(</span><span class="n">n2_pos</span> <span class="o">+</span> <span class="n">n2_pos_eps</span><span class="p">))</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">len_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">len_max</span> <span class="o">=</span> <span class="n">galp_clim</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">k_arr</span><span class="o">/</span><span class="p">(</span><span class="n">n2_pos</span> <span class="o">+</span> <span class="n">n2_pos_eps</span><span class="p">))</span>
+                <span class="n">numpy</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">len_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">10.0</span><span class="p">:</span>
                 <span class="n">warning</span><span class="p">(</span><span class="s1">&#39; * large L: </span><span class="si">{:f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
 
@@ -607,7 +617,7 @@
                                                     <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
                                                     <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
             <span class="c1"># update diffusivity/viscosity</span>
-            <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
             <span class="n">lam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relaxation</span>
             <span class="n">new_visc</span> <span class="o">=</span> <span class="n">b</span><span class="o">*</span><span class="n">s_m</span><span class="o">/</span><span class="n">cmu0</span><span class="o">**</span><span class="mi">3</span>
             <span class="n">new_diff</span> <span class="o">=</span> <span class="n">b</span><span class="o">*</span><span class="n">s_h</span><span class="o">/</span><span class="n">cmu0</span><span class="o">**</span><span class="mi">3</span>
@@ -910,6 +920,7 @@
 <span class="sd">    11(11):1443-1451.</span>
 <span class="sd">    http://dx.doi.org/10.1175/1520-0485(1981)011%3C1443:POVMIN%3E2.0.CO;2</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.PacanowskiPhilanderModel.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="n">uv_field</span><span class="p">,</span> <span class="n">rho_field</span><span class="p">,</span>
                  <span class="n">eddy_diffusivity</span><span class="p">,</span> <span class="n">eddy_viscosity</span><span class="p">,</span>
                  <span class="n">n2</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -961,14 +972,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
         <span class="n">print_output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PacanowskiPhilanderModel.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.PacanowskiPhilanderModel.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PacanowskiPhilanderModel.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.PacanowskiPhilanderModel.initialize">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.PacanowskiPhilanderModel.initialize&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initializes fields&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">1e-12</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n2_pos</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">1e-12</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">init_solve</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">postprocess</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="PacanowskiPhilanderModel.preprocess"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.PacanowskiPhilanderModel.preprocess">[docs]</a>    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solve</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="PacanowskiPhilanderModel.preprocess"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.PacanowskiPhilanderModel.preprocess">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.PacanowskiPhilanderModel.preprocess&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solve</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes all diagnostic variables that depend on the mean flow model</span>
 <span class="sd">        variables.</span>
@@ -985,7 +998,8 @@
             <span class="n">pos_ix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n2_pos</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">pos_ix</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">pos_ix</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="PacanowskiPhilanderModel.postprocess"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.PacanowskiPhilanderModel.postprocess">[docs]</a>    <span class="k">def</span> <span class="nf">postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PacanowskiPhilanderModel.postprocess"><a class="viewcode-back" href="../../thetis.html#thetis.turbulence.PacanowskiPhilanderModel.postprocess">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.PacanowskiPhilanderModel.postprocess&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates all diagnostic variables that depend on the turbulence state</span>
 <span class="sd">        variables.</span>
@@ -1007,7 +1021,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2021, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>
