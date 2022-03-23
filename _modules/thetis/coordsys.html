@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.coordsys &#8212; Thetis 0+untagged.1793.g290af40 documentation</title>
+    <title>thetis.coordsys &#8212; Thetis 0+untagged.1891.g4528d31 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -55,7 +55,7 @@
 <span class="sd">Generic methods for converting data between different spatial coordinate systems.</span>
 <span class="sd">Uses pyproj library.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
+<span class="kn">import</span> <span class="nn">firedrake</span> <span class="k">as</span> <span class="nn">fd</span>
 <span class="kn">import</span> <span class="nn">pyproj</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
@@ -159,6 +159,42 @@
         <span class="n">u</span> <span class="o">=</span> <span class="n">v_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotation_cos</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">-</span> <span class="n">v_y</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotation_sin</span><span class="p">[</span><span class="n">f</span><span class="p">]</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">v_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotation_sin</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">+</span> <span class="n">v_y</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotation_cos</span><span class="p">[</span><span class="n">f</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span></div>
+
+
+<div class="viewcode-block" id="to_latlon"><a class="viewcode-back" href="../../thetis.html#thetis.coordsys.to_latlon">[docs]</a><span class="k">def</span> <span class="nf">to_latlon</span><span class="p">(</span><span class="n">coord_system</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">positive_lon</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert model coordinates to latitude-longitude coordinates.</span>
+
+<span class="sd">    :arg coord_system: the local mesh coordinate system</span>
+<span class="sd">    :arg x: x coordinate</span>
+<span class="sd">    :arg y: y coordinate</span>
+<span class="sd">    :kwarg positive_lon: should positive longitude be enforced?</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">convert_coords</span><span class="p">(</span><span class="n">coord_system</span><span class="p">,</span> <span class="n">LL_WGS84</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">positive_lon</span><span class="p">:</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="mf">360.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span></div>
+
+
+<div class="viewcode-block" id="get_lonlat_function"><a class="viewcode-back" href="../../thetis.html#thetis.coordsys.get_lonlat_function">[docs]</a><span class="k">def</span> <span class="nf">get_lonlat_function</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Construct a :class:`Function` holding the mesh coordinates in</span>
+<span class="sd">    longitude-latitude coordinates.</span>
+
+<span class="sd">    :arg mesh2d: the 2D mesh</span>
+<span class="sd">    :arg coord_system: the coordinate system of the mesh</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dim</span> <span class="o">=</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">topological_dimension</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">dim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected a mesh of dimension 2, not </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Transformer</span><span class="o">.</span><span class="n">from_crs</span><span class="p">(</span><span class="n">coord_system</span><span class="o">.</span><span class="n">srs</span><span class="p">,</span> <span class="n">LL_WGS84</span><span class="o">.</span><span class="n">srs</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_ro</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_ro</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">lonlat</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">function_space</span><span class="p">())</span>
+    <span class="n">lonlat</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">lon</span>
+    <span class="n">lonlat</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">lat</span>
+    <span class="k">return</span> <span class="n">lonlat</span></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -169,7 +205,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2021, Tuomas Kärnä et al..
+        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>

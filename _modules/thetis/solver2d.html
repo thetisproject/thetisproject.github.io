@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.solver2d &#8212; Thetis 0+untagged.1795.gcdcd32d documentation</title>
+    <title>thetis.solver2d &#8212; Thetis 0+untagged.1888.gc4e776a documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -434,15 +434,18 @@
         <span class="k">if</span> <span class="n">preproc_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_field_preproc_funcs</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">preproc_func</span></div>
 
-<div class="viewcode-block" id="FlowSolver2d.create_equations"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_equations">[docs]</a>    <span class="nd">@unfrozen</span>
+<div class="viewcode-block" id="FlowSolver2d.create_fields"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_fields">[docs]</a>    <span class="nd">@unfrozen</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.create_equations&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">create_equations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates equation instances</span>
+<span class="sd">        Creates field Functions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="p">,</span> <span class="s1">&#39;U_2d&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">create_function_spaces</span><span class="p">()</span>
-        <span class="c1"># ----- fields</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">log_output</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">no_exports</span><span class="p">:</span>
+            <span class="n">set_log_directory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">V_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;solution_2d&#39;</span><span class="p">)</span>
         <span class="c1"># correct treatment of the split 2d functions</span>
         <span class="n">uv_2d</span><span class="p">,</span> <span class="n">elev_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -454,9 +457,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="n">DepthExpression</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">bathymetry_2d</span><span class="p">,</span>
                                      <span class="n">use_nonlinear_equations</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_nonlinear_equations</span><span class="p">,</span>
                                      <span class="n">use_wetting_and_drying</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_wetting_and_drying</span><span class="p">,</span>
-                                     <span class="n">wetting_and_drying_alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wetting_and_drying_alpha</span><span class="p">)</span>
+                                     <span class="n">wetting_and_drying_alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wetting_and_drying_alpha</span><span class="p">)</span></div>
 
-        <span class="c1"># ----- Equations</span>
+<div class="viewcode-block" id="FlowSolver2d.create_equations"><a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_equations">[docs]</a>    <span class="nd">@unfrozen</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.create_equations&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">create_equations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates equation instances</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span> <span class="s1">&#39;uv_2d&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_fields</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">equations</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">equations</span><span class="o">.</span><span class="n">sw</span> <span class="o">=</span> <span class="n">shallowwater_eq</span><span class="o">.</span><span class="n">ShallowWaterEquations</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">solution_2d</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span>
@@ -635,12 +646,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;equations&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">create_equations</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">log_output</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">no_exports</span><span class="p">:</span>
-            <span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">create_directory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span><span class="p">),</span> <span class="s1">&#39;log&#39;</span><span class="p">)</span>
-            <span class="n">filehandler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
-            <span class="n">filehandler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">))</span>
-            <span class="n">output_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">filehandler</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">compute_mesh_stats</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_time_step</span><span class="p">()</span>
@@ -995,7 +1000,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2021, Tuomas Kärnä et al..
+        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>

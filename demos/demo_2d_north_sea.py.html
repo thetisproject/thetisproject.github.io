@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>North Sea example &#8212; Thetis 0+untagged.1891.g4528d31 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/thetis.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+<!-- <link rel="stylesheet" href="../_static/featured.css"> -->
+
+
+<link rel="shortcut icon" href="../_static/icon_thetis.ico" />
+
+
+  </head><body>
+<div class="wrapper">
+  <a href="../index.html"><img src="../_static/banner.jpg" height="180px" alt="Thetis Project Banner" /></a>
+  <div id="access">
+    <div class="menu">
+      <ul>
+        <li class="page_item"><a href="../documentation.html" title="Thetis documentation">Documentation</a></li>
+        <li class="page_item"><a href="../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../team.html" title="Development team">Team</a></li>
+        <li class="page_item"><a href="../publications.html" title="Publications">Publications</a></li>
+        <li class="page_item"><a href="../funding.html" title="Our financial supporters">Funding</a></li>
+        <li class="page_item"><a href="../contact.html" title="Getting in touch">Contact</a></li>
+        <li class="page_item"><a href="https://github.com/thetisproject/thetis" title="Thetis source on GitHub">GitHub</a></li>
+      </ul>
+    </div><!-- .menu -->
+  </div><!-- #access -->
+</div><!-- #wrapper -->
+
+
+    <div class="document">
+    <div class="demos/demo_2d_north_sea.py">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="north-sea-example">
+<h1>North Sea example<a class="headerlink" href="#north-sea-example" title="Permalink to this headline">¶</a></h1>
+<p>This example gives an overview of how to set up a tidal model of the North Sea.</p>
+<p>In this demo, we are working with geographic data and so need to import a number of
+additional packages and configure for the right timezones and map projection. It is
+common to use UTC as the time zone, since it is used by most observation data sets and
+domains often cover multiple time zones. For the map projection, we use the UTM
+coordinate system, which subdivides the surface of the Earth into zones and applies a
+tangent plane approximation within each zone. In our case, UTM zone 30 is the
+appropriate one.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">thetis</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">thetis.coordsys</span> <span class="k">as</span> <span class="nn">coordsys</span>
+<span class="kn">import</span> <span class="nn">thetis.forcing</span> <span class="k">as</span> <span class="nn">forcing</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pyproj</span>
+
+<span class="n">sim_tz</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span>
+<span class="n">UTM_ZONE30</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Proj</span><span class="p">(</span><span class="n">proj</span><span class="o">=</span><span class="s2">&quot;utm&quot;</span><span class="p">,</span> <span class="n">zone</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">datum</span><span class="o">=</span><span class="s2">&quot;WGS84&quot;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="n">errcheck</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Having imported all the relevant packages, the first thing we need is a mesh of the
+domain of interest. This part is skipped for the purposes of this demo, but details
+can be found in the corresponding
+<a class="reference external" href="https://github.com/thetisproject/thetis/tree/master/examples/north_sea">example</a>
+in the Thetis source code. It involves extracting coastline data from the GSHHS
+coastline data set <span id="id1">[<a class="reference internal" href="#id9" title="Pål Wessel and Walter HF Smith. A global, self-consistent, hierarchical, high-resolution shoreline database. Journal of Geophysical Research: Solid Earth, 101(B4):8741–8743, 1996. Accessed 2022/03/14.">WS96</a>]</span> and using this to generate a mesh using qmesh
+<span id="id2">[<a class="reference internal" href="#id13" title="Alexandros Avdis, Adam S Candy, Jon Hill, Stephan C Kramer, and Matthew D Piggott. Efficient unstructured mesh generation for marine renewable energy applications. Renewable Energy, 116:842–856, 2018.">ACH+18</a>]</span>. The mesh is stored as a GMSH file named <cite>north_sea.msh</cite> and is
+plotted below.</p>
+<figure class="align-center" style="width: 80%">
+<img alt="../_images/north_sea_mesh.png" src="../_images/north_sea_mesh.png" />
+</figure>
+<p>Note that the boundary segments are given different tags, depending on whether they
+correspond to open ocean (tag 100) or coasts (tag 200). This is because we impose
+different boundary conditions in each case.</p>
+<p>We set up the (UTM) mesh and calculate its longitude-latitude coordinates as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mesh2d</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="s2">&quot;north_sea.msh&quot;</span><span class="p">)</span>
+<span class="n">lonlat</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">get_lonlat_function</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">UTM_ZONE30</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With the mesh, we can now move on to set up fields defined upon it. For the
+bathymetry data, we use the
+<a class="reference external" href="https://www.ngdc.noaa.gov/mgg/global">ETOPO1 data set</a>
+<span id="id3">[<a class="reference internal" href="#id11" title="Christopher Amante and Barry W Eakins. ETOPO1 arc-minute global relief model: procedures, data sources and analysis. NOAA National Centers for Environmental Information, 2009. Accessed 2022/03/14.">AE09a</a>]</span>, <span id="id4">[<a class="reference internal" href="#id12" title="Christopher Amante and Barry W Eakins. ETOPO1 arc-minute global relief model: procedures, data sources and analysis. noaa technical memorandum nesdis ngdc-24. National Geophysical Data Center, NOAA, 10(2009):V5C8276M, 2009. Accessed 2022/03/14.">AE09b</a>]</span>.
+A NetCDF file containing such data for the North Sea can be downloaded from the
+webpage, stored as <cite>etopo1.nc</cite> and then interpolated onto the unstructured mesh
+using SciPy. An <cite>interpolate_bathymetry</cite> script is provided in the
+<a class="reference external" href="https://github.com/thetisproject/thetis/tree/master/examples/north_sea">example</a>
+in the Thetis source code, which follows the
+<a class="reference external" href="https://firedrakeproject.org/interpolation.html#interpolation-from-external-data">recommendations in the Firedrake documentation for interpolating data</a>.
+However, the NetCDF file cannot be included here for
+copyright reasons, so we insteady provide a HDF5 file containing the data already
+interpolated onto the mesh. Note that HDF5 files currently have to be saved and
+loaded using the same number of processors. The bathymetry field was generated by
+a serial run, so the following will not work in parallel.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P1_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">bathymetry_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Bathymetry&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">DumbCheckpoint</span><span class="p">(</span><span class="s2">&quot;north_sea_bathymetry&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">FILE_READ</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
+    <span class="n">h5</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">bathymetry_2d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The resulting bathymetry field is plotted below.</p>
+<figure class="align-center" style="width: 80%">
+<img alt="../_images/north_sea_bathymetry.png" src="../_images/north_sea_bathymetry.png" />
+</figure>
+<p>Observe that the plot also includes eight orange crosses. These indicate tide
+gauges where we would like to compare our tidal model against real data. For
+details on obtaining such data, we refer to the
+<a class="reference external" href="https://github.com/thetisproject/thetis/tree/master/examples/north_sea">example</a>
+in the source code. For the purposes of this demo, we have included a CSV file
+named <cite>stations_elev.csv</cite> containing the gauge locations. We can read it as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">read_station_data</span><span class="p">():</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;stations_elev.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+        <span class="n">stations</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;latitude&quot;</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;longitude&quot;</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">skipinitialspace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="k">return</span> <span class="n">stations</span>
+</pre></div>
+</div>
+<p>We also require fields for the Manning friction coefficient and the Coriolis forcing.
+These can be set up as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">manning_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Manning coefficient&quot;</span><span class="p">)</span>
+<span class="n">manning_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">3.0e-02</span><span class="p">)</span>
+
+<span class="n">omega</span> <span class="o">=</span> <span class="mf">7.292e-05</span>
+<span class="n">coriolis_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Coriolis forcing&quot;</span><span class="p">)</span>
+<span class="n">coriolis_2d</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">omega</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">lonlat</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>We also need to choose a time window of interest and discretise it appropriately.
+We arbitrarily choose the simulation to start at 00:00 UTC on 15th January 2022
+and end exactly three days later. We are using a fairly coarse mesh (and will use
+an implicit time integration scheme) and so can get away with using timesteps of
+one hour.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2022</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">sim_tz</span><span class="p">)</span>
+<span class="n">end_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2022</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">sim_tz</span><span class="p">)</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">3600.0</span>
+<span class="n">t_export</span> <span class="o">=</span> <span class="mf">3600.0</span>
+<span class="n">t_end</span> <span class="o">=</span> <span class="p">(</span><span class="n">end_date</span> <span class="o">-</span> <span class="n">start_date</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We are now in a position where we can create the Thetis solver object and pass it
+all of the above parameters. We choose the implicit time integration scheme DIRK22
+because it is more suitable than the default Crank-Nicolson integrator in the case
+where we take large timesteps. (Crank-Nicolson is asymptotically unstable.)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span> <span class="o">=</span> <span class="n">solver2d</span><span class="o">.</span><span class="n">FlowSolver2d</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">)</span>
+<span class="n">options</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span>
+<span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="o">=</span> <span class="s2">&quot;dg-dg&quot;</span>
+<span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">options</span><span class="o">.</span><span class="n">coriolis_frequency</span> <span class="o">=</span> <span class="n">coriolis_2d</span>
+<span class="n">options</span><span class="o">.</span><span class="n">manning_drag_coefficient</span> <span class="o">=</span> <span class="n">manning_2d</span>
+<span class="n">options</span><span class="o">.</span><span class="n">horizontal_velocity_scale</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.5</span><span class="p">)</span>
+<span class="n">options</span><span class="o">.</span><span class="n">use_lax_friedrichs_velocity</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span> <span class="o">=</span> <span class="n">t_export</span>
+<span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">=</span> <span class="n">t_end</span>
+<span class="n">options</span><span class="o">.</span><span class="n">swe_timestepper_type</span> <span class="o">=</span> <span class="s2">&quot;DIRK22&quot;</span>
+<span class="n">options</span><span class="o">.</span><span class="n">swe_timestepper_options</span><span class="o">.</span><span class="n">use_semi_implicit_linearization</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">options</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="n">dt</span>
+<span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;elev_2d&quot;</span><span class="p">,</span> <span class="s2">&quot;uv_2d&quot;</span><span class="p">]</span>
+<span class="n">options</span><span class="o">.</span><span class="n">fields_to_export_hdf5</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">solver_obj</span><span class="o">.</span><span class="n">create_equations</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To extract free surface elevation timeseries at the tide gauges, we add in
+some <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesCallback2D</span></code> instances. We need to provide the solver
+object, the field names to be evaluated, the UTM coordinates and finally the
+name of each tide gauge.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trans</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Transformer</span><span class="o">.</span><span class="n">from_crs</span><span class="p">(</span><span class="n">coordsys</span><span class="o">.</span><span class="n">LL_WGS84</span><span class="o">.</span><span class="n">srs</span><span class="p">,</span> <span class="n">UTM_ZONE30</span><span class="o">.</span><span class="n">srs</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">sta_lat</span><span class="p">,</span> <span class="n">sta_lon</span><span class="p">)</span> <span class="ow">in</span> <span class="n">read_station_data</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">sta_x</span><span class="p">,</span> <span class="n">sta_y</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">sta_lon</span><span class="p">,</span> <span class="n">sta_lat</span><span class="p">)</span>
+    <span class="n">cb</span> <span class="o">=</span> <span class="n">TimeSeriesCallback2D</span><span class="p">(</span>
+        <span class="n">solver_obj</span><span class="p">,</span>
+        <span class="p">[</span><span class="s2">&quot;elev_2d&quot;</span><span class="p">],</span>
+        <span class="n">sta_x</span><span class="p">,</span>
+        <span class="n">sta_y</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">append_to_log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">solver_obj</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We still need to add a crucially important component to our tidal model…
+the tides! To do this, we make use of the
+<a class="reference external" href="https://www.tpxo.net/">TPXO tidal forcing data set</a> <span id="id5">[<a class="reference internal" href="#id10" title="Gary D Egbert and Svetlana Y Erofeeva. Efficient inverse modeling of barotropic ocean tides. Journal of Atmospheric and Oceanic technology, 19(2):183–204, 2002. Accessed 2022/03/14.">EE02</a>]</span>.
+In order for this demo to work you will need to obtain NetCDF files for
+the forcing data as described on the
+<a class="reference external" href="https://www.tpxo.net/tpxo-products-and-registration">TPXO access page</a>.
+We recommend that you store them in a subdirectory <cite>tpxo</cite> of a directory
+either located in a subdirectory <cite>data</cite> or referenced by the environment
+variable <cite>$DATA</cite>.</p>
+<p>With the data in place, we can set up a Firedrake <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code> to control
+the elevation forcings on ocean boundaries and pass them into a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TPXOTidalBoundaryForcing</span></code> instance.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DATA&quot;</span><span class="p">,</span> <span class="s2">&quot;./data&quot;</span><span class="p">),</span> <span class="s2">&quot;tpxo&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_dir</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Forcing data directory </span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s2"> does not exist&quot;</span><span class="p">)</span>
+<span class="n">forcing_constituents</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Q1&quot;</span><span class="p">,</span> <span class="s2">&quot;O1&quot;</span><span class="p">,</span> <span class="s2">&quot;P1&quot;</span><span class="p">,</span> <span class="s2">&quot;K1&quot;</span><span class="p">,</span> <span class="s2">&quot;N2&quot;</span><span class="p">,</span> <span class="s2">&quot;M2&quot;</span><span class="p">,</span> <span class="s2">&quot;S2&quot;</span><span class="p">,</span> <span class="s2">&quot;K2&quot;</span><span class="p">]</span>
+<span class="n">elev_tide_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Tidal elevation&quot;</span><span class="p">)</span>
+<span class="n">tbnd</span> <span class="o">=</span> <span class="n">forcing</span><span class="o">.</span><span class="n">TPXOTidalBoundaryForcing</span><span class="p">(</span>
+    <span class="n">elev_tide_2d</span><span class="p">,</span>
+    <span class="n">start_date</span><span class="p">,</span>
+    <span class="n">UTM_ZONE30</span><span class="p">,</span>
+    <span class="n">data_dir</span><span class="o">=</span><span class="n">data_dir</span><span class="p">,</span>
+    <span class="n">constituents</span><span class="o">=</span><span class="n">forcing_constituents</span><span class="p">,</span>
+    <span class="n">boundary_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># Set the tidal field at time zero (of the simulation).</span>
+<span class="n">tbnd</span><span class="o">.</span><span class="n">set_tidal_field</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As mentioned above, the forcing data drives the boundary conditions on
+boundary segments with tag 100. For open ocean boundaries in sufficiently deep
+open water, it is usually sufficient to use a zero boundary condition for the
+velocity because its magnitude is not significant. We pass this information to
+the solver object as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s2">&quot;shallow_water&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">100</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;elev&quot;</span><span class="p">:</span> <span class="n">elev_tide_2d</span><span class="p">,</span> <span class="s2">&quot;uv&quot;</span><span class="p">:</span> <span class="n">Constant</span><span class="p">(</span><span class="n">as_vector</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Note that we have assumed a fully “spun-up” tidal model here. It is standard
+practice to “spin-up” the model from a state of rest, slowly introducing the
+tidal forcings over one or two simulated weeks. For such preparatory runs, we
+need to modify the boundary condition expressions slightly. See the example in
+the source code for details on this. After a two week spin-up period, we obtain
+the following free surface elevation field (as well as a velocity field).</p>
+<figure class="align-center" style="width: 80%">
+<img alt="../_images/north_sea_init.png" src="../_images/north_sea_init.png" />
+</figure>
+<p>For the purposes of this demo, we have included HDF5 files containing spun-up
+elevation and velocity fields in the <cite>outputs_spinup</cite> directory. These can be
+used to initialise the model as follows. Again, the spun-up HDF5 data were
+generated by a serial run, so this demo will not work in parallel.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">load_state</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="s2">&quot;outputs_spinup&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">iteration</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The spin-up run was exported to HDF5 at daily intervals, so the first argument
+indicates that we resume on the fifteenth day (counting from zero). The last
+two keyword arguments are used to reset the clock for the subsequent simulation.</p>
+<p>The final ingredient that we need is a callback function that updates the tidal
+forcings as the simulation progresses. With that, we are ready to run the model!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">update_forcings</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="n">tbnd</span><span class="o">.</span><span class="n">set_tidal_field</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+
+<span class="n">solver_obj</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="n">update_forcings</span><span class="o">=</span><span class="n">update_forcings</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The elevation timeseries at the tide gauges should be as shown in the following
+plot, along with in-situ data from the
+<a class="reference external" href="http://www.marineinsitu.eu/access-data/">CMEMS catalogue</a> <span id="id6">[<a class="reference internal" href="#id14" title="E.U. Copernicus Marine Service Information. Atlantic-european north west shelf-ocean in-situ near real time observations. 2022. Accessed 2022/03/14. doi:10.48670/moi-00045.">Inf22</a>]</span>.
+Observe that the tidal cycles are well matched. The magnitudes are not so well
+matched. These results are generated on a coarse mesh, for the purposes of having
+a demo that can be run in a short amount of time. In order to more accurately
+approximate the observations, it would be beneficial to use a finer mesh. It could
+also be beneficial to calibrate the various parameters that define the tidal model,
+for example the Manning friction coefficient.</p>
+<figure class="align-center" style="width: 100%">
+<img alt="../_images/north_sea_elev_ts.png" src="../_images/north_sea_elev_ts.png" />
+</figure>
+<p>Scripts for generating all of the figures in this demo can be found in the
+<a class="reference external" href="https://github.com/thetisproject/thetis/tree/master/examples/north_sea">example</a>
+in the source code.</p>
+<p>This tutorial can be dowloaded as a Python script <a class="reference external" href="demo_2d_north_sea.py">here</a>.</p>
+<p class="rubric">References</p>
+<p id="id7"><dl class="citation">
+<dt class="label" id="id11"><span class="brackets"><a class="fn-backref" href="#id3">AE09a</a></span></dt>
+<dd><p>Christopher Amante and Barry W Eakins. ETOPO1 arc-minute global relief model: procedures, data sources and analysis. <em>NOAA National Centers for Environmental Information</em>, 2009. Accessed 2022/03/14.</p>
+</dd>
+<dt class="label" id="id12"><span class="brackets"><a class="fn-backref" href="#id4">AE09b</a></span></dt>
+<dd><p>Christopher Amante and Barry W Eakins. ETOPO1 arc-minute global relief model: procedures, data sources and analysis. noaa technical memorandum nesdis ngdc-24. <em>National Geophysical Data Center, NOAA</em>, 10(2009):V5C8276M, 2009. Accessed 2022/03/14.</p>
+</dd>
+<dt class="label" id="id13"><span class="brackets"><a class="fn-backref" href="#id2">ACH+18</a></span></dt>
+<dd><p>Alexandros Avdis, Adam S Candy, Jon Hill, Stephan C Kramer, and Matthew D Piggott. Efficient unstructured mesh generation for marine renewable energy applications. <em>Renewable Energy</em>, 116:842–856, 2018.</p>
+</dd>
+<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id5">EE02</a></span></dt>
+<dd><p>Gary D Egbert and Svetlana Y Erofeeva. Efficient inverse modeling of barotropic ocean tides. <em>Journal of Atmospheric and Oceanic technology</em>, 19(2):183–204, 2002. Accessed 2022/03/14.</p>
+</dd>
+<dt class="label" id="id14"><span class="brackets"><a class="fn-backref" href="#id6">Inf22</a></span></dt>
+<dd><p>E.U. Copernicus Marine Service Information. Atlantic-european north west shelf-ocean in-situ near real time observations. 2022. Accessed 2022/03/14. <a class="reference external" href="https://doi.org/10.48670/moi-00045">doi:10.48670/moi-00045</a>.</p>
+</dd>
+<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id1">WS96</a></span></dt>
+<dd><p>Pål Wessel and Walter HF Smith. A global, self-consistent, hierarchical, high-resolution shoreline database. <em>Journal of Geophysical Research: Solid Earth</em>, 101(B4):8741–8743, 1996. Accessed 2022/03/14.</p>
+</dd>
+</dl>
+</p>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    </div>
+  </body>
+</html>

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.callback &#8212; Thetis 0+untagged.1793.g290af40 documentation</title>
+    <title>thetis.callback &#8212; Thetis 0+untagged.1888.gc4e776a documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -180,10 +180,10 @@
 
 <span class="sd">        The HDF5 is updated immediately.</span>
 
-<span class="sd">        :arg time: time stamp of entry</span>
-<span class="sd">        :type time: float</span>
 <span class="sd">        :arg variables: values of entry</span>
 <span class="sd">        :type variables: tuple of float</span>
+<span class="sd">        :kwarg time: time stamp of entry</span>
+<span class="sd">        :type time: float</span>
 <span class="sd">        :kwarg int index: If provided, defines the time index in the file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -214,7 +214,9 @@
                  <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">include_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">hdf5_dtype</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">):</span>
+                 <span class="n">hdf5_dtype</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span>
+                 <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">end_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver_obj: Thetis solver object</span>
 <span class="sd">        :kwarg str outputdir: Custom directory where hdf5 files will be stored.</span>
@@ -229,12 +231,11 @@
 <span class="sd">        :kwarg bool include_time: whether to include time in the hdf5 file</span>
 <span class="sd">        :kwarg hdf5_dtype: Precision to use in hdf5 output: `d` for double</span>
 <span class="sd">            precision (default), and `f` for single precision</span>
+<span class="sd">        :kwarg start_time: Optional start time for callback evaluation</span>
+<span class="sd">        :kwarg end_time: Optional end time for callback evaluation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span> <span class="o">=</span> <span class="n">solver_obj</span>
-        <span class="k">if</span> <span class="n">outputdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="n">outputdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="n">outputdir</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">array_dim</span> <span class="o">=</span> <span class="n">array_dim</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="n">attrs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">append_to_hdf5</span> <span class="o">=</span> <span class="n">export_to_hdf5</span>
@@ -243,6 +244,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">include_time</span> <span class="o">=</span> <span class="n">include_time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_new_file</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hdf5_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">start_time</span> <span class="ow">or</span> <span class="o">-</span><span class="n">numpy</span><span class="o">.</span><span class="n">inf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="ow">or</span> <span class="n">numpy</span><span class="o">.</span><span class="n">inf</span>
 
 <div class="viewcode-block" id="DiagnosticCallback.set_write_mode"><a class="viewcode-back" href="../../thetis.html#thetis.callback.DiagnosticCallback.set_write_mode">[docs]</a>    <span class="k">def</span> <span class="nf">set_write_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -324,8 +327,10 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluates callback and pushes values to log and hdf file (if enabled)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__call__</span><span class="p">()</span>
         <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">simulation_time</span>
+        <span class="k">if</span> <span class="n">time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="ow">or</span> <span class="n">time</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__call__</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">append_to_log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">push_to_log</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">append_to_hdf5</span><span class="p">:</span>
@@ -657,7 +662,8 @@
                  <span class="n">location_name</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">eval_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                 <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">eval_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver_obj: Thetis :class:`FlowSolver` object</span>
 <span class="sd">        :arg fieldnames: List of fields to extract</span>
@@ -671,6 +677,8 @@
 <span class="sd">            format</span>
 <span class="sd">        :kwarg bool append_to_log: If True, callback output messages will be</span>
 <span class="sd">            printed in log</span>
+<span class="sd">        :kwarg start_time: Optional start time for timeseries extraction</span>
+<span class="sd">        :kwarg end_time: Optional end time for timeseries extraction</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">export_to_hdf5</span> <span class="ow">is</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fieldnames</span> <span class="o">=</span> <span class="n">fieldnames</span>
@@ -692,7 +700,9 @@
             <span class="n">array_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span>
             <span class="n">export_to_hdf5</span><span class="o">=</span><span class="n">export_to_hdf5</span><span class="p">,</span>
-            <span class="n">append_to_log</span><span class="o">=</span><span class="n">append_to_log</span><span class="p">)</span>
+            <span class="n">append_to_log</span><span class="o">=</span><span class="n">append_to_log</span><span class="p">,</span>
+            <span class="n">start_time</span><span class="o">=</span><span class="n">start_time</span><span class="p">,</span>
+            <span class="n">end_time</span><span class="o">=</span><span class="n">end_time</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">z</span>
@@ -764,8 +774,8 @@
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.TimeSeriesCallback3D.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">fieldnames</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span>
                  <span class="n">location_name</span><span class="p">,</span>
-                 <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                 <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_to_hdf5</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">append_to_log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver_obj: Thetis :class:`FlowSolver` object</span>
 <span class="sd">        :arg fieldnames: List of fields to extract</span>
@@ -779,6 +789,8 @@
 <span class="sd">            format</span>
 <span class="sd">        :kwarg bool append_to_log: If True, callback output messages will be</span>
 <span class="sd">            printed in log</span>
+<span class="sd">        :kwarg start_time: Optional start time for timeseries extraction</span>
+<span class="sd">        :kwarg end_time: Optional end time for timeseries extraction</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">export_to_hdf5</span> <span class="ow">is</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fieldnames</span> <span class="o">=</span> <span class="n">fieldnames</span>
@@ -796,7 +808,9 @@
             <span class="n">array_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span>
             <span class="n">export_to_hdf5</span><span class="o">=</span><span class="n">export_to_hdf5</span><span class="p">,</span>
-            <span class="n">append_to_log</span><span class="o">=</span><span class="n">append_to_log</span><span class="p">)</span>
+            <span class="n">append_to_log</span><span class="o">=</span><span class="n">append_to_log</span><span class="p">,</span>
+            <span class="n">start_time</span><span class="o">=</span><span class="n">start_time</span><span class="p">,</span>
+            <span class="n">end_time</span><span class="o">=</span><span class="n">end_time</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">z</span>
@@ -1114,7 +1128,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2021, Tuomas Kärnä et al..
+        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>

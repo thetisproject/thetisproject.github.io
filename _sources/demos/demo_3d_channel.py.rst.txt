@@ -103,6 +103,7 @@ both boundaries::
   def river_flux_func(t):
       return flux_river*min(t/t_ramp, 1.0)
   
+  
 We then define :py:class:`~.firedrake.constant.Constant` objects for the fluxes and
 use them as boundary conditions for the 2D shallow water model::
 
@@ -142,6 +143,7 @@ We now need to define the callback functions that update all time dependent
 forcing fields. As the 2D and 3D modes may be treated separately in the time
 integrator we create a different call back for the two modes::
 
+
   def update_forcings_2d(t_new):
       """Callback function that updates all time dependent forcing fields
       for the 2D mode"""
@@ -153,6 +155,7 @@ integrator we create a different call back for the two modes::
       """Callback function that updates all time dependent forcing fields
       for the 3D mode"""
       pass
+  
   
 Because the boundary conditions of the 3D equations do not depend on time, the
 3d callback function does nothing (it could be omitted).

@@ -68,12 +68,14 @@ For all supported boundary conditions, see module :py:mod:`~.shallowwater_eq`.
 In order to set time-dependent boundary conditions we first define a python
 function that evaluates the time dependent variable::
 
+
   def timedep_flux(simulation_time):
       """Time-dependent flux function"""
       tide_amp = -2e3
       tide_t = 12 * 3600.
       flux = tide_amp*sin(2 * pi * simulation_time / tide_t) + in_flux
       return flux
+  
   
 We then create a Constant object with the initial value,
 and assign it to the left boundary::
@@ -99,9 +101,11 @@ For this purpose we use the optional ``update_forcings`` argument of the
 :py:class:`~.firedrake.function.Function`\s used to force the model.
 In this case we only need to update ``tide_flux_const``::
 
+
   def update_forcings(t_new):
       """Callback function that updates all time dependent forcing fields"""
       tide_flux_const.assign(timedep_flux(t_new))
+  
   
 and finally pass this callback to the time iterator::
 

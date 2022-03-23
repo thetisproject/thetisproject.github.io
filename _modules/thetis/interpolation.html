@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.interpolation &#8212; Thetis 0+untagged.1793.g290af40 documentation</title>
+    <title>thetis.interpolation &#8212; Thetis 0+untagged.1891.g4528d31 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -59,21 +59,13 @@
 
 <span class="sd">.. code-block:: python</span>
 
-<span class="sd">    def to_latlon(x, y, positive_lon=False):</span>
-<span class="sd">        # Converts mesh (x,y) points to coordinates used in the atm data</span>
-<span class="sd">        lon, lat = coordsys_spcs.spcs2lonlat(x, y)</span>
-<span class="sd">        if positive_lon and lon &lt; 0.0:</span>
-<span class="sd">            lon += 360.</span>
-<span class="sd">        return lat, lon</span>
-
-
 <span class="sd">    class WRFInterpolator(object):</span>
 <span class="sd">        # Interpolates WRF atmospheric model data on 2D fields</span>
 <span class="sd">        def __init__(self, function_space, atm_pressure_field, ncfile_pattern, init_date):</span>
 <span class="sd">            self.atm_pressure_field = atm_pressure_field</span>
 
 <span class="sd">            # object that interpolates forcing data from structured grid on the local mesh</span>
-<span class="sd">            self.grid_interpolator = NetCDFLatLonInterpolator2d(function_space, to_latlon)</span>
+<span class="sd">            self.grid_interpolator = NetCDFLatLonInterpolator2d(function_space, coord_system)</span>
 <span class="sd">            # reader object that can read fields from netCDF files, applies spatial interpolation</span>
 <span class="sd">            self.reader = NetCDFSpatialInterpolator(self.grid_interpolator, [&#39;prmsl&#39;])</span>
 <span class="sd">            # object that can find previous/next time stamps in a collection of netCDF files</span>
@@ -101,6 +93,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">.coordsys</span> <span class="kn">import</span> <span class="n">to_latlon</span>
 <span class="kn">from</span> <span class="nn">.timezone</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.log</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">scipy.spatial.qhull</span> <span class="k">as</span> <span class="nn">qhull</span>
@@ -393,11 +386,10 @@
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: target Firedrake FunctionSpace</span>
-<span class="sd">        :arg to_latlon: Python function that converts local mesh coordinates to</span>
-<span class="sd">            latitude and longitude: &#39;lat, lon = to_latlon(x, y)&#39;</span>
+<span class="sd">        :arg coord_system: the local mesh coordinate system</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
@@ -416,11 +408,15 @@
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolator2d.__init__&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">to_latlon</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span> <span class="n">fill_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">fill_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: target Firedrake FunctionSpace</span>
-<span class="sd">        :arg to_latlon: Python function that converts local mesh coordinates to</span>
-<span class="sd">            latitude and longitude: &#39;lat, lon = to_latlon(x, y)&#39;</span>
+<span class="sd">        :arg coord_system: the local mesh coordinate system</span>
+<span class="sd">        :kwarg fill_mode: Determines how points outside the source grid will be</span>
+<span class="sd">            treated. If &#39;nearest&#39;, value of the nearest source point will be</span>
+<span class="sd">            used. Otherwise a constant fill value will be used (default).</span>
+<span class="sd">        :kwarg float fill_value: Set the fill value (default: NaN)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">function_space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">value_shape</span><span class="p">()</span> <span class="o">==</span> <span class="p">()</span>
 
@@ -439,9 +435,11 @@
             <span class="n">fsy</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span>
             <span class="n">coords</span> <span class="o">=</span> <span class="p">(</span><span class="n">fsx</span><span class="p">,</span> <span class="n">fsy</span><span class="p">)</span>
 
-        <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">to_latlon</span><span class="p">(</span><span class="o">*</span><span class="n">coords</span><span class="p">)</span>
+        <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">to_latlon</span><span class="p">(</span><span class="n">coord_system</span><span class="p">,</span> <span class="o">*</span><span class="n">coords</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh_lonlat</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">fill_mode</span> <span class="o">=</span> <span class="n">fill_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fill_value</span> <span class="o">=</span> <span class="n">fill_value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolator2d._create_interpolator&quot;</span><span class="p">)</span>
@@ -461,7 +459,9 @@
         <span class="n">subset_lat</span> <span class="o">=</span> <span class="n">lat_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
         <span class="n">subset_lon</span> <span class="o">=</span> <span class="n">lon_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
         <span class="n">subset_lonlat</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">subset_lon</span><span class="p">,</span> <span class="n">subset_lat</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span> <span class="o">=</span> <span class="n">GridInterpolator</span><span class="p">(</span><span class="n">subset_lonlat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_lonlat</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span> <span class="o">=</span> <span class="n">GridInterpolator</span><span class="p">(</span>
+            <span class="n">subset_lonlat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_lonlat</span><span class="p">,</span> <span class="n">fill_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fill_mode</span><span class="p">,</span>
+            <span class="n">fill_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fill_value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="c1"># debug: plot subsets</span>
@@ -495,7 +495,7 @@
 
 <span class="sd">        fs = FunctionSpace(...)</span>
 <span class="sd">        myfunc = Function(fs, ...)</span>
-<span class="sd">        ncinterp2d = NetCDFLatLonInterpolator2d(fs, to_latlon, nc_filename)</span>
+<span class="sd">        ncinterp2d = NetCDFLatLonInterpolator2d(fs, coord_system, nc_filename)</span>
 <span class="sd">        val1, val2 = ncinterp2d.interpolate(nc_filename, [&#39;var1&#39;, &#39;var2&#39;], 10)</span>
 <span class="sd">        myfunc.dat.data_with_halos[:] = val1 + val2</span>
 
@@ -933,7 +933,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2021, Tuomas Kärnä et al..
+        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
