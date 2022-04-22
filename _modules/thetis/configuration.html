@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.configuration &#8212; Thetis 0+untagged.1878.g52658ff.dirty documentation</title>
+    <title>thetis.configuration &#8212; Thetis 0+untagged.1922.g02d08b3.dirty documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -54,14 +54,19 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Utility function and extensions to traitlets used for specifying Thetis options</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">ipython_genutils.text</span> <span class="kn">import</span> <span class="n">indent</span><span class="p">,</span> <span class="n">dedent</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">dedent</span>
 <span class="kn">from</span> <span class="nn">traitlets.config.configurable</span> <span class="kn">import</span> <span class="n">Configurable</span>
 <span class="kn">from</span> <span class="nn">traitlets</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">firedrake</span> <span class="kn">import</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">Function</span>
-
+<span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">ufl</span>
 
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractproperty</span>
+
+
+<div class="viewcode-block" id="indent"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.indent">[docs]</a><span class="k">def</span> <span class="nf">indent</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">nspaces</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="n">nspaces</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="rst_all_options"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.rst_all_options">[docs]</a><span class="k">def</span> <span class="nf">rst_all_options</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">nspace</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -256,6 +261,16 @@
         <span class="k">return</span> <span class="s1">&#39;UFL vector expression&#39;</span></div></div>
 
 
+<div class="viewcode-block" id="DatetimeTraitlet"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.DatetimeTraitlet">[docs]</a><span class="k">class</span> <span class="nc">DatetimeTraitlet</span><span class="p">(</span><span class="n">TraitType</span><span class="p">):</span>
+    <span class="n">default_value</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">info_text</span> <span class="o">=</span> <span class="s1">&#39;a timezone-aware datetime object&#39;</span>
+
+<div class="viewcode-block" id="DatetimeTraitlet.validate"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.DatetimeTraitlet.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div></div>
+
+
 <div class="viewcode-block" id="PETScSolverParameters"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.PETScSolverParameters">[docs]</a><span class="k">class</span> <span class="nc">PETScSolverParameters</span><span class="p">(</span><span class="n">Dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;PETSc solver options dictionary&quot;&quot;&quot;</span>
     <span class="n">info_text</span> <span class="o">=</span> <span class="s1">&#39;a PETSc solver options dictionary&#39;</span>
@@ -288,9 +303,8 @@
         <span class="k">return</span> <span class="n">result</span> <span class="o">+</span> <span class="nb">super</span><span class="p">(</span><span class="n">PairedEnum</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="OptionsBase"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.OptionsBase">[docs]</a><span class="k">class</span> <span class="nc">OptionsBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="OptionsBase"><a class="viewcode-back" href="../../thetis.html#thetis.configuration.OptionsBase">[docs]</a><span class="k">class</span> <span class="nc">OptionsBase</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Abstract base class for all options classes&quot;&quot;&quot;</span>
-
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
 
     <span class="nd">@abstractproperty</span>
@@ -415,7 +429,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2022, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
     </div>
   </body>
 </html>
