@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>North Sea example &#8212; Thetis 0+untagged.1891.g4528d31 documentation</title>
+    <title>North Sea example &#8212; Thetis 0+untagged.1922.g02d08b3 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/thetis.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -66,10 +66,9 @@ appropriate one.</p>
 <span class="kn">import</span> <span class="nn">thetis.forcing</span> <span class="k">as</span> <span class="nn">forcing</span>
 <span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pyproj</span>
 
 <span class="n">sim_tz</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span>
-<span class="n">UTM_ZONE30</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Proj</span><span class="p">(</span><span class="n">proj</span><span class="o">=</span><span class="s2">&quot;utm&quot;</span><span class="p">,</span> <span class="n">zone</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">datum</span><span class="o">=</span><span class="s2">&quot;WGS84&quot;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="n">errcheck</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">coord_system</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">UTMCoordinateSystem</span><span class="p">(</span><span class="n">utm_zone</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Having imported all the relevant packages, the first thing we need is a mesh of the
@@ -88,7 +87,8 @@ correspond to open ocean (tag 100) or coasts (tag 200). This is because we impos
 different boundary conditions in each case.</p>
 <p>We set up the (UTM) mesh and calculate its longitude-latitude coordinates as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mesh2d</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="s2">&quot;north_sea.msh&quot;</span><span class="p">)</span>
-<span class="n">lonlat</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">get_lonlat_function</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">UTM_ZONE30</span><span class="p">)</span>
+<span class="n">lonlat</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">get_mesh_lonlat_function</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">)</span>
+<span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">lonlat</span>
 </pre></div>
 </div>
 <p>With the mesh, we can now move on to set up fields defined upon it. For the
@@ -138,7 +138,7 @@ These can be set up as follows:</p>
 
 <span class="n">omega</span> <span class="o">=</span> <span class="mf">7.292e-05</span>
 <span class="n">coriolis_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Coriolis forcing&quot;</span><span class="p">)</span>
-<span class="n">coriolis_2d</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">omega</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">lonlat</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">))</span>
+<span class="n">coriolis_2d</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">omega</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">lat</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>We also need to choose a time window of interest and discretise it appropriately.
@@ -150,7 +150,6 @@ one hour.</p>
 <span class="n">end_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2022</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">sim_tz</span><span class="p">)</span>
 <span class="n">dt</span> <span class="o">=</span> <span class="mf">3600.0</span>
 <span class="n">t_export</span> <span class="o">=</span> <span class="mf">3600.0</span>
-<span class="n">t_end</span> <span class="o">=</span> <span class="p">(</span><span class="n">end_date</span> <span class="o">-</span> <span class="n">start_date</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>We are now in a position where we can create the Thetis solver object and pass it
@@ -166,7 +165,8 @@ where we take large timesteps. (Crank-Nicolson is asymptotically unstable.)</p>
 <span class="n">options</span><span class="o">.</span><span class="n">horizontal_velocity_scale</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.5</span><span class="p">)</span>
 <span class="n">options</span><span class="o">.</span><span class="n">use_lax_friedrichs_velocity</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span> <span class="o">=</span> <span class="n">t_export</span>
-<span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">=</span> <span class="n">t_end</span>
+<span class="n">options</span><span class="o">.</span><span class="n">simulation_initial_date</span> <span class="o">=</span> <span class="n">start_date</span>
+<span class="n">options</span><span class="o">.</span><span class="n">simulation_end_date</span> <span class="o">=</span> <span class="n">end_date</span>
 <span class="n">options</span><span class="o">.</span><span class="n">swe_timestepper_type</span> <span class="o">=</span> <span class="s2">&quot;DIRK22&quot;</span>
 <span class="n">options</span><span class="o">.</span><span class="n">swe_timestepper_options</span><span class="o">.</span><span class="n">use_semi_implicit_linearization</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">options</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="n">dt</span>
@@ -179,9 +179,8 @@ where we take large timesteps. (Crank-Nicolson is asymptotically unstable.)</p>
 some <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesCallback2D</span></code> instances. We need to provide the solver
 object, the field names to be evaluated, the UTM coordinates and finally the
 name of each tide gauge.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trans</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Transformer</span><span class="o">.</span><span class="n">from_crs</span><span class="p">(</span><span class="n">coordsys</span><span class="o">.</span><span class="n">LL_WGS84</span><span class="o">.</span><span class="n">srs</span><span class="p">,</span> <span class="n">UTM_ZONE30</span><span class="o">.</span><span class="n">srs</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">sta_lat</span><span class="p">,</span> <span class="n">sta_lon</span><span class="p">)</span> <span class="ow">in</span> <span class="n">read_station_data</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="n">sta_x</span><span class="p">,</span> <span class="n">sta_y</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">sta_lon</span><span class="p">,</span> <span class="n">sta_lat</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">sta_lat</span><span class="p">,</span> <span class="n">sta_lon</span><span class="p">)</span> <span class="ow">in</span> <span class="n">read_station_data</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">sta_x</span><span class="p">,</span> <span class="n">sta_y</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">to_xy</span><span class="p">(</span><span class="n">sta_lon</span><span class="p">,</span> <span class="n">sta_lat</span><span class="p">)</span>
     <span class="n">cb</span> <span class="o">=</span> <span class="n">TimeSeriesCallback2D</span><span class="p">(</span>
         <span class="n">solver_obj</span><span class="p">,</span>
         <span class="p">[</span><span class="s2">&quot;elev_2d&quot;</span><span class="p">],</span>
@@ -213,7 +212,7 @@ the elevation forcings on ocean boundaries and pass them into a
 <span class="n">tbnd</span> <span class="o">=</span> <span class="n">forcing</span><span class="o">.</span><span class="n">TPXOTidalBoundaryForcing</span><span class="p">(</span>
     <span class="n">elev_tide_2d</span><span class="p">,</span>
     <span class="n">start_date</span><span class="p">,</span>
-    <span class="n">UTM_ZONE30</span><span class="p">,</span>
+    <span class="n">coord_system</span><span class="p">,</span>
     <span class="n">data_dir</span><span class="o">=</span><span class="n">data_dir</span><span class="p">,</span>
     <span class="n">constituents</span><span class="o">=</span><span class="n">forcing_constituents</span><span class="p">,</span>
     <span class="n">boundary_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">],</span>
@@ -311,7 +310,7 @@ in the source code.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2022, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
     </div>
   </body>
 </html>
