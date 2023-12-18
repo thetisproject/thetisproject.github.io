@@ -1,19 +1,16 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>3D tidal channel demo &#8212; Thetis 0+untagged.1962.ge771a0c documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/thetis.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <title>3D tidal channel demo &#8212; Thetis 0+untagged.2009.gd7af522 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/thetis.css?v=0f3339d6" />
+    <script src="../_static/documentation_options.js?v=5ff313e6"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -54,7 +51,7 @@
           <div class="body" role="main">
             
   <section id="d-tidal-channel-demo">
-<h1>3D tidal channel demo<a class="headerlink" href="#d-tidal-channel-demo" title="Permalink to this heading">¶</a></h1>
+<h1>3D tidal channel demo<a class="headerlink" href="#d-tidal-channel-demo" title="Link to this heading">¶</a></h1>
 <p>This example demonstrates a 3D barotropic model in a tidal channel with sloping
 bathymetry. We also add a constant, passive salinity tracer to demonstrate local
 tracer conservation. This simulation uses the ALE moving mesh.</p>
@@ -152,7 +149,7 @@ both boundaries:</p>
     <span class="k">return</span> <span class="n">flux_river</span><span class="o">*</span><span class="nb">min</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">t_ramp</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>We then define <a class="reference external" href="https://firedrakeproject.org/firedrake.html#firedrake.constant.Constant" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constant</span></code></a> objects for the fluxes and
+<p>We then define <a class="reference external" href="https://www.firedrakeproject.org/firedrake.html#firedrake.constant.Constant" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constant</span></code></a> objects for the fluxes and
 use them as boundary conditions for the 2D shallow water model:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ocean_flux</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">ocean_flux_func</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 <span class="n">river_flux</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">river_flux_func</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
@@ -190,14 +187,14 @@ assumed to be impermeable land boundaries.</p>
 forcing fields. As the 2D and 3D modes may be treated separately in the time
 integrator we create a different call back for the two modes:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">update_forcings_2d</span><span class="p">(</span><span class="n">t_new</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Callback function that updates all time dependent forcing fields</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback function that updates all time dependent forcing fields</span>
 <span class="sd">    for the 2D mode&quot;&quot;&quot;</span>
     <span class="n">ocean_flux</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">ocean_flux_func</span><span class="p">(</span><span class="n">t_new</span><span class="p">))</span>
     <span class="n">river_flux</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">river_flux_func</span><span class="p">(</span><span class="n">t_new</span><span class="p">))</span>
 
 
 <span class="k">def</span> <span class="nf">update_forcings_3d</span><span class="p">(</span><span class="n">t_new</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Callback function that updates all time dependent forcing fields</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback function that updates all time dependent forcing fields</span>
 <span class="sd">    for the 3D mode&quot;&quot;&quot;</span>
     <span class="k">pass</span>
 </pre></div>
@@ -239,8 +236,8 @@ horizontal velocity field (3D velocity minus its vertical average).</p>
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
+    &#169; Copyright 2016-2023, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     </div>
   </body>
 </html>

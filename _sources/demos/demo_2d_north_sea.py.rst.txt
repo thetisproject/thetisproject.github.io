@@ -20,10 +20,10 @@ appropriate one.
   import thetis.forcing as forcing
   import csv
   import os
-  
+
   sim_tz = timezone.pytz.utc
   coord_system = coordsys.UTMCoordinateSystem(utm_zone=30)
-  
+
 Having imported all the relevant packages, the first thing we need is a mesh of the
 domain of interest. This part is skipped for the purposes of this demo, but details
 can be found in the corresponding
@@ -41,24 +41,21 @@ Note that the boundary segments are given different tags, depending on whether t
 correspond to open ocean (tag 100) or coasts (tag 200). This is because we impose
 different boundary conditions in each case.
 
-We set up the (UTM) mesh and calculate its longitude-latitude coordinates as follows:
+Normally, we would read in this mesh using ``mesh2d = Mesh('north_sea.msh)``;
+Here however, we use a pre-prepared bathymetry that is stored in a checkpoint
+file and therefore also read in the mesh from the checkpoint file.
 
-::
-
-  mesh2d = Mesh("north_sea.msh")
-  lonlat = coord_system.get_mesh_lonlat_function(mesh2d)
-  lon, lat = lonlat
-  
-With the mesh, we can now move on to set up fields defined upon it. For the
-bathymetry data, we use the
-`ETOPO1 data set <https://www.ngdc.noaa.gov/mgg/global>`__
-:cite:`ETOPO1:2009`, :cite:`ETOPO1tech:2009`.
-A NetCDF file containing such data for the North Sea can be downloaded from the
-webpage, stored as `etopo1.nc` and then interpolated onto the unstructured mesh
-using SciPy. An `interpolate_bathymetry` script is provided in the
-`example <https://github.com/thetisproject/thetis/tree/master/examples/north_sea>`__
-in the Thetis source code, which follows the
-`recommendations in the Firedrake documentation for interpolating data <https://firedrakeproject.org/interpolation.html#interpolation-from-external-data>`__.
+For the bathymetry data, we used the `ETOPO1 data set
+<https://www.ngdc.noaa.gov/mgg/global>`__ :cite:`ETOPO1:2009`,
+:cite:`ETOPO1tech:2009`.  A NetCDF file containing such data for the North
+Sea can be downloaded from the webpage, stored as `etopo1.nc` and then
+interpolated onto the unstructured mesh using SciPy. An
+`interpolate_bathymetry` function is provided in model_config module in the
+`example
+<https://github.com/thetisproject/thetis/tree/master/examples/north_sea>`__
+in the Thetis source code, which follows the `recommendations in the
+Firedrake documentation for interpolating data
+<https://firedrakeproject.org/interpolation.html#interpolation-from-external-data>`__.
 However, the NetCDF file cannot be included here for
 copyright reasons, so we insteady provide a HDF5 file containing the data already
 interpolated onto the mesh. Note that HDF5 files currently have to be saved and
@@ -67,13 +64,10 @@ a serial run, so the following will not work in parallel.
 
 ::
 
-  P1_2d = get_functionspace(mesh2d, "CG", 1)
-  bathymetry_2d = Function(P1_2d, name="Bathymetry")
   with CheckpointFile("north_sea_bathymetry.h5", "r") as f:
-      m = f.load_mesh("firedrake_default")
-      g = f.load_function(m, "Bathymetry")
-      bathymetry_2d.assign(g)
-  
+      mesh2d = f.load_mesh("firedrake_default")
+      bathymetry_2d = f.load_function(mesh2d, "Bathymetry")
+
 The resulting bathymetry field is plotted below.
 
 .. figure:: north_sea_bathymetry.png
@@ -97,20 +91,22 @@ named `stations_elev.csv` containing the gauge locations. We can read it as foll
               for d in csv.DictReader(csvfile, delimiter=",", skipinitialspace=True)
           }
       return stations
-  
-  
+
+
 We also require fields for the Manning friction coefficient and the Coriolis forcing.
 These can be set up as follows:
 
 ::
 
+  P1_2d = get_functionspace(mesh2d, "CG", 1)
   manning_2d = Function(P1_2d, name="Manning coefficient")
   manning_2d.assign(3.0e-02)
-  
+
   omega = 7.292e-05
   coriolis_2d = Function(P1_2d, name="Coriolis forcing")
+  lon, lat = coord_system.get_mesh_lonlat_function(mesh2d)
   coriolis_2d.interpolate(2 * omega * sin(lat * pi / 180.0))
-  
+
 We also need to choose a time window of interest and discretise it appropriately.
 We arbitrarily choose the simulation to start at 00:00 UTC on 15th January 2022
 and end exactly three days later. We are using a fairly coarse mesh (and will use
@@ -123,7 +119,7 @@ one hour.
   end_date = datetime.datetime(2022, 1, 18, tzinfo=sim_tz)
   dt = 3600.0
   t_export = 3600.0
-  
+
 We are now in a position where we can create the Thetis solver object and pass it
 all of the above parameters. We choose the implicit time integration scheme DIRK22
 because it is more suitable than the default Crank-Nicolson integrator in the case
@@ -148,7 +144,7 @@ where we take large timesteps. (Crank-Nicolson is asymptotically unstable.)
   options.fields_to_export = ["elev_2d", "uv_2d"]
   options.fields_to_export_hdf5 = []
   solver_obj.create_equations()
-  
+
 To extract free surface elevation timeseries at the tide gauges, we add in
 some :class:`TimeSeriesCallback2D` instances. We need to provide the solver
 object, the field names to be evaluated, the UTM coordinates and finally the
@@ -167,7 +163,7 @@ name of each tide gauge.
           append_to_log=False,
       )
       solver_obj.add_callback(cb)
-  
+
 We still need to add a crucially important component to our tidal model...
 the tides! To do this, we make use of the
 `TPXO tidal forcing data set <https://www.tpxo.net/>`__ :cite:`TPXO:2002`.
@@ -197,10 +193,10 @@ the elevation forcings on ocean boundaries and pass them into a
       constituents=forcing_constituents,
       boundary_ids=[100],
   )
-  
+
   # Set the tidal field at time zero (of the simulation).
   tbnd.set_tidal_field(0.0)
-  
+
 As mentioned above, the forcing data drives the boundary conditions on
 boundary segments with tag 100. For open ocean boundaries in sufficiently deep
 open water, it is usually sufficient to use a zero boundary condition for the
@@ -212,7 +208,7 @@ the solver object as follows:
   solver_obj.bnd_functions["shallow_water"] = {
       100: {"elev": elev_tide_2d, "uv": Constant(as_vector([0, 0]))},
   }
-  
+
 Note that we have assumed a fully "spun-up" tidal model here. It is standard
 practice to "spin-up" the model from a state of rest, slowly introducing the
 tidal forcings over one or two simulated weeks. For such preparatory runs, we
@@ -226,13 +222,13 @@ the following free surface elevation field (as well as a velocity field).
 
 For the purposes of this demo, we have included HDF5 files containing spun-up
 elevation and velocity fields in the `outputs_spinup` directory. These can be
-used to initialise the model as follows. Again, the spun-up HDF5 data were
+used to initialise the model as follows. The spun-up HDF5 data were
 generated by a serial run, so this demo will not work in parallel.
 
 ::
 
   solver_obj.load_state(14, outputdir="outputs_spinup", t=0, iteration=0)
-  
+
 The spin-up run was exported to HDF5 at daily intervals, so the first argument
 indicates that we resume on the fifteenth day (counting from zero). The last
 two keyword arguments are used to reset the clock for the subsequent simulation.
@@ -245,10 +241,10 @@ forcings as the simulation progresses. With that, we are ready to run the model!
 
   def update_forcings(t):
       tbnd.set_tidal_field(t)
-  
-  
+
+
   solver_obj.iterate(update_forcings=update_forcings)
-  
+
 The elevation timeseries at the tide gauges should be as shown in the following
 plot, along with in-situ data from the
 `CMEMS catalogue <http://www.marineinsitu.eu/access-data/>`__ :cite:`CMEMS:2022`.

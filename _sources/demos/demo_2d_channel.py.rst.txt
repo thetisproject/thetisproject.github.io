@@ -13,13 +13,13 @@ We generate 25 elements in the along-channel direction and 2 in the
 cross-channel direction::
 
   from thetis import *
-  
+
   lx = 40e3
   ly = 2e3
   nx = 25
   ny = 2
   mesh2d = RectangleMesh(nx, ny, lx, ly)
-  
+
 Next we define a bathymetry function in the 2D mesh, using continuous linear
 elements. In this example we set the bathymetry to constant 20 m depth::
 
@@ -27,7 +27,7 @@ elements. In this example we set the bathymetry to constant 20 m depth::
   bathymetry_2d = Function(P1_2d, name='Bathymetry')
   depth = 20.0
   bathymetry_2d.assign(depth)
-  
+
 .. note::
 
     See
@@ -40,12 +40,12 @@ We are now ready to create a 2D solver object, and set some options::
   t_end = 2 * 3600
   # export interval in seconds
   t_export = 100.0
-  
+
   solver_obj = solver2d.FlowSolver2d(mesh2d, bathymetry_2d)
   options = solver_obj.options
   options.simulation_export_time = t_export
   options.simulation_end_time = t_end
-  
+
 Here we simply define the total duration of the run, and the
 export interval. See :py:class:`~.ModelOptions` for more information about the
 available options.
@@ -55,7 +55,7 @@ equations and set the time step::
 
   options.swe_timestepper_type = 'CrankNicolson'
   options.timestep = 50.0
-  
+
 Because Crank-Nicolson is an uncondionally stable method, we can set
 the time step freely.
 
@@ -63,7 +63,7 @@ We then define the initial condition for elevation. We begin by creating a
 function (in the same linear continous function space)::
 
   elev_init = Function(P1_2d, name='initial elevation')
-  
+
 We then need to define an analytical expression the the x,y coordinates of the
 mesh. To this end, we use
 :py:class:`~.ufl.classes.SpatialCoordinate` and define a `UFL <http://fenics-ufl.readthedocs.io/en/latest/>`_ expression (see
@@ -74,20 +74,20 @@ for more information)::
   gauss_width = 4000.
   gauss_ampl = 2.0
   gauss_expr = gauss_ampl * exp(-((xy[0]-lx/2)/gauss_width)**2)
-  
+
 This defines a 2 m tall Gaussian hill in the x-direction in the middle on the
 domain. We can then interpolate this expression on the function::
 
   elev_init.interpolate(gauss_expr)
-  
+
 and set this function as an initial condition to the elevation field::
 
   solver_obj.assign_initial_conditions(elev=elev_init)
-  
+
 Model setup is now complelete. We run the model by issuing::
 
   solver_obj.iterate()
-  
+
 While the model is running, Thetis prints some statistics on the command line:
 
 .. code-block:: none

@@ -1,19 +1,16 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>North Sea example &#8212; Thetis 0+untagged.1962.ge771a0c documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/thetis.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <title>North Sea example &#8212; Thetis 0+untagged.2009.gd7af522 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/thetis.css?v=0f3339d6" />
+    <script src="../_static/documentation_options.js?v=5ff313e6"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <!--[if lte IE 6]>
@@ -53,7 +50,7 @@
           <div class="body" role="main">
             
   <section id="north-sea-example">
-<h1>North Sea example<a class="headerlink" href="#north-sea-example" title="Permalink to this heading">¶</a></h1>
+<h1>North Sea example<a class="headerlink" href="#north-sea-example" title="Link to this heading">¶</a></h1>
 <p>This example gives an overview of how to set up a tidal model of the North Sea.</p>
 <p>In this demo, we are working with geographic data and so need to import a number of
 additional packages and configure for the right timezones and map projection. It is
@@ -86,33 +83,25 @@ plotted below.</p>
 <p>Note that the boundary segments are given different tags, depending on whether they
 correspond to open ocean (tag 100) or coasts (tag 200). This is because we impose
 different boundary conditions in each case.</p>
-<p>We set up the (UTM) mesh and calculate its longitude-latitude coordinates as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mesh2d</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="s2">&quot;north_sea.msh&quot;</span><span class="p">)</span>
-<span class="n">lonlat</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">get_mesh_lonlat_function</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">)</span>
-<span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">lonlat</span>
-</pre></div>
-</div>
-<p>With the mesh, we can now move on to set up fields defined upon it. For the
-bathymetry data, we use the
-<a class="reference external" href="https://www.ngdc.noaa.gov/mgg/global">ETOPO1 data set</a>
-<span id="id3">[<a class="reference internal" href="#id11" title="Christopher Amante and Barry W Eakins. ETOPO1 arc-minute global relief model: procedures, data sources and analysis. NOAA National Centers for Environmental Information, 2009. Accessed 2022/03/14.">AE09a</a>]</span>, <span id="id4">[<a class="reference internal" href="#id12" title="Christopher Amante and Barry W Eakins. ETOPO1 arc-minute global relief model: procedures, data sources and analysis. noaa technical memorandum nesdis ngdc-24. National Geophysical Data Center, NOAA, 10(2009):V5C8276M, 2009. Accessed 2022/03/14.">AE09b</a>]</span>.
-A NetCDF file containing such data for the North Sea can be downloaded from the
-webpage, stored as <cite>etopo1.nc</cite> and then interpolated onto the unstructured mesh
-using SciPy. An <cite>interpolate_bathymetry</cite> script is provided in the
+<p>Normally, we would read in this mesh using <code class="docutils literal notranslate"><span class="pre">mesh2d</span> <span class="pre">=</span> <span class="pre">Mesh('north_sea.msh)</span></code>;
+Here however, we use a pre-prepared bathymetry that is stored in a checkpoint
+file and therefore also read in the mesh from the checkpoint file.</p>
+<p>For the bathymetry data, we used the <a class="reference external" href="https://www.ngdc.noaa.gov/mgg/global">ETOPO1 data set</a> <span id="id3">[<a class="reference internal" href="#id11" title="Christopher Amante and Barry W Eakins. ETOPO1 arc-minute global relief model: procedures, data sources and analysis. NOAA National Centers for Environmental Information, 2009. Accessed 2022/03/14.">AE09a</a>]</span>,
+<span id="id4">[<a class="reference internal" href="#id12" title="Christopher Amante and Barry W Eakins. ETOPO1 arc-minute global relief model: procedures, data sources and analysis. noaa technical memorandum nesdis ngdc-24. National Geophysical Data Center, NOAA, 10(2009):V5C8276M, 2009. Accessed 2022/03/14.">AE09b</a>]</span>.  A NetCDF file containing such data for the North
+Sea can be downloaded from the webpage, stored as <cite>etopo1.nc</cite> and then
+interpolated onto the unstructured mesh using SciPy. An
+<cite>interpolate_bathymetry</cite> function is provided in model_config module in the
 <a class="reference external" href="https://github.com/thetisproject/thetis/tree/master/examples/north_sea">example</a>
-in the Thetis source code, which follows the
-<a class="reference external" href="https://firedrakeproject.org/interpolation.html#interpolation-from-external-data">recommendations in the Firedrake documentation for interpolating data</a>.
+in the Thetis source code, which follows the <a class="reference external" href="https://firedrakeproject.org/interpolation.html#interpolation-from-external-data">recommendations in the
+Firedrake documentation for interpolating data</a>.
 However, the NetCDF file cannot be included here for
 copyright reasons, so we insteady provide a HDF5 file containing the data already
 interpolated onto the mesh. Note that HDF5 files currently have to be saved and
 loaded using the same number of processors. The bathymetry field was generated by
 a serial run, so the following will not work in parallel.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P1_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">bathymetry_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Bathymetry&quot;</span><span class="p">)</span>
-<span class="k">with</span> <span class="n">CheckpointFile</span><span class="p">(</span><span class="s2">&quot;north_sea_bathymetry.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">load_mesh</span><span class="p">(</span><span class="s2">&quot;firedrake_default&quot;</span><span class="p">)</span>
-    <span class="n">g</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">load_function</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="s2">&quot;Bathymetry&quot;</span><span class="p">)</span>
-    <span class="n">bathymetry_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">CheckpointFile</span><span class="p">(</span><span class="s2">&quot;north_sea_bathymetry.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">mesh2d</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">load_mesh</span><span class="p">(</span><span class="s2">&quot;firedrake_default&quot;</span><span class="p">)</span>
+    <span class="n">bathymetry_2d</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">load_function</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">&quot;Bathymetry&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The resulting bathymetry field is plotted below.</p>
@@ -136,11 +125,13 @@ named <cite>stations_elev.csv</cite> containing the gauge locations. We can read
 </div>
 <p>We also require fields for the Manning friction coefficient and the Coriolis forcing.
 These can be set up as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">manning_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Manning coefficient&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P1_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">manning_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Manning coefficient&quot;</span><span class="p">)</span>
 <span class="n">manning_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">3.0e-02</span><span class="p">)</span>
 
 <span class="n">omega</span> <span class="o">=</span> <span class="mf">7.292e-05</span>
 <span class="n">coriolis_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Coriolis forcing&quot;</span><span class="p">)</span>
+<span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">get_mesh_lonlat_function</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">)</span>
 <span class="n">coriolis_2d</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">omega</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">lat</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -246,7 +237,7 @@ the following free surface elevation field (as well as a velocity field).</p>
 </figure>
 <p>For the purposes of this demo, we have included HDF5 files containing spun-up
 elevation and velocity fields in the <cite>outputs_spinup</cite> directory. These can be
-used to initialise the model as follows. Again, the spun-up HDF5 data were
+used to initialise the model as follows. The spun-up HDF5 data were
 generated by a serial run, so this demo will not work in parallel.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">load_state</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="s2">&quot;outputs_spinup&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">iteration</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
@@ -281,6 +272,7 @@ in the source code.</p>
 <p>This tutorial can be dowloaded as a Python script <a class="reference external" href="demo_2d_north_sea.py">here</a>.</p>
 <p class="rubric">References</p>
 <div class="docutils container" id="id7">
+<div role="list" class="citation-list">
 <div class="citation" id="id11" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">AE09a</a><span class="fn-bracket">]</span></span>
 <p>Christopher Amante and Barry W Eakins. ETOPO1 arc-minute global relief model: procedures, data sources and analysis. <em>NOAA National Centers for Environmental Information</em>, 2009. Accessed 2022/03/14.</p>
@@ -318,8 +310,8 @@ in the source code.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
+    &#169; Copyright 2016-2023, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     </div>
   </body>
 </html>
