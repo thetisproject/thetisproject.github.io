@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.utility &#8212; Thetis 0+untagged.1888.gb6666e3 documentation</title>
+    <title>thetis.utility &#8212; Thetis 0+untagged.2009.gd7af522 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -55,16 +55,15 @@
 <span class="sd">Utility functions and classes for 2D and 3D ocean models</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>  <span class="c1"># NOQA</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">namedtuple</span>  <span class="c1"># NOQA</span>
 
-<span class="kn">import</span> <span class="nn">coffee.base</span> <span class="k">as</span> <span class="nn">ast</span>  <span class="c1"># NOQA</span>
 <span class="kn">import</span> <span class="nn">ufl</span>  <span class="c1"># NOQA</span>
 <span class="kn">from</span> <span class="nn">firedrake</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">firedrake.petsc</span> <span class="kn">import</span> <span class="n">PETSc</span>
 <span class="kn">from</span> <span class="nn">mpi4py</span> <span class="kn">import</span> <span class="n">MPI</span>  <span class="c1"># NOQA</span>
-<span class="kn">from</span> <span class="nn">pyop2.profiling</span> <span class="kn">import</span> <span class="n">timed_function</span><span class="p">,</span> <span class="n">timed_region</span><span class="p">,</span> <span class="n">timed_stage</span>  <span class="c1"># NOQA</span>
+<span class="kn">from</span> <span class="nn">pyop2.profiling</span> <span class="kn">import</span> <span class="n">timed_stage</span>  <span class="c1"># NOQA</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">pyadjoint.tape</span> <span class="kn">import</span> <span class="n">no_annotations</span>
@@ -78,7 +77,7 @@
 
 
 <div class="viewcode-block" id="FrozenClass"><a class="viewcode-back" href="../../thetis.html#thetis.utility.FrozenClass">[docs]</a><span class="k">class</span> <span class="nc">FrozenClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class where creating a new attribute will raise an exception if</span>
 <span class="sd">    :attr:`_isfrozen` is ``True``.</span>
 
@@ -95,7 +94,7 @@
 
 
 <div class="viewcode-block" id="unfrozen"><a class="viewcode-back" href="../../thetis.html#thetis.utility.unfrozen">[docs]</a><span class="k">def</span> <span class="nf">unfrozen</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator to temporarily unfreeze an object</span>
 <span class="sd">    whilst one of its methods is being called.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -112,11 +111,11 @@
 
 
 <div class="viewcode-block" id="SumFunction"><a class="viewcode-back" href="../../thetis.html#thetis.utility.SumFunction">[docs]</a><span class="k">class</span> <span class="nc">SumFunction</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper class to keep track of sum of Coefficients.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize empty sum.</span>
 
 <span class="sd">        get operation returns Constant(0)</span>
@@ -124,7 +123,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">coeff_list</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="SumFunction.add"><a class="viewcode-back" href="../../thetis.html#thetis.utility.SumFunction.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeff</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a coefficient to self</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">coeff</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -132,7 +131,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">coeff_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coeff</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SumFunction.get_sum"><a class="viewcode-back" href="../../thetis.html#thetis.utility.SumFunction.get_sum">[docs]</a>    <span class="k">def</span> <span class="nf">get_sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a sum of all added Coefficients</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coeff_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -141,7 +140,7 @@
 
 
 <div class="viewcode-block" id="AttrDict"><a class="viewcode-back" href="../../thetis.html#thetis.utility.AttrDict">[docs]</a><span class="k">class</span> <span class="nc">AttrDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dictionary that provides both self[&#39;key&#39;] and self.key access to members.</span>
 
 <span class="sd">    http://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute-in-python</span>
@@ -154,7 +153,7 @@
 
 
 <div class="viewcode-block" id="FieldDict"><a class="viewcode-back" href="../../thetis.html#thetis.utility.FieldDict">[docs]</a><span class="k">class</span> <span class="nc">FieldDict</span><span class="p">(</span><span class="n">AttrDict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    AttrDict that checks that all added fields have proper meta data.</span>
 
 <span class="sd">    Values can be either Function or Constant objects.</span>
@@ -175,7 +174,7 @@
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_functionname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set function.name to key to ensure consistent naming&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set function.name to key to ensure consistent naming&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
             <span class="n">value</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
 
@@ -229,18 +228,18 @@
 
 
 <div class="viewcode-block" id="get_extruded_base_element"><a class="viewcode-back" href="../../thetis.html#thetis.utility.get_extruded_base_element">[docs]</a><span class="k">def</span> <span class="nf">get_extruded_base_element</span><span class="p">(</span><span class="n">ufl_element</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return UFL TensorProductElement of an extruded UFL element.</span>
 
 <span class="sd">    In case of a non-extruded mesh, returns the element itself.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_element</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">HDivElement</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_element</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">HDivElement</span><span class="p">):</span>
         <span class="n">ufl_element</span> <span class="o">=</span> <span class="n">ufl_element</span><span class="o">.</span><span class="n">_element</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_element</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">MixedElement</span><span class="p">):</span>
-        <span class="n">ufl_element</span> <span class="o">=</span> <span class="n">ufl_element</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_element</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">):</span>
-        <span class="n">ufl_element</span> <span class="o">=</span> <span class="n">ufl_element</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># take the first component</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_element</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">EnrichedElement</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_element</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">MixedElement</span><span class="p">):</span>
+        <span class="n">ufl_element</span> <span class="o">=</span> <span class="n">ufl_element</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_element</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">):</span>
+        <span class="n">ufl_element</span> <span class="o">=</span> <span class="n">ufl_element</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># take the first component</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_element</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">EnrichedElement</span><span class="p">):</span>
         <span class="n">ufl_element</span> <span class="o">=</span> <span class="n">ufl_element</span><span class="o">.</span><span class="n">_elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">ufl_element</span></div>
 
@@ -254,7 +253,7 @@
 
 
 <div class="viewcode-block" id="element_continuity"><a class="viewcode-back" href="../../thetis.html#thetis.utility.element_continuity">[docs]</a><span class="k">def</span> <span class="nf">element_continuity</span><span class="p">(</span><span class="n">ufl_element</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return an :class:`ElementContinuity` instance with the</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return an :class:`ElementContinuity` instance with the</span>
 <span class="sd">    continuity of a given element.</span>
 
 <span class="sd">    :arg ufl_element: The UFL element to determine the continuity</span>
@@ -274,11 +273,11 @@
     <span class="p">}</span>
 
     <span class="n">base_element</span> <span class="o">=</span> <span class="n">get_extruded_base_element</span><span class="p">(</span><span class="n">ufl_element</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">HDivElement</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">HDivElement</span><span class="p">):</span>
         <span class="n">horiz_type</span> <span class="o">=</span> <span class="s1">&#39;hdiv&#39;</span>
         <span class="n">vert_type</span> <span class="o">=</span> <span class="s1">&#39;hdiv&#39;</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_element</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">TensorProductElement</span><span class="p">):</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">base_element</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_element</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">TensorProductElement</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">base_element</span><span class="o">.</span><span class="n">sub_elements</span>
         <span class="n">horiz_type</span> <span class="o">=</span> <span class="n">elem_types</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">family</span><span class="p">()]</span>
         <span class="n">vert_type</span> <span class="o">=</span> <span class="n">elem_types</span><span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">family</span><span class="p">()]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -288,7 +287,7 @@
 
 
 <div class="viewcode-block" id="create_directory"><a class="viewcode-back" href="../../thetis.html#thetis.utility.create_directory">[docs]</a><span class="k">def</span> <span class="nf">create_directory</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">COMM_WORLD</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a directory on disk</span>
 
 <span class="sd">    Raises IOError if a file with the same name already exists.</span>
@@ -303,9 +302,51 @@
     <span class="k">return</span> <span class="n">path</span></div>
 
 
+<div class="viewcode-block" id="read_mesh_from_checkpoint"><a class="viewcode-back" href="../../thetis.html#thetis.utility.read_mesh_from_checkpoint">[docs]</a><span class="k">def</span> <span class="nf">read_mesh_from_checkpoint</span><span class="p">(</span><span class="n">filename_or_outputdir</span><span class="p">,</span> <span class="n">mesh_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read mesh from a hdf5 checkpoint file.</span>
+<span class="sd">    :arg filename_or_outputdir: file name of the hdf5 checkpoint file,</span>
+<span class="sd">       or the output directory used in the previous run that create the</span>
+<span class="sd">       checkpoint. In the latter case the mesh will be read from the</span>
+<span class="sd">       first file that&#39;s found in outputdir/hdf5/*.h5</span>
+
+<span class="sd">    When loading fields from a checkpoint file in a run, the mesh used in that</span>
+<span class="sd">    run needs to be read from that same checkpoint file.</span>
+
+<span class="sd">    When multiple checkpoint files are used as model inputs which have</span>
+<span class="sd">    been created in separate runs/scripts, make sure that only one of those</span>
+<span class="sd">    scripts created the original mesh (by reading a .msh file or using a mesh</span>
+<span class="sd">    creation utility like RectangleMesh) and all other script read their mesh</span>
+<span class="sd">    from the checkpoint created by that first script.  For example, a</span>
+<span class="sd">    preprocessing script might read in a .msh file and interpolate and smoothen</span>
+<span class="sd">    the bathymetry on that mesh and write out the result in a checkpoint. A</span>
+<span class="sd">    first Thetis run should read its mesh from that checkpoint, and may then</span>
+<span class="sd">    save a series of hdf5 files.  A second Thetis run can then read in the mesh</span>
+<span class="sd">    and bathymetry from the checkpoint of the preprocessing script, and call</span>
+<span class="sd">    load_state() to pick up from the previous run.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">filename_or_outputdir</span><span class="p">):</span>
+        <span class="c1"># grab the first outputdir/hdf5/*.h5 file we can find</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filename_or_outputdir</span><span class="p">,</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">,</span> <span class="s1">&#39;*.h5&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No checkpoint files found in </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># assume we&#39;re being pointed to the hdf5 file directly</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">filename_or_outputdir</span>
+
+    <span class="k">with</span> <span class="n">CheckpointFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mesh_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mesh_name</span> <span class="o">=</span> <span class="s1">&#39;firedrake_default&#39;</span>
+        <span class="n">mesh</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">load_mesh</span><span class="p">(</span><span class="n">mesh_name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mesh</span></div>
+
+
 <div class="viewcode-block" id="get_facet_mask"><a class="viewcode-back" href="../../thetis.html#thetis.utility.get_facet_mask">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.get_facet_mask&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_facet_mask</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">facet</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the top/bottom nodes of extruded 3D elements.</span>
 
 <span class="sd">    :arg function_space: Firedrake :class:`FunctionSpace` object</span>
@@ -323,7 +364,7 @@
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">TensorProductElement</span><span class="p">),</span> \
         <span class="sa">f</span><span class="s1">&#39;function space must be defined on an extruded 3D mesh: </span><span class="si">{</span><span class="n">elem</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="c1"># figure out number of nodes in sub elements</span>
-    <span class="n">h_elt</span><span class="p">,</span> <span class="n">v_elt</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()</span>
+    <span class="n">h_elt</span><span class="p">,</span> <span class="n">v_elt</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">sub_elements</span>
     <span class="n">nb_nodes_h</span> <span class="o">=</span> <span class="n">create_finat_element</span><span class="p">(</span><span class="n">h_elt</span><span class="p">)</span><span class="o">.</span><span class="n">space_dimension</span><span class="p">()</span>
     <span class="n">nb_nodes_v</span> <span class="o">=</span> <span class="n">create_finat_element</span><span class="p">(</span><span class="n">v_elt</span><span class="p">)</span><span class="o">.</span><span class="n">space_dimension</span><span class="p">()</span>
     <span class="c1"># compute top/bottom facet indices</span>
@@ -337,7 +378,7 @@
 <div class="viewcode-block" id="extrude_mesh_sigma"><a class="viewcode-back" href="../../thetis.html#thetis.utility.extrude_mesh_sigma">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.extrude_mesh_sigma&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">extrude_mesh_sigma</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">,</span> <span class="n">z_stretch_fact</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
                        <span class="n">min_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extrudes a 2d surface mesh with bathymetry data defined in a 2d field.</span>
 
 <span class="sd">    Generates a uniform terrain following mesh.</span>
@@ -408,14 +449,14 @@
 
 <div class="viewcode-block" id="comp_volume_2d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.comp_volume_2d">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.comp_volume_2d&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">comp_volume_2d</span><span class="p">(</span><span class="n">eta</span><span class="p">,</span> <span class="n">bath</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computes volume of the 2D domain as an integral of the elevation field&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes volume of the 2D domain as an integral of the elevation field&quot;&quot;&quot;</span>
     <span class="n">val</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">((</span><span class="n">eta</span><span class="o">+</span><span class="n">bath</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">val</span></div>
 
 
 <div class="viewcode-block" id="comp_volume_3d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.comp_volume_3d">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.comp_volume_3d&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">comp_volume_3d</span><span class="p">(</span><span class="n">mesh</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computes volume of the 3D domain as an integral&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes volume of the 3D domain as an integral&quot;&quot;&quot;</span>
     <span class="n">one</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">mesh</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">ufl_domain</span><span class="p">())</span>
     <span class="n">val</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">one</span><span class="o">*</span><span class="n">dx</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">val</span></div>
@@ -423,7 +464,7 @@
 
 <div class="viewcode-block" id="comp_tracer_mass_2d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.comp_tracer_mass_2d">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.comp_tracer_mass_2d&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">comp_tracer_mass_2d</span><span class="p">(</span><span class="n">scalar_func</span><span class="p">,</span> <span class="n">total_depth</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes total tracer mass in the 2D domain</span>
 <span class="sd">    :arg scalar_func: depth-averaged scalar :class:`Function` to integrate</span>
 <span class="sd">    :arg total_depth: scalar UFL expression (e.g. from get_total_depth())</span>
@@ -434,7 +475,7 @@
 
 <div class="viewcode-block" id="comp_tracer_mass_3d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.comp_tracer_mass_3d">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.comp_tracer_mass_3d&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">comp_tracer_mass_3d</span><span class="p">(</span><span class="n">scalar_func</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes total tracer mass in the 3D domain</span>
 
 <span class="sd">    :arg scalar_func: scalar :class:`Function` to integrate</span>
@@ -445,7 +486,7 @@
 
 <div class="viewcode-block" id="get_zcoord_from_mesh"><a class="viewcode-back" href="../../thetis.html#thetis.utility.get_zcoord_from_mesh">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.get_zcoord_from_mesh&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_zcoord_from_mesh</span><span class="p">(</span><span class="n">zcoord</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluates z coordinates from the 3D mesh</span>
 
 <span class="sd">    :arg zcoord: scalar :class:`Function` where coordinates will be stored</span>
@@ -466,7 +507,7 @@
 
 <div class="viewcode-block" id="compute_baroclinic_head"><a class="viewcode-back" href="../../thetis.html#thetis.utility.compute_baroclinic_head">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.compute_baroclinic_head&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">compute_baroclinic_head</span><span class="p">(</span><span class="n">solver</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the baroclinic head :math:`r` from the density field</span>
 
 <span class="sd">    .. math::</span>
@@ -483,7 +524,7 @@
 
 <div class="viewcode-block" id="extend_function_to_3d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.extend_function_to_3d">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.extend_function_to_3d&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">extend_function_to_3d</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">mesh_extruded</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a 3D view of a 2D :class:`Function` on the extruded domain.</span>
 
 <span class="sd">    The 3D function resides in V x R function space, where V is the function</span>
@@ -496,7 +537,7 @@
     <span class="n">family</span> <span class="o">=</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">family</span><span class="p">()</span>
     <span class="n">degree</span> <span class="o">=</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_elem</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_elem</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">):</span>
         <span class="c1"># vector function space</span>
         <span class="n">fs_extended</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="n">mesh_extruded</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
                                         <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -508,7 +549,7 @@
 
 
 <div class="viewcode-block" id="ExtrudedFunction"><a class="viewcode-back" href="../../thetis.html#thetis.utility.ExtrudedFunction">[docs]</a><span class="k">class</span> <span class="nc">ExtrudedFunction</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A 2D :class:`Function` that provides a 3D view on the extruded domain.</span>
 
 <span class="sd">    The 3D function can be accessed as `ExtrudedFunction.view_3d`.</span>
@@ -517,7 +558,7 @@
 <span class="sd">    function.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">mesh_3d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a 2D :class:`Function` with a 3D view on extruded mesh.</span>
 
 <span class="sd">        :arg mesh_3d: Extruded 3D mesh where the function will be extended to.</span>
@@ -530,7 +571,7 @@
 
 
 <div class="viewcode-block" id="SubdomainProjector"><a class="viewcode-back" href="../../thetis.html#thetis.utility.SubdomainProjector">[docs]</a><span class="k">class</span> <span class="nc">SubdomainProjector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Projector that projects the restriction of an expression to the specified subdomain.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">v_out</span><span class="p">,</span> <span class="n">subdomain_id</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">constant_jacobian</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -562,7 +603,7 @@
 
 <div class="viewcode-block" id="SubdomainProjector.project"><a class="viewcode-back" href="../../thetis.html#thetis.utility.SubdomainProjector.project">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SubdomainProjector.project&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply the projection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
@@ -570,7 +611,7 @@
 
 <div class="viewcode-block" id="compute_elem_height"><a class="viewcode-back" href="../../thetis.html#thetis.utility.compute_elem_height">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.compute_elem_height&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">compute_elem_height</span><span class="p">(</span><span class="n">zcoord</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the element height on an extruded mesh.</span>
 
 <span class="sd">    :arg zcoord: field that contains the z coordinates of the mesh</span>
@@ -609,7 +650,7 @@
 <div class="viewcode-block" id="get_horizontal_elem_size_2d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.get_horizontal_elem_size_2d">[docs]</a><span class="nd">@no_annotations</span>
 <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.get_horizontal_elem_size_2d&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_horizontal_elem_size_2d</span><span class="p">(</span><span class="n">sol2d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes horizontal element size from the 2D mesh</span>
 
 <span class="sd">    :arg sol2d: 2D :class:`Function` where result is stored</span>
@@ -631,7 +672,7 @@
 
 <div class="viewcode-block" id="get_facet_areas"><a class="viewcode-back" href="../../thetis.html#thetis.utility.get_facet_areas">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.get_facet_areas&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_facet_areas</span><span class="p">(</span><span class="n">mesh</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute area of each facet of `mesh`. The facet areas are stored as a HDiv trace field.</span>
 
 <span class="sd">    NOTES:</span>
@@ -654,7 +695,7 @@
 
 <div class="viewcode-block" id="get_minimum_angles_2d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.get_minimum_angles_2d">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.get_minimum_angles_2d&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_minimum_angles_2d</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the minimum angle in each element of a triangular mesh, `mesh2d`, using the</span>
 <span class="sd">    cosine rule. The minimum angles are outputted as a P0 field.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -665,8 +706,12 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Minimum angle only currently implemented for triangles.&quot;</span><span class="p">)</span>
     <span class="n">edge_lengths</span> <span class="o">=</span> <span class="n">get_facet_areas</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">)</span>
     <span class="n">min_angles</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-    <span class="n">par_loop</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;for (int i=0; i&lt;angle.dofs; i++) {</span>
+    <span class="n">edge_cell_node_map</span> <span class="o">=</span> <span class="n">edge_lengths</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()</span>
+    <span class="n">min_angle_cell_node_map</span> <span class="o">=</span> <span class="n">min_angles</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()</span>
 
+    <span class="n">kernel</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Kernel</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        void minimum_angle_kernel(double *edges, double *angle) {</span>
+<span class="s2">            for (int i=0; i&lt;</span><span class="si">%(nodes)d</span><span class="s2">; i++) {</span>
 <span class="s2">                  double min_edge = edges[0];</span>
 <span class="s2">                  int min_index = 0;</span>
 
@@ -689,13 +734,17 @@
 <span class="s2">                    }</span>
 <span class="s2">                  }</span>
 <span class="s2">                  angle[0] = acos(numerator/denominator);</span>
-<span class="s2">                }&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;edges&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">edge_lengths</span><span class="p">,</span> <span class="n">READ</span><span class="p">),</span> <span class="s1">&#39;angle&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">min_angles</span><span class="p">,</span> <span class="n">RW</span><span class="p">)})</span>
+<span class="s2">            }</span>
+<span class="s2">        }&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">{</span><span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="n">edge_cell_node_map</span><span class="o">.</span><span class="n">arity</span><span class="p">},</span> <span class="s2">&quot;minimum_angle_kernel&quot;</span><span class="p">)</span>
+    <span class="n">op2</span><span class="o">.</span><span class="n">par_loop</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">cell_set</span><span class="p">,</span>
+                 <span class="n">edge_lengths</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">,</span> <span class="n">edge_cell_node_map</span><span class="p">),</span>
+                 <span class="n">min_angles</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">RW</span><span class="p">,</span> <span class="n">min_angle_cell_node_map</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">min_angles</span></div>
 
 
 <div class="viewcode-block" id="get_cell_widths_2d"><a class="viewcode-back" href="../../thetis.html#thetis.utility.get_cell_widths_2d">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.get_cell_widths_2d&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_cell_widths_2d</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute widths of mesh elements in each coordinate direction as the maximum distance</span>
 <span class="sd">    between components of vertex coordinates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -705,16 +754,24 @@
     <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Cell widths only currently implemented for triangles.&quot;</span><span class="p">)</span>
     <span class="n">cell_widths</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
-    <span class="n">par_loop</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;for (int i=0; i&lt;coords.dofs; i++) {</span>
-<span class="s2">                  widths[0] = fmax(widths[0], fabs(coords[2*i] - coords[(2*i+2)%6]));</span>
-<span class="s2">                  widths[1] = fmax(widths[1], fabs(coords[2*i+1] - coords[(2*i+3)%6]));</span>
-<span class="s2">                }&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;coords&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">READ</span><span class="p">),</span> <span class="s1">&#39;widths&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">cell_widths</span><span class="p">,</span> <span class="n">RW</span><span class="p">)})</span>
+    <span class="n">coords_cell_node_map</span> <span class="o">=</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()</span>
+    <span class="n">widths_cell_node_map</span> <span class="o">=</span> <span class="n">cell_widths</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Kernel</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        void cell_width_kernel(double *coords, double *widths) {</span>
+<span class="s2">            for (int i=0; i&lt;</span><span class="si">%(nodes)d</span><span class="s2">; i++) {</span>
+<span class="s2">                  widths[0] = fmax(widths[0], fabs(coords[2*i] - coords[(2*i+2)</span><span class="si">%%</span><span class="s2">6]));</span>
+<span class="s2">                  widths[1] = fmax(widths[1], fabs(coords[2*i+1] - coords[(2*i+3)</span><span class="si">%%</span><span class="s2">6]));</span>
+<span class="s2">            }</span>
+<span class="s2">        }&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">{</span><span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="n">coords_cell_node_map</span><span class="o">.</span><span class="n">arity</span><span class="p">},</span> <span class="s2">&quot;cell_width_kernel&quot;</span><span class="p">)</span>
+    <span class="n">op2</span><span class="o">.</span><span class="n">par_loop</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">mesh2d</span><span class="o">.</span><span class="n">cell_set</span><span class="p">,</span>
+                 <span class="n">mesh2d</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">,</span> <span class="n">coords_cell_node_map</span><span class="p">),</span>
+                 <span class="n">cell_widths</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">MAX</span><span class="p">,</span> <span class="n">widths_cell_node_map</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">cell_widths</span></div>
 
 
 <div class="viewcode-block" id="anisotropic_cell_size"><a class="viewcode-back" href="../../thetis.html#thetis.utility.anisotropic_cell_size">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.anisotropic_cell_size&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">anisotropic_cell_size</span><span class="p">(</span><span class="n">mesh</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Measure of cell size for anisotropic meshes, as described in</span>
 <span class="sd">    Micheletti et al. (2003).</span>
 
@@ -725,52 +782,23 @@
 <span class="sd">    the advection-diffusion and the Stokes problems. SIAM Journal</span>
 <span class="sd">    on Numerical Analysis 41.3: 1131-1162.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">firedrake.slate.slac.compiler</span> <span class="kn">import</span> <span class="n">PETSC_ARCH</span>
-    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="n">PETSC_ARCH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;PETSC_DIR&#39;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;PETSC_ARCH&#39;</span><span class="p">))</span>
-    <span class="n">include_dir</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/include/eigen3&quot;</span> <span class="o">%</span> <span class="n">PETSC_ARCH</span><span class="p">]</span>
 
-    <span class="c1"># Compute cell Jacobian</span>
-    <span class="n">P0_ten</span> <span class="o">=</span> <span class="n">TensorFunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">J</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P0_ten</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Cell Jacobian&quot;</span><span class="p">)</span>
-    <span class="n">J</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">Jacobian</span><span class="p">(</span><span class="n">mesh</span><span class="p">))</span>
+    <span class="n">JTJ</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">Jacobian</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">Jacobian</span><span class="p">(</span><span class="n">mesh</span><span class="p">))</span>
 
-    <span class="c1"># Compute minimum eigenvalue</span>
+    <span class="c1"># based on https://github.com/michalhabera/dolfiny/blob/master/dolfiny/invariants.py</span>
+    <span class="n">I1</span> <span class="o">=</span> <span class="n">JTJ</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">JTJ</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="p">(</span><span class="n">JTJ</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">JTJ</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">JTJ</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">JTJ</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">D</span> <span class="o">+=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+
+    <span class="c1"># Compute smallest singular value of J</span>
     <span class="n">P0</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">min_evalue</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Minimum eigenvalue&quot;</span><span class="p">)</span>
-    <span class="n">kernel_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">#include &lt;Eigen/Dense&gt;</span>
-
-<span class="s2">using namespace Eigen;</span>
-
-<span class="s2">void eigmin(double minEval[1], const double * J_) {</span>
-
-<span class="s2">  // Map input onto an Eigen object</span>
-<span class="s2">  Map&lt;Matrix&lt;double, 2, 2, RowMajor&gt; &gt; J((double *)J_);</span>
-
-<span class="s2">  // Compute J^T * J</span>
-<span class="s2">  Matrix&lt;double, 2, 2, RowMajor&gt; A = J.transpose()*J;</span>
-
-<span class="s2">  // Solve eigenvalue problem</span>
-<span class="s2">  SelfAdjointEigenSolver&lt;Matrix&lt;double, 2, 2, RowMajor&gt;&gt; eigensolver(A);</span>
-<span class="s2">  Vector2d D = eigensolver.eigenvalues();</span>
-
-<span class="s2">  // Take the square root</span>
-<span class="s2">  double lambda1 = sqrt(fabs(D(0)));</span>
-<span class="s2">  double lambda2 = sqrt(fabs(D(1)));</span>
-
-<span class="s2">  // Select minimum eigenvalue in modulus</span>
-<span class="s2">  minEval[0] = fmin(lambda1, lambda2);</span>
-<span class="s2">}</span>
-<span class="s2">&quot;&quot;&quot;</span>
-    <span class="n">kernel</span> <span class="o">=</span> <span class="n">op2</span><span class="o">.</span><span class="n">Kernel</span><span class="p">(</span><span class="n">kernel_str</span><span class="p">,</span> <span class="s1">&#39;eigmin&#39;</span><span class="p">,</span> <span class="n">cpp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_dirs</span><span class="o">=</span><span class="n">include_dir</span><span class="p">)</span>
-    <span class="n">op2</span><span class="o">.</span><span class="n">par_loop</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">P0_ten</span><span class="o">.</span><span class="n">node_set</span><span class="p">,</span> <span class="n">min_evalue</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">RW</span><span class="p">),</span> <span class="n">J</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">min_evalue</span></div>
+    <span class="n">cell_size</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Smallest singular value&quot;</span><span class="p">)</span>
+    <span class="n">cell_size</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">sqrt</span><span class="p">((</span><span class="n">I1</span><span class="o">-</span><span class="n">sqrt</span><span class="p">(</span><span class="n">D</span><span class="p">))</span><span class="o">/</span><span class="mf">2.</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">cell_size</span></div>
 
 
 <div class="viewcode-block" id="beta_plane_coriolis_params"><a class="viewcode-back" href="../../thetis.html#thetis.utility.beta_plane_coriolis_params">[docs]</a><span class="k">def</span> <span class="nf">beta_plane_coriolis_params</span><span class="p">(</span><span class="n">latitude</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes beta plane parameters :math:`f_0,\beta` based on latitude</span>
 
 <span class="sd">    :arg float latitude: latitude in degrees</span>
@@ -792,7 +820,7 @@
 
 
 <div class="viewcode-block" id="beta_plane_coriolis_function"><a class="viewcode-back" href="../../thetis.html#thetis.utility.beta_plane_coriolis_function">[docs]</a><span class="k">def</span> <span class="nf">beta_plane_coriolis_function</span><span class="p">(</span><span class="n">latitude</span><span class="p">,</span> <span class="n">out_function</span><span class="p">,</span> <span class="n">y_offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpolates beta plane Coriolis function to a field</span>
 
 <span class="sd">    :arg float latitude: latitude in degrees</span>
@@ -807,7 +835,7 @@
 
 
 <div class="viewcode-block" id="tensor_jump"><a class="viewcode-back" href="../../thetis.html#thetis.utility.tensor_jump">[docs]</a><span class="k">def</span> <span class="nf">tensor_jump</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Jump term for vector functions based on the tensor product</span>
 
 <span class="sd">    .. math::</span>
@@ -821,7 +849,7 @@
 
 
 <div class="viewcode-block" id="compute_boundary_length"><a class="viewcode-back" href="../../thetis.html#thetis.utility.compute_boundary_length">[docs]</a><span class="k">def</span> <span class="nf">compute_boundary_length</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the length of the boundary segments in given 2d mesh</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">p1</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s1">&#39;CG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -836,7 +864,7 @@
 
 <div class="viewcode-block" id="print_function_value_range"><a class="viewcode-back" href="../../thetis.html#thetis.utility.print_function_value_range">[docs]</a><span class="k">def</span> <span class="nf">print_function_value_range</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">COMM_WORLD</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;2.3g&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Prints the min/max DOF values of a function.</span>
 
 <span class="sd">    .. code-block:: python</span>
@@ -865,7 +893,7 @@
 <div class="viewcode-block" id="select_and_move_detectors"><a class="viewcode-back" href="../../thetis.html#thetis.utility.select_and_move_detectors">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.select_and_move_detectors&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">select_and_move_detectors</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">detector_locations</span><span class="p">,</span> <span class="n">detector_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                               <span class="n">maximum_distance</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Select those detectors that are within the domain and/or move them to</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Select those detectors that are within the domain and/or move them to</span>
 <span class="sd">    the nearest cell centre within the domain</span>
 
 <span class="sd">    :arg mesh: Defines the domain in which detectors are to be located</span>
@@ -936,7 +964,7 @@
 
 
 <div class="viewcode-block" id="DepthExpression"><a class="viewcode-back" href="../../thetis.html#thetis.utility.DepthExpression">[docs]</a><span class="k">class</span> <span class="nc">DepthExpression</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct expression for depth depending on options</span>
 
 <span class="sd">    If `not use_nonlinear_equations`, then the depth is simply the bathymetry:</span>
@@ -975,7 +1003,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wetting_and_drying_alpha</span> <span class="o">=</span> <span class="n">wetting_and_drying_alpha</span>
 
 <div class="viewcode-block" id="DepthExpression.wd_bathymetry_displacement"><a class="viewcode-back" href="../../thetis.html#thetis.utility.DepthExpression.wd_bathymetry_displacement">[docs]</a>    <span class="k">def</span> <span class="nf">wd_bathymetry_displacement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eta</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns wetting and drying bathymetry displacement as described in:</span>
 <span class="sd">        Karna et al.,  2011.</span>
 <span class="sd">        :arg eta: current elevation as UFL expression</span>
@@ -987,7 +1015,7 @@
             <span class="k">return</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="DepthExpression.get_total_depth"><a class="viewcode-back" href="../../thetis.html#thetis.utility.DepthExpression.get_total_depth">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_depth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eta</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns total water column depth based on options</span>
 <span class="sd">        :arg eta: current elevation as UFL expression</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -999,7 +1027,7 @@
 
 
 <div class="viewcode-block" id="DepthIntegratedPoissonSolver"><a class="viewcode-back" href="../../thetis.html#thetis.utility.DepthIntegratedPoissonSolver">[docs]</a><span class="k">class</span> <span class="nc">DepthIntegratedPoissonSolver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct solvers for Poisson equation and updating velocities</span>
 
 <span class="sd">    Poisson equation is related to 2d NH SWE system</span>
@@ -1105,6 +1133,57 @@
         <span class="c1"># update vertical velocity w_2d</span>
         <span class="k">if</span> <span class="n">solve_w</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solver_w</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="form2indicator"><a class="viewcode-back" href="../../thetis.html#thetis.utility.form2indicator">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.form2indicator&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">form2indicator</span><span class="p">(</span><span class="n">F</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deduce the cell-wise contributions to a functional.</span>
+
+<span class="sd">    Given a 0-form, multiply the integrand of each of its integrals by a</span>
+<span class="sd">    :math:`\mathbb P0` test function and reassemble to give an element-wise error</span>
+<span class="sd">    indicator.</span>
+
+<span class="sd">    Note that a 0-form does not contain any :class:`firedrake.ufl_expr.TestFunction`\s</span>
+<span class="sd">    or :class:`firedrake.ufl_expr.TrialFunction`\s.</span>
+
+<span class="sd">    :arg F: the 0-form</span>
+<span class="sd">    :return: the corresponding error indicator field</span>
+
+<span class="sd">    Modified code based on</span>
+<span class="sd">    https://github.com/pyroteus/goalie/blob/main/goalie/error_estimation.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">arguments</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input form should be 0-form&quot;</span><span class="p">)</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">ufl_domain</span><span class="p">()</span>
+    <span class="n">P0</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">p0test</span> <span class="o">=</span> <span class="n">TestFunction</span><span class="p">(</span><span class="n">P0</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">ufl</span><span class="o">.</span><span class="n">CellVolume</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+
+    <span class="n">rhs</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">integral</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">integrals_by_type</span><span class="p">(</span><span class="s2">&quot;exterior_facet&quot;</span><span class="p">):</span>
+        <span class="n">dsi</span> <span class="o">=</span> <span class="n">ds</span><span class="p">(</span><span class="n">integral</span><span class="o">.</span><span class="n">subdomain_id</span><span class="p">())</span>
+        <span class="n">rhs</span> <span class="o">+=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">p0test</span> <span class="o">*</span> <span class="n">integral</span><span class="o">.</span><span class="n">integrand</span><span class="p">()</span> <span class="o">*</span> <span class="n">dsi</span>
+    <span class="k">for</span> <span class="n">integral</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">integrals_by_type</span><span class="p">(</span><span class="s2">&quot;interior_facet&quot;</span><span class="p">):</span>
+        <span class="n">dSi</span> <span class="o">=</span> <span class="n">dS</span><span class="p">(</span><span class="n">integral</span><span class="o">.</span><span class="n">subdomain_id</span><span class="p">())</span>
+        <span class="n">rhs</span> <span class="o">+=</span> <span class="n">h</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">p0test</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">integral</span><span class="o">.</span><span class="n">integrand</span><span class="p">()</span> <span class="o">*</span> <span class="n">dSi</span>
+        <span class="n">rhs</span> <span class="o">+=</span> <span class="n">h</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">p0test</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">integral</span><span class="o">.</span><span class="n">integrand</span><span class="p">()</span> <span class="o">*</span> <span class="n">dSi</span>
+    <span class="k">for</span> <span class="n">integral</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">integrals_by_type</span><span class="p">(</span><span class="s2">&quot;cell&quot;</span><span class="p">):</span>
+        <span class="n">dxi</span> <span class="o">=</span> <span class="n">dx</span><span class="p">(</span><span class="n">integral</span><span class="o">.</span><span class="n">subdomain_id</span><span class="p">())</span>
+        <span class="n">rhs</span> <span class="o">+=</span> <span class="n">h</span> <span class="o">*</span> <span class="n">p0test</span> <span class="o">*</span> <span class="n">integral</span><span class="o">.</span><span class="n">integrand</span><span class="p">()</span> <span class="o">*</span> <span class="n">dxi</span>
+
+    <span class="k">assert</span> <span class="n">rhs</span> <span class="o">!=</span> <span class="mi">0</span>
+    <span class="n">indicator</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P0</span><span class="p">)</span>
+    <span class="n">solve</span><span class="p">(</span>
+        <span class="n">TrialFunction</span><span class="p">(</span><span class="n">P0</span><span class="p">)</span> <span class="o">*</span> <span class="n">p0test</span> <span class="o">*</span> <span class="n">dx</span> <span class="o">==</span> <span class="n">rhs</span><span class="p">,</span>
+        <span class="n">indicator</span><span class="p">,</span>
+        <span class="n">solver_parameters</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;snes_type&quot;</span><span class="p">:</span> <span class="s2">&quot;ksponly&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ksp_type&quot;</span><span class="p">:</span> <span class="s2">&quot;preonly&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pc_type&quot;</span><span class="p">:</span> <span class="s2">&quot;jacobi&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">indicator</span></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -1115,8 +1194,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+        &#169; Copyright 2016-2023, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
     </div>
   </body>
 </html>

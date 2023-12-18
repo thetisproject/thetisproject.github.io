@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.rungekutta &#8212; Thetis 0+untagged.1888.gc4e776a documentation</title>
+    <title>thetis.rungekutta &#8212; Thetis 0+untagged.2009.gd7af522 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -58,13 +58,13 @@
 <span class="sd">coefficients, and can be used to implement generic time integrators.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">.timeintegrator</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractproperty</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractproperty</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">import</span> <span class="nn">operator</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 
 <div class="viewcode-block" id="butcher_to_shuosher_form"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.butcher_to_shuosher_form">[docs]</a><span class="k">def</span> <span class="nf">butcher_to_shuosher_form</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts Butcher tableau to Shu-Osher form.</span>
 
 <span class="sd">    The Shu-Osher form of a s-stage scheme is defined by two s+1 by s+1 arrays</span>
@@ -140,8 +140,8 @@
     <span class="k">return</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span></div>
 
 
-<div class="viewcode-block" id="AbstractRKScheme"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.AbstractRKScheme">[docs]</a><span class="k">class</span> <span class="nc">AbstractRKScheme</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AbstractRKScheme"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.AbstractRKScheme">[docs]</a><span class="k">class</span> <span class="nc">AbstractRKScheme</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract class for defining Runge-Kutta schemes.</span>
 
 <span class="sd">    Derived classes must define the Butcher tableau (arrays :attr:`a`, :attr:`b`,</span>
@@ -149,26 +149,24 @@
 
 <span class="sd">    Currently only explicit or diagonally implicit schemes are supported.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
-
     <span class="nd">@abstractproperty</span>
     <span class="k">def</span> <span class="nf">a</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Runge-Kutta matrix :math:`a_{i,j}` of the Butcher tableau&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Runge-Kutta matrix :math:`a_{i,j}` of the Butcher tableau&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractproperty</span>
     <span class="k">def</span> <span class="nf">b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;weights :math:`b_{i}` of the Butcher tableau&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;weights :math:`b_{i}` of the Butcher tableau&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractproperty</span>
     <span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;nodes :math:`c_{i}` of the Butcher tableau&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;nodes :math:`c_{i}` of the Butcher tableau&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractproperty</span>
     <span class="k">def</span> <span class="nf">cfl_coeff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        CFL number of the scheme</span>
 
 <span class="sd">        Value 1.0 corresponds to Forward Euler time step.</span>
@@ -195,7 +193,7 @@
 
 
 <div class="viewcode-block" id="ForwardEulerAbstract"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ForwardEulerAbstract">[docs]</a><span class="k">class</span> <span class="nc">ForwardEulerAbstract</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Forward Euler method</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">a</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">]]</span>
@@ -205,7 +203,7 @@
 
 
 <div class="viewcode-block" id="BackwardEulerAbstract"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.BackwardEulerAbstract">[docs]</a><span class="k">class</span> <span class="nc">BackwardEulerAbstract</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Backward Euler method</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">a</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">]]</span>
@@ -215,7 +213,7 @@
 
 
 <div class="viewcode-block" id="ImplicitMidpointAbstract"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ImplicitMidpointAbstract">[docs]</a><span class="k">class</span> <span class="nc">ImplicitMidpointAbstract</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implicit midpoint method, second order.</span>
 
 <span class="sd">    This method has the Butcher tableau</span>
@@ -234,7 +232,7 @@
 
 
 <div class="viewcode-block" id="CrankNicolsonAbstract"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CrankNicolsonAbstract">[docs]</a><span class="k">class</span> <span class="nc">CrankNicolsonAbstract</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Crack-Nicolson scheme</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">a</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
@@ -245,7 +243,7 @@
 
 
 <div class="viewcode-block" id="DIRK22Abstract"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRK22Abstract">[docs]</a><span class="k">class</span> <span class="nc">DIRK22Abstract</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    2-stage, 2nd order, L-stable Diagonally Implicit Runge Kutta method</span>
 
 <span class="sd">    This method has the Butcher tableau</span>
@@ -274,7 +272,7 @@
 
 
 <div class="viewcode-block" id="DIRK23Abstract"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRK23Abstract">[docs]</a><span class="k">class</span> <span class="nc">DIRK23Abstract</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    2-stage, 3rd order Diagonally Implicit Runge Kutta method</span>
 
 <span class="sd">    This method has the Butcher tableau</span>
@@ -303,7 +301,7 @@
 
 
 <div class="viewcode-block" id="DIRK33Abstract"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRK33Abstract">[docs]</a><span class="k">class</span> <span class="nc">DIRK33Abstract</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    3-stage, 3rd order, L-stable Diagonally Implicit Runge Kutta method</span>
 
 <span class="sd">    From DIRK(3,4,3) IMEX scheme in Ascher et al. (1997)</span>
@@ -324,7 +322,7 @@
 
 
 <div class="viewcode-block" id="DIRK43Abstract"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRK43Abstract">[docs]</a><span class="k">class</span> <span class="nc">DIRK43Abstract</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    4-stage, 3rd order, L-stable Diagonally Implicit Runge Kutta method</span>
 
 <span class="sd">    From DIRK(4,4,3) IMEX scheme in Ascher et al. (1997)</span>
@@ -343,7 +341,7 @@
 
 
 <div class="viewcode-block" id="DIRKLSPUM2Abstract"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKLSPUM2Abstract">[docs]</a><span class="k">class</span> <span class="nc">DIRKLSPUM2Abstract</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    DIRKLSPUM2, 3-stage, 2nd order, L-stable Diagonally Implicit Runge Kutta method</span>
 
 <span class="sd">    From IMEX RK scheme (17) in Higureras et al. (2014).</span>
@@ -361,7 +359,7 @@
 
 
 <div class="viewcode-block" id="DIRKLPUM2Abstract"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKLPUM2Abstract">[docs]</a><span class="k">class</span> <span class="nc">DIRKLPUM2Abstract</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    DIRKLPUM2, 3-stage, 2nd order, L-stable Diagonally Implicit Runge Kutta method</span>
 
 <span class="sd">    From IMEX RK scheme (20) in Higureras et al. (2014).</span>
@@ -379,7 +377,7 @@
 
 
 <div class="viewcode-block" id="SSPRK33Abstract"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.SSPRK33Abstract">[docs]</a><span class="k">class</span> <span class="nc">SSPRK33Abstract</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    3rd order Strong Stability Preserving Runge-Kutta scheme, SSP(3,3).</span>
 
 <span class="sd">    This scheme has Butcher tableau</span>
@@ -403,7 +401,7 @@
 
 
 <div class="viewcode-block" id="ERKLSPUM2Abstract"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKLSPUM2Abstract">[docs]</a><span class="k">class</span> <span class="nc">ERKLSPUM2Abstract</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ERKLSPUM2, 3-stage, 2nd order Explicit Runge Kutta method</span>
 
 <span class="sd">    From IMEX RK scheme (17) in Higureras et al. (2014).</span>
@@ -421,7 +419,7 @@
 
 
 <div class="viewcode-block" id="ERKLPUM2Abstract"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKLPUM2Abstract">[docs]</a><span class="k">class</span> <span class="nc">ERKLPUM2Abstract</span><span class="p">(</span><span class="n">AbstractRKScheme</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ERKLPUM2, 3-stage, 2nd order</span>
 <span class="sd">    Explicit Runge Kutta method</span>
 
@@ -463,20 +461,18 @@
     <span class="n">cfl_coeff</span> <span class="o">=</span> <span class="n">CFL_UNCONDITIONALLY_STABLE</span></div>
 
 
-<div class="viewcode-block" id="RungeKuttaTimeIntegrator"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.RungeKuttaTimeIntegrator">[docs]</a><span class="k">class</span> <span class="nc">RungeKuttaTimeIntegrator</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Abstract base class for all Runge-Kutta time integrators&quot;&quot;&quot;</span>
-    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
-
+<div class="viewcode-block" id="RungeKuttaTimeIntegrator"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.RungeKuttaTimeIntegrator">[docs]</a><span class="k">class</span> <span class="nc">RungeKuttaTimeIntegrator</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for all Runge-Kutta time integrators&quot;&quot;&quot;</span>
 <div class="viewcode-block" id="RungeKuttaTimeIntegrator.get_final_solution"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.RungeKuttaTimeIntegrator.get_final_solution">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_final_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">additive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluates the final solution</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="RungeKuttaTimeIntegrator.solve_stage"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.RungeKuttaTimeIntegrator.solve_stage">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">solve_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solves a single stage of step from t to t+dt.</span>
 <span class="sd">        All functions that the equation depends on must be at right state</span>
 <span class="sd">        corresponding to each sub-step.</span>
@@ -484,7 +480,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="RungeKuttaTimeIntegrator.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.RungeKuttaTimeIntegrator.advance">[docs]</a>    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Advances equations for one time step.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Advances equations for one time step.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span><span class="p">):</span>
@@ -493,7 +489,7 @@
 
 
 <div class="viewcode-block" id="DIRKGeneric"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGeneric">[docs]</a><span class="k">class</span> <span class="nc">DIRKGeneric</span><span class="p">(</span><span class="n">RungeKuttaTimeIntegrator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic implementation of Diagonally Implicit Runge Kutta schemes.</span>
 
 <span class="sd">    All derived classes must define the Butcher tableau coefficients :attr:`a`,</span>
@@ -501,7 +497,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DIRKGeneric.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
 <span class="sd">        :arg solution: :class:`Function` where solution will be stored</span>
@@ -582,7 +578,7 @@
 
 <div class="viewcode-block" id="DIRKGeneric.update_solver"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGeneric.update_solver">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DIRKGeneric.update_solver&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">update_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create solver objects&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create solver objects&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span><span class="p">):</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">NonlinearVariationalProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
@@ -595,13 +591,13 @@
 
 <div class="viewcode-block" id="DIRKGeneric.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGeneric.initialize">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DIRKGeneric.initialize&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_cond</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Assigns initial conditions to all required fields.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assigns initial conditions to all required fields.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">init_cond</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="DIRKGeneric.update_solution"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGeneric.update_solution">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DIRKGeneric.update_solution&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">update_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates solution to i_stage sub-stage.</span>
 
 <span class="sd">        Tendencies must have been evaluated first.</span>
@@ -610,7 +606,7 @@
 
 <div class="viewcode-block" id="DIRKGeneric.solve_tendency"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGeneric.solve_tendency">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DIRKGeneric.solve_tendency&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">solve_tendency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluates the tendency of i-th stage.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">i_stage</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -624,12 +620,12 @@
 
 <div class="viewcode-block" id="DIRKGeneric.get_final_solution"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGeneric.get_final_solution">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DIRKGeneric.get_final_solution&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_final_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Assign final solution to :attr:`self.solution`&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign final solution to :attr:`self.solution`&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_sol_expr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DIRKGeneric.solve_stage"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGeneric.solve_stage">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DIRKGeneric.solve_stage&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">solve_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Solve i-th stage and assign solution to :attr:`self.solution`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solve i-th stage and assign solution to :attr:`self.solution`.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solve_tendency</span><span class="p">(</span><span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_solution</span><span class="p">(</span><span class="n">i_stage</span><span class="p">)</span></div></div>
 
@@ -639,7 +635,7 @@
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DIRKGenericUForm.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
 <span class="sd">        :arg solution: :class:`Function` where solution will be stored</span>
@@ -709,7 +705,7 @@
 
 <div class="viewcode-block" id="DIRKGenericUForm.update_solver"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGenericUForm.update_solver">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DIRKGenericUForm.update_solver&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">update_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create solver objects&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create solver objects&quot;&quot;&quot;</span>
         <span class="c1"># Ensure LU assembles monolithic matrices</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pc_type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;lu&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solver_parameters</span><span class="p">[</span><span class="s1">&#39;mat_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;aij&#39;</span>
@@ -739,19 +735,19 @@
 
 <div class="viewcode-block" id="DIRKGenericUForm.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGenericUForm.initialize">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DIRKGenericUForm.initialize&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_cond</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Assigns initial conditions to all required fields.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assigns initial conditions to all required fields.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">init_cond</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="DIRKGenericUForm.get_final_solution"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGenericUForm.get_final_solution">[docs]</a>    <span class="k">def</span> <span class="nf">get_final_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">additive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluates the final solution</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DIRKGenericUForm.solve_stage"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.DIRKGenericUForm.solve_stage">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DIRKGenericUForm.solve_stage&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">solve_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solves a single stage of step from t to t+dt.</span>
 <span class="sd">        All functions that the equation depends on must be at right state</span>
 <span class="sd">        corresponding to each sub-step.</span>
@@ -817,14 +813,14 @@
 
 
 <div class="viewcode-block" id="ERKGeneric"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKGeneric">[docs]</a><span class="k">class</span> <span class="nc">ERKGeneric</span><span class="p">(</span><span class="n">RungeKuttaTimeIntegrator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic explicit Runge-Kutta time integrator.</span>
 
 <span class="sd">    Implements the Butcher form. All terms in the equation are treated explicitly.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ERKGeneric.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
 <span class="sd">        :arg solution: :class:`Function` where solution will be stored</span>
@@ -875,13 +871,13 @@
 
 <div class="viewcode-block" id="ERKGeneric.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKGeneric.initialize">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ERKGeneric.initialize&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Assigns initial conditions to all required fields.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assigns initial conditions to all required fields.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solution_old</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="ERKGeneric.update_solution"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKGeneric.update_solution">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ERKGeneric.update_solution&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">update_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">additive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the solution of the i-th stage</span>
 
 <span class="sd">        Tendencies must have been evaluated first.</span>
@@ -896,7 +892,7 @@
 
 <div class="viewcode-block" id="ERKGeneric.solve_tendency"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKGeneric.solve_tendency">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ERKGeneric.solve_tendency&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">solve_tendency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluates the tendency of i-th stage</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nontrivial</span><span class="p">:</span>
@@ -906,7 +902,7 @@
 
 <div class="viewcode-block" id="ERKGeneric.get_final_solution"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKGeneric.get_final_solution">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ERKGeneric.get_final_solution&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_final_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">additive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Assign final solution to :attr:`self.solution`</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign final solution to :attr:`self.solution`</span>
 
 <span class="sd">        If additive=False, will overwrite :attr:`solution` function, otherwise</span>
 <span class="sd">        will add to it.</span>
@@ -919,20 +915,20 @@
 
 <div class="viewcode-block" id="ERKGeneric.solve_stage"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKGeneric.solve_stage">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ERKGeneric.solve_stage&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">solve_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Solve i-th stage and assign solution to :attr:`self.solution`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solve i-th stage and assign solution to :attr:`self.solution`.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_solution</span><span class="p">(</span><span class="n">i_stage</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solve_tendency</span><span class="p">(</span><span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="ERKGenericShuOsher"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKGenericShuOsher">[docs]</a><span class="k">class</span> <span class="nc">ERKGenericShuOsher</span><span class="p">(</span><span class="n">TimeIntegrator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic explicit Runge-Kutta time integrator.</span>
 
 <span class="sd">    Implements the Shu-Osher form.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ERKGenericShuOsher.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">,</span> <span class="n">terms_to_add</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg equation: the equation to solve</span>
 <span class="sd">        :type equation: :class:`Equation` object</span>
 <span class="sd">        :arg solution: :class:`Function` where solution will be stored</span>
@@ -985,7 +981,7 @@
 
 <div class="viewcode-block" id="ERKGenericShuOsher.solve_stage"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKGenericShuOsher.solve_stage">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ERKGenericShuOsher.solve_stage&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">solve_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stage</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Solve i-th stage and assign solution to :attr:`self.solution`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solve i-th stage and assign solution to :attr:`self.solution`.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nontrivial</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">update_forcings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">update_forcings</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">i_stage</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
@@ -1004,7 +1000,7 @@
 
 <div class="viewcode-block" id="ERKGenericShuOsher.advance"><a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.ERKGenericShuOsher.advance">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ERKGenericShuOsher.advance&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Advances equations for one time step.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Advances equations for one time step.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solve_stage</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span></div></div>
 
@@ -1045,8 +1041,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+        &#169; Copyright 2016-2023, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
     </div>
   </body>
 </html>

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.limiter &#8212; Thetis 0+untagged.1888.gc4e776a documentation</title>
+    <title>thetis.limiter &#8212; Thetis 0+untagged.2009.gd7af522 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -56,13 +56,12 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">firedrake</span> <span class="kn">import</span> <span class="n">VertexBasedLimiter</span>
-<span class="kn">import</span> <span class="nn">ufl</span>
-<span class="kn">from</span> <span class="nn">pyop2.profiling</span> <span class="kn">import</span> <span class="n">timed_region</span><span class="p">,</span> <span class="n">timed_function</span><span class="p">,</span> <span class="n">timed_stage</span>  <span class="c1"># NOQA</span>
+<span class="kn">from</span> <span class="nn">pyop2.profiling</span> <span class="kn">import</span> <span class="n">timed_stage</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 
 <div class="viewcode-block" id="assert_function_space"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.assert_function_space">[docs]</a><span class="k">def</span> <span class="nf">assert_function_space</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks the family and degree of function space.</span>
 
 <span class="sd">    Raises AssertionError if function space differs.</span>
@@ -77,30 +76,30 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">family</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">fam_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">family</span><span class="p">]</span>
     <span class="n">ufl_elem</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_elem</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">):</span>
-        <span class="n">ufl_elem</span> <span class="o">=</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_elem</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">):</span>
+        <span class="n">ufl_elem</span> <span class="o">=</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;TensorProductElement&#39;</span><span class="p">:</span>
         <span class="c1"># extruded mesh</span>
-        <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="ow">in</span> <span class="n">fam_list</span><span class="p">,</span>\
+        <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">sub_elements</span>
+        <span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="ow">in</span> <span class="n">fam_list</span><span class="p">,</span> \
             <span class="s1">&#39;horizontal space must be one of </span><span class="si">{0:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fam_list</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">B</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="ow">in</span> <span class="n">fam_list</span><span class="p">,</span>\
+        <span class="k">assert</span> <span class="n">B</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="ow">in</span> <span class="n">fam_list</span><span class="p">,</span> \
             <span class="s1">&#39;vertical space must be </span><span class="si">{0:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fam_list</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">==</span> <span class="n">degree</span><span class="p">,</span>\
+        <span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">==</span> <span class="n">degree</span><span class="p">,</span> \
             <span class="s1">&#39;degree of horizontal space must be </span><span class="si">{0:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">degree</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">B</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">==</span> <span class="n">degree</span><span class="p">,</span>\
+        <span class="k">assert</span> <span class="n">B</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">==</span> <span class="n">degree</span><span class="p">,</span> \
             <span class="s1">&#39;degree of vertical space must be </span><span class="si">{0:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">degree</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># assume 2D mesh</span>
-        <span class="k">assert</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="ow">in</span> <span class="n">fam_list</span><span class="p">,</span>\
+        <span class="k">assert</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="ow">in</span> <span class="n">fam_list</span><span class="p">,</span> \
             <span class="s1">&#39;function space must be one of </span><span class="si">{0:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fam_list</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">==</span> <span class="n">degree</span><span class="p">,</span>\
+        <span class="k">assert</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">==</span> <span class="n">degree</span><span class="p">,</span> \
             <span class="s1">&#39;degree of function space must be </span><span class="si">{0:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">degree</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="VertexBasedP1DGLimiter"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter">[docs]</a><span class="k">class</span> <span class="nc">VertexBasedP1DGLimiter</span><span class="p">(</span><span class="n">VertexBasedLimiter</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Vertex based limiter for P1DG tracer fields, see Kuzmin (2010)</span>
 
 <span class="sd">    .. note::</span>
@@ -112,7 +111,7 @@
 <span class="sd">    http://dx.doi.org/10.1016/j.cam.2009.05.028</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1dg_space</span><span class="p">,</span> <span class="n">time_dependent_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg p1dg_space: P1DG function space</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -128,7 +127,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">time_dependent_mesh</span> <span class="o">=</span> <span class="n">time_dependent_mesh</span>
 
     <span class="k">def</span> <span class="nf">_construct_centroid_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructs a linear problem for computing the centroids</span>
 
 <span class="sd">        :return: LinearSolver instance</span>
@@ -142,7 +141,7 @@
                                                   <span class="s1">&#39;sub_pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ilu&#39;</span><span class="p">})</span>
 
     <span class="k">def</span> <span class="nf">_update_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update centroid values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">b</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">TestFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="p">)</span> <span class="o">*</span> <span class="n">field</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
@@ -152,7 +151,7 @@
 
 <div class="viewcode-block" id="VertexBasedP1DGLimiter.compute_bounds"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.compute_bounds">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VertexBasedP1DGLimiter.compute_bounds&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">compute_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-compute min/max values of all neighbouring centroids</span>
 
 <span class="sd">        :arg field: :class:`Function` to limit</span>
@@ -234,7 +233,7 @@
 
 <div class="viewcode-block" id="VertexBasedP1DGLimiter.apply"><a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.apply">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VertexBasedP1DGLimiter.apply&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies the limiter on the given field (in place)</span>
 
 <span class="sd">        :arg field: :class:`Function` to limit</span>
@@ -260,8 +259,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+        &#169; Copyright 2016-2023, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
     </div>
   </body>
 </html>

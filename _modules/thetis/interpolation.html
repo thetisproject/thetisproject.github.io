@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.interpolation &#8212; Thetis 0+untagged.1891.g4528d31 documentation</title>
+    <title>thetis.interpolation &#8212; Thetis 0+untagged.2009.gd7af522 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -93,12 +93,11 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">.coordsys</span> <span class="kn">import</span> <span class="n">to_latlon</span>
 <span class="kn">from</span> <span class="nn">.timezone</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.log</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">scipy.spatial.qhull</span> <span class="k">as</span> <span class="nn">qhull</span>
 <span class="kn">import</span> <span class="nn">netCDF4</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">firedrake</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">firedrake.petsc</span> <span class="kn">import</span> <span class="n">PETSc</span>
 <span class="kn">import</span> <span class="nn">re</span>
@@ -110,7 +109,7 @@
 
 
 <div class="viewcode-block" id="get_ncvar_name"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.get_ncvar_name">[docs]</a><span class="k">def</span> <span class="nf">get_ncvar_name</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span> <span class="n">standard_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">long_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Look for variables that match either CF standard_name or long_name</span>
 <span class="sd">    attributes.</span>
 
@@ -165,7 +164,7 @@
 
 
 <div class="viewcode-block" id="GridInterpolator"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.GridInterpolator">[docs]</a><span class="k">class</span> <span class="nc">GridInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A reuseable griddata interpolator object.</span>
 
 <span class="sd">    Usage:</span>
@@ -195,7 +194,7 @@
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GridInterpolator.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_xyz</span><span class="p">,</span> <span class="n">target_xyz</span><span class="p">,</span> <span class="n">fill_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
                  <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dont_raise</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg grid_xyz: Array of source grid coordinates, shape (npoints, 2) or</span>
 <span class="sd">            (npoints, 3)</span>
 <span class="sd">        :arg target_xyz: Array of target grid coordinates, shape (n, 2) or</span>
@@ -274,7 +273,7 @@
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GridInterpolator.__call__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Interpolate values defined on grid_xyz to target_xyz.</span>
 
 <span class="sd">        :arg values: Array of source values to interpolate, shape (npoints, )</span>
@@ -295,12 +294,12 @@
 
 
 <div class="viewcode-block" id="FileTreeReader"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.FileTreeReader">[docs]</a><span class="k">class</span> <span class="nc">FileTreeReader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class of file tree reader object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">time_index</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads a data for one time step from the file</span>
 
 <span class="sd">        :arg str filename: a filename where to find the data (e.g. filename)</span>
@@ -311,7 +310,7 @@
 
 
 <div class="viewcode-block" id="NetCDFTimeSeriesReader"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFTimeSeriesReader">[docs]</a><span class="k">class</span> <span class="nc">NetCDFTimeSeriesReader</span><span class="p">(</span><span class="n">FileTreeReader</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simple netCDF reader that returns a time slice of the given variable.</span>
 
 <span class="sd">    This class does not interpolate the data in any way. Useful for</span>
@@ -331,7 +330,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nc_var</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_index</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a slice object that extracts a single time index</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -341,7 +340,7 @@
         <span class="k">return</span> <span class="n">slice_list</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">time_index</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads a time_index from the data base</span>
 
 <span class="sd">        :arg str filename: netcdf file where to find the data</span>
@@ -360,7 +359,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_subset_nodes</span><span class="p">(</span><span class="n">grid_x</span><span class="p">,</span> <span class="n">grid_y</span><span class="p">,</span> <span class="n">target_x</span><span class="p">,</span> <span class="n">target_y</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retuns grid nodes that are necessary for intepolating onto target_x,y</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">orig_shape</span> <span class="o">=</span> <span class="n">grid_x</span><span class="o">.</span><span class="n">shape</span>
@@ -379,46 +378,42 @@
     <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ind_x</span><span class="p">,</span> <span class="n">ind_y</span>
 
 
-<div class="viewcode-block" id="SpatialInterpolator"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.SpatialInterpolator">[docs]</a><span class="k">class</span> <span class="nc">SpatialInterpolator</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SpatialInterpolator"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.SpatialInterpolator">[docs]</a><span class="k">class</span> <span class="nc">SpatialInterpolator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class for spatial interpolators that read data from disk</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
-
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: target Firedrake FunctionSpace</span>
-<span class="sd">        :arg coord_system: the local mesh coordinate system</span>
+<span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="SpatialInterpolator.interpolate"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.SpatialInterpolator.interpolate">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">itime</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Interpolates data from the given file at given time step</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 
 
-<div class="viewcode-block" id="SpatialInterpolator2d"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.SpatialInterpolator2d">[docs]</a><span class="k">class</span> <span class="nc">SpatialInterpolator2d</span><span class="p">(</span><span class="n">SpatialInterpolator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SpatialInterpolator2d"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.SpatialInterpolator2d">[docs]</a><span class="k">class</span> <span class="nc">SpatialInterpolator2d</span><span class="p">(</span><span class="n">SpatialInterpolator</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract spatial interpolator class that can interpolate onto a 2D Function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
-
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolator2d.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span> <span class="n">fill_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">fill_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: target Firedrake FunctionSpace</span>
-<span class="sd">        :arg coord_system: the local mesh coordinate system</span>
+<span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
 <span class="sd">        :kwarg fill_mode: Determines how points outside the source grid will be</span>
 <span class="sd">            treated. If &#39;nearest&#39;, value of the nearest source point will be</span>
 <span class="sd">            used. Otherwise a constant fill value will be used (default).</span>
 <span class="sd">        :kwarg float fill_value: Set the fill value (default: NaN)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">function_space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">value_shape</span><span class="p">()</span> <span class="o">==</span> <span class="p">()</span>
+        <span class="k">assert</span> <span class="n">function_space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">value_shape</span> <span class="o">==</span> <span class="p">()</span>
 
         <span class="c1"># construct local coordinates</span>
         <span class="n">on_sphere</span> <span class="o">=</span> <span class="n">function_space</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span>
@@ -435,7 +430,7 @@
             <span class="n">fsy</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span>
             <span class="n">coords</span> <span class="o">=</span> <span class="p">(</span><span class="n">fsx</span><span class="p">,</span> <span class="n">fsy</span><span class="p">)</span>
 
-        <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">to_latlon</span><span class="p">(</span><span class="n">coord_system</span><span class="p">,</span> <span class="o">*</span><span class="n">coords</span><span class="p">)</span>
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">to_lonlat</span><span class="p">(</span><span class="o">*</span><span class="n">coords</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh_lonlat</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fill_mode</span> <span class="o">=</span> <span class="n">fill_mode</span>
@@ -444,7 +439,7 @@
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolator2d._create_interpolator&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_create_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lat_array</span><span class="p">,</span> <span class="n">lon_array</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create compact interpolator by finding the minimal necessary support</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">lat_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Latitude must be two dimensional array.&#39;</span>
@@ -473,14 +468,14 @@
 
 <div class="viewcode-block" id="SpatialInterpolator2d.interpolate"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.SpatialInterpolator2d.interpolate">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calls the interpolator object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 
 
 <div class="viewcode-block" id="NetCDFLatLonInterpolator2d"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFLatLonInterpolator2d">[docs]</a><span class="k">class</span> <span class="nc">NetCDFLatLonInterpolator2d</span><span class="p">(</span><span class="n">SpatialInterpolator2d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpolates netCDF data on a local 2D unstructured mesh</span>
 
 <span class="sd">    The intepolator is constructed for a single netCDF file that defines the</span>
@@ -502,7 +497,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="NetCDFLatLonInterpolator2d.interpolate"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFLatLonInterpolator2d.interpolate">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.NetCDFLatLonInterpolator2d.interpolate&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nc_filename</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">itime</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Interpolates data from a netCDF file onto Firedrake function space.</span>
 
 <span class="sd">        :arg str nc_filename: netCDF file to read</span>
@@ -536,7 +531,7 @@
 
 
 <div class="viewcode-block" id="NetCDFSpatialInterpolator"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFSpatialInterpolator">[docs]</a><span class="k">class</span> <span class="nc">NetCDFSpatialInterpolator</span><span class="p">(</span><span class="n">FileTreeReader</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper class that provides FileTreeReader API for grid interpolators</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_interpolator</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">):</span>
@@ -548,7 +543,7 @@
 
 
 <div class="viewcode-block" id="TimeParser"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.TimeParser">[docs]</a><span class="k">class</span> <span class="nc">TimeParser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class for time definition objects.</span>
 
 <span class="sd">    Defines the time span that a file (or data set) covers and provides a time</span>
@@ -556,17 +551,17 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="TimeParser.get_start_time"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.TimeParser.get_start_time">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the first time stamp in the file/data set&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the first time stamp in the file/data set&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="TimeParser.get_end_time"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.TimeParser.get_end_time">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the last time stamp in the file/data set&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the last time stamp in the file/data set&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="TimeParser.find_time_stamp"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.TimeParser.find_time_stamp">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">find_time_stamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">previous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given time t, returns index of the next (previous) time stamp</span>
 
 <span class="sd">        raises IndexError if t is out of range, i.e.</span>
@@ -576,12 +571,12 @@
 
 
 <div class="viewcode-block" id="NetCDFTimeParser"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFTimeParser">[docs]</a><span class="k">class</span> <span class="nc">NetCDFTimeParser</span><span class="p">(</span><span class="n">TimeParser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Describes the time stamps stored in a netCDF file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">time_variable_name</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">allow_gaps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct a new object by scraping data from the given netcdf file.</span>
 
 <span class="sd">        :arg str filename: name of the netCDF file to read</span>
@@ -594,7 +589,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">time_variable_name</span> <span class="o">=</span> <span class="n">time_variable_name</span>
 
         <span class="k">def</span> <span class="nf">get_datetime</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">calendar</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Convert netcdf time value to datetime.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">cftime</span><span class="o">.</span><span class="n">num2pydate</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">calendar</span><span class="p">)</span>
@@ -644,12 +639,12 @@
 
 
 <div class="viewcode-block" id="TimeSearch"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.TimeSearch">[docs]</a><span class="k">class</span> <span class="nc">TimeSearch</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for searching nearest time steps in a file tree or database</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="TimeSearch.find"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.TimeSearch.find">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">previous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find a next (previous) time stamp from a given time</span>
 
 <span class="sd">        :arg float time: input time stamp</span>
@@ -661,7 +656,7 @@
 
 
 <div class="viewcode-block" id="NetCDFTimeSearch"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFTimeSearch">[docs]</a><span class="k">class</span> <span class="nc">NetCDFTimeSearch</span><span class="p">(</span><span class="n">TimeSearch</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds a nearest time stamp in a collection of netCDF files.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.NetCDFTimeSearch.__init__&quot;</span><span class="p">)</span>
@@ -701,7 +696,7 @@
 
 <div class="viewcode-block" id="NetCDFTimeSearch.find"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFTimeSearch.find">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.NetCDFTimeSearch.find&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation_time</span><span class="p">,</span> <span class="n">previous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find file that contains the given simulation time</span>
 
 <span class="sd">        :arg float simulation_time: simulation time in seconds</span>
@@ -732,7 +727,7 @@
 
 
 <div class="viewcode-block" id="DailyFileTimeSearch"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.DailyFileTimeSearch">[docs]</a><span class="k">class</span> <span class="nc">DailyFileTimeSearch</span><span class="p">(</span><span class="n">TimeSearch</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Treats a list of daily files as a time series.</span>
 
 <span class="sd">    File name pattern must be given as a string where the 4-digit year is</span>
@@ -775,7 +770,7 @@
                 <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_datetime</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
 
     <span class="k">def</span> <span class="nf">_find_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Finds all files that match the given pattern.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Finds all files that match the given pattern.&quot;&quot;&quot;</span>
         <span class="n">search_pattern</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_pattern</span><span class="p">)</span>
         <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;:02d}&#39;</span><span class="p">,</span> <span class="s1">&#39;:}&#39;</span><span class="p">)</span>
         <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;:04d}&#39;</span><span class="p">,</span> <span class="s1">&#39;:}&#39;</span><span class="p">)</span>
@@ -785,7 +780,7 @@
         <span class="k">return</span> <span class="n">all_files</span>
 
     <span class="k">def</span> <span class="nf">_parse_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse year, month, day from filename using the given pattern.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">re_pattern</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_pattern</span><span class="p">)</span>
@@ -804,7 +799,7 @@
 
 <div class="viewcode-block" id="DailyFileTimeSearch.find"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.DailyFileTimeSearch.find">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DailyFileTimeSearch.find&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation_time</span><span class="p">,</span> <span class="n">previous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find file that contains the given simulation time</span>
 
 <span class="sd">        :arg float simulation_time: simulation time in seconds</span>
@@ -823,7 +818,7 @@
 
 
 <div class="viewcode-block" id="LinearTimeInterpolator"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.LinearTimeInterpolator">[docs]</a><span class="k">class</span> <span class="nc">LinearTimeInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpolates time series in time</span>
 
 <span class="sd">    User must provide timesearch_obj that finds time stamps from</span>
@@ -833,7 +828,7 @@
 <span class="sd">    time.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timesearch_obj</span><span class="p">,</span> <span class="n">reader</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg timesearch_obj: TimeSearch object</span>
 <span class="sd">        :arg reader: FileTreeReader object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -842,7 +837,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="nf">_get_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetch data set from cache, read if not present</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
@@ -850,7 +845,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_clean_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys_to_keep</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove cached data sets that are no longer needed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
@@ -858,7 +853,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Interpolate at time t</span>
 
 <span class="sd">        :retuns: list of numpy arrays</span>
@@ -883,13 +878,13 @@
 
 
 <div class="viewcode-block" id="NetCDFTimeSeriesInterpolator"><a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFTimeSeriesInterpolator">[docs]</a><span class="k">class</span> <span class="nc">NetCDFTimeSeriesInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads and interpolates scalar time series from a sequence of netCDF files.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.NetCDFTimeSeriesInterpolator.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncfile_pattern</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span>
                  <span class="n">time_variable_name</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">scalars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_gaps</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg str ncfile_pattern: file search pattern, e.g. &quot;mydir/foo_*.nc&quot;</span>
 <span class="sd">        :arg variable_list: list if netCDF variable names to read</span>
 <span class="sd">        :arg datetime.datetime init_date: simulation start time</span>
@@ -913,7 +908,7 @@
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.NetCDFTimeSeriesInterpolator.__call__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Time series at the given time</span>
 
 <span class="sd">        :returns: list of scalars or numpy.arrays</span>
@@ -933,8 +928,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+        &#169; Copyright 2016-2023, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
     </div>
   </body>
 </html>

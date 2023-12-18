@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.utility3d &#8212; Thetis 0+untagged.1888.gc4e776a documentation</title>
+    <title>thetis.utility3d &#8212; Thetis 0+untagged.2009.gd7af522 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -55,6 +55,7 @@
 <span class="sd">Utility solvers and calculators for 3D hydrostatic ocean model</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 
@@ -77,7 +78,7 @@
 
 
 <div class="viewcode-block" id="VerticalVelocitySolver"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.VerticalVelocitySolver">[docs]</a><span class="k">class</span> <span class="nc">VerticalVelocitySolver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes vertical velocity diagnostically from the continuity equation</span>
 
 <span class="sd">    Vertical velocity is obtained from the continuity equation</span>
@@ -109,7 +110,7 @@
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VerticalVelocitySolver.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span> <span class="n">boundary_funcs</span><span class="o">=</span><span class="p">{},</span>
                  <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solution: w :class:`Function`</span>
 <span class="sd">        :arg uv: horizontal velocity :class:`Function`</span>
 <span class="sd">        :arg bathymetry: bathymetry :class:`Function`</span>
@@ -177,19 +178,19 @@
 
 <div class="viewcode-block" id="VerticalVelocitySolver.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.VerticalVelocitySolver.solve">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VerticalVelocitySolver.solve&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute w&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute w&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="VerticalIntegrator"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.VerticalIntegrator">[docs]</a><span class="k">class</span> <span class="nc">VerticalIntegrator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes vertical integral (or average) of a field.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VerticalIntegrator.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">bottom_to_top</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">bnd_value</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elevation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg input: 3D field to integrate</span>
 <span class="sd">        :arg output: 3D field where the integral is stored</span>
 <span class="sd">        :kwarg bottom_to_top: Defines the integration direction: If True integration is performed along the z axis, from bottom surface to top surface.</span>
@@ -256,14 +257,14 @@
 
 <div class="viewcode-block" id="VerticalIntegrator.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.VerticalIntegrator.solve">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VerticalIntegrator.solve&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the integral and stores it in the output field.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="DensitySolver"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.DensitySolver">[docs]</a><span class="k">class</span> <span class="nc">DensitySolver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes density from salinity and temperature using the equation of state.</span>
 
 <span class="sd">    Water density is defined as</span>
@@ -278,7 +279,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DensitySolver.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">salinity</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">eos_class</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg salinity: water salinity field</span>
 <span class="sd">        :type salinity: :class:`Function`</span>
 <span class="sd">        :arg temperature: water temperature field</span>
@@ -301,7 +302,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="n">density</span>
 
     <span class="k">def</span> <span class="nf">_get_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns numpy data array from a :class:`Function`&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns numpy data array from a :class:`Function`&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
             <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">==</span> <span class="n">function</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">function</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
@@ -312,7 +313,7 @@
 
 <div class="viewcode-block" id="DensitySolver.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.DensitySolver.solve">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DensitySolver.solve&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute density&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute density&quot;&quot;&quot;</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
         <span class="n">th</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
         <span class="n">p</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># NOTE ignore pressure for now</span>
@@ -321,7 +322,7 @@
 
 
 <div class="viewcode-block" id="DensitySolverWeak"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.DensitySolverWeak">[docs]</a><span class="k">class</span> <span class="nc">DensitySolverWeak</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes density from salinity and temperature using the equation of state.</span>
 
 <span class="sd">    Water density is defined as</span>
@@ -336,7 +337,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DensitySolverWeak.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">salinity</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">eos_class</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg salinity: water salinity field</span>
 <span class="sd">        :type salinity: :class:`Function`</span>
 <span class="sd">        :arg temperature: water temperature field</span>
@@ -362,7 +363,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">projector</span> <span class="o">=</span> <span class="n">Projector</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">density</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DensitySolverWeak.ensure_positive_salinity"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.DensitySolverWeak.ensure_positive_salinity">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_positive_salinity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        make sure salinity is not negative</span>
 
 <span class="sd">        some EOS depend on sqrt(salt).</span>
@@ -374,19 +375,19 @@
 
 <div class="viewcode-block" id="DensitySolverWeak.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.DensitySolverWeak.solve">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DensitySolverWeak.solve&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute density&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute density&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ensure_positive_salinity</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">projector</span><span class="o">.</span><span class="n">project</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="VelocityMagnitudeSolver"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.VelocityMagnitudeSolver">[docs]</a><span class="k">class</span> <span class="nc">VelocityMagnitudeSolver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes magnitude of (u[0],u[1],w) and stores it in solution</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VelocityMagnitudeSolver.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_val</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
                  <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solution: scalar field for velocity magnitude scalar :class:`Function`</span>
 <span class="sd">        :type solution: :class:`Function`</span>
 <span class="sd">        :kwarg u: horizontal velocity</span>
@@ -420,13 +421,13 @@
 
 <div class="viewcode-block" id="VelocityMagnitudeSolver.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.VelocityMagnitudeSolver.solve">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VelocityMagnitudeSolver.solve&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute the magnitude&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the magnitude&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
         <span class="n">numpy</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="Mesh3DConsistencyCalculator"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.Mesh3DConsistencyCalculator">[docs]</a><span class="k">class</span> <span class="nc">Mesh3DConsistencyCalculator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes a hydrostatic consistency criterion metric on the 3D mesh.</span>
 
 <span class="sd">    Let :math:`\Delta x` and :math:`\Delta z` denote the horizontal and vertical</span>
@@ -461,7 +462,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.Mesh3DConsistencyCalculator.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver_obj: :class:`FlowSolver` object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span> <span class="o">=</span> <span class="n">solver_obj</span>
@@ -506,7 +507,7 @@
 
 <div class="viewcode-block" id="Mesh3DConsistencyCalculator.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.Mesh3DConsistencyCalculator.solve">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.Mesh3DConsistencyCalculator.solve&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute the HCC metric&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the HCC metric&quot;&quot;&quot;</span>
         <span class="n">op2</span><span class="o">.</span><span class="n">par_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">cell_set</span><span class="p">,</span>
                      <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">WRITE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()),</span>
                      <span class="bp">self</span><span class="o">.</span><span class="n">z_coord</span><span class="o">.</span><span class="n">dat</span><span class="p">(</span><span class="n">op2</span><span class="o">.</span><span class="n">READ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_coord</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">cell_node_map</span><span class="p">()),</span>
@@ -521,7 +522,7 @@
 
 
 <div class="viewcode-block" id="ExpandFunctionTo3d"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.ExpandFunctionTo3d">[docs]</a><span class="k">class</span> <span class="nc">ExpandFunctionTo3d</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copy a 2D field to 3D</span>
 
 <span class="sd">    Copies a field from 2D mesh to 3D mesh, assigning the same value over the</span>
@@ -538,7 +539,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ExpandFunctionTo3d.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_2d</span><span class="p">,</span> <span class="n">output_3d</span><span class="p">,</span> <span class="n">elem_height</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg input_2d: 2D source field</span>
 <span class="sd">        :type input_2d: :class:`Function`</span>
 <span class="sd">        :arg output_3d: 3D target field</span>
@@ -554,8 +555,8 @@
 
         <span class="n">family_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_2d</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">family</span><span class="p">()</span>
         <span class="n">base_element_3d</span> <span class="o">=</span> <span class="n">get_extruded_base_element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs_3d</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_element_3d</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">TensorProductElement</span><span class="p">)</span>
-        <span class="n">family_3dh</span> <span class="o">=</span> <span class="n">base_element_3d</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">family</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_element_3d</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">TensorProductElement</span><span class="p">)</span>
+        <span class="n">family_3dh</span> <span class="o">=</span> <span class="n">base_element_3d</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">family</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">family_2d</span> <span class="o">!=</span> <span class="n">family_3dh</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;2D and 3D spaces do not match: </span><span class="si">{0:s}</span><span class="s1"> </span><span class="si">{1:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family_2d</span><span class="p">,</span> <span class="n">family_3dh</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">do_hdiv_scaling</span> <span class="o">=</span> <span class="n">family_2d</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Raviart-Thomas&#39;</span><span class="p">,</span> <span class="s1">&#39;RTCF&#39;</span><span class="p">,</span> <span class="s1">&#39;Brezzi-Douglas-Marini&#39;</span><span class="p">,</span> <span class="s1">&#39;BDMCF&#39;</span><span class="p">]</span>
@@ -612,7 +613,7 @@
 
 
 <div class="viewcode-block" id="SubFunctionExtractor"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.SubFunctionExtractor">[docs]</a><span class="k">class</span> <span class="nc">SubFunctionExtractor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract a 2D sub-function from a 3D function in an extruded mesh</span>
 
 <span class="sd">    Given 2D and 3D functions,</span>
@@ -652,7 +653,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_3d</span><span class="p">,</span> <span class="n">output_2d</span><span class="p">,</span>
                  <span class="n">boundary</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">elem_facet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">elem_height</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg input_3d: 3D source field</span>
 <span class="sd">        :type input_3d: :class:`Function`</span>
 <span class="sd">        :arg output_2d: 2D target field</span>
@@ -677,8 +678,8 @@
 
         <span class="n">family_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_2d</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">family</span><span class="p">()</span>
         <span class="n">base_element_3d</span> <span class="o">=</span> <span class="n">get_extruded_base_element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs_3d</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_element_3d</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">TensorProductElement</span><span class="p">)</span>
-        <span class="n">family_3dh</span> <span class="o">=</span> <span class="n">base_element_3d</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">family</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_element_3d</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">TensorProductElement</span><span class="p">)</span>
+        <span class="n">family_3dh</span> <span class="o">=</span> <span class="n">base_element_3d</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">family</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">family_2d</span> <span class="o">!=</span> <span class="n">family_3dh</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;2D and 3D spaces do not match: </span><span class="si">{0:s}</span><span class="s1"> </span><span class="si">{1:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family_2d</span><span class="p">,</span> <span class="n">family_3dh</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">do_hdiv_scaling</span> <span class="o">=</span> <span class="n">family_2d</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Raviart-Thomas&#39;</span><span class="p">,</span> <span class="s1">&#39;RTCF&#39;</span><span class="p">,</span> <span class="s1">&#39;Brezzi-Douglas-Marini&#39;</span><span class="p">,</span> <span class="s1">&#39;BDMCF&#39;</span><span class="p">]</span>
@@ -759,7 +760,7 @@
 
 
 <div class="viewcode-block" id="ALEMeshUpdater"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.ALEMeshUpdater">[docs]</a><span class="k">class</span> <span class="nc">ALEMeshUpdater</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class that handles vertically moving ALE mesh</span>
 
 <span class="sd">    Mesh geometry is updated to match the elevation field</span>
@@ -773,7 +774,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ALEMeshUpdater.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver: :class:`FlowSolver` object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">solver</span>
@@ -799,8 +800,8 @@
 
         <span class="n">family_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_2d</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">family</span><span class="p">()</span>
         <span class="n">base_element_3d</span> <span class="o">=</span> <span class="n">get_extruded_base_element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs_3d</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_element_3d</span><span class="p">,</span> <span class="n">ufl</span><span class="o">.</span><span class="n">TensorProductElement</span><span class="p">)</span>
-        <span class="n">family_3dh</span> <span class="o">=</span> <span class="n">base_element_3d</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">family</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_element_3d</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">TensorProductElement</span><span class="p">)</span>
+        <span class="n">family_3dh</span> <span class="o">=</span> <span class="n">base_element_3d</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">family</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">family_2d</span> <span class="o">!=</span> <span class="n">family_3dh</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;2D and 3D spaces do not match: &quot;</span><span class="si">{0:s}</span><span class="s1">&quot; != &quot;</span><span class="si">{1:s}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">family_2d</span><span class="p">,</span> <span class="n">family_3dh</span><span class="p">))</span>
 
@@ -849,27 +850,27 @@
 
 <div class="viewcode-block" id="ALEMeshUpdater.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.ALEMeshUpdater.initialize">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ALEMeshUpdater.intialize&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set values for initial mesh (elevation at rest)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set values for initial mesh (elevation at rest)&quot;&quot;&quot;</span>
         <span class="n">get_zcoord_from_mesh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_coord_ref_3d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_coord_3d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_coord_ref_3d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_elem_height</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ALEMeshUpdater.update_elem_height"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.ALEMeshUpdater.update_elem_height">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ALEMeshUpdater.update_elem_height&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">update_elem_height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Updates vertical element size fields&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates vertical element size fields&quot;&quot;&quot;</span>
         <span class="n">compute_elem_height</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">z_coord_3d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">v_elem_size_3d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cp_v_elem_size_to_2d</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ALEMeshUpdater.compute_mesh_velocity_begin"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.ALEMeshUpdater.compute_mesh_velocity_begin">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ALEMeshUpdater.compute_mesh_velocity_begin&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">compute_mesh_velocity_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Stores the current 2D elevation state as the &quot;old&quot; field&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stores the current 2D elevation state as the &quot;old&quot; field&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proj_elev_to_cg_2d</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proj_elev_cg_to_coords_2d</span><span class="o">.</span><span class="n">project</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ALEMeshUpdater.compute_mesh_velocity_finalize"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.ALEMeshUpdater.compute_mesh_velocity_finalize">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ALEMeshUpdater.compute_mesh_velocity_finalize&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">compute_mesh_velocity_finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">w_mesh_surf_expr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes mesh velocity from the elevation difference</span>
 
 <span class="sd">        Stores the current 2D elevation state as the &quot;new&quot; field,</span>
@@ -900,7 +901,7 @@
 
 <div class="viewcode-block" id="ALEMeshUpdater.update_mesh_coordinates"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.ALEMeshUpdater.update_mesh_coordinates">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ALEMeshUpdater.update_mesh_coordinates&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">update_mesh_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates 3D mesh coordinates to match current elev_2d field</span>
 
 <span class="sd">        elev_2d is first projected to continous space</span>
@@ -926,7 +927,7 @@
 
 
 <div class="viewcode-block" id="SmagorinskyViscosity"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.SmagorinskyViscosity">[docs]</a><span class="k">class</span> <span class="nc">SmagorinskyViscosity</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes Smagorinsky subgrid scale horizontal viscosity</span>
 
 <span class="sd">    This formulation is according to Ilicak et al. (2012) and</span>
@@ -960,7 +961,7 @@
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SmagorinskyViscosity.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">c_s</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="p">,</span> <span class="n">max_val</span><span class="p">,</span> <span class="n">min_val</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>
                  <span class="n">weak_form</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg uv_3d: horizontal velocity</span>
 <span class="sd">        :type uv_3d: 3D vector :class:`Function`</span>
 <span class="sd">        :arg output: Smagorinsky viscosity field</span>
@@ -1033,7 +1034,7 @@
 
 <div class="viewcode-block" id="SmagorinskyViscosity.solve"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.SmagorinskyViscosity.solve">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SmagorinskyViscosity.solve&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute viscosity&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute viscosity&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weak_form</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">weak_grad_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
@@ -1046,15 +1047,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_val</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="EquationOfState"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.EquationOfState">[docs]</a><span class="k">class</span> <span class="nc">EquationOfState</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="EquationOfState"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.EquationOfState">[docs]</a><span class="k">class</span> <span class="nc">EquationOfState</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class of all equation of state objects</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
 
 <div class="viewcode-block" id="EquationOfState.compute_rho"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.EquationOfState.compute_rho">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">compute_rho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute sea water density.</span>
 
 <span class="sd">        :arg s: Salinity expressed on the Practical Salinity Scale 1978</span>
@@ -1076,14 +1076,14 @@
 
 <div class="viewcode-block" id="EquationOfState.eval"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.EquationOfState.eval">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute sea water density.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 
 
 <div class="viewcode-block" id="JackettEquationOfState"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.JackettEquationOfState">[docs]</a><span class="k">class</span> <span class="nc">JackettEquationOfState</span><span class="p">(</span><span class="n">EquationOfState</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Equation of State according of Jackett et al. (2006) for computing sea</span>
 <span class="sd">    water density.</span>
 
@@ -1108,7 +1108,7 @@
                      <span class="mf">6.7103246285651894e-6</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.4461698007024582e-17</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.1534417604289062e-18</span><span class="p">])</span>
 
 <div class="viewcode-block" id="JackettEquationOfState.compute_rho"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.JackettEquationOfState.compute_rho">[docs]</a>    <span class="k">def</span> <span class="nf">compute_rho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute sea water density.</span>
 
 <span class="sd">        :arg s: Salinity expressed on the Practical Salinity Scale 1978</span>
@@ -1144,14 +1144,14 @@
 
 
 <div class="viewcode-block" id="LinearEquationOfState"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.LinearEquationOfState">[docs]</a><span class="k">class</span> <span class="nc">LinearEquationOfState</span><span class="p">(</span><span class="n">EquationOfState</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Linear Equation of State for computing sea water density</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \rho = \rho_{ref} - \alpha (T - T_{ref}) + \beta (S - S_{ref})</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rho_ref</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">th_ref</span><span class="p">,</span> <span class="n">s_ref</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg float rho_ref: reference density</span>
 <span class="sd">        :arg float alpha: thermal expansion coefficient</span>
 <span class="sd">        :arg float beta: haline contraction coefficient</span>
@@ -1165,7 +1165,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">S_ref</span> <span class="o">=</span> <span class="n">s_ref</span>
 
 <div class="viewcode-block" id="LinearEquationOfState.compute_rho"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.LinearEquationOfState.compute_rho">[docs]</a>    <span class="k">def</span> <span class="nf">compute_rho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rho0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute sea water density.</span>
 
 <span class="sd">        :arg s: Salinity expressed on the Practical Salinity Scale 1978</span>
@@ -1192,7 +1192,7 @@
 
 <div class="viewcode-block" id="get_horizontal_elem_size_3d"><a class="viewcode-back" href="../../thetis.html#thetis.utility3d.get_horizontal_elem_size_3d">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.get_horizontal_elem_size_3d&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_horizontal_elem_size_3d</span><span class="p">(</span><span class="n">sol2d</span><span class="p">,</span> <span class="n">sol3d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes horizontal element size from the 2D mesh, then copies it on a 3D</span>
 <span class="sd">    field</span>
 
@@ -1211,8 +1211,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+        &#169; Copyright 2016-2023, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
     </div>
   </body>
 </html>

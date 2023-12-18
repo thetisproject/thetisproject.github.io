@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.exner_eq &#8212; Thetis 0+untagged.1878.g52658ff.dirty documentation</title>
+    <title>thetis.exner_eq &#8212; Thetis 0+untagged.2009.gd7af522 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -68,8 +68,8 @@
 <span class="sd">:math:`\nabla_h` denotes horizontal gradient, :math:`m` is the morphological scale factor,</span>
 <span class="sd">:math:`p` is the porosity and :math:`\textbf{Q_b}` is the bedload transport vector</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">.equation</span> <span class="kn">import</span> <span class="n">Term</span><span class="p">,</span> <span class="n">Equation</span>
 <span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.equation</span> <span class="kn">import</span> <span class="n">Term</span><span class="p">,</span> <span class="n">Equation</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;ExnerEquation&#39;</span><span class="p">,</span>
@@ -80,12 +80,12 @@
 
 
 <div class="viewcode-block" id="ExnerTerm"><a class="viewcode-back" href="../../thetis.html#thetis.exner_eq.ExnerTerm">[docs]</a><span class="k">class</span> <span class="nc">ExnerTerm</span><span class="p">(</span><span class="n">Term</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic term in the Exner equations that provides commonly used members</span>
 <span class="sd">    There are no boundary conditions for the Exner equation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">sediment_model</span><span class="p">,</span> <span class="n">depth_integrated_sediment</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
 <span class="sd">        :arg depth: :class:`DepthExpression` containing depth info</span>
 <span class="sd">        :arg sediment_model: :class:`SedimentModel` containing sediment info</span>
@@ -107,7 +107,7 @@
 
 
 <div class="viewcode-block" id="ExnerSourceTerm"><a class="viewcode-back" href="../../thetis.html#thetis.exner_eq.ExnerSourceTerm">[docs]</a><span class="k">class</span> <span class="nc">ExnerSourceTerm</span><span class="p">(</span><span class="n">ExnerTerm</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Source term accounting for suspended sediment transport</span>
 
 <span class="sd">    The weak form reads</span>
@@ -138,7 +138,7 @@
 
 
 <div class="viewcode-block" id="ExnerBedloadTerm"><a class="viewcode-back" href="../../thetis.html#thetis.exner_eq.ExnerBedloadTerm">[docs]</a><span class="k">class</span> <span class="nc">ExnerBedloadTerm</span><span class="p">(</span><span class="n">ExnerTerm</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Bedload transport term, \nabla_h \cdot \textbf{Q_b}</span>
 
 <span class="sd">    The weak form is</span>
@@ -183,7 +183,7 @@
 
 
 <span class="k">class</span> <span class="nc">ExnerSedimentSlideTerm</span><span class="p">(</span><span class="n">ExnerTerm</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Term which adds component to bedload transport to ensure the slope angle does not exceed a certain value</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
@@ -203,13 +203,13 @@
 
 
 <div class="viewcode-block" id="ExnerEquation"><a class="viewcode-back" href="../../thetis.html#thetis.exner_eq.ExnerEquation">[docs]</a><span class="k">class</span> <span class="nc">ExnerEquation</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exner equation</span>
 
 <span class="sd">    2D conservation of mass equation describing bed evolution due to sediment transport</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">sediment_model</span><span class="p">,</span> <span class="n">depth_integrated_sediment</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
 <span class="sd">        :arg depth: :class: `DepthExpression` containing depth info</span>
 <span class="sd">        :arg sediment_model: :class: `SedimentModel` containing sediment info</span>
@@ -237,8 +237,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+        &#169; Copyright 2016-2023, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
     </div>
   </body>
 </html>
