@@ -1,17 +1,15 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.exporter &#8212; Thetis 0+untagged.2009.gd7af522 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
+    <title>thetis.exporter &#8212; Thetis 0+untagged.2009.gb75eefa documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
+    <script src="../../_static/documentation_options.js?v=47a7fef3"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -60,12 +58,17 @@
 <span class="kn">import</span> <span class="nn">itertools</span>
 
 
-<div class="viewcode-block" id="is_2d"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.is_2d">[docs]</a><span class="k">def</span> <span class="nf">is_2d</span><span class="p">(</span><span class="n">fs</span><span class="p">):</span>
+<div class="viewcode-block" id="is_2d">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.is_2d">[docs]</a>
+<span class="k">def</span> <span class="nf">is_2d</span><span class="p">(</span><span class="n">fs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests wether a function space is 2D or 3D&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span></div>
 
 
-<div class="viewcode-block" id="get_visu_space"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.get_visu_space">[docs]</a><span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.get_visu_space&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="get_visu_space">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.get_visu_space">[docs]</a>
+<span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.get_visu_space&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_visu_space</span><span class="p">(</span><span class="n">fs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an appropriate VTK visualization space for a function space</span>
@@ -89,7 +92,10 @@
     <span class="k">return</span> <span class="n">visu_fs</span></div>
 
 
-<div class="viewcode-block" id="ExporterBase"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExporterBase">[docs]</a><span class="k">class</span> <span class="nc">ExporterBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ExporterBase">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExporterBase">[docs]</a>
+<span class="k">class</span> <span class="nc">ExporterBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for exporter objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -106,16 +112,25 @@
         <span class="c1"># keeps track of export numbers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span> <span class="o">=</span> <span class="n">next_export_ix</span>
 
-<div class="viewcode-block" id="ExporterBase.set_next_export_ix"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExporterBase.set_next_export_ix">[docs]</a>    <span class="k">def</span> <span class="nf">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">):</span>
+<div class="viewcode-block" id="ExporterBase.set_next_export_ix">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExporterBase.set_next_export_ix">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the index of next export&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span> <span class="o">=</span> <span class="n">next_export_ix</span></div>
 
-<div class="viewcode-block" id="ExporterBase.export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExporterBase.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ExporterBase.export">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExporterBase.export">[docs]</a>
+    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Exports given function to disk&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;This method must be implemented in the derived class&#39;</span><span class="p">)</span></div></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;This method must be implemented in the derived class&#39;</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="VTKExporter"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter">[docs]</a><span class="k">class</span> <span class="nc">VTKExporter</span><span class="p">(</span><span class="n">ExporterBase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="VTKExporter">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter">[docs]</a>
+<span class="k">class</span> <span class="nc">VTKExporter</span><span class="p">(</span><span class="n">ExporterBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class that handles Paraview VTK file exports</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -147,14 +162,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cast_operators</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="VTKExporter.set_next_export_ix"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter.set_next_export_ix">[docs]</a>    <span class="k">def</span> <span class="nf">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">):</span>
+<div class="viewcode-block" id="VTKExporter.set_next_export_ix">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter.set_next_export_ix">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the index of next export&quot;&quot;&quot;</span>
         <span class="c1"># NOTE vtk io objects store current export index not next</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">VTKExporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_next_export_ix</span><span class="p">(</span><span class="n">next_export_ix</span><span class="p">)</span>
         <span class="c1"># FIXME hack to change correct output file count</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="VTKExporter.export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter.export">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VTKExporter.export&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VTKExporter.export">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter.export">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VTKExporter.export&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Exports given function to disk&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_visu</span><span class="o">.</span><span class="n">max_work_functions</span> <span class="o">==</span> <span class="mi">1</span>
@@ -178,10 +198,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="c1"># restore old name</span>
         <span class="n">tmp_proj_func</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">old_name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fs_visu</span><span class="o">.</span><span class="n">restore_work_function</span><span class="p">(</span><span class="n">tmp_proj_func</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs_visu</span><span class="o">.</span><span class="n">restore_work_function</span><span class="p">(</span><span class="n">tmp_proj_func</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="HDF5Exporter"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter">[docs]</a><span class="k">class</span> <span class="nc">HDF5Exporter</span><span class="p">(</span><span class="n">ExporterBase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HDF5Exporter">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter">[docs]</a>
+<span class="k">class</span> <span class="nc">HDF5Exporter</span><span class="p">(</span><span class="n">ExporterBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stores fields in disk in native discretization using HDF5 containers</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -205,7 +229,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span> <span class="o">=</span> <span class="n">function_space</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dumb_checkpoint</span> <span class="o">=</span> <span class="n">legacy_mode</span>
 
-<div class="viewcode-block" id="HDF5Exporter.gen_filename"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.gen_filename">[docs]</a>    <span class="k">def</span> <span class="nf">gen_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">):</span>
+<div class="viewcode-block" id="HDF5Exporter.gen_filename">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.gen_filename">[docs]</a>
+    <span class="k">def</span> <span class="nf">gen_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate file name &#39;prefix_nnnnn.h5&#39; for i-th export</span>
 
@@ -216,7 +242,10 @@
             <span class="n">filename</span> <span class="o">+=</span> <span class="s1">&#39;.h5&#39;</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HDF5Exporter.export_as_index"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.export_as_index">[docs]</a>    <span class="k">def</span> <span class="nf">export_as_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HDF5Exporter.export_as_index">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.export_as_index">[docs]</a>
+    <span class="k">def</span> <span class="nf">export_as_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Export function to disk using the specified export index number</span>
 
@@ -238,7 +267,10 @@
                 <span class="n">f</span><span class="o">.</span><span class="n">save_function</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span> <span class="o">=</span> <span class="n">iexport</span> <span class="o">+</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="HDF5Exporter.export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.export">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HDF5Exporter.export&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HDF5Exporter.export">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.export">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HDF5Exporter.export&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Export function to disk.</span>
@@ -249,7 +281,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_as_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span><span class="p">,</span> <span class="n">function</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HDF5Exporter.load"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.load">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HDF5Exporter.load&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HDF5Exporter.load">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.load">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HDF5Exporter.load&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads nodal values from disk and assigns to the given function</span>
@@ -271,10 +306,14 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;sfXC&#39;</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;When loading fields from hdf5 checkpoint files, you should also read the mesh from checkpoint. See the documentation for `read_mesh_from_checkpoint()`&#39;</span><span class="p">)</span>
                 <span class="n">g</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">load_function</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
-                <span class="n">function</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">g</span><span class="p">)</span></div></div>
+                <span class="n">function</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">g</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="ExportManager"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager">[docs]</a><span class="k">class</span> <span class="nc">ExportManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ExportManager">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager">[docs]</a>
+<span class="k">class</span> <span class="nc">ExportManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper object for exporting multiple fields simultaneously</span>
 
@@ -323,7 +362,9 @@
                                 <span class="n">legacy_mode</span><span class="o">=</span><span class="n">legacy_mode</span><span class="p">,</span>
                                 <span class="n">next_export_ix</span><span class="o">=</span><span class="n">next_export_ix</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ExportManager.add_export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.add_export">[docs]</a>    <span class="k">def</span> <span class="nf">add_export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span>
+<div class="viewcode-block" id="ExportManager.add_export">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.add_export">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span>
                    <span class="n">export_type</span><span class="o">=</span><span class="s1">&#39;vtk&#39;</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">shortname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">legacy_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                    <span class="n">preproc_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -371,12 +412,18 @@
                                                          <span class="n">legacy_mode</span><span class="o">=</span><span class="n">legacy_mode</span><span class="p">,</span>
                                                          <span class="n">next_export_ix</span><span class="o">=</span><span class="n">next_export_ix</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExportManager.set_next_export_ix"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.set_next_export_ix">[docs]</a>    <span class="k">def</span> <span class="nf">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ExportManager.set_next_export_ix">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.set_next_export_ix">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set export index to all child exporters&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_next_export_ix</span><span class="p">(</span><span class="n">next_export_ix</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExportManager.export"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ExportManager.export">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.export">[docs]</a>
+    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Export all designated functions to disk</span>
 
@@ -397,7 +444,10 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ExportManager.export_bathymetry"><a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.export_bathymetry">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ExportManager.export_bathymetry&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ExportManager.export_bathymetry">
+<a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.export_bathymetry">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ExportManager.export_bathymetry&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">export_bathymetry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Special function to export 2D bathymetry data to disk</span>
@@ -406,7 +456,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bathfile</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="s1">&#39;init_bathymetry_2d/init_bathymetry_2d.pvd&#39;</span><span class="p">))</span>
 
-        <span class="n">bathfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bathymetry_2d</span><span class="p">)</span></div></div>
+        <span class="n">bathfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bathymetry_2d</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
             <div class="clearer"></div>
@@ -417,8 +469,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2023, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    &#169; Copyright 2016-2023, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     </div>
   </body>
 </html>

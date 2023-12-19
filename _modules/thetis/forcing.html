@@ -1,17 +1,15 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.forcing &#8212; Thetis 0+untagged.1891.g4528d31 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
+    <title>thetis.forcing &#8212; Thetis 0+untagged.2009.gb75eefa documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
+    <script src="../../_static/documentation_options.js?v=47a7fef3"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -59,19 +57,20 @@
 <span class="kn">import</span> <span class="nn">scipy.spatial.qhull</span> <span class="k">as</span> <span class="nn">qhull</span>
 <span class="kn">import</span> <span class="nn">thetis.timezone</span> <span class="k">as</span> <span class="nn">timezone</span>
 <span class="kn">import</span> <span class="nn">thetis.interpolation</span> <span class="k">as</span> <span class="nn">interpolation</span>
-<span class="kn">import</span> <span class="nn">thetis.coordsys</span> <span class="k">as</span> <span class="nn">coordsys</span>
 <span class="kn">from</span> <span class="nn">.log</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">netCDF4</span>
 <span class="kn">import</span> <span class="nn">thetis.physical_constants</span> <span class="k">as</span> <span class="nn">physical_constants</span>
 <span class="kn">import</span> <span class="nn">uptide</span>
 <span class="kn">import</span> <span class="nn">uptide.tidal_netcdf</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span><span class="p">,</span> <span class="n">abstractproperty</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span><span class="p">,</span> <span class="n">abstractproperty</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 
-<div class="viewcode-block" id="compute_wind_stress"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.compute_wind_stress">[docs]</a><span class="k">def</span> <span class="nf">compute_wind_stress</span><span class="p">(</span><span class="n">wind_u</span><span class="p">,</span> <span class="n">wind_v</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;LargeYeager2009&#39;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="compute_wind_stress">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.compute_wind_stress">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_wind_stress</span><span class="p">(</span><span class="n">wind_u</span><span class="p">,</span> <span class="n">wind_v</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;LargeYeager2009&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute wind stress from atmospheric 10 m wind.</span>
 
 <span class="sd">    wind stress is defined as</span>
@@ -133,13 +132,16 @@
     <span class="k">return</span> <span class="n">tau_x</span><span class="p">,</span> <span class="n">tau_y</span></div>
 
 
-<div class="viewcode-block" id="ATMNetCDFTime"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.ATMNetCDFTime">[docs]</a><span class="k">class</span> <span class="nc">ATMNetCDFTime</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFTimeParser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ATMNetCDFTime">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.ATMNetCDFTime">[docs]</a>
+<span class="k">class</span> <span class="nc">ATMNetCDFTime</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFTimeParser</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A TimeParser class for reading atmosphere model output files.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ATMNetCDFTime.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">max_duration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg filename:</span>
 <span class="sd">        :kwarg max_duration: Time span to read from each file (in seconds).</span>
 <span class="sd">            E.g. forecast files can consist of daily files with &gt; 1 day of</span>
@@ -167,8 +169,11 @@
                 <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  New time span: </span><span class="si">{:}</span><span class="s1"> -&gt; </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="ATMInterpolator"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.ATMInterpolator">[docs]</a><span class="k">class</span> <span class="nc">ATMInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ATMInterpolator">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.ATMInterpolator">[docs]</a>
+<span class="k">class</span> <span class="nc">ATMInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpolates WRF/NAM atmospheric model data on 2D fields.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ATMInterpolator.__init__&quot;</span><span class="p">)</span>
@@ -180,14 +185,14 @@
                  <span class="n">pressure_var_name</span><span class="o">=</span><span class="s1">&#39;prmsl&#39;</span><span class="p">,</span> <span class="n">fill_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">fill_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
                  <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: Target (scalar) :class:`FunctionSpace` object onto</span>
 <span class="sd">            which data will be interpolated.</span>
 <span class="sd">        :arg wind_stress_field: A 2D vector :class:`Function` where the output</span>
 <span class="sd">            wind stress will be stored.</span>
 <span class="sd">        :arg atm_pressure_field: A 2D scalar :class:`Function` where the output</span>
 <span class="sd">            atmospheric pressure will be stored.</span>
-<span class="sd">        :arg coord_system: the local mesh coordinate system</span>
+<span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
 <span class="sd">        :arg ncfile_pattern: A file name pattern for reading the atmospheric</span>
 <span class="sd">            model output files. E.g. &#39;forcings/nam_air.local.2006_*.nc&#39;</span>
 <span class="sd">        :arg init_date: A :class:`datetime` object that indicates the start</span>
@@ -219,14 +224,15 @@
         <span class="n">lon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="o">.</span><span class="n">mesh_lonlat</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
         <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="o">.</span><span class="n">mesh_lonlat</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">vect_rotator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">VectorCoordSysRotation</span><span class="p">(</span>
-                <span class="n">coordsys</span><span class="o">.</span><span class="n">LL_WGS84</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">get_vector_rotator</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">vect_rotator</span>
 
-<div class="viewcode-block" id="ATMInterpolator.set_fields"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.ATMInterpolator.set_fields">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ATMInterpolator.set_fields&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="ATMInterpolator.set_fields">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.ATMInterpolator.set_fields">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ATMInterpolator.set_fields&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluates forcing fields at the given time.</span>
 
 <span class="sd">        Performs interpolation and updates the output wind stress and</span>
@@ -245,19 +251,23 @@
             <span class="n">u_strs</span><span class="p">,</span> <span class="n">v_strs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span><span class="p">(</span><span class="n">east_strs</span><span class="p">,</span> <span class="n">north_strs</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">u_strs</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_strs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">atm_pressure_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">prmsl</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atm_pressure_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">prmsl</span></div>
+</div>
 
 
-<div class="viewcode-block" id="SpatialInterpolatorNCOMBase"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOMBase">[docs]</a><span class="k">class</span> <span class="nc">SpatialInterpolatorNCOMBase</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">SpatialInterpolator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SpatialInterpolatorNCOMBase">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOMBase">[docs]</a>
+<span class="k">class</span> <span class="nc">SpatialInterpolatorNCOMBase</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">SpatialInterpolator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for 2D and 3D NCOM spatial interpolators.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorNCOMBase.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span> <span class="n">grid_path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: Target (scalar) :class:`FunctionSpace` object onto</span>
 <span class="sd">            which data will be interpolated.</span>
-<span class="sd">        :arg coord_system: the local mesh coordinate system</span>
+<span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
 <span class="sd">        :arg grid_path: File path where the NCOM model grid files</span>
 <span class="sd">            (&#39;model_lat.nc&#39;, &#39;model_lon.nc&#39;, &#39;model_zm.nc&#39;) are located.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -267,7 +277,7 @@
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorNCOMBase._create_2d_mapping&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_create_2d_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncfile</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create map for 2D nodes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># read source lat lon grid</span>
@@ -330,7 +340,7 @@
         <span class="k">return</span> <span class="n">lon_subset</span><span class="p">,</span> <span class="n">lat_subset</span><span class="p">,</span> <span class="n">x_ind</span><span class="p">,</span> <span class="n">y_ind</span><span class="p">,</span> <span class="n">vals</span>
 
     <span class="k">def</span> <span class="nf">_get_forcing_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function to load NCOM grid files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">v</span> <span class="o">=</span> <span class="kc">None</span>
@@ -339,16 +349,19 @@
         <span class="k">return</span> <span class="n">v</span></div>
 
 
-<div class="viewcode-block" id="SpatialInterpolatorNCOM3d"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOM3d">[docs]</a><span class="k">class</span> <span class="nc">SpatialInterpolatorNCOM3d</span><span class="p">(</span><span class="n">SpatialInterpolatorNCOMBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SpatialInterpolatorNCOM3d">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOM3d">[docs]</a>
+<span class="k">class</span> <span class="nc">SpatialInterpolatorNCOM3d</span><span class="p">(</span><span class="n">SpatialInterpolatorNCOMBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Spatial interpolator class for interpolating NCOM ocean model 3D fields.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorNCOM3d.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span> <span class="n">grid_path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: Target (scalar) :class:`FunctionSpace` object onto</span>
 <span class="sd">            which data will be interpolated.</span>
-<span class="sd">        :arg coord_system: the local mesh coordinate system</span>
+<span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
 <span class="sd">        :arg grid_path: File path where the NCOM model grid files</span>
 <span class="sd">            (&#39;model_lat.nc&#39;, &#39;model_lon.nc&#39;, &#39;model_zm.nc&#39;) are located.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -364,8 +377,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">restore_work_function</span><span class="p">(</span><span class="n">tmp_func</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">xyz_array</span><span class="p">)</span>
-        <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">to_latlon</span><span class="p">(</span>
-            <span class="n">coord_system</span><span class="p">,</span> <span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">positive_lon</span><span class="o">=</span><span class="kc">True</span>
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">to_lonlat</span><span class="p">(</span>
+            <span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">positive_lon</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">lat</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">lon</span>
@@ -373,7 +386,7 @@
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorNCOM3d._create_interpolator&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_create_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncfile</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a compact interpolator by finding the minimal necessary support</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lon_subset</span><span class="p">,</span> <span class="n">lat_subset</span><span class="p">,</span> <span class="n">x_ind</span><span class="p">,</span> <span class="n">y_ind</span><span class="p">,</span> <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_2d_mapping</span><span class="p">(</span><span class="n">ncfile</span><span class="p">)</span>
@@ -412,9 +425,11 @@
         <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;done.&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="SpatialInterpolatorNCOM3d.interpolate"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOM3d.interpolate">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorNCOM3d.interpolate&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SpatialInterpolatorNCOM3d.interpolate">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOM3d.interpolate">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorNCOM3d.interpolate&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nc_filename</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">itime</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calls the interpolator object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">nc_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ncfile</span><span class="p">:</span>
@@ -426,19 +441,23 @@
                 <span class="n">grid_data</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="n">var</span><span class="p">][:][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">good_mask_3d</span><span class="p">]</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="p">(</span><span class="n">grid_data</span><span class="p">)</span>
                 <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">output</span></div></div>
+        <span class="k">return</span> <span class="n">output</span></div>
+</div>
 
 
-<div class="viewcode-block" id="SpatialInterpolatorNCOM2d"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOM2d">[docs]</a><span class="k">class</span> <span class="nc">SpatialInterpolatorNCOM2d</span><span class="p">(</span><span class="n">SpatialInterpolatorNCOMBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SpatialInterpolatorNCOM2d">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOM2d">[docs]</a>
+<span class="k">class</span> <span class="nc">SpatialInterpolatorNCOM2d</span><span class="p">(</span><span class="n">SpatialInterpolatorNCOMBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Spatial interpolator class for interpolating NCOM ocean model 2D fields.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorNCOM2d.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span> <span class="n">grid_path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: Target (scalar) :class:`FunctionSpace` object onto</span>
 <span class="sd">            which data will be interpolated.</span>
-<span class="sd">        :arg coord_system: the local mesh coordinate system</span>
+<span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
 <span class="sd">        :arg grid_path: File path where the NCOM model grid files</span>
 <span class="sd">            (&#39;model_lat.nc&#39;, &#39;model_lon.nc&#39;, &#39;model_zm.nc&#39;) are located.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -453,15 +472,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">restore_work_function</span><span class="p">(</span><span class="n">tmp_func</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">xy_array</span><span class="p">)</span>
-        <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">to_latlon</span><span class="p">(</span>
-            <span class="n">coord_system</span><span class="p">,</span> <span class="n">xy_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xy_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">positive_lon</span><span class="o">=</span><span class="kc">True</span>
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">to_lonlat</span><span class="p">(</span>
+            <span class="n">xy_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xy_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">positive_lon</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">lat</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">lon</span>
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorNCOM2d._create_interpolator&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_create_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncfile</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a compact interpolator by finding the minimal necessary support</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lon_subset</span><span class="p">,</span> <span class="n">lat_subset</span><span class="p">,</span> <span class="n">x_ind</span><span class="p">,</span> <span class="n">y_ind</span><span class="p">,</span> <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_2d_mapping</span><span class="p">(</span><span class="n">ncfile</span><span class="p">)</span>
@@ -481,9 +500,11 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="SpatialInterpolatorNCOM2d.interpolate"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOM2d.interpolate">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorNCOM2d.interpolate&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SpatialInterpolatorNCOM2d.interpolate">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorNCOM2d.interpolate">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorNCOM2d.interpolate&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nc_filename</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">itime</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calls the interpolator object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">nc_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ncfile</span><span class="p">:</span>
@@ -495,11 +516,15 @@
                 <span class="n">grid_data</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="n">var</span><span class="p">][:][</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">]</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="p">(</span><span class="n">grid_data</span><span class="p">)</span>
                 <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">output</span></div></div>
+        <span class="k">return</span> <span class="n">output</span></div>
+</div>
 
 
-<div class="viewcode-block" id="NCOMInterpolator"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.NCOMInterpolator">[docs]</a><span class="k">class</span> <span class="nc">NCOMInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NCOMInterpolator">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.NCOMInterpolator">[docs]</a>
+<span class="k">class</span> <span class="nc">NCOMInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpolates NCOM model data on 3D fields.</span>
 
 <span class="sd">    .. note::</span>
@@ -523,7 +548,7 @@
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.NCOMInterpolator.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space_2d</span><span class="p">,</span> <span class="n">function_space_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">field_names</span><span class="p">,</span> <span class="n">field_fnstr</span><span class="p">,</span>
                  <span class="n">coord_system</span><span class="p">,</span> <span class="n">basedir</span><span class="p">,</span> <span class="n">file_pattern</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space_2d: Target (scalar) :class:`FunctionSpace` object onto</span>
 <span class="sd">            which 2D data will be interpolated.</span>
 <span class="sd">        :arg function_space_3d: Target (scalar) :class:`FunctionSpace` object onto</span>
@@ -534,7 +559,7 @@
 <span class="sd">            [&#39;Salinity&#39;, &#39;Temperature&#39;].</span>
 <span class="sd">        :arg field_fnstr: List of variables in netCDF file names. E.g.</span>
 <span class="sd">            [&#39;s3d&#39;, &#39;t3d&#39;].</span>
-<span class="sd">        :arg coord_system: the local mesh coordinate system</span>
+<span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
 <span class="sd">        :arg basedir: Root dir where NCOM files are stored.</span>
 <span class="sd">            E.g. &#39;/forcings/ncom&#39;.</span>
 <span class="sd">        :arg file_pattern: A file name pattern for reading the NCOM output</span>
@@ -577,12 +602,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_names</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;V_Velocity&#39;</span><span class="p">)</span>
             <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator_3d</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
             <span class="n">lon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator_3d</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">VectorCoordSysRotation</span><span class="p">(</span>
-                <span class="n">coordsys</span><span class="o">.</span><span class="n">LL_WGS84</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">get_vector_rotator</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NCOMInterpolator.set_fields"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.NCOMInterpolator.set_fields">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.NCOMInterpolator.set_fields&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="NCOMInterpolator.set_fields">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.NCOMInterpolator.set_fields">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.NCOMInterpolator.set_fields&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluates forcing fields at the given time</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotate_velocity</span><span class="p">:</span>
@@ -596,18 +622,22 @@
 
         <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_names</span><span class="p">:</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span><span class="p">[</span><span class="n">fname</span><span class="p">](</span><span class="n">time</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">fname</span><span class="p">]</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">vals</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">fname</span><span class="p">]</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">vals</span></div>
+</div>
 
 
-<div class="viewcode-block" id="SpatialInterpolatorROMS3d"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorROMS3d">[docs]</a><span class="k">class</span> <span class="nc">SpatialInterpolatorROMS3d</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">SpatialInterpolator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SpatialInterpolatorROMS3d">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorROMS3d">[docs]</a>
+<span class="k">class</span> <span class="nc">SpatialInterpolatorROMS3d</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">SpatialInterpolator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract spatial interpolator class that can interpolate onto a Function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorROMS3d.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_space: target Firedrake FunctionSpace</span>
-<span class="sd">        :arg coord_system: the local mesh coordinate system</span>
+<span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span> <span class="o">=</span> <span class="n">function_space</span>
 
@@ -621,8 +651,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">restore_work_function</span><span class="p">(</span><span class="n">tmp_func</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">xyz_array</span><span class="p">)</span>
-        <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">to_latlon</span><span class="p">(</span>
-            <span class="n">coord_system</span><span class="p">,</span> <span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">to_lonlat</span><span class="p">(</span>
+            <span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xyz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">lat</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latlonz_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">lon</span>
@@ -631,7 +661,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_get_subset_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_x</span><span class="p">,</span> <span class="n">grid_y</span><span class="p">,</span> <span class="n">target_x</span><span class="p">,</span> <span class="n">target_y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns grid nodes that are necessary for intepolating onto target_x,y</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">orig_shape</span> <span class="o">=</span> <span class="n">grid_x</span><span class="o">.</span><span class="n">shape</span>
@@ -669,7 +699,7 @@
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorROMS3d._create_interpolator&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_create_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncfile</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create compact interpolator by finding the minimal necessary support</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lat</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="s1">&#39;lat_rho&#39;</span><span class="p">][:]</span>
@@ -711,9 +741,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="SpatialInterpolatorROMS3d.interpolate"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorROMS3d.interpolate">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorROMS3d.interpolate&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SpatialInterpolatorROMS3d.interpolate">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.SpatialInterpolatorROMS3d.interpolate">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolatorROMS3d.interpolate&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nc_filename</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">itime</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calls the interpolator object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">nc_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ncfile</span><span class="p">:</span>
@@ -725,11 +757,15 @@
                 <span class="n">grid_data</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">itime</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="p">(</span><span class="n">grid_data</span><span class="p">)</span>
                 <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">output</span></div></div>
+        <span class="k">return</span> <span class="n">output</span></div>
+</div>
 
 
-<div class="viewcode-block" id="LiveOceanInterpolator"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.LiveOceanInterpolator">[docs]</a><span class="k">class</span> <span class="nc">LiveOceanInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LiveOceanInterpolator">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.LiveOceanInterpolator">[docs]</a>
+<span class="k">class</span> <span class="nc">LiveOceanInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpolates LiveOcean (ROMS) model data on 3D fields</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.LiveOceanInterpolator.__init__&quot;</span><span class="p">)</span>
@@ -747,22 +783,28 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">timesearch_obj</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFTimeSearch</span><span class="p">(</span><span class="n">ncfile_pattern</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFTimeParser</span><span class="p">,</span> <span class="n">time_variable_name</span><span class="o">=</span><span class="s1">&#39;ocean_time&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">LinearTimeInterpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timesearch_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">)</span>
 
-<div class="viewcode-block" id="LiveOceanInterpolator.set_fields"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.LiveOceanInterpolator.set_fields">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.LiveOceanInterpolator.set_fields&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="LiveOceanInterpolator.set_fields">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.LiveOceanInterpolator.set_fields">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.LiveOceanInterpolator.set_fields&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluates forcing fields at the given time</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
+</div>
 
 
-<div class="viewcode-block" id="GenericSpatialInterpolator2D"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.GenericSpatialInterpolator2D">[docs]</a><span class="k">class</span> <span class="nc">GenericSpatialInterpolator2D</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">SpatialInterpolator2d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GenericSpatialInterpolator2D">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.GenericSpatialInterpolator2D">[docs]</a>
+<span class="k">class</span> <span class="nc">GenericSpatialInterpolator2D</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">SpatialInterpolator2d</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Spatial interpolator class for interpolating netCDF 2D fields.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">_get_nc_var_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncfile</span><span class="p">,</span> <span class="n">standard_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find netCDF variable name that matches CF standard_name.</span>
 
 <span class="sd">        Raises an AssertionError if standard_name is not found.</span>
@@ -780,7 +822,7 @@
         <span class="k">return</span> <span class="n">name</span>
 
     <span class="k">def</span> <span class="nf">_get_subset_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_x</span><span class="p">,</span> <span class="n">grid_y</span><span class="p">,</span> <span class="n">target_x</span><span class="p">,</span> <span class="n">target_y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns grid nodes that are necessary for intepolating onto target_x,y</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">orig_shape</span> <span class="o">=</span> <span class="n">grid_x</span><span class="o">.</span><span class="n">shape</span>
@@ -796,7 +838,7 @@
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GenericSpatialInterpolator2D._create_interpolator&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_create_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncfile</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create compact interpolator by finding the minimal necessary support</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lat_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nc_var_name</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span> <span class="s1">&#39;latitude&#39;</span><span class="p">)</span>
@@ -844,9 +886,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="GenericSpatialInterpolator2D.interpolate"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.GenericSpatialInterpolator2D.interpolate">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GenericSpatialInterpolator2D.interpolate&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="GenericSpatialInterpolator2D.interpolate">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.GenericSpatialInterpolator2D.interpolate">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GenericSpatialInterpolator2D.interpolate&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nc_filename</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">itime</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calls the interpolator object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">nc_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ncfile</span><span class="p">:</span>
@@ -858,11 +902,15 @@
                 <span class="n">grid_data</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">itime</span><span class="p">,</span> <span class="o">...</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_mask</span><span class="p">]</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="p">(</span><span class="n">grid_data</span><span class="p">)</span>
                 <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">output</span></div></div>
+        <span class="k">return</span> <span class="n">output</span></div>
+</div>
 
 
-<div class="viewcode-block" id="GenericInterpolator2D"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.GenericInterpolator2D">[docs]</a><span class="k">class</span> <span class="nc">GenericInterpolator2D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GenericInterpolator2D">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.GenericInterpolator2D">[docs]</a>
+<span class="k">class</span> <span class="nc">GenericInterpolator2D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpolates 2D fields from netCDF files.</span>
 
 <span class="sd">    The grid latitude, longitude coordinates must be defined in 1D arrays</span>
@@ -897,14 +945,15 @@
             <span class="n">lon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="o">.</span><span class="n">mesh_lonlat</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
             <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="o">.</span><span class="n">mesh_lonlat</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">vector_rotator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">VectorCoordSysRotation</span><span class="p">(</span>
-                    <span class="n">coordsys</span><span class="o">.</span><span class="n">LL_WGS84</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">get_vector_rotator</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">vector_rotator</span>
 
-<div class="viewcode-block" id="GenericInterpolator2D.set_fields"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.GenericInterpolator2D.set_fields">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GenericInterpolator2D.set_fields&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="GenericInterpolator2D.set_fields">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.GenericInterpolator2D.set_fields">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GenericInterpolator2D.set_fields&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluates forcing fields at the given time</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
@@ -922,16 +971,19 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">vector_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">vector_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_index</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
+</div>
 
 
-<div class="viewcode-block" id="TidalBoundaryForcing"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.TidalBoundaryForcing">[docs]</a><span class="k">class</span> <span class="nc">TidalBoundaryForcing</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for tidal boundary interpolators.&quot;&quot;&quot;</span>
-    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
+
+<div class="viewcode-block" id="TidalBoundaryForcing">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.TidalBoundaryForcing">[docs]</a>
+<span class="k">class</span> <span class="nc">TidalBoundaryForcing</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for tidal boundary interpolators.&quot;&quot;&quot;</span>
 
     <span class="nd">@abstractproperty</span>
     <span class="k">def</span> <span class="nf">coord_layout</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Data layout in the netcdf files.</span>
 
 <span class="sd">        Either &#39;lon,lat&#39; or &#39;lat,lon&#39;.</span>
@@ -940,17 +992,17 @@
 
     <span class="nd">@abstractproperty</span>
     <span class="k">def</span> <span class="nf">compute_velocity</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;If True, compute tidal currents as well.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If True, compute tidal currents as well.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.TidalBoundaryForcing.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elev_field</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span> <span class="n">vect_rotator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">uv_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">constituents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">boundary_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">data_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg elev_field: Function where tidal elevation will be interpolated.</span>
 <span class="sd">        :arg init_date: Datetime object defining the simulation init time.</span>
-<span class="sd">        :arg coord_system: the local mesh coordinate system</span>
+<span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
 <span class="sd">        :kwarg vect_rotator: User-defined vector rotator function</span>
 <span class="sd">        :kwarg uv_field: Function where tidal transport will be interpolated.</span>
 <span class="sd">        :kwarg constituents: list of tidal constituents, e.g. [&#39;M2&#39;, &#39;K1&#39;]</span>
@@ -997,7 +1049,7 @@
             <span class="n">fsy</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span>
             <span class="n">coords</span> <span class="o">=</span> <span class="p">(</span><span class="n">fsx</span><span class="p">,</span> <span class="n">fsy</span><span class="p">)</span>
 
-        <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">to_latlon</span><span class="p">(</span><span class="n">coord_system</span><span class="p">,</span> <span class="o">*</span><span class="n">coords</span><span class="p">,</span> <span class="n">positive_lon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">to_lonlat</span><span class="p">(</span><span class="o">*</span><span class="n">coords</span><span class="p">,</span> <span class="n">positive_lon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latlon</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty_set</span><span class="p">:</span>
@@ -1017,17 +1069,18 @@
                 <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlon</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
                 <span class="n">lon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlon</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">vect_rotator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">coordsys</span><span class="o">.</span><span class="n">VectorCoordSysRotation</span><span class="p">(</span>
-                        <span class="n">coordsys</span><span class="o">.</span><span class="n">LL_WGS84</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">get_vector_rotator</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">vect_rotator</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_create_readers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create uptide netcdf reader objects.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create uptide netcdf reader objects.&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-<div class="viewcode-block" id="TidalBoundaryForcing.set_tidal_field"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.TidalBoundaryForcing.set_tidal_field">[docs]</a>    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.TidalBoundaryForcing.set_tidal_field&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TidalBoundaryForcing.set_tidal_field">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.TidalBoundaryForcing.set_tidal_field">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.TidalBoundaryForcing.set_tidal_field&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">set_tidal_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
         <span class="n">elev_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elev_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_velocity</span><span class="p">:</span>
@@ -1059,11 +1112,15 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_velocity</span><span class="p">:</span>
             <span class="n">uv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span><span class="p">(</span><span class="n">lon_vel</span><span class="p">,</span> <span class="n">lat_vel</span><span class="p">)</span>
             <span class="n">uv_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">uv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">uv_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">uv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div></div>
+            <span class="n">uv_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">uv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+</div>
 
 
-<div class="viewcode-block" id="TPXOTidalBoundaryForcing"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.TPXOTidalBoundaryForcing">[docs]</a><span class="k">class</span> <span class="nc">TPXOTidalBoundaryForcing</span><span class="p">(</span><span class="n">TidalBoundaryForcing</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TPXOTidalBoundaryForcing">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.TPXOTidalBoundaryForcing">[docs]</a>
+<span class="k">class</span> <span class="nc">TPXOTidalBoundaryForcing</span><span class="p">(</span><span class="n">TidalBoundaryForcing</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpolator for TPXO global tidal model data.</span>
 
 <span class="sd">    See the `TPXO website &lt;https://www.tpxo.net/global/tpxo9-atlas&gt;`_ for data</span>
@@ -1079,10 +1136,10 @@
                  <span class="n">vect_rotator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uv_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">constituents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">boundary_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elev_file</span><span class="o">=</span><span class="s1">&#39;h_tpxo9.v5a.nc&#39;</span><span class="p">,</span>
                  <span class="n">uv_file</span><span class="o">=</span><span class="s1">&#39;u_tpxo9.v5a.nc&#39;</span><span class="p">,</span> <span class="n">grid_file</span><span class="o">=</span><span class="s1">&#39;gridtpxo9v5a.nc&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg elev_field: Function where tidal elevation will be interpolated.</span>
 <span class="sd">        :arg init_date: Datetime object defining the simulation init time.</span>
-<span class="sd">        :arg coord_system: the local mesh coordinate system</span>
+<span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
 <span class="sd">        :kwarg vect_rotator: User-defined vector rotator function</span>
 <span class="sd">        :kwarg uv_field: Function where tidal transport will be interpolated.</span>
 <span class="sd">        :kwarg constituents: list of tidal constituents, e.g. [&#39;M2&#39;, &#39;K1&#39;]</span>
@@ -1108,7 +1165,7 @@
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.TPXOTidalBoundaryForcing._create_readers&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_create_readers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create uptide netcdf reader objects.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create uptide netcdf reader objects.&quot;&quot;&quot;</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;File </span><span class="si">{:}</span><span class="s1"> not found.&#39;</span>
         <span class="n">f_grid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_nc_file</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f_grid</span><span class="p">),</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f_grid</span><span class="p">)</span>
@@ -1122,8 +1179,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">tnciv</span> <span class="o">=</span> <span class="n">uptide</span><span class="o">.</span><span class="n">tidal_netcdf</span><span class="o">.</span><span class="n">OTPSncTidalComponentInterpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tide</span><span class="p">,</span> <span class="n">f_grid</span><span class="p">,</span> <span class="n">f_uv</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ranges</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="FES2004TidalBoundaryForcing"><a class="viewcode-back" href="../../thetis.html#thetis.forcing.FES2004TidalBoundaryForcing">[docs]</a><span class="k">class</span> <span class="nc">FES2004TidalBoundaryForcing</span><span class="p">(</span><span class="n">TidalBoundaryForcing</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Tidal boundary interpolator for FES2004 tidal model.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FES2004TidalBoundaryForcing">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.FES2004TidalBoundaryForcing">[docs]</a>
+<span class="k">class</span> <span class="nc">FES2004TidalBoundaryForcing</span><span class="p">(</span><span class="n">TidalBoundaryForcing</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tidal boundary interpolator for FES2004 tidal model.&quot;&quot;&quot;</span>
     <span class="n">elev_nc_file</span> <span class="o">=</span> <span class="s1">&#39;tide.fes2004.nc&#39;</span>
     <span class="n">uv_nc_file</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">grid_nc_file</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1132,11 +1192,12 @@
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FES2004TidalBoundaryForcing._create_readers&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_create_readers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create uptide netcdf reader objects.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create uptide netcdf reader objects.&quot;&quot;&quot;</span>
         <span class="n">f_elev</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elev_nc_file</span><span class="p">)</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;File </span><span class="si">{:}</span><span class="s1"> not found, download it from </span><span class="se">\n</span><span class="s1">ftp://ftp.legos.obs-mip.fr/pub/soa/maree/tide_model/global_solution/fes2004/&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f_elev</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f_elev</span><span class="p">),</span> <span class="n">msg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tnci</span> <span class="o">=</span> <span class="n">uptide</span><span class="o">.</span><span class="n">tidal_netcdf</span><span class="o">.</span><span class="n">FESTidalInterpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tide</span><span class="p">,</span> <span class="n">f_elev</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ranges</span><span class="p">)</span></div>
+
 </pre></div>
 
             <div class="clearer"></div>
@@ -1147,8 +1208,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2022, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2016-2023, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     </div>
   </body>
 </html>

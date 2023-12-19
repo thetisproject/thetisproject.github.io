@@ -1,17 +1,15 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.assembledschur &#8212; Thetis 0+untagged.2009.gd7af522 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
+    <title>thetis.assembledschur &#8212; Thetis 0+untagged.2009.gb75eefa documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
+    <script src="../../_static/documentation_options.js?v=47a7fef3"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <!--[if lte IE 6]>
@@ -55,7 +53,9 @@
 <span class="kn">from</span> <span class="nn">petsc4py</span> <span class="kn">import</span> <span class="n">PETSc</span>
 
 
-<div class="viewcode-block" id="AssembledSchurPC"><a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC">[docs]</a><span class="k">class</span> <span class="nc">AssembledSchurPC</span><span class="p">(</span><span class="n">PCBase</span><span class="p">):</span>
+<div class="viewcode-block" id="AssembledSchurPC">
+<a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC">[docs]</a>
+<span class="k">class</span> <span class="nc">AssembledSchurPC</span><span class="p">(</span><span class="n">PCBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Preconditioner for the Schur complement</span>
 
@@ -74,7 +74,9 @@
 <span class="sd">        block. This gives the exact inverse of the mass matrix for a DG</span>
 <span class="sd">        discretisation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="AssembledSchurPC.initialize"><a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">):</span>
+<div class="viewcode-block" id="AssembledSchurPC.initialize">
+<a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.initialize">[docs]</a>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">):</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">getOperators</span><span class="p">()</span>
         <span class="n">ctx</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">getPythonContext</span><span class="p">()</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">appctx</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>
@@ -103,7 +105,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">setFromOptions</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AssembledSchurPC.update"><a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">):</span>
+
+<div class="viewcode-block" id="AssembledSchurPC.update">
+<a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.update">[docs]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">A01</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a01</span><span class="p">,</span> <span class="n">tensor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">A01</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">A10</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a10</span><span class="p">,</span> <span class="n">tensor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">A10</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">A11</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a11</span><span class="p">,</span> <span class="n">tensor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">A11</span><span class="p">)</span>
@@ -121,13 +126,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">schur_plus</span><span class="o">.</span><span class="n">aypx</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">A11</span><span class="p">,</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Mat</span><span class="o">.</span><span class="n">Structure</span><span class="o">.</span><span class="n">SAME_NONZERO_PATTERN</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">setOperators</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schur_plus</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AssembledSchurPC.apply"><a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+
+<div class="viewcode-block" id="AssembledSchurPC.apply">
+<a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.apply">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
         <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">getConvergedReason</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;LinearSolver failed to converge after </span><span class="si">%d</span><span class="s2"> iterations with reason: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">getIterationNumber</span><span class="p">(),</span> <span class="n">solving_utils</span><span class="o">.</span><span class="n">KSPReasons</span><span class="p">[</span><span class="n">r</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="AssembledSchurPC.view"><a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.view">[docs]</a>    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">viewer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="AssembledSchurPC.view">
+<a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.view">[docs]</a>
+    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">viewer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">AssembledSchurPC</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">viewer</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">viewer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
@@ -138,8 +149,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">viewer</span><span class="p">)</span>
         <span class="n">viewer</span><span class="o">.</span><span class="n">popASCIITab</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="AssembledSchurPC.applyTranspose"><a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.applyTranspose">[docs]</a>    <span class="k">def</span> <span class="nf">applyTranspose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;applyTranspose not implemented for AssembledSchurPC&quot;</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="AssembledSchurPC.applyTranspose">
+<a class="viewcode-back" href="../../thetis.html#thetis.assembledschur.AssembledSchurPC.applyTranspose">[docs]</a>
+    <span class="k">def</span> <span class="nf">applyTranspose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;applyTranspose not implemented for AssembledSchurPC&quot;</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
             <div class="clearer"></div>
@@ -150,8 +166,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2023, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    &#169; Copyright 2016-2023, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     </div>
   </body>
 </html>
