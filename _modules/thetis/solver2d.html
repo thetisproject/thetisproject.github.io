@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.solver2d &#8212; Thetis 0+untagged.2009.gb75eefa documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <title>thetis.solver2d &#8212; Thetis 0+untagged.2057.gbb0d01b.dirty documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=47a7fef3"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/documentation_options.js?v=05ff3d8c"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -52,33 +52,33 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Module for 2D depth averaged solver</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">shallowwater_eq</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">timeintegrator</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rungekutta</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">implicitexplicit</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">coupled_timeintegrator_2d</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">tracer_eq_2d</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">sediment_eq_2d</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">exner_eq</span>
-<span class="kn">import</span> <span class="nn">weakref</span>
-<span class="kn">import</span> <span class="nn">time</span> <span class="k">as</span> <span class="nn">time_mod</span>
-<span class="kn">from</span> <span class="nn">mpi4py</span> <span class="kn">import</span> <span class="n">MPI</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">exporter</span>
-<span class="kn">from</span> <span class="nn">.turbines</span> <span class="kn">import</span> <span class="n">TidalTurbineFarm</span><span class="p">,</span> <span class="n">DiscreteTidalTurbineFarm</span>
-<span class="kn">from</span> <span class="nn">.field_defs</span> <span class="kn">import</span> <span class="n">field_metadata</span>
-<span class="kn">from</span> <span class="nn">.options</span> <span class="kn">import</span> <span class="n">ModelOptions2d</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">callback</span>
-<span class="kn">from</span> <span class="nn">.log</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">import</span> <span class="nn">thetis.limiter</span> <span class="k">as</span> <span class="nn">limiter</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utility</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">shallowwater_eq</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeintegrator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">rungekutta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">implicitexplicit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">coupled_timeintegrator_2d</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">tracer_eq_2d</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">sediment_eq_2d</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">exner_eq</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">time_mod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">exporter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.turbines</span><span class="w"> </span><span class="kn">import</span> <span class="n">TidalTurbineFarm</span><span class="p">,</span> <span class="n">DiscreteTidalTurbineFarm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.field_defs</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_metadata</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.options</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelOptions2d</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">callback</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.log</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">thetis.limiter</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">limiter</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 
 
 <div class="viewcode-block" id="FlowSolver2d">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d">[docs]</a>
-<span class="k">class</span> <span class="nc">FlowSolver2d</span><span class="p">(</span><span class="n">FrozenClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlowSolver2d</span><span class="p">(</span><span class="n">FrozenClass</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main object for 2D depth averaged solver</span>
 
@@ -131,7 +131,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@unfrozen</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.__init__&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh2d</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh2d</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg mesh2d: :class:`Mesh` object of the 2D mesh</span>
 <span class="sd">        :arg bathymetry_2d: Bathymetry of the domain. Bathymetry stands for</span>
@@ -202,7 +202,7 @@
 <div class="viewcode-block" id="FlowSolver2d.compute_time_step">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.compute_time_step">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.compute_time_step&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">compute_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_scale</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_scale</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes maximum explicit time step from CFL condition.</span>
 
@@ -235,7 +235,7 @@
 <div class="viewcode-block" id="FlowSolver2d.compute_mesh_stats">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.compute_mesh_stats">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.compute_mesh_stats&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">compute_mesh_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_mesh_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes number of elements, nodes etc and prints to sdtout</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -272,7 +272,7 @@
 <div class="viewcode-block" id="FlowSolver2d.set_time_step">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.set_time_step">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.set_time_step&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">set_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the model the model time step</span>
 
@@ -312,7 +312,7 @@
 <div class="viewcode-block" id="FlowSolver2d.set_wetting_and_drying_alpha">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.set_wetting_and_drying_alpha">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.set_wetting_and_drying_alpha&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">set_wetting_and_drying_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_wetting_and_drying_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute a wetting and drying parameter :math:`\alpha` which ensures positive water</span>
 <span class="sd">        depth using the approximate method suggested by Karna et al. (2011).</span>
@@ -371,7 +371,7 @@
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_function_spaces">[docs]</a>
     <span class="nd">@unfrozen</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.create_function_spaces&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">create_function_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_function_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates function spaces</span>
 
@@ -422,7 +422,7 @@
 <div class="viewcode-block" id="FlowSolver2d.add_new_field">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.add_new_field">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.add_new_field&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">add_new_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">shortname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">preproc_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_new_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">shortname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">preproc_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a field to :attr:`fields`.</span>
 
@@ -459,7 +459,7 @@
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_fields">[docs]</a>
     <span class="nd">@unfrozen</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.create_fields&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">create_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates field Functions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -526,7 +526,7 @@
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_equations">[docs]</a>
     <span class="nd">@unfrozen</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.create_equations&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">create_equations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_equations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates equation instances</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -539,13 +539,24 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">tidal_farms</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U_2d</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
             <span class="n">quad_degree</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">subdomain</span><span class="p">,</span> <span class="n">farm_options</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">tidal_turbine_farms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">fdx</span> <span class="o">=</span> <span class="n">dx</span><span class="p">(</span><span class="n">subdomain</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">quad_degree</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">tidal_farms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TidalTurbineFarm</span><span class="p">(</span><span class="n">farm_options</span><span class="o">.</span><span class="n">turbine_density</span><span class="p">,</span>
-                                                         <span class="n">fdx</span><span class="p">,</span> <span class="n">farm_options</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">subdomain</span><span class="p">,</span> <span class="n">farm_options</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">discrete_tidal_turbine_farms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">fdx</span> <span class="o">=</span> <span class="n">dx</span><span class="p">(</span><span class="n">subdomain</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">farm_options</span><span class="o">.</span><span class="n">quadrature_degree</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">tidal_farms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DiscreteTidalTurbineFarm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">fdx</span><span class="p">,</span> <span class="n">farm_options</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">subdomain</span><span class="p">,</span> <span class="n">farm_options_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">tidal_turbine_farms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">farm_options_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Farm options must be entered as a list e.g. &quot;</span> \
+                                <span class="s2">&quot;solver2d.FlowSolver2d(mesh2d, bathymetry_2d).options.discrete_tidal_turbine_farms[site_ID] = &quot;</span> \
+                                <span class="s2">&quot;[farm_options]&quot;</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">farm_options</span> <span class="ow">in</span> <span class="n">farm_options_list</span><span class="p">:</span>
+                    <span class="n">fdx</span> <span class="o">=</span> <span class="n">dx</span><span class="p">(</span><span class="n">subdomain</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">quad_degree</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tidal_farms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TidalTurbineFarm</span><span class="p">(</span><span class="n">farm_options</span><span class="o">.</span><span class="n">turbine_density</span><span class="p">,</span> <span class="n">fdx</span><span class="p">,</span> <span class="n">farm_options</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">subdomain</span><span class="p">,</span> <span class="n">farm_options_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">discrete_tidal_turbine_farms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">farm_options_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Farm options must be entered as a list e.g. &quot;</span> \
+                                <span class="s2">&quot;solver2d.FlowSolver2d(mesh2d, bathymetry_2d).options.discrete_tidal_turbine_farms[site_ID] = &quot;</span> \
+                                <span class="s2">&quot;[farm_options]&quot;</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">farm_options</span> <span class="ow">in</span> <span class="n">farm_options_list</span><span class="p">:</span>
+                    <span class="n">fdx</span> <span class="o">=</span> <span class="n">dx</span><span class="p">(</span><span class="n">subdomain</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">farm_options</span><span class="o">.</span><span class="n">quadrature_degree</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tidal_farms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DiscreteTidalTurbineFarm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">fdx</span><span class="p">,</span> <span class="n">farm_options</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tidal_farms</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Shallow water equations for hydrodynamic modelling</span>
@@ -607,7 +618,7 @@
 <div class="viewcode-block" id="FlowSolver2d.get_swe_timestepper">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.get_swe_timestepper">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.get_swe_timestepper&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_swe_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">integrator</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_swe_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">integrator</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets shallow water timestepper object with appropriate parameters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -644,7 +655,7 @@
 <div class="viewcode-block" id="FlowSolver2d.get_tracer_timestepper">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.get_tracer_timestepper">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.get_tracer_timestepper&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_tracer_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">integrator</span><span class="p">,</span> <span class="n">system</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tracer_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">integrator</span><span class="p">,</span> <span class="n">system</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets tracer timestepper object with appropriate parameters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -672,7 +683,7 @@
 <div class="viewcode-block" id="FlowSolver2d.get_sediment_timestepper">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.get_sediment_timestepper">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.get_sediment_timestepper&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_sediment_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">integrator</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_sediment_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">integrator</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets sediment timestepper object with appropriate parameters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -692,7 +703,7 @@
 <div class="viewcode-block" id="FlowSolver2d.get_exner_timestepper">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.get_exner_timestepper">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.get_exner_timestepper&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_exner_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">integrator</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_exner_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">integrator</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets exner timestepper object with appropriate parameters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -714,7 +725,7 @@
 <div class="viewcode-block" id="FlowSolver2d.get_fs_timestepper">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.get_fs_timestepper">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.get_fs_timestepper&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_fs_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">integrator</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_fs_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">integrator</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets free-surface correction timestepper object with appropriate parameters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -731,7 +742,7 @@
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_timestepper">[docs]</a>
     <span class="nd">@unfrozen</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.create_timestepper&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">create_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_timestepper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates time stepper instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -787,7 +798,7 @@
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_exporters">[docs]</a>
     <span class="nd">@unfrozen</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.create_exporters&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">create_exporters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_exporters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates file exporters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -816,7 +827,7 @@
 
 <div class="viewcode-block" id="FlowSolver2d.initialize">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.initialize">[docs]</a>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates function spaces, equations, time stepper and exporters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -834,7 +845,7 @@
 <div class="viewcode-block" id="FlowSolver2d.assign_initial_conditions">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.assign_initial_conditions">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.assign_initial_conditions&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">assign_initial_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sediment</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">tracers</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">assign_initial_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sediment</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">tracers</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assigns initial conditions</span>
 
@@ -878,7 +889,7 @@
 <div class="viewcode-block" id="FlowSolver2d.add_callback">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.add_callback">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.add_callback&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">eval_interval</span><span class="o">=</span><span class="s1">&#39;export&#39;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">eval_interval</span><span class="o">=</span><span class="s1">&#39;export&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds callback to solver object</span>
 
@@ -893,7 +904,7 @@
 <div class="viewcode-block" id="FlowSolver2d.export">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.export">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.export&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Export all fields to disk</span>
 
@@ -907,7 +918,7 @@
 <div class="viewcode-block" id="FlowSolver2d.load_state">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.load_state">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.load_state&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">load_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stored</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iteration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_stored</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iteration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">i_export</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">legacy_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads simulation state from hdf5 outputs.</span>
@@ -995,7 +1006,7 @@
 
 <div class="viewcode-block" id="FlowSolver2d.print_state">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.print_state">[docs]</a>
-    <span class="k">def</span> <span class="nf">print_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cputime</span><span class="p">,</span> <span class="n">print_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">print_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cputime</span><span class="p">,</span> <span class="n">print_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print a summary of the model state on stdout</span>
 
@@ -1049,7 +1060,7 @@
 <div class="viewcode-block" id="FlowSolver2d.iterate">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.iterate">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.iterate&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">export_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs the simulation</span>
@@ -1181,8 +1192,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2016-2023, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    &#169; Copyright 2016-2025, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>3D tidal channel demo &#8212; Thetis 0+untagged.2009.gb75eefa documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <title>3D tidal channel demo &#8212; Thetis 0+untagged.2054.ge07ddf2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/thetis.css?v=0f3339d6" />
-    <script src="../_static/documentation_options.js?v=47a7fef3"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/documentation_options.js?v=70f0a730"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -56,7 +56,7 @@
 bathymetry. We also add a constant, passive salinity tracer to demonstrate local
 tracer conservation. This simulation uses the ALE moving mesh.</p>
 <p>We begin by defining the 2D mesh as before:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">thetis</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">thetis</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">lx</span> <span class="o">=</span> <span class="mf">100e3</span>
 <span class="n">ly</span> <span class="o">=</span> <span class="mf">6e3</span>
@@ -141,11 +141,11 @@ both boundaries:</p>
 <span class="n">t_ramp</span> <span class="o">=</span> <span class="mi">6</span><span class="o">*</span><span class="mf">3600.0</span>  <span class="c1"># use linear ramp up for boundary forcings</span>
 
 
-<span class="k">def</span> <span class="nf">ocean_flux_func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ocean_flux_func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">flux_amp</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">t_tide</span><span class="p">)</span> <span class="o">-</span> <span class="n">flux_river</span><span class="p">)</span><span class="o">*</span><span class="nb">min</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">t_ramp</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">river_flux_func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">river_flux_func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">flux_river</span><span class="o">*</span><span class="nb">min</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">t_ramp</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -186,14 +186,14 @@ assumed to be impermeable land boundaries.</p>
 <p>We now need to define the callback functions that update all time dependent
 forcing fields. As the 2D and 3D modes may be treated separately in the time
 integrator we create a different call back for the two modes:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">update_forcings_2d</span><span class="p">(</span><span class="n">t_new</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">update_forcings_2d</span><span class="p">(</span><span class="n">t_new</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback function that updates all time dependent forcing fields</span>
 <span class="sd">    for the 2D mode&quot;&quot;&quot;</span>
     <span class="n">ocean_flux</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">ocean_flux_func</span><span class="p">(</span><span class="n">t_new</span><span class="p">))</span>
     <span class="n">river_flux</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">river_flux_func</span><span class="p">(</span><span class="n">t_new</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">update_forcings_3d</span><span class="p">(</span><span class="n">t_new</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_forcings_3d</span><span class="p">(</span><span class="n">t_new</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback function that updates all time dependent forcing fields</span>
 <span class="sd">    for the 3D mode&quot;&quot;&quot;</span>
     <span class="k">pass</span>
@@ -236,8 +236,8 @@ horizontal velocity field (3D velocity minus its vertical average).</p>
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2016-2023, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    &#169; Copyright 2016-2025, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.turbines &#8212; Thetis 0+untagged.2009.gb75eefa documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <title>thetis.turbines &#8212; Thetis 0+untagged.2057.gbb0d01b.dirty documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=47a7fef3"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/documentation_options.js?v=05ff3d8c"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -52,25 +52,27 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Classes related to tidal turbine farms in Thetis.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">firedrake</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">firedrake.petsc</span> <span class="kn">import</span> <span class="n">PETSc</span>
-<span class="kn">from</span> <span class="nn">.log</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.callback</span> <span class="kn">import</span> <span class="n">DiagnosticCallback</span>
-<span class="kn">from</span> <span class="nn">.optimisation</span> <span class="kn">import</span> <span class="n">DiagnosticOptimisationCallback</span>
-<span class="kn">import</span> <span class="nn">pyadjoint</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">firedrake</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">firedrake.petsc</span><span class="w"> </span><span class="kn">import</span> <span class="n">PETSc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.log</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.callback</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiagnosticCallback</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.physical_constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">physical_constants</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.optimisation</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiagnosticOptimisationCallback</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyadjoint</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 
 <div class="viewcode-block" id="TidalTurbine">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TidalTurbine">[docs]</a>
-<span class="k">class</span> <span class="nc">TidalTurbine</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">upwind_correction</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TidalTurbine</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">upwind_correction</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">diameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projected_diameter</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">projected_diameter</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">C_support</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">C_support</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">A_support</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">A_support</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">upwind_correction</span> <span class="o">=</span> <span class="n">upwind_correction</span>
 
-    <span class="k">def</span> <span class="nf">_thrust_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_thrust_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">):</span>
         <span class="n">C_T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thrust_coefficient</span><span class="p">(</span><span class="n">uv</span><span class="p">)</span>
         <span class="n">A_T</span> <span class="o">=</span> <span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">4</span>
         <span class="n">fric</span> <span class="o">=</span> <span class="n">C_T</span> <span class="o">*</span> <span class="n">A_T</span>
@@ -80,17 +82,17 @@
 
 <div class="viewcode-block" id="TidalTurbine.velocity_correction">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TidalTurbine.velocity_correction">[docs]</a>
-    <span class="k">def</span> <span class="nf">velocity_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">velocity_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
         <span class="n">fric</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thrust_area</span><span class="p">(</span><span class="n">uv</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">upwind_correction</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">fric</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diameter</span><span class="o">*</span><span class="n">depth</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">fric</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projected_diameter</span><span class="o">*</span><span class="n">depth</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">1</span></div>
 
 
 <div class="viewcode-block" id="TidalTurbine.friction_coefficient">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TidalTurbine.friction_coefficient">[docs]</a>
-    <span class="k">def</span> <span class="nf">friction_coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">friction_coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
         <span class="n">thrust_area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thrust_area</span><span class="p">(</span><span class="n">uv</span><span class="p">)</span>
         <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity_correction</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">thrust_area</span><span class="o">/</span><span class="mf">2.</span><span class="o">/</span><span class="n">alpha</span><span class="o">**</span><span class="mi">2</span></div>
@@ -98,36 +100,43 @@
 
 <div class="viewcode-block" id="TidalTurbine.power">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TidalTurbine.power">[docs]</a>
-    <span class="k">def</span> <span class="nf">power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
         <span class="c1"># ratio of discrete to upstream velocity (NOTE: should include support drag!)</span>
         <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity_correction</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>
-        <span class="n">A_T</span> <span class="o">=</span> <span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">4</span>
+        <span class="n">A_T</span> <span class="o">=</span> <span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">4</span>  <span class="c1"># power is based on true turbine diameter</span>
         <span class="n">uv3</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="n">uv</span><span class="p">)</span><span class="o">**</span><span class="mf">1.5</span> <span class="o">/</span> <span class="n">alpha</span><span class="o">**</span><span class="mi">3</span>  <span class="c1"># upwind cubed velocity</span>
-        <span class="n">C_T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thrust_coefficient</span><span class="p">(</span><span class="n">uv3</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">))</span>
+        <span class="n">C_P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">power_coefficient</span><span class="p">(</span><span class="n">uv3</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">))</span>
         <span class="c1"># this assumes the velocity through the turbine does not change due to the support (is this correct?)</span>
-        <span class="k">return</span> <span class="mf">0.25</span><span class="o">*</span><span class="n">C_T</span><span class="o">*</span><span class="n">A_T</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">C_T</span><span class="p">))</span><span class="o">*</span><span class="n">uv3</span></div>
+        <span class="k">return</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;rho0&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">A_T</span><span class="o">*</span><span class="n">C_P</span><span class="o">*</span><span class="n">uv3</span>  <span class="c1"># units: W</span></div>
 </div>
 
 
 
 <div class="viewcode-block" id="ConstantThrustTurbine">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.ConstantThrustTurbine">[docs]</a>
-<span class="k">class</span> <span class="nc">ConstantThrustTurbine</span><span class="p">(</span><span class="n">TidalTurbine</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">upwind_correction</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConstantThrustTurbine</span><span class="p">(</span><span class="n">TidalTurbine</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">upwind_correction</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">upwind_correction</span><span class="o">=</span><span class="n">upwind_correction</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">C_T</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">thrust_coefficient</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_P</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">power_coefficient</span> <span class="ow">or</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_T</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_T</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ConstantThrustTurbine.thrust_coefficient">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.ConstantThrustTurbine.thrust_coefficient">[docs]</a>
-    <span class="k">def</span> <span class="nf">thrust_coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">thrust_coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_T</span></div>
+
+
+<div class="viewcode-block" id="ConstantThrustTurbine.power_coefficient">
+<a class="viewcode-back" href="../../thetis.html#thetis.turbines.ConstantThrustTurbine.power_coefficient">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">power_coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_P</span></div>
 </div>
 
 
 
 <div class="viewcode-block" id="linearly_interpolate_table">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.linearly_interpolate_table">[docs]</a>
-<span class="k">def</span> <span class="nf">linearly_interpolate_table</span><span class="p">(</span><span class="n">x_list</span><span class="p">,</span> <span class="n">y_list</span><span class="p">,</span> <span class="n">y_final</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">linearly_interpolate_table</span><span class="p">(</span><span class="n">x_list</span><span class="p">,</span> <span class="n">y_list</span><span class="p">,</span> <span class="n">y_final</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return UFL expression that linearly interpolates between y-values in x-points</span>
 
 <span class="sd">    :param x_list: (1D) x-points</span>
@@ -149,27 +158,37 @@
 
 <div class="viewcode-block" id="TabulatedThrustTurbine">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TabulatedThrustTurbine">[docs]</a>
-<span class="k">class</span> <span class="nc">TabulatedThrustTurbine</span><span class="p">(</span><span class="n">TidalTurbine</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">upwind_correction</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TabulatedThrustTurbine</span><span class="p">(</span><span class="n">TidalTurbine</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">upwind_correction</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">upwind_correction</span><span class="o">=</span><span class="n">upwind_correction</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">C_T</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">thrust_coefficients</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_P</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">power_coefficients</span> <span class="ow">or</span> <span class="p">[</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">c_t</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">c_t</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span> <span class="k">for</span> <span class="n">c_t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_T</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">speeds</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">thrust_speeds</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_T</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speeds</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;In tabulated thrust curve the number of thrust coefficients and speed values should be the same.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_P</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speeds</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;In tabulated thrust curve the number of power coefficients and speed values should be the same.&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TabulatedThrustTurbine.thrust_coefficient">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TabulatedThrustTurbine.thrust_coefficient">[docs]</a>
-    <span class="k">def</span> <span class="nf">thrust_coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">thrust_coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">):</span>
         <span class="n">umag</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="n">uv</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span>
         <span class="k">return</span> <span class="n">conditional</span><span class="p">(</span><span class="n">umag</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">speeds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">linearly_interpolate_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speeds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_T</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">umag</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="TabulatedThrustTurbine.power_coefficient">
+<a class="viewcode-back" href="../../thetis.html#thetis.turbines.TabulatedThrustTurbine.power_coefficient">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">power_coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">):</span>
+        <span class="n">umag</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="n">uv</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+        <span class="k">return</span> <span class="n">conditional</span><span class="p">(</span><span class="n">umag</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">speeds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">linearly_interpolate_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speeds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_P</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">umag</span><span class="p">))</span></div>
 </div>
 
 
 
 <div class="viewcode-block" id="TidalTurbineFarm">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TidalTurbineFarm">[docs]</a>
-<span class="k">class</span> <span class="nc">TidalTurbineFarm</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turbine_density</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TidalTurbineFarm</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turbine_density</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg turbine_density: turbine distribution density field or expression</span>
 <span class="sd">        :arg dx: measure to integrate power output, n/o turbines</span>
@@ -186,19 +205,19 @@
 
 <div class="viewcode-block" id="TidalTurbineFarm.number_of_turbines">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TidalTurbineFarm.number_of_turbines">[docs]</a>
-    <span class="k">def</span> <span class="nf">number_of_turbines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">number_of_turbines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">turbine_density</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TidalTurbineFarm.power_output">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TidalTurbineFarm.power_output">[docs]</a>
-    <span class="k">def</span> <span class="nf">power_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">power_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">turbine</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">turbine_density</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TidalTurbineFarm.friction_coefficient">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TidalTurbineFarm.friction_coefficient">[docs]</a>
-    <span class="k">def</span> <span class="nf">friction_coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">friction_coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">turbine</span><span class="o">.</span><span class="n">friction_coefficient</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span></div>
 </div>
 
@@ -206,12 +225,12 @@
 
 <div class="viewcode-block" id="DiscreteTidalTurbineFarm">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.DiscreteTidalTurbineFarm">[docs]</a>
-<span class="k">class</span> <span class="nc">DiscreteTidalTurbineFarm</span><span class="p">(</span><span class="n">TidalTurbineFarm</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DiscreteTidalTurbineFarm</span><span class="p">(</span><span class="n">TidalTurbineFarm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class that can be used for the addition of turbines in the turbine density field</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg mesh: mesh domain</span>
 <span class="sd">        :arg dx: measure to integrate power output, n/o turbines</span>
@@ -228,7 +247,7 @@
 
 <div class="viewcode-block" id="DiscreteTidalTurbineFarm.add_turbines">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.DiscreteTidalTurbineFarm.add_turbines">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_turbines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_turbines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param coords: Array with turbine coordinates to be positioned</span>
 <span class="sd">        :param function: turbine density function to be adapted</span>
@@ -238,7 +257,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">SpatialCoordinate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
 
-        <span class="n">radius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">turbine</span><span class="o">.</span><span class="n">diameter</span> <span class="o">*</span> <span class="mf">0.5</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">turbine</span><span class="o">.</span><span class="n">projected_diameter</span> <span class="o">*</span> <span class="mf">0.5</span>
         <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="p">:</span>
             <span class="n">dx0</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">radius</span>
             <span class="n">dx1</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="n">radius</span>
@@ -254,7 +273,7 @@
 
 <div class="viewcode-block" id="TurbineFunctionalCallback">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineFunctionalCallback">[docs]</a>
-<span class="k">class</span> <span class="nc">TurbineFunctionalCallback</span><span class="p">(</span><span class="n">DiagnosticCallback</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TurbineFunctionalCallback</span><span class="p">(</span><span class="n">DiagnosticCallback</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :class:`.DiagnosticCallback` that evaluates the performance of each tidal turbine farm.&quot;&quot;&quot;</span>
 
@@ -262,7 +281,7 @@
     <span class="n">variable_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;current_power&#39;</span><span class="p">,</span> <span class="s1">&#39;average_power&#39;</span><span class="p">,</span> <span class="s1">&#39;average_profit&#39;</span><span class="p">]</span>
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.TurbineFunctionalCallback.__init__&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver_obj: a :class:`.FlowSolver2d` object containing the tidal_turbine_farms</span>
 <span class="sd">        :arg kwargs: see :class:`DiagnosticCallback`&quot;&quot;&quot;</span>
@@ -281,30 +300,32 @@
             <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Number of turbines = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">break_even_wattage</span> <span class="o">=</span> <span class="p">[</span><span class="n">farm</span><span class="o">.</span><span class="n">break_even_wattage</span> <span class="k">for</span> <span class="n">farm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">farms</span><span class="p">]</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">instantaneous_power</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">nfarms</span>
         <span class="c1"># time-integrated quantities:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">integrated_power</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">nfarms</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">average_power</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">nfarms</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">average_profit</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">nfarms</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_period</span> <span class="o">=</span> <span class="mf">0.</span>
 
-    <span class="k">def</span> <span class="nf">_evaluate_timestep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_evaluate_timestep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform time integration and return current power and time-averaged power and profit.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_period</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_period</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
         <span class="n">current_power</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">farm</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">farms</span><span class="p">):</span>
             <span class="n">power</span> <span class="o">=</span> <span class="n">farm</span><span class="o">.</span><span class="n">power_output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">)</span>
             <span class="n">current_power</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">power</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">instantaneous_power</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">power</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">integrated_power</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">power</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">average_power</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrated_power</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_period</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">average_profit</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">average_power</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">break_even_wattage</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">current_power</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">average_power</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">average_profit</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_timestep</span><span class="p">()</span>
 
 <div class="viewcode-block" id="TurbineFunctionalCallback.message_str">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineFunctionalCallback.message_str">[docs]</a>
-    <span class="k">def</span> <span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_power</span><span class="p">,</span> <span class="n">average_power</span><span class="p">,</span> <span class="n">average_profit</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_power</span><span class="p">,</span> <span class="n">average_power</span><span class="p">,</span> <span class="n">average_profit</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;Current power, average power and profit for each farm: </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_power</span><span class="p">,</span> <span class="n">average_power</span><span class="p">,</span> <span class="n">average_profit</span><span class="p">)</span></div>
 </div>
 
@@ -312,7 +333,7 @@
 
 <div class="viewcode-block" id="TurbineOptimisationCallback">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineOptimisationCallback">[docs]</a>
-<span class="k">class</span> <span class="nc">TurbineOptimisationCallback</span><span class="p">(</span><span class="n">DiagnosticOptimisationCallback</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TurbineOptimisationCallback</span><span class="p">(</span><span class="n">DiagnosticOptimisationCallback</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :class:`DiagnosticOptimisationCallback` that evaluates the performance of each tidal turbine farm during an optimisation.</span>
 
@@ -320,7 +341,7 @@
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;farm_optimisation&#39;</span>
     <span class="n">variable_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;cost&#39;</span><span class="p">,</span> <span class="s1">&#39;average_power&#39;</span><span class="p">,</span> <span class="s1">&#39;average_profit&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">turbine_functional_callback</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">turbine_functional_callback</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver_obj: a :class:`.FlowSolver2d` object</span>
 <span class="sd">        :arg turbine_functional_callback: a :class:`.TurbineFunctionalCallback` used in the forward model</span>
@@ -330,7 +351,7 @@
 
 <div class="viewcode-block" id="TurbineOptimisationCallback.compute_values">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineOptimisationCallback.compute_values">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="n">costs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">block_variable</span><span class="o">.</span><span class="n">saved_output</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tfc</span><span class="o">.</span><span class="n">cost</span><span class="p">]</span>
         <span class="n">powers</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">block_variable</span><span class="o">.</span><span class="n">saved_output</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tfc</span><span class="o">.</span><span class="n">average_power</span><span class="p">]</span>
         <span class="n">profits</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">block_variable</span><span class="o">.</span><span class="n">saved_output</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tfc</span><span class="o">.</span><span class="n">average_profit</span><span class="p">]</span>
@@ -339,7 +360,7 @@
 
 <div class="viewcode-block" id="TurbineOptimisationCallback.message_str">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.TurbineOptimisationCallback.message_str">[docs]</a>
-    <span class="k">def</span> <span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="n">average_power</span><span class="p">,</span> <span class="n">average_profit</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="n">average_power</span><span class="p">,</span> <span class="n">average_profit</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;Costs, average power and profit for each farm: </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">average_power</span><span class="p">,</span> <span class="n">average_profit</span><span class="p">)</span></div>
 </div>
 
@@ -347,7 +368,7 @@
 
 <div class="viewcode-block" id="MinimumDistanceConstraints">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.MinimumDistanceConstraints">[docs]</a>
-<span class="k">class</span> <span class="nc">MinimumDistanceConstraints</span><span class="p">(</span><span class="n">pyadjoint</span><span class="o">.</span><span class="n">InequalityConstraint</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MinimumDistanceConstraints</span><span class="p">(</span><span class="n">pyadjoint</span><span class="o">.</span><span class="n">InequalityConstraint</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This class implements minimum distance constraints between turbines.</span>
 
 <span class="sd">    .. note:: This class subclasses ``pyadjoint.InequalityConstraint``. The</span>
@@ -357,7 +378,7 @@
 <span class="sd">        * ``function(self, m)``</span>
 <span class="sd">        * ``jacobian(self, m)``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turbine_positions</span><span class="p">,</span> <span class="n">minimum_distance</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turbine_positions</span><span class="p">,</span> <span class="n">minimum_distance</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create MinimumDistanceConstraints</span>
 
 <span class="sd">        :param turbine_positions: list of [x,y] where x and y are either float or Constant</span>
@@ -369,14 +390,14 @@
 
 <div class="viewcode-block" id="MinimumDistanceConstraints.length">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.MinimumDistanceConstraints.length">[docs]</a>
-    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of constraints ``len(function(m))``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nturbines</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nturbines</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MinimumDistanceConstraints.function">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.MinimumDistanceConstraints.function">[docs]</a>
-    <span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return an object which must be positive for the point to be feasible.</span>
 
 <span class="sd">        :param m: The serialized paramaterisation of the turbines.</span>
@@ -402,7 +423,7 @@
 
 <div class="viewcode-block" id="MinimumDistanceConstraints.jacobian">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbines.MinimumDistanceConstraints.jacobian">[docs]</a>
-    <span class="k">def</span> <span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the gradient of the constraint function.</span>
 
 <span class="sd">        Return a list of vector-like objects representing the gradient of the</span>
@@ -441,8 +462,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2016-2023, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    &#169; Copyright 2016-2025, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

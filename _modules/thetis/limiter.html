@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.limiter &#8212; Thetis 0+untagged.2009.gb75eefa documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <title>thetis.limiter &#8212; Thetis 0+untagged.2057.gbb0d01b.dirty documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=47a7fef3"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/documentation_options.js?v=05ff3d8c"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -52,15 +52,15 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Slope limiters for discontinuous fields</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">firedrake</span> <span class="kn">import</span> <span class="n">VertexBasedLimiter</span>
-<span class="kn">from</span> <span class="nn">pyop2.profiling</span> <span class="kn">import</span> <span class="n">timed_stage</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utility</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">firedrake</span><span class="w"> </span><span class="kn">import</span> <span class="n">VertexBasedLimiter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyop2.profiling</span><span class="w"> </span><span class="kn">import</span> <span class="n">timed_stage</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 
 <div class="viewcode-block" id="assert_function_space">
 <a class="viewcode-back" href="../../thetis.html#thetis.limiter.assert_function_space">[docs]</a>
-<span class="k">def</span> <span class="nf">assert_function_space</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">assert_function_space</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks the family and degree of function space.</span>
 
@@ -101,7 +101,7 @@
 
 <div class="viewcode-block" id="VertexBasedP1DGLimiter">
 <a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter">[docs]</a>
-<span class="k">class</span> <span class="nc">VertexBasedP1DGLimiter</span><span class="p">(</span><span class="n">VertexBasedLimiter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VertexBasedP1DGLimiter</span><span class="p">(</span><span class="n">VertexBasedLimiter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Vertex based limiter for P1DG tracer fields, see Kuzmin (2010)</span>
 
@@ -113,7 +113,7 @@
 <span class="sd">    and Applied Mathematics, 233(12):3077-3085.</span>
 <span class="sd">    http://dx.doi.org/10.1016/j.cam.2009.05.028</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1dg_space</span><span class="p">,</span> <span class="n">time_dependent_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1dg_space</span><span class="p">,</span> <span class="n">time_dependent_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg p1dg_space: P1DG function space</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -129,7 +129,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_dependent_mesh</span> <span class="o">=</span> <span class="n">time_dependent_mesh</span>
 
-    <span class="k">def</span> <span class="nf">_construct_centroid_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_construct_centroid_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructs a linear problem for computing the centroids</span>
 
@@ -143,19 +143,19 @@
                                                   <span class="s1">&#39;pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">,</span>
                                                   <span class="s1">&#39;sub_pc_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ilu&#39;</span><span class="p">})</span>
 
-    <span class="k">def</span> <span class="nf">_update_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update centroid values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">b</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">TestFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="p">)</span> <span class="o">*</span> <span class="n">field</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_dependent_mesh</span><span class="p">:</span>
-            <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a_form</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid_solver</span><span class="o">.</span><span class="n">A</span><span class="p">)</span>
+            <span class="n">assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a_form</span><span class="p">,</span> <span class="n">tensor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">centroid_solver</span><span class="o">.</span><span class="n">A</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">centroid_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centroids</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
 <div class="viewcode-block" id="VertexBasedP1DGLimiter.compute_bounds">
 <a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.compute_bounds">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VertexBasedP1DGLimiter.compute_bounds&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">compute_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-compute min/max values of all neighbouring centroids</span>
 
@@ -168,7 +168,7 @@
         <span class="c1"># NOTE this just computes the arithmetic mean of nodal values on the facet,</span>
         <span class="c1"># which in general is not equivalent to the mean of the field over the bnd facet.</span>
         <span class="c1"># This is OK for P1DG triangles, but not exact for the extruded case (quad facets)</span>
-        <span class="kn">from</span> <span class="nn">finat.finiteelementbase</span> <span class="kn">import</span> <span class="n">entity_support_dofs</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">finat.finiteelementbase</span><span class="w"> </span><span class="kn">import</span> <span class="n">entity_support_dofs</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span><span class="p">:</span>
             <span class="n">entity_dim</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># get 1D facets</span>
@@ -240,7 +240,7 @@
 <div class="viewcode-block" id="VertexBasedP1DGLimiter.apply">
 <a class="viewcode-back" href="../../thetis.html#thetis.limiter.VertexBasedP1DGLimiter.apply">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VertexBasedP1DGLimiter.apply&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies the limiter on the given field (in place)</span>
 
@@ -269,8 +269,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2016-2023, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    &#169; Copyright 2016-2025, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>
