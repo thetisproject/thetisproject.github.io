@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.coupled_timeintegrator &#8212; Thetis 0+untagged.2009.gb75eefa documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <title>thetis.coupled_timeintegrator &#8212; Thetis 0+untagged.2057.gbb0d01b.dirty documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=47a7fef3"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/documentation_options.js?v=05ff3d8c"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -52,23 +52,23 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Time integrators for solving coupled 2D-3D system of equations.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">timeintegrator</span>
-<span class="kn">from</span> <span class="nn">.log</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rungekutta</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractproperty</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utility</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeintegrator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.log</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">rungekutta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractproperty</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 
 <div class="viewcode-block" id="CoupledTimeIntegratorBase">
 <a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTimeIntegratorBase">[docs]</a>
-<span class="k">class</span> <span class="nc">CoupledTimeIntegratorBase</span><span class="p">(</span><span class="n">timeintegrator</span><span class="o">.</span><span class="n">TimeIntegratorBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CoupledTimeIntegratorBase</span><span class="p">(</span><span class="n">timeintegrator</span><span class="o">.</span><span class="n">TimeIntegratorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for coupled 2D-3D time integrators</span>
 
 <span class="sd">    Provides common functionality for updating diagnostic fields etc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver: :class:`.FlowSolver` object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -77,30 +77,30 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_update_3d_elevation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_3d_elevation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Projects elevation to 3D&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;aux_elev_3d&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_2d</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_update_vertical_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_vertical_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Solve vertical velocity&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;continuity_eq&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">w_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_update_moving_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_moving_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates 3D mesh to match elevation field&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;aux_mesh_ale&#39;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">mesh_updater</span><span class="o">.</span><span class="n">update_mesh_coordinates</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_update_2d_coupling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_2d_coupling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Does 2D-3D coupling for the velocity field&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;aux_uv_coupling&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_remove_depth_average_from_uv_3d</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_2d_coupling_term</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_copy_uv_2d_to_3d</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_remove_depth_average_from_uv_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_remove_depth_average_from_uv_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes depth averaged velocity and removes it from the 3D velocity field&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;aux_uv_coupling&#39;</span><span class="p">):</span>
             <span class="c1"># compute depth averaged 3D velocity</span>
@@ -110,24 +110,24 @@
             <span class="c1"># remove depth average from 3D velocity</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_dav_3d</span>
 
-    <span class="k">def</span> <span class="nf">_copy_uv_2d_to_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_copy_uv_2d_to_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Copies uv_2d to uv_dav_3d&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;aux_uv_coupling&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">copy_uv_to_uv_dav_3d</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_update_2d_coupling_term</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_2d_coupling_term</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update split_residual_2d field for 2D-3D coupling&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;aux_uv_coupling&#39;</span><span class="p">):</span>
             <span class="c1"># scale dav uv 2D to be used as a forcing in 2D mom eq.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">split_residual_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_dav_2d</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">split_residual_2d</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">mom_expl</span><span class="o">.</span><span class="n">dt_const</span>
 
-    <span class="k">def</span> <span class="nf">_update_baroclinicity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_baroclinicity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes baroclinic head&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_baroclinic_formulation</span><span class="p">:</span>
             <span class="n">compute_baroclinic_head</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_update_turbulence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_turbulence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates turbulence related fields</span>
 
@@ -143,7 +143,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">tke_impl</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">turbulence_model</span><span class="o">.</span><span class="n">postprocess</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_update_stabilization_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_stabilization_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes Smagorinsky viscosity etc fields</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -151,7 +151,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">use_smagorinsky_viscosity</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">smagorinsky_diff_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_update_all_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_all_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
                                  <span class="n">do_2d_coupling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                  <span class="n">do_vert_diffusion</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                  <span class="n">do_ale_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -183,27 +183,27 @@
 
 <div class="viewcode-block" id="CoupledTimeIntegrator">
 <a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTimeIntegrator">[docs]</a>
-<span class="k">class</span> <span class="nc">CoupledTimeIntegrator</span><span class="p">(</span><span class="n">CoupledTimeIntegratorBase</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CoupledTimeIntegrator</span><span class="p">(</span><span class="n">CoupledTimeIntegratorBase</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class of mode-split time integrators that use 2D, 3D and implicit 3D</span>
 <span class="sd">    time integrators.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@abstractproperty</span>
-    <span class="k">def</span> <span class="nf">integrator_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">integrator_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;time integrator for 2D equations&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractproperty</span>
-    <span class="k">def</span> <span class="nf">integrator_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">integrator_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;time integrator for explicit 3D equations (momentum, tracers)&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractproperty</span>
-    <span class="k">def</span> <span class="nf">integrator_vert_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">integrator_vert_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;time integrator for implicit 3D equations (vertical diffusion)&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver: :class:`.FlowSolver` object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -217,7 +217,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_integrators</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_stages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">swe2d</span><span class="o">.</span><span class="n">n_stages</span>
 
-    <span class="k">def</span> <span class="nf">_get_vert_diffusivity_functions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_vert_diffusivity_functions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assign vertical viscosity/diffusivity to implicit/explicit parts</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -234,7 +234,7 @@
 
         <span class="k">return</span> <span class="n">impl_v_visc</span><span class="p">,</span> <span class="n">expl_v_visc</span><span class="p">,</span> <span class="n">impl_v_diff</span><span class="p">,</span> <span class="n">expl_v_diff</span>
 
-    <span class="k">def</span> <span class="nf">_create_swe_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_swe_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create time integrator for 2D system</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -254,7 +254,7 @@
             <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">swe_options</span><span class="p">,</span>
             <span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">_create_mom_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_mom_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create time integrator for 3D momentum equation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -290,7 +290,7 @@
                 <span class="n">solver</span><span class="o">.</span><span class="n">equations</span><span class="o">.</span><span class="n">vertmomentum</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">implicit_momentum_options</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;momentum&#39;</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">_create_salt_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_salt_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create time integrator for salinity equation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -319,7 +319,7 @@
                     <span class="n">solver</span><span class="o">.</span><span class="n">equations</span><span class="o">.</span><span class="n">salt_vdff</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">salt_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">implicit_tracer_options</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;salt&#39;</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">_create_temp_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_temp_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create time integrator for temperature equation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -348,7 +348,7 @@
                     <span class="n">solver</span><span class="o">.</span><span class="n">equations</span><span class="o">.</span><span class="n">temp_vdff</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">temp_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">implicit_tracer_options</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;temp&#39;</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">_create_turb_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_turb_integrator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create time integrators for turbulence equations</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -390,7 +390,7 @@
                     <span class="n">eq_psi_adv</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">psi_3d</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timestepper_options</span><span class="o">.</span><span class="n">explicit_tracer_options</span><span class="p">,</span> <span class="p">{})</span>
 
-    <span class="k">def</span> <span class="nf">_create_integrators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_integrators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates all time integrators with the correct arguments</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -405,7 +405,7 @@
 
 <div class="viewcode-block" id="CoupledTimeIntegrator.set_dt">
 <a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTimeIntegrator.set_dt">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">dt_2d</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">dt_2d</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set time step for the coupled time integrator</span>
 
@@ -427,7 +427,7 @@
 
 <div class="viewcode-block" id="CoupledTimeIntegrator.initialize">
 <a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTimeIntegrator.initialize">[docs]</a>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assign initial conditions to all necessary fields</span>
 
@@ -460,7 +460,7 @@
 
 <div class="viewcode-block" id="CoupledLeapFrogAM3">
 <a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledLeapFrogAM3">[docs]</a>
-<span class="k">class</span> <span class="nc">CoupledLeapFrogAM3</span><span class="p">(</span><span class="n">CoupledTimeIntegrator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CoupledLeapFrogAM3</span><span class="p">(</span><span class="n">CoupledTimeIntegrator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Leap-Frog Adams-Moulton 3 time integrator for coupled 2D-3D problem</span>
 
@@ -476,7 +476,7 @@
     <span class="n">integrator_vert_3d</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">BackwardEuler</span>
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.CoupledLeapFrogAM3.__init__&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CoupledLeapFrogAM3</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elev_domain_old_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_domain_2d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uv_old_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_2d</span><span class="p">)</span>
@@ -485,7 +485,7 @@
 <div class="viewcode-block" id="CoupledLeapFrogAM3.advance">
 <a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledLeapFrogAM3.advance">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.CoupledLeapFrogAM3.advance&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Advances the equations for one time step</span>
 
@@ -631,7 +631,7 @@
 
 <div class="viewcode-block" id="CoupledTwoStageRK">
 <a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTwoStageRK">[docs]</a>
-<span class="k">class</span> <span class="nc">CoupledTwoStageRK</span><span class="p">(</span><span class="n">CoupledTimeIntegrator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CoupledTwoStageRK</span><span class="p">(</span><span class="n">CoupledTimeIntegrator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Coupled time integrator based on SSPRK(2,2) scheme</span>
 
@@ -644,7 +644,7 @@
     <span class="n">integrator_vert_3d</span> <span class="o">=</span> <span class="n">rungekutta</span><span class="o">.</span><span class="n">BackwardEuler</span>
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.CoupledTwoStageRK.__init__&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CoupledTwoStageRK</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver</span><span class="p">)</span>
         <span class="c1"># allocate CG elevation fields for storing mesh geometry</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elev_fields</span> <span class="o">=</span> <span class="p">[]</span>
@@ -655,7 +655,7 @@
 <div class="viewcode-block" id="CoupledTwoStageRK.store_elevation">
 <a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTwoStageRK.store_elevation">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.CoupledTwoStageRK.store_elevation&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">store_elevation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">istage</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">store_elevation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">istage</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store current elevation field for computing mesh velocity</span>
 
@@ -672,7 +672,7 @@
 <div class="viewcode-block" id="CoupledTwoStageRK.compute_mesh_velocity">
 <a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTwoStageRK.compute_mesh_velocity">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.CoupledTwoStageRK.compute_mesh_velocity&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">compute_mesh_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">istage</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_mesh_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">istage</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes mesh velocity for stage i</span>
 
@@ -697,7 +697,7 @@
 <div class="viewcode-block" id="CoupledTwoStageRK.advance">
 <a class="viewcode-back" href="../../thetis.html#thetis.coupled_timeintegrator.CoupledTwoStageRK.advance">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.CoupledTwoStageRK.advance&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_forcings3d</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Advances the equations for one time step</span>
 
@@ -799,8 +799,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2016-2023, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    &#169; Copyright 2016-2025, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

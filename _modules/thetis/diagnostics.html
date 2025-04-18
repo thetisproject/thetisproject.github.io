@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.diagnostics &#8212; Thetis 0+untagged.2009.gb75eefa documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <title>thetis.diagnostics &#8212; Thetis 0+untagged.2057.gbb0d01b.dirty documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=47a7fef3"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/documentation_options.js?v=05ff3d8c"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -52,31 +52,31 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Classes for computing diagnostics.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">.utility</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.configuration</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utility</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;VorticityCalculator2D&quot;</span><span class="p">,</span> <span class="s2">&quot;HessianRecoverer2D&quot;</span><span class="p">,</span> <span class="s2">&quot;KineticEnergyCalculator&quot;</span><span class="p">,</span>
            <span class="s2">&quot;ShallowWaterDualWeightedResidual2D&quot;</span><span class="p">,</span> <span class="s2">&quot;TracerDualWeightedResidual2D&quot;</span><span class="p">]</span>
 
 
-<span class="k">class</span> <span class="nc">DiagnosticCalculator</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DiagnosticCalculator</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class that defines the API for all diagnostic calculators.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
 
 <div class="viewcode-block" id="VorticityCalculator2D">
 <a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.VorticityCalculator2D">[docs]</a>
-<span class="k">class</span> <span class="nc">VorticityCalculator2D</span><span class="p">(</span><span class="n">DiagnosticCalculator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VorticityCalculator2D</span><span class="p">(</span><span class="n">DiagnosticCalculator</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Linear solver for recovering fluid vorticity,</span>
 <span class="sd">    interpreted as a scalar field:</span>
@@ -94,7 +94,7 @@
 
     <span class="nd">@unfrozen</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VorticityCalculator2D.__init__&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv_2d</span><span class="p">,</span> <span class="n">vorticity_2d</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv_2d</span><span class="p">,</span> <span class="n">vorticity_2d</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg uv_2d: vector expression for the horizontal velocity.</span>
 <span class="sd">        :arg vorticity_2d: :class:`Function` to hold calculated vorticity.</span>
@@ -128,7 +128,7 @@
 <div class="viewcode-block" id="VorticityCalculator2D.solve">
 <a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.VorticityCalculator2D.solve">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VorticityCalculator2D.solve&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div>
 </div>
 
@@ -136,7 +136,7 @@
 
 <div class="viewcode-block" id="HessianRecoverer2D">
 <a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.HessianRecoverer2D">[docs]</a>
-<span class="k">class</span> <span class="nc">HessianRecoverer2D</span><span class="p">(</span><span class="n">DiagnosticCalculator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HessianRecoverer2D</span><span class="p">(</span><span class="n">DiagnosticCalculator</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Linear solver for recovering Hessians.</span>
 
@@ -153,7 +153,7 @@
 
     <span class="nd">@unfrozen</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HessianRecoverer2D.__init__&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_2d</span><span class="p">,</span> <span class="n">hessian_2d</span><span class="p">,</span> <span class="n">gradient_2d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_2d</span><span class="p">,</span> <span class="n">hessian_2d</span><span class="p">,</span> <span class="n">gradient_2d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg field_2d: scalar expression to recover the Hessian of.</span>
 <span class="sd">        :arg hessian_2d: :class:`Function` to hold recovered Hessian.</span>
@@ -237,7 +237,7 @@
 <div class="viewcode-block" id="HessianRecoverer2D.solve">
 <a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.HessianRecoverer2D.solve">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HessianRecoverer2D.solve&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hessian_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hessian</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_2d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -248,7 +248,7 @@
 
 <div class="viewcode-block" id="KineticEnergyCalculator">
 <a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.KineticEnergyCalculator">[docs]</a>
-<span class="k">class</span> <span class="nc">KineticEnergyCalculator</span><span class="p">(</span><span class="n">DiagnosticCalculator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">KineticEnergyCalculator</span><span class="p">(</span><span class="n">DiagnosticCalculator</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for calculating dynamic pressure (i.e. kinetic energy),</span>
 
@@ -263,7 +263,7 @@
 
     <span class="nd">@unfrozen</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.KineticEnergyCalculator.__init__&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">ke</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">horizontal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">ke</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">horizontal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg uv: scalar expression for the fluid velocity.</span>
 <span class="sd">        :arg ke: :class:`Function` to hold calculated kinetic energy.</span>
@@ -284,7 +284,7 @@
 <div class="viewcode-block" id="KineticEnergyCalculator.solve">
 <a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.KineticEnergyCalculator.solve">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.KineticEnergyCalculator.solve&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;projector&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">projector</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -294,7 +294,7 @@
 
 
 
-<span class="k">class</span> <span class="nc">DualWeightedResidual2D</span><span class="p">(</span><span class="n">DiagnosticCalculator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DualWeightedResidual2D</span><span class="p">(</span><span class="n">DiagnosticCalculator</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for computing contributions to dual weighted residual (DWR)</span>
 <span class="sd">    error indicators.</span>
@@ -318,7 +318,7 @@
 
     <span class="nd">@unfrozen</span>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DualWeightedResidual.__init__&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">dual</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">dual</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver_obj: :class:`FlowSolver2d` instance</span>
 <span class="sd">        :arg dual: a :class:`Function` that approximates the true adjoint solution,</span>
@@ -333,27 +333,27 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">F</span> <span class="o">=</span> <span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="p">,</span> <span class="p">{</span><span class="n">TestFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">space</span><span class="p">):</span> <span class="n">dual</span><span class="p">})</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DualWeightedResidual.solve&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">form2indicator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="ShallowWaterDualWeightedResidual2D">
 <a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.ShallowWaterDualWeightedResidual2D">[docs]</a>
-<span class="k">class</span> <span class="nc">ShallowWaterDualWeightedResidual2D</span><span class="p">(</span><span class="n">DualWeightedResidual2D</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShallowWaterDualWeightedResidual2D</span><span class="p">(</span><span class="n">DualWeightedResidual2D</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for computing dual weighted residual contributions</span>
 <span class="sd">    for the shallow water equations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">dual</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">dual</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver_obj: :class:`FlowSolver2d` instance</span>
 <span class="sd">        :arg dual: a :class:`Function` that approximates the true adjoint solution,</span>
@@ -367,25 +367,25 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver_obj</span><span class="p">,</span> <span class="n">dual</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">timestepper</span>
         <span class="k">return</span> <span class="n">ts</span><span class="o">.</span><span class="n">F</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;timesteppers&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">ts</span><span class="o">.</span><span class="n">timesteppers</span><span class="o">.</span><span class="n">swe2d</span><span class="o">.</span><span class="n">F</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">V_2d</span></div>
 
 
 
 <div class="viewcode-block" id="TracerDualWeightedResidual2D">
 <a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.TracerDualWeightedResidual2D">[docs]</a>
-<span class="k">class</span> <span class="nc">TracerDualWeightedResidual2D</span><span class="p">(</span><span class="n">DualWeightedResidual2D</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TracerDualWeightedResidual2D</span><span class="p">(</span><span class="n">DualWeightedResidual2D</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for computing dual weighted residual contributions</span>
 <span class="sd">    for 2D tracer transport problems.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">dual</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;tracer_2d&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">dual</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;tracer_2d&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg solver_obj: :class:`FlowSolver2d` instance</span>
 <span class="sd">        :arg dual: a :class:`Function` that approximates the true adjoint solution,</span>
@@ -400,11 +400,11 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver_obj</span><span class="p">,</span> <span class="n">dual</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">timestepper</span><span class="o">.</span><span class="n">timesteppers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">F</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">Q_2d</span></div>
 
 </pre></div>
@@ -417,8 +417,8 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2016-2023, Tuomas Kärnä et al..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    &#169; Copyright 2016-2025, Tuomas Kärnä et al..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>
