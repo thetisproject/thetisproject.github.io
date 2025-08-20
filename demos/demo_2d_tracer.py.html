@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>2D tracer transport &#8212; Thetis 0+untagged.2054.ge07ddf2 documentation</title>
+    <title>2D tracer transport &#8212; Thetis 0+untagged.2082.gf1a0bbb documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/thetis.css?v=0f3339d6" />
-    <script src="../_static/documentation_options.js?v=70f0a730"></script>
+    <script src="../_static/documentation_options.js?v=ccd1159c"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -112,9 +112,11 @@ strong stability preserving third order Runge-Kutta method (SSPRK33).
 For consistency with the Firedrake demo, Thetis’ automatic timestep
 computation functionality is switched off and the simulation time is
 split into 600 steps, giving a timestep close to the CFL limit.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">tracer_timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;SSPRK33&#39;</span>
-<span class="n">options</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">300.0</span>
-<span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">t_end</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span>
+<span class="n">timestep</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">300.0</span>
+<span class="n">options</span><span class="o">.</span><span class="n">tracer_timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;SSPRK33&#39;</span>
+<span class="n">options</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="n">timestep</span>
+<span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">=</span> <span class="n">t_end</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">15.0</span>
 <span class="n">options</span><span class="o">.</span><span class="n">tracer_timestepper_options</span><span class="o">.</span><span class="n">use_automatic_timestep</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
@@ -133,7 +135,8 @@ value.</p>
 </pre></div>
 </div>
 <p>The velocity field is set up using a simple analytic expression.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv_init</span> <span class="o">=</span> <span class="n">as_vector</span><span class="p">([</span><span class="mf">0.5</span> <span class="o">-</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">SpatialCoordinate</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">)</span>
+<span class="n">uv_init</span> <span class="o">=</span> <span class="n">as_vector</span><span class="p">([</span><span class="mf">0.5</span> <span class="o">-</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>Now, we set up the cosine-bell–cone–slotted-cylinder initial condition. The
@@ -163,8 +166,14 @@ that we can check the <span class="math notranslate nohighlight">\(L^2\)</span>-
 <span class="n">solver_obj</span><span class="o">.</span><span class="n">assign_initial_conditions</span><span class="p">(</span><span class="n">uv</span><span class="o">=</span><span class="n">uv_init</span><span class="p">,</span> <span class="n">tracer_2d</span><span class="o">=</span><span class="n">q_init</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Now we are in a position to run the time loop.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">iterate</span><span class="p">()</span>
+<p>Now we are in a position to run the time loop. We can either automatically run
+the time loop to the end time as in <a class="reference internal" href="demo_2d_channel.py.html"><span class="doc">2D channel example</span></a>
+or, here, we create a time iterator that we can use to explicitly iterate over the timesteps ourselves. This might be useful for instance if we want to couple Thetis with another model</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">thetis_timestepper</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">create_iterator</span><span class="p">()</span>
+<span class="n">t_Thetis</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">while</span> <span class="n">t_Thetis</span> <span class="o">&lt;</span> <span class="n">t_end</span> <span class="o">-</span> <span class="n">timestep</span><span class="p">:</span>
+    <span class="n">t_Thetis</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">thetis_timestepper</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Finally, we display the normalised <span class="math notranslate nohighlight">\(L^2\)</span> error, by comparing to the initial condition.</p>

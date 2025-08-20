@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.diagnostics &#8212; Thetis 0+untagged.2057.gbb0d01b.dirty documentation</title>
+    <title>thetis.diagnostics &#8212; Thetis 0+untagged.2082.gf1a0bbb documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=05ff3d8c"></script>
+    <script src="../../_static/documentation_options.js?v=ccd1159c"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -55,8 +55,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utility</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">firedrake</span><span class="w"> </span><span class="kn">import</span> <span class="n">project</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;VorticityCalculator2D&quot;</span><span class="p">,</span> <span class="s2">&quot;HessianRecoverer2D&quot;</span><span class="p">,</span> <span class="s2">&quot;KineticEnergyCalculator&quot;</span><span class="p">,</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;VorticityCalculator2D&quot;</span><span class="p">,</span> <span class="s2">&quot;GradientRecoverer2D&quot;</span><span class="p">,</span> <span class="s2">&quot;HessianRecoverer2D&quot;</span><span class="p">,</span> <span class="s2">&quot;KineticEnergyCalculator&quot;</span><span class="p">,</span>
            <span class="s2">&quot;ShallowWaterDualWeightedResidual2D&quot;</span><span class="p">,</span> <span class="s2">&quot;TracerDualWeightedResidual2D&quot;</span><span class="p">]</span>
 
 
@@ -130,6 +131,34 @@
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VorticityCalculator2D.solve&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GradientRecoverer2D">
+<a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.GradientRecoverer2D">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GradientRecoverer2D</span><span class="p">(</span><span class="n">DiagnosticCalculator</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gradient recovery via L2 projection.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">field_2d</span> <span class="o">=</span> <span class="n">FiredrakeScalarExpression</span><span class="p">(</span>
+        <span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Field to recover the gradient of&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@unfrozen</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_2d</span><span class="p">,</span> <span class="n">gradient_2d</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_2d</span> <span class="o">=</span> <span class="n">field_2d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_2d</span> <span class="o">=</span> <span class="n">gradient_2d</span>
+
+<div class="viewcode-block" id="GradientRecoverer2D.solve">
+<a class="viewcode-back" href="../../thetis.html#thetis.diagnostics.GradientRecoverer2D.solve">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GradientRecoverer2D.solve&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span>
+            <span class="n">project</span><span class="p">(</span>
+                <span class="n">ufl</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_2d</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gradient_2d</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
 </div>
 
 
