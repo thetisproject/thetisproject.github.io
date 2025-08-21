@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.inversion_tools &#8212; Thetis 0+untagged.2057.gbb0d01b.dirty documentation</title>
+    <title>thetis.inversion_tools &#8212; Thetis 0+untagged.2082.gf1a0bbb documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=05ff3d8c"></script>
+    <script src="../../_static/documentation_options.js?v=ccd1159c"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -56,7 +56,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.solver2d</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowSolver2d</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_directory</span><span class="p">,</span> <span class="n">print_function_value_range</span><span class="p">,</span> <span class="n">get_functionspace</span><span class="p">,</span> <span class="n">unfrozen</span><span class="p">,</span> <span class="n">domain_constant</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.log</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_output</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.diagnostics</span><span class="w"> </span><span class="kn">import</span> <span class="n">HessianRecoverer2D</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.diagnostics</span><span class="w"> </span><span class="kn">import</span> <span class="n">GradientRecoverer2D</span><span class="p">,</span> <span class="n">HessianRecoverer2D</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.exporter</span><span class="w"> </span><span class="kn">import</span> <span class="n">HDF5Exporter</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
@@ -64,6 +64,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">interp1d</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">time_mod</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
 
 
 <div class="viewcode-block" id="InversionManager">
@@ -293,7 +294,8 @@
 
 <div class="viewcode-block" id="InversionManager.get_cost_function">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.InversionManager.get_cost_function">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_cost_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">weight_by_variance</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cost_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">weight_by_variance</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">regularisation_manager</span><span class="o">=</span><span class="s2">&quot;Hessian&quot;</span><span class="p">,</span>
+                          <span class="n">use_local_element_size</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a sum of square errors cost function for the problem:</span>
 
@@ -311,14 +313,38 @@
 <span class="sd">        :arg solver_obj: the :class:`FlowSolver2d` instance</span>
 <span class="sd">        :kwarg weight_by_variance: should the observation data be</span>
 <span class="sd">            weighted by the variance at each station?</span>
+<span class="sd">        :kwarg regularisation_manager: which regularisation to apply</span>
+<span class="sd">            (&quot;Hessian&quot; or &quot;Gradient&quot;)</span>
+<span class="sd">        :kwarg use_local_element_size: choose whether to use local</span>
+<span class="sd">            (varying) element size to normalise regularisation units</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">solver_obj</span><span class="p">,</span> <span class="n">FlowSolver2d</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">real</span><span class="p">:</span>
+            <span class="n">calculator</span> <span class="o">=</span> <span class="n">RSpaceRegularizationCalculator</span>
+            <span class="n">calculator_kwargs</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;R-space regularisation being applied (real case).&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">calculator_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;use_local_element_size&quot;</span><span class="p">:</span> <span class="n">use_local_element_size</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">regularisation_manager</span> <span class="o">==</span> <span class="s2">&quot;Hessian&quot;</span><span class="p">:</span>
+                <span class="n">calculator</span> <span class="o">=</span> <span class="n">HessianRegularizationCalculator</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Hessian regularisation being applied.&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">regularisation_manager</span> <span class="o">==</span> <span class="s2">&quot;Gradient&quot;</span><span class="p">:</span>
+                <span class="n">calculator</span> <span class="o">=</span> <span class="n">GradientRegularizationCalculator</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Gradient regularisation being applied.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Unsupported regularisation_manager: &#39;</span><span class="si">{</span><span class="n">regularisation_manager</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                    <span class="s2">&quot;Must be one of: &#39;Hessian&#39;, &#39;Gradient&#39;.&quot;</span>
+                <span class="p">)</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameters</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">reg_manager</span> <span class="o">=</span> <span class="n">ControlRegularizationManager</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">control_coeff_list</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameters</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cost_function_scaling</span><span class="p">,</span>
-                <span class="n">RSpaceRegularizationCalculator</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">real</span> <span class="k">else</span> <span class="n">HessianRegularizationCalculator</span><span class="p">)</span>
+                <span class="n">calculator</span><span class="p">,</span>
+                <span class="n">calculator_kwargs</span><span class="o">=</span><span class="n">calculator_kwargs</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">J_reg</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">J_misfit</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg_manager</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -750,6 +776,62 @@
 
 
 
+<div class="viewcode-block" id="GradientRegularizationCalculator">
+<a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.GradientRegularizationCalculator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GradientRegularizationCalculator</span><span class="p">(</span><span class="n">RegularizationCalculator</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the following regularization term for a control Function `f`:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        J = \gamma \| (\Delta x) \nabla f \|^2,</span>
+
+<span class="sd">    where:</span>
+
+<span class="sd">    - :math:`\nabla f` is the gradient of the field `f`.</span>
+<span class="sd">    - :math:`\Delta x` is the characteristic element size (cell size)</span>
+<span class="sd">      used to scale the gradient regularization.</span>
+
+<span class="sd">    The element size defaults to varying spatially with the mesh,</span>
+<span class="sd">    but can be set constant with the smallest element size by specifying</span>
+<span class="sd">    the `use_local_element_size` flag to be False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">gradient_penalty</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">use_local_element_size</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function: Control :class:`Function`</span>
+<span class="sd">        :arg gradient_penalty: Gradient penalty coefficient</span>
+<span class="sd">        :kwarg scaling: Optional global scaling for the regularization term</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="n">scaling</span><span class="p">)</span>
+
+        <span class="c1"># Setup continuous vector function space</span>
+        <span class="n">P1v_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_2d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">P1v_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> gradient&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Recover gradient using projection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_recoverer</span> <span class="o">=</span> <span class="n">GradientRecoverer2D</span><span class="p">(</span>
+            <span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_2d</span><span class="p">)</span>
+
+        <span class="n">h</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">CellSize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">use_local_element_size</span><span class="p">:</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">h_</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+            <span class="n">h_</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+            <span class="n">local_min</span> <span class="o">=</span> <span class="n">h_</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="n">global_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">local_min</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">MPI</span><span class="o">.</span><span class="n">MIN</span><span class="p">)</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">global_min</span><span class="p">)</span>
+
+        <span class="c1"># Regularization term: |grad(f)|^2 * h^2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regularization_expr</span> <span class="o">=</span> <span class="n">gradient_penalty</span> <span class="o">*</span> <span class="n">fd</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_2d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_2d</span><span class="p">)</span> <span class="o">*</span> <span class="n">h</span><span class="o">**</span><span class="mi">2</span>
+
+<div class="viewcode-block" id="GradientRegularizationCalculator.eval_cost_function">
+<a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.GradientRegularizationCalculator.eval_cost_function">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eval_cost_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_recoverer</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">eval_cost_function</span><span class="p">()</span></div>
+</div>
+
+
+
 <div class="viewcode-block" id="HessianRegularizationCalculator">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.HessianRegularizationCalculator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HessianRegularizationCalculator</span><span class="p">(</span><span class="n">RegularizationCalculator</span><span class="p">):</span>
@@ -760,12 +842,20 @@
 <span class="sd">    .. math::</span>
 <span class="sd">        J = \gamma \| (\Delta x)^2 H(f) \|^2,</span>
 
-<span class="sd">    where :math:`H` is the Hessian of field :math:`f`.</span>
+<span class="sd">    where:</span>
+
+<span class="sd">        - :math:`H` is the Hessian of field :math:`f`.</span>
+<span class="sd">        - :math:`\Delta x` is the characteristic element size (cell size)</span>
+<span class="sd">      used to scale the gradient regularization.</span>
+
+<span class="sd">    The element size defaults to varying spatially with the mesh,</span>
+<span class="sd">    but can be set constant with the smallest element size by specifying</span>
+<span class="sd">    the `use_local_element_size` flag to be False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">hessian_penalty</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">use_local_element_size</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function: Control :class:`Function`</span>
-<span class="sd">        :arg gamma: Hessian penalty coefficient</span>
+<span class="sd">        :arg hessian_penalty: Hessian penalty coefficient</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="n">scaling</span><span class="p">)</span>
         <span class="c1"># solvers to evaluate the gradient of the control</span>
@@ -777,10 +867,17 @@
             <span class="n">function</span><span class="p">,</span> <span class="n">hessian_2d</span><span class="p">,</span> <span class="n">gradient_2d</span><span class="p">)</span>
 
         <span class="n">h</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">CellSize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">use_local_element_size</span><span class="p">:</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">h_</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+            <span class="n">h_</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+            <span class="n">local_min</span> <span class="o">=</span> <span class="n">h_</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="n">global_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">local_min</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">MPI</span><span class="o">.</span><span class="n">MIN</span><span class="p">)</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">global_min</span><span class="p">)</span>
         <span class="c1"># regularization expression |hessian|^2</span>
         <span class="c1"># NOTE this is normalized by the mesh element size</span>
         <span class="c1"># d^2 u/dx^2 * dx^2 ~ du^2</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">regularization_expr</span> <span class="o">=</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">fd</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">hessian_2d</span><span class="p">,</span> <span class="n">hessian_2d</span><span class="p">)</span> <span class="o">*</span> <span class="n">h</span><span class="o">**</span><span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regularization_expr</span> <span class="o">=</span> <span class="n">hessian_penalty</span> <span class="o">*</span> <span class="n">fd</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">hessian_2d</span><span class="p">,</span> <span class="n">hessian_2d</span><span class="p">)</span> <span class="o">*</span> <span class="n">h</span><span class="o">**</span><span class="mi">4</span>
 
 <div class="viewcode-block" id="HessianRegularizationCalculator.eval_cost_function">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.HessianRegularizationCalculator.eval_cost_function">[docs]</a>
@@ -829,18 +926,20 @@
 <span class="sd">    Handles regularization of multiple control fields</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_list</span><span class="p">,</span> <span class="n">gamma_list</span><span class="p">,</span> <span class="n">penalty_term_scaling</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">calculator</span><span class="o">=</span><span class="n">HessianRegularizationCalculator</span><span class="p">):</span>
+                 <span class="n">calculator</span><span class="o">=</span><span class="n">HessianRegularizationCalculator</span><span class="p">,</span> <span class="n">calculator_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg function_list: list of control functions</span>
 <span class="sd">        :arg gamma_list: list of penalty parameters</span>
 <span class="sd">        :kwarg penalty_term_scaling: Penalty term scaling factor</span>
 <span class="sd">        :kwarg calculator: class used for obtaining regularization</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">calculator_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">calculator_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reg_calculators</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">function_list</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">gamma_list</span><span class="p">),</span> \
             <span class="s1">&#39;Number of control functions and parameters must match&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reg_calculators</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">calculator</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="n">penalty_term_scaling</span><span class="p">)</span>
+            <span class="n">calculator</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="n">penalty_term_scaling</span><span class="p">,</span> <span class="o">**</span><span class="n">calculator_kwargs</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">function_list</span><span class="p">,</span> <span class="n">gamma_list</span><span class="p">)</span>
         <span class="p">]</span>
 

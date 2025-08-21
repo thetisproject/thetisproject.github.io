@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.solver2d &#8212; Thetis 0+untagged.2057.gbb0d01b.dirty documentation</title>
+    <title>thetis.solver2d &#8212; Thetis 0+untagged.2082.gf1a0bbb documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=05ff3d8c"></script>
+    <script src="../../_static/documentation_options.js?v=ccd1159c"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -1060,12 +1060,12 @@
 <div class="viewcode-block" id="FlowSolver2d.iterate">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.iterate">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.iterate&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                <span class="n">export_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs the simulation</span>
 
-<span class="sd">        Iterates over the time loop until time ``options.simulation_end_time`` is reached.</span>
+<span class="sd">        Wrapper for function for `create_iterator` generator and automatically</span>
+<span class="sd">        iterates over the time loop until time ``options.simulation_end_time`` is reached.</span>
 <span class="sd">        Exports fields to disk on ``options.simulation_export_time`` intervals.</span>
 
 <span class="sd">        :kwarg update_forcings: User-defined function that takes simulation</span>
@@ -1074,6 +1074,45 @@
 <span class="sd">        :kwarg export_func: User-defined function (with no arguments) that will</span>
 <span class="sd">            be called on every export.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_iterator</span><span class="p">(</span><span class="n">update_forcings</span><span class="o">=</span><span class="n">update_forcings</span><span class="p">,</span>
+                                      <span class="n">export_func</span><span class="o">=</span><span class="n">export_func</span><span class="p">):</span>
+            <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="FlowSolver2d.create_iterator">
+<a class="viewcode-back" href="../../thetis.html#thetis.solver2d.FlowSolver2d.create_iterator">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver2d.create_iterator&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_forcings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">export_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a generator to iterate through the simulation and return access</span>
+<span class="sd">        to time advancing function when time control is handled externally.</span>
+
+<span class="sd">        Iterates over the time loop until time ``options.simulation_end_time`` is reached.</span>
+<span class="sd">        Exports fields to disk on ``options.simulation_export_time`` intervals.</span>
+
+<span class="sd">        For example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            for t in solver_obj.create_iterator():</span>
+<span class="sd">                # user code</span>
+
+<span class="sd">        or, to get per time-step control:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            thetis_timestepper = solver_obj.create_iterator()</span>
+
+<span class="sd">            while t_Thetis&lt;t_end - timestep and .... :</span>
+<span class="sd">                t_Thetis = next(thetis_timestepper)</span>
+
+<span class="sd">        :kwarg update_forcings: User-defined function that takes simulation</span>
+<span class="sd">            time as an argument and updates time-dependent boundary conditions</span>
+<span class="sd">            (if any).</span>
+<span class="sd">        :kwarg export_func: User-defined function (with no arguments) that will</span>
+<span class="sd">            be called on every export.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
 
@@ -1161,6 +1200,9 @@
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">-</span> <span class="n">t_epsilon</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span><span class="p">,</span> <span class="n">update_forcings</span><span class="p">)</span>
 
+            <span class="c1"># returns internal simulation time</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span>
+
             <span class="c1"># Move to next time step</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">iteration</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">internal_iteration</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -1179,7 +1221,9 @@
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">export_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">export_func</span><span class="p">()</span></div>
+                    <span class="n">export_func</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span></div>
 </div>
 
 </pre></div>
