@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.utility &#8212; Thetis 0+untagged.2082.gf1a0bbb documentation</title>
+    <title>thetis.utility &#8212; Thetis 2025.10.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=ccd1159c"></script>
+    <script src="../../_static/documentation_options.js?v=1f79160d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -331,7 +331,7 @@
         <span class="n">horiz_type</span> <span class="o">=</span> <span class="s1">&#39;hdiv&#39;</span>
         <span class="n">vert_type</span> <span class="o">=</span> <span class="s1">&#39;hdiv&#39;</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_element</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">TensorProductElement</span><span class="p">):</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">base_element</span><span class="o">.</span><span class="n">sub_elements</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">base_element</span><span class="o">.</span><span class="n">factor_elements</span>
         <span class="n">horiz_type</span> <span class="o">=</span> <span class="n">elem_types</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">family</span><span class="p">()]</span>
         <span class="n">vert_type</span> <span class="o">=</span> <span class="n">elem_types</span><span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">family</span><span class="p">()]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -427,7 +427,7 @@
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">TensorProductElement</span><span class="p">),</span> \
         <span class="sa">f</span><span class="s1">&#39;function space must be defined on an extruded 3D mesh: </span><span class="si">{</span><span class="n">elem</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="c1"># figure out number of nodes in sub elements</span>
-    <span class="n">h_elt</span><span class="p">,</span> <span class="n">v_elt</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">sub_elements</span>
+    <span class="n">h_elt</span><span class="p">,</span> <span class="n">v_elt</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">factor_elements</span>
     <span class="n">nb_nodes_h</span> <span class="o">=</span> <span class="n">create_finat_element</span><span class="p">(</span><span class="n">h_elt</span><span class="p">)</span><span class="o">.</span><span class="n">space_dimension</span><span class="p">()</span>
     <span class="n">nb_nodes_v</span> <span class="o">=</span> <span class="n">create_finat_element</span><span class="p">(</span><span class="n">v_elt</span><span class="p">)</span><span class="o">.</span><span class="n">space_dimension</span><span class="p">()</span>
     <span class="c1"># compute top/bottom facet indices</span>
@@ -1079,7 +1079,7 @@
     <span class="k">for</span> <span class="n">location</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">detector_locations</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">v</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">PointNotInDomainError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="n">VertexOnlyMeshMissingPointsError</span><span class="p">:</span>
             <span class="n">moved_dist</span><span class="p">,</span> <span class="n">location</span> <span class="o">=</span> <span class="n">move_to_nearest_cell_center</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">moved_dist</span> <span class="o">&gt;</span> <span class="n">maximum_distance</span><span class="p">:</span>
                 <span class="k">continue</span>

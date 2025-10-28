@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Obtaining Thetis &#8212; Thetis 0+untagged.2082.gf1a0bbb documentation</title>
+    <title>Obtaining Thetis &#8212; Thetis 2025.10.1+1.gf513865b.dirty documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/thetis.css?v=0f3339d6" />
-    <script src="_static/documentation_options.js?v=ccd1159c"></script>
+    <script src="_static/documentation_options.js?v=df6f0c20"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -63,7 +63,7 @@ within the Firedrake virtual environment.</p>
 <p><strong>Installing PETSc and Firedrake can take up to 30 minutes depending on the system.</strong></p>
 </div>
 <p>After installation, in order to use Firedrake and install Thetis you need to activate the Firedrake
-virtualenv:</p>
+virtual environment:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>source &lt;your-firedrake-venv-dir&gt;/bin/activate
 </pre></div>
 </div>
@@ -74,37 +74,56 @@ virtualenv:</p>
 </pre></div>
 </div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you want to install the developer <strong>main</strong> branch of Thetis, you will need to
+install the corresponding development branch (<strong>main</strong>) of Firedrake.
+Please follow the instructions on the <a class="reference external" href="http://firedrakeproject.org/install.html">Firedrake website</a>
+to do this.</p>
+</div>
 </section>
 <section id="installing-thetis">
 <h2>Installing Thetis<a class="headerlink" href="#installing-thetis" title="Link to this heading">¶</a></h2>
-<p>You can install Thetis in your Firedrake installation by activating the Firedrake virtualenv and running:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/thetisproject/thetis.git
+<p>You can install Thetis in your Firedrake installation by activating the Firedrake virtual environment and running:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/thetisproject/thetis.git@release
 </pre></div>
 </div>
+<p>This will install the latest (stable) release branch.</p>
+</section>
 <section id="editable-install">
-<span id="id1"></span><h3>Editable install<a class="headerlink" href="#editable-install" title="Link to this heading">¶</a></h3>
-<p>If you want to install Thetis from a local checkout of the repository that you can directly edit, update (pull) from GitHub, switch branches, etc., it is recommended to use an editable install using:</p>
+<span id="id2"></span><h2>Editable install<a class="headerlink" href="#editable-install" title="Link to this heading">¶</a></h2>
+<p>If you want to install Thetis from a local checkout of the repository that you can directly edit, update (pull) from
+GitHub, switch branches, etc., it is recommended to use an editable install using:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/thetisproject/thetis
-pip install -e &lt;path_to_thetis&gt;
+cd thetis
+git checkout &lt;branch_name&gt;
+pip install -e .
 </pre></div>
 </div>
 <p>If you have SSH keys set up with GitHub, you can use the SSH-based clone instead:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:thetisproject/thetis
-pip install -e &lt;path_to_thetis&gt;
+cd thetis
+git checkout &lt;branch_name&gt;
+pip install -e .
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For development, the default branch of Thetis is <strong>main</strong>. This tracks the <strong>main</strong> branch of Firedrake. If
+you do not intend on developing Thetis, please ensure that you checkout the release branch for compatibility.</p>
 </div>
 <p>An IDE such as PyCharm will not recognize Thetis when installed in this fashion for any project outside the cloned repository,
 as the source is not in site-packages. It will still run, and if you would like to enable full code navigation, you
 can add the Thetis cloned repository as a content root, then add the <code class="docutils literal notranslate"><span class="pre">thetis</span></code> sub-directory as a sources root.</p>
 </section>
 <section id="alternative-installation-methods">
-<span id="id2"></span><h3>Alternative installation methods<a class="headerlink" href="#alternative-installation-methods" title="Link to this heading">¶</a></h3>
-<p>As well as being installable through <code class="docutils literal notranslate"><span class="pre">pip</span></code>, Firedrake also provides Docker containers which <em>typically</em> contain the
-latest Thetis at the time of release.</p>
+<span id="id3"></span><h2>Alternative installation methods<a class="headerlink" href="#alternative-installation-methods" title="Link to this heading">¶</a></h2>
+<p>As well as being installable through <code class="docutils literal notranslate"><span class="pre">pip</span></code>, Firedrake also provides Docker containers.
+Thetis is no longer distributed in Docker containers with the “latest” image, so please
+follow the standard installation instructions above.</p>
 <p>If there are any problems with the installation of Firedrake and Thetis, the Slack workspace for Firedrake contains both
 the general channel for Firedrake and a specific channel for Thetis. GitHub can also be used to report issues. Please
 follow this <a class="reference external" href="https://thetisproject.org/contact.html">link</a> for contact details and we will be happy to help.</p>
-</section>
 </section>
 </section>
 

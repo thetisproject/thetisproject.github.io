@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>2D channel with time-dependent boundary conditions &#8212; Thetis 0+untagged.2082.gf1a0bbb documentation</title>
+    <title>2D channel with time-dependent boundary conditions &#8212; Thetis 2025.10.1+1.gf513865b.dirty documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/thetis.css?v=0f3339d6" />
-    <script src="../_static/documentation_options.js?v=ccd1159c"></script>
+    <script src="../_static/documentation_options.js?v=df6f0c20"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -86,7 +86,7 @@ Note that we have increased <code class="docutils literal notranslate"><span cla
 tidal dynamics.</p>
 <p>Boundary condtitions are defined for each external boundary using their ID.
 In this example we are using a
-<a class="reference external" href="https://www.firedrakeproject.org/firedrake.html#firedrake.utility_meshes.RectangleMesh" title="(in Firedrake v0.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">RectangleMesh()</span></code></a> which assigns IDs 1, 2, 3,
+<a class="reference external" href="https://www.firedrakeproject.org/firedrake.html#firedrake.utility_meshes.RectangleMesh" title="(in Firedrake v2025.10.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">RectangleMesh()</span></code></a> which assigns IDs 1, 2, 3,
 and 4 for the four sides of the rectangle:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">left_bnd_id</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">right_bnd_id</span> <span class="o">=</span> <span class="mi">2</span>
@@ -94,8 +94,8 @@ and 4 for the four sides of the rectangle:</p>
 </div>
 <p>At each boundary we need to define the external value of the prognostic
 variables, i.e. in this case the water elevation and velocity.
-The value should be either a Firedrake <a class="reference external" href="https://www.firedrakeproject.org/firedrake.html#firedrake.constant.Constant" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constant</span></code></a> or
-<a class="reference external" href="https://www.firedrakeproject.org/firedrake.html#firedrake.function.Function" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></a> (in case the boundary condition is not uniform in space).</p>
+The value should be either a Firedrake <a class="reference external" href="https://www.firedrakeproject.org/firedrake.html#firedrake.constant.Constant" title="(in Firedrake v2025.10.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constant</span></code></a> or
+<a class="reference external" href="https://www.firedrakeproject.org/firedrake.html#firedrake.function.Function" title="(in Firedrake v2025.10.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></a> (in case the boundary condition is not uniform in space).</p>
 <p>We store the boundary conditions in a dictionary:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">swe_bnd</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">in_flux</span> <span class="o">=</span> <span class="mf">1e3</span>
@@ -138,8 +138,8 @@ condition as the simulation progresses.
 For this purpose we use the optional <code class="docutils literal notranslate"><span class="pre">update_forcings</span></code> argument of the
 <a class="reference internal" href="../thetis.html#thetis.solver2d.FlowSolver2d.iterate" title="thetis.solver2d.FlowSolver2d.iterate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iterate()</span></code></a> method.
 <code class="docutils literal notranslate"><span class="pre">update_forcings</span></code> is a python function that updates all time dependent
-<a class="reference external" href="https://www.firedrakeproject.org/firedrake.html#firedrake.constant.Constant" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constant</span></code></a>s or
-<a class="reference external" href="https://www.firedrakeproject.org/firedrake.html#firedrake.function.Function" title="(in Firedrake v0.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></a>s used to force the model.
+<a class="reference external" href="https://www.firedrakeproject.org/firedrake.html#firedrake.constant.Constant" title="(in Firedrake v2025.10.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constant</span></code></a>s or
+<a class="reference external" href="https://www.firedrakeproject.org/firedrake.html#firedrake.function.Function" title="(in Firedrake v2025.10.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code></a>s used to force the model.
 In this case we only need to update <code class="docutils literal notranslate"><span class="pre">tide_flux_const</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">update_forcings</span><span class="p">(</span><span class="n">t_new</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback function that updates all time dependent forcing fields&quot;&quot;&quot;</span>
