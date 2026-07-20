@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.solver &#8212; Thetis 2025.10.1 documentation</title>
+    <title>thetis.solver &#8212; Thetis 2026.7.dev8 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=1f79160d"></script>
+    <script src="../../_static/documentation_options.js?v=3dc2f53e"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -29,7 +29,8 @@
     <div class="menu">
       <ul>
         <li class="page_item"><a href="../../documentation.html" title="Thetis documentation">Documentation</a></li>
-        <li class="page_item"><a href="../../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../../developer_notes.html" title="Developer notes">Developer Notes</a></li>
+        <li class="page_item"><a href="../../download.html" title="Install Thetis">Install</a></li>
         <li class="page_item"><a href="../../team.html" title="Development team">Team</a></li>
         <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
         <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
@@ -374,7 +375,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">nnodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1_2d</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span>
         <span class="n">P1DG_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">P1DG_2d</span>
-        <span class="n">nelem2d</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">P1DG_2d</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span><span class="o">/</span><span class="n">P1DG_2d</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">()</span><span class="o">.</span><span class="n">num_vertices</span><span class="p">())</span>
+        <span class="n">nelem2d</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">P1DG_2d</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span><span class="o">/</span><span class="n">P1DG_2d</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">()</span><span class="o">.</span><span class="n">num_vertices</span><span class="p">)</span>
         <span class="n">nlayers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">layers</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="n">nprisms</span> <span class="o">=</span> <span class="n">nelem2d</span><span class="o">*</span><span class="n">nlayers</span>
         <span class="n">dofs_elev2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">H_2d</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span>
@@ -503,7 +504,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;rt-dg&#39;</span><span class="p">,</span> <span class="s1">&#39;bdm-dg&#39;</span><span class="p">]:</span>
             <span class="n">h_family_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">element_family</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
             <span class="n">h_family_suffix</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;triangle&#39;</span><span class="p">:</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;quadrilateral&#39;</span><span class="p">:</span> <span class="s1">&#39;CF&#39;</span><span class="p">}</span>
-            <span class="n">h_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">()</span><span class="o">.</span><span class="n">cellname</span><span class="p">()</span>
+            <span class="n">h_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh2d</span><span class="o">.</span><span class="n">ufl_cell</span><span class="p">()</span><span class="o">.</span><span class="n">cellname</span>
             <span class="n">hfam</span> <span class="o">=</span> <span class="n">h_family_prefix</span> <span class="o">+</span> <span class="n">h_family_suffix</span><span class="p">[</span><span class="n">h_cell</span><span class="p">]</span>
             <span class="n">h_degree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">function_spaces</span><span class="o">.</span><span class="n">U</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">hfam</span><span class="p">,</span> <span class="n">h_degree</span><span class="p">,</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">,</span> <span class="n">hdiv</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -612,7 +613,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">coriolis_3d</span> <span class="o">=</span> <span class="n">extend_function_to_3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">coriolis_frequency</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wind_stress</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wind_stress</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
-                <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wind_stress</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> \
+                <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wind_stress</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">geometric_dimension</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> \
                     <span class="s1">&#39;wind stress field must be a 3D function&#39;</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">wind_stress_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wind_stress</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">wind_stress</span><span class="p">,</span> <span class="n">Constant</span><span class="p">):</span>
@@ -987,7 +988,9 @@
                                        <span class="n">field_metadata</span><span class="p">,</span>
                                        <span class="n">export_type</span><span class="o">=</span><span class="s1">&#39;hdf5&#39;</span><span class="p">,</span>
                                        <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
-                                       <span class="n">preproc_funcs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_field_preproc_funcs</span><span class="p">)</span>
+                                       <span class="n">preproc_funcs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_field_preproc_funcs</span><span class="p">,</span>
+                                       <span class="n">include_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                       <span class="n">initial_time</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">,</span> <span class="s1">&#39;simulation_initial_date&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;hdf5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span></div>
 
 
@@ -1086,18 +1089,24 @@
 <div class="viewcode-block" id="FlowSolver.export">
 <a class="viewcode-back" href="../../thetis.html#thetis.solver.FlowSolver.export">[docs]</a>
     <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.FlowSolver.export&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Export all fields to disk</span>
 
 <span class="sd">        Also evaluates all callbacks set to &#39;export&#39; interval.</span>
+
+<span class="sd">        :kwarg float time: simulation time to pass to HDF5 exporters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;export&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">i_export</span><span class="p">)</span>
         <span class="c1"># set uv to total uv instead of deviation from depth average</span>
         <span class="c1"># TODO find a cleaner way of doing this ...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_dav_3d</span>
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">e</span><span class="o">.</span><span class="n">export</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">e</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="c1"># exporter doesn&#39;t accept time (VTKExporter, old HDF5)</span>
+                <span class="n">e</span><span class="o">.</span><span class="n">export</span><span class="p">()</span>
         <span class="c1"># restore uv_3d</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_dav_3d</span></div>
 
@@ -1166,8 +1175,9 @@
                                    <span class="n">export_type</span><span class="o">=</span><span class="s1">&#39;hdf5&#39;</span><span class="p">,</span>
                                    <span class="n">legacy_mode</span><span class="o">=</span><span class="n">legacy_mode</span><span class="p">,</span>
                                    <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">e</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;uv_2d&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">i_stored</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_2d</span><span class="p">)</span>
-        <span class="n">e</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;elev_2d&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">i_stored</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_2d</span><span class="p">)</span>
+        <span class="c1"># Load fields and collect metadata</span>
+        <span class="n">meta_uv_2d</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;uv_2d&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">i_stored</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_2d</span><span class="p">)</span>
+        <span class="n">meta_elev</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;elev_2d&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">i_stored</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">elev_2d</span><span class="p">)</span>
         <span class="n">e</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="s1">&#39;uv_3d&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">i_stored</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">uv_3d</span><span class="p">)</span>
         <span class="c1"># NOTE remove mean from uv_3d</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestepper</span><span class="o">.</span><span class="n">_remove_depth_average_from_uv_3d</span><span class="p">()</span>
@@ -1192,6 +1202,11 @@
                                        <span class="n">tke</span><span class="o">=</span><span class="n">tke</span><span class="p">,</span> <span class="n">psi</span><span class="o">=</span><span class="n">psi</span><span class="p">,</span>
                                        <span class="p">)</span>
 
+        <span class="c1"># choose metadata from one file (they should agree)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">meta_uv_2d</span><span class="p">)</span>
+        <span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">meta_elev</span><span class="p">)</span>
+
         <span class="c1"># time stepper bookkeeping for export time step</span>
         <span class="k">if</span> <span class="n">i_export</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">i_export</span> <span class="o">=</span> <span class="n">i_stored</span>
@@ -1200,9 +1215,19 @@
         <span class="k">if</span> <span class="n">iteration</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">iteration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_export_t</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">t</span> <span class="o">=</span> <span class="n">iteration</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+            <span class="c1"># prefer metadata time if available</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">iteration</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iteration</span> <span class="o">=</span> <span class="n">iteration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span> <span class="o">=</span> <span class="n">t</span>
+
+        <span class="c1"># if initial_time stored in file, update options</span>
+        <span class="k">if</span> <span class="s1">&#39;initial_time_iso&#39;</span> <span class="ow">in</span> <span class="n">metadata</span> <span class="ow">and</span> <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;initial_time_iso&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">initial_time</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;initial_time_iso&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">initial_time</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">simulation_initial_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">initial_time</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># already a datetime object</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">simulation_initial_date</span> <span class="o">=</span> <span class="n">initial_time</span>
 
         <span class="c1"># for next export</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_initial_state</span> <span class="o">=</span> <span class="n">outputdir</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span>
@@ -1403,7 +1428,7 @@
         <span class="c1"># initial export</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print_state</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">print_header</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_initial_state</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">export_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">export_func</span><span class="p">()</span>
             <span class="k">if</span> <span class="s1">&#39;vtk&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">:</span>
@@ -1430,7 +1455,7 @@
                 <span class="n">cputimestamp</span> <span class="o">=</span> <span class="n">time_mod</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">print_state</span><span class="p">(</span><span class="n">cputime</span><span class="p">)</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">export_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">export_func</span><span class="p">()</span></div>
 </div>
@@ -1445,7 +1470,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2016-2025, Tuomas Kärnä et al..
+    &#169; Copyright 2016-2026, Tuomas Kärnä et al..
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>

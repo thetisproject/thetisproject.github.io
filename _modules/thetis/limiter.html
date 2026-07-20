@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.limiter &#8212; Thetis 2025.10.1 documentation</title>
+    <title>thetis.limiter &#8212; Thetis 2026.7.dev8 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=1f79160d"></script>
+    <script src="../../_static/documentation_options.js?v=3dc2f53e"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -29,7 +29,8 @@
     <div class="menu">
       <ul>
         <li class="page_item"><a href="../../documentation.html" title="Thetis documentation">Documentation</a></li>
-        <li class="page_item"><a href="../../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../../developer_notes.html" title="Developer notes">Developer Notes</a></li>
+        <li class="page_item"><a href="../../download.html" title="Install Thetis">Install</a></li>
         <li class="page_item"><a href="../../team.html" title="Development team">Team</a></li>
         <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
         <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
@@ -79,7 +80,7 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_elem</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">VectorElement</span><span class="p">):</span>
         <span class="n">ufl_elem</span> <span class="o">=</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">sub_elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;TensorProductElement&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ufl_elem</span><span class="p">,</span> <span class="n">firedrake</span><span class="o">.</span><span class="n">TensorProductElement</span><span class="p">):</span>
         <span class="c1"># extruded mesh</span>
         <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">ufl_elem</span><span class="o">.</span><span class="n">factor_elements</span>
         <span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="ow">in</span> <span class="n">fam_list</span><span class="p">,</span> \
@@ -126,7 +127,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">(</span><span class="n">VertexBasedP1DGLimiter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p1dg_space</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P0</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">geometric_dimension</span> <span class="o">==</span> <span class="mi">2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_dependent_mesh</span> <span class="o">=</span> <span class="n">time_dependent_mesh</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_construct_centroid_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -269,7 +270,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2016-2025, Tuomas Kärnä et al..
+    &#169; Copyright 2016-2026, Tuomas Kärnä et al..
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>

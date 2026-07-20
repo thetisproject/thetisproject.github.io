@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.forcing &#8212; Thetis 0+untagged.2082.gf1a0bbb documentation</title>
+    <title>thetis.forcing &#8212; Thetis 2026.7.dev8 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=ccd1159c"></script>
+    <script src="../../_static/documentation_options.js?v=3dc2f53e"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -29,7 +29,8 @@
     <div class="menu">
       <ul>
         <li class="page_item"><a href="../../documentation.html" title="Thetis documentation">Documentation</a></li>
-        <li class="page_item"><a href="../../download.html" title="Install Thetis">Download</a></li>
+        <li class="page_item"><a href="../../developer_notes.html" title="Developer notes">Developer Notes</a></li>
+        <li class="page_item"><a href="../../download.html" title="Install Thetis">Install</a></li>
         <li class="page_item"><a href="../../team.html" title="Development team">Team</a></li>
         <li class="page_item"><a href="../../publications.html" title="Publications">Publications</a></li>
         <li class="page_item"><a href="../../funding.html" title="Our financial supporters">Funding</a></li>
@@ -133,6 +134,154 @@
 
 
 
+<div class="viewcode-block" id="AtmosphericForcingInterpolator">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.AtmosphericForcingInterpolator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AtmosphericForcingInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic class for atmospheric forcing (pressure and wind stress)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.AtmosForcingInterpolator.__init__&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">wind_stress_field</span><span class="p">,</span>
+                 <span class="n">atm_pressure_field</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span>
+                 <span class="n">ncfile</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span>
+                 <span class="n">vect_rotator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">east_wind_var_name</span><span class="o">=</span><span class="s1">&#39;u10&#39;</span><span class="p">,</span> <span class="n">north_wind_var_name</span><span class="o">=</span><span class="s1">&#39;v10&#39;</span><span class="p">,</span>
+                 <span class="n">pressure_var_name</span><span class="o">=</span><span class="s1">&#39;msl&#39;</span><span class="p">,</span> <span class="n">time_var_name</span><span class="o">=</span><span class="s1">&#39;valid_time&#39;</span><span class="p">,</span>
+                 <span class="n">pressure_units</span><span class="o">=</span><span class="s2">&quot;pa&quot;</span><span class="p">,</span> <span class="n">temporal_interpolator</span><span class="o">=</span><span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFTimeParser</span><span class="p">,</span>
+                 <span class="n">fill_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+                 <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg function_space: Target (scalar) :class:`FunctionSpace` object onto</span>
+<span class="sd">            which data will be interpolated.</span>
+<span class="sd">        :arg wind_stress_field: A 2D vector :class:`Function` where the output</span>
+<span class="sd">            wind stress will be stored.</span>
+<span class="sd">        :arg atm_pressure_field: A 2D scalar :class:`Function` where the output</span>
+<span class="sd">            atmospheric pressure will be stored.</span>
+<span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
+<span class="sd">        :arg ncfile: A file name or file pattern for reading the atmospheric data</span>
+<span class="sd">        :arg init_date: A :class:`datetime` object that indicates the start</span>
+<span class="sd">            date/time of the Thetis simulation. Must contain time zone. E.g.</span>
+<span class="sd">            &#39;datetime(2006, 5, 1, tzinfo=pytz.utc)&#39;</span>
+<span class="sd">        :arg temporal_interpolator: A :class:`TimeParser` object to handle temporal interpolation.</span>
+<span class="sd">        :kwarg vect_rotator: function that rotates vectors from ENU coordinates</span>
+<span class="sd">            to target function space (optional).</span>
+<span class="sd">        :kwarg east_wind_var_name, north_wind_var_name, pressure_var_name, time_var_name:</span>
+<span class="sd">            wind components, pressure, and time field names in netCDF file.</span>
+<span class="sd">        :kwarg fill_mode: Determines how points outside the source grid will be</span>
+<span class="sd">            treated. If &#39;nearest&#39;, value of the nearest source point will be</span>
+<span class="sd">            used. Otherwise a constant fill value will be used (default).</span>
+<span class="sd">        :kwarg float fill_value: Set the fill value (default: NaN)</span>
+<span class="sd">        :kwarg bool verbose: Set True to print debug information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span> <span class="o">=</span> <span class="n">function_space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span> <span class="o">=</span> <span class="n">wind_stress_field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atm_pressure_field</span> <span class="o">=</span> <span class="n">atm_pressure_field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure_units</span> <span class="o">=</span> <span class="n">pressure_units</span>
+
+        <span class="c1"># construct interpolators</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFLatLonInterpolator2d</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span> <span class="n">fill_mode</span><span class="o">=</span><span class="n">fill_mode</span><span class="p">,</span>
+            <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span><span class="p">)</span>
+        <span class="n">var_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">east_wind_var_name</span><span class="p">,</span> <span class="n">north_wind_var_name</span><span class="p">,</span> <span class="n">pressure_var_name</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFSpatialInterpolator</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="p">,</span> <span class="n">var_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timesearch_obj</span> <span class="o">=</span> \
+            <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFTimeSearch</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span>
+                                           <span class="n">init_date</span><span class="p">,</span>
+                                           <span class="n">temporal_interpolator</span><span class="p">,</span>
+                                           <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                                           <span class="n">time_variable_name</span><span class="o">=</span><span class="n">time_var_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span> <span class="o">=</span> \
+            <span class="n">interpolation</span><span class="o">.</span><span class="n">LinearTimeInterpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timesearch_obj</span><span class="p">,</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">)</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="o">.</span><span class="n">mesh_lonlat</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="o">.</span><span class="n">mesh_lonlat</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">vect_rotator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">get_vector_rotator</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">vect_rotator</span>
+
+<div class="viewcode-block" id="AtmosphericForcingInterpolator.set_fields">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.AtmosphericForcingInterpolator.set_fields">[docs]</a>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.AtmosForcingInterpolator.set_fields&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates forcing fields at the given time.</span>
+<span class="sd">        Performs interpolation and updates the output wind stress and</span>
+<span class="sd">        atmospheric pressure fields in place.</span>
+<span class="sd">        :arg float time: Thetis simulation time in seconds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">east_wind</span><span class="p">,</span> <span class="n">north_wind</span><span class="p">,</span> <span class="n">prmsl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">east_strs</span><span class="p">,</span> <span class="n">north_strs</span> <span class="o">=</span> <span class="n">compute_wind_stress</span><span class="p">(</span><span class="n">east_wind</span><span class="p">,</span> <span class="n">north_wind</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">ufl_shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">3</span><span class="p">,):</span>
+            <span class="n">u_strs</span><span class="p">,</span> <span class="n">v_strs</span><span class="p">,</span> <span class="n">z_strs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span><span class="p">(</span><span class="n">east_strs</span><span class="p">,</span> <span class="n">north_strs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">u_strs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_strs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_strs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">u_strs</span><span class="p">,</span> <span class="n">v_strs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span><span class="p">(</span><span class="n">east_strs</span><span class="p">,</span> <span class="n">north_strs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">u_strs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_strs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_units</span> <span class="o">==</span> <span class="s2">&quot;pa&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">atm_pressure_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">prmsl</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_units</span> <span class="o">==</span> <span class="s2">&quot;hpa&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">atm_pressure_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">prmsl</span> <span class="o">*</span> <span class="mi">100</span>  <span class="c1"># hPa to Pa</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ERA5Interpolator">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.ERA5Interpolator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ERA5Interpolator</span><span class="p">(</span><span class="n">AtmosphericForcingInterpolator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to use ERA5 forcing. Note most defaults are for this kind of forcing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">wind_stress_field</span><span class="p">,</span>
+                 <span class="n">atm_pressure_field</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span>
+                 <span class="n">ncfile</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span>
+                 <span class="n">vect_rotator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">fill_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+                 <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">wind_stress_field</span><span class="p">,</span>
+                         <span class="n">atm_pressure_field</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span>
+                         <span class="n">ncfile</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span>
+                         <span class="n">vect_rotator</span><span class="p">,</span>
+                         <span class="n">fill_mode</span><span class="o">=</span><span class="n">fill_mode</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span><span class="p">,</span>
+                         <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="TCHazardsInterpolator">
+<a class="viewcode-back" href="../../thetis.html#thetis.forcing.TCHazardsInterpolator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TCHazardsInterpolator</span><span class="p">(</span><span class="n">AtmosphericForcingInterpolator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to use atmospheric forcing from the TCHazaRds package</span>
+<span class="sd">    https://github.com/AusClimateService/TCHazaRds</span>
+<span class="sd">    O’Grady, J. et al. (2024) ‘Evaluation of parametric tropical cyclone surface winds</span>
+<span class="sd">    over the Eastern Australian region’,</span>
+<span class="sd">    Monthly weather review, 152(1), pp. 345–361.</span>
+<span class="sd">    Available at: https://doi.org/10.1175/mwr-d-23-0063.1.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">wind_stress_field</span><span class="p">,</span>
+                 <span class="n">atm_pressure_field</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span>
+                 <span class="n">ncfile</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span>
+                 <span class="n">vect_rotator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">fill_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+                 <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">wind_stress_field</span><span class="p">,</span>
+                         <span class="n">atm_pressure_field</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span>
+                         <span class="n">ncfile</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span>
+                         <span class="n">vect_rotator</span><span class="p">,</span>
+                         <span class="n">east_wind_var_name</span><span class="o">=</span><span class="s2">&quot;Uw&quot;</span><span class="p">,</span> <span class="n">north_wind_var_name</span><span class="o">=</span><span class="s2">&quot;Vw&quot;</span><span class="p">,</span>
+                         <span class="n">pressure_var_name</span><span class="o">=</span><span class="s2">&quot;Pr&quot;</span><span class="p">,</span> <span class="n">time_var_name</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+                         <span class="n">pressure_units</span><span class="o">=</span><span class="s2">&quot;hpa&quot;</span><span class="p">,</span>
+                         <span class="n">fill_mode</span><span class="o">=</span><span class="n">fill_mode</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span><span class="p">,</span>
+                         <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="ATMNetCDFTime">
 <a class="viewcode-back" href="../../thetis.html#thetis.forcing.ATMNetCDFTime">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ATMNetCDFTime</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFTimeParser</span><span class="p">):</span>
@@ -149,7 +298,7 @@
 <span class="sd">            all time steps are loaded. Default: None.</span>
 <span class="sd">        :kwarg bool verbose: Se True to print debug information.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ATMNetCDFTime</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">time_variable_name</span><span class="o">=</span><span class="n">time_variable_name</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">time_variable_name</span><span class="o">=</span><span class="n">time_variable_name</span><span class="p">)</span>
         <span class="c1"># NOTE these are daily forecast files, limit time steps to one day</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">epoch_to_datetime</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">end_time_raw</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">epoch_to_datetime</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
@@ -161,100 +310,39 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">time_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">epoch_to_datetime</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Parsed file </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
-            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Time span: </span><span class="si">{:}</span><span class="s1"> -&gt; </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time_raw</span><span class="p">))</span>
-            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Time step: </span><span class="si">{:}</span><span class="s1"> h&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_step</span><span class="o">/</span><span class="mf">3600.</span><span class="p">))</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Parsed file </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Time span: </span><span class="si">%s</span><span class="s1"> -&gt; </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time_raw</span><span class="p">)</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Time step: </span><span class="si">%.1f</span><span class="s1"> h&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span><span class="o">/</span><span class="mf">3600.</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">max_duration</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Restricting duration to </span><span class="si">{:}</span><span class="s1"> h -&gt; keeping </span><span class="si">{:}</span><span class="s1"> steps&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_duration</span><span class="o">/</span><span class="mf">3600.</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">))</span>
-                <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  New time span: </span><span class="si">{:}</span><span class="s1"> -&gt; </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">))</span></div>
+                <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Restricting duration to </span><span class="si">%.1f</span><span class="s1"> h -&gt; keeping </span><span class="si">%d</span><span class="s1"> steps&#39;</span><span class="p">,</span>
+                             <span class="n">max_duration</span><span class="o">/</span><span class="mf">3600.</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">)</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  New time span: </span><span class="si">%s</span><span class="s1"> -&gt; </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="ATMInterpolator">
 <a class="viewcode-back" href="../../thetis.html#thetis.forcing.ATMInterpolator">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ATMInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ATMInterpolator</span><span class="p">(</span><span class="n">AtmosphericForcingInterpolator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpolates WRF/NAM atmospheric model data on 2D fields.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ATMInterpolator.__init__&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">wind_stress_field</span><span class="p">,</span>
                  <span class="n">atm_pressure_field</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span>
-                 <span class="n">ncfile_pattern</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span>
+                 <span class="n">ncfile</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span>
                  <span class="n">vect_rotator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">east_wind_var_name</span><span class="o">=</span><span class="s1">&#39;uwind&#39;</span><span class="p">,</span> <span class="n">north_wind_var_name</span><span class="o">=</span><span class="s1">&#39;vwind&#39;</span><span class="p">,</span>
-                 <span class="n">pressure_var_name</span><span class="o">=</span><span class="s1">&#39;prmsl&#39;</span><span class="p">,</span> <span class="n">time_variable_name</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span>
-                 <span class="n">fill_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">fill_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+                 <span class="n">fill_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
                  <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :arg function_space: Target (scalar) :class:`FunctionSpace` object onto</span>
-<span class="sd">            which data will be interpolated.</span>
-<span class="sd">        :arg wind_stress_field: A 2D vector :class:`Function` where the output</span>
-<span class="sd">            wind stress will be stored.</span>
-<span class="sd">        :arg atm_pressure_field: A 2D scalar :class:`Function` where the output</span>
-<span class="sd">            atmospheric pressure will be stored.</span>
-<span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
-<span class="sd">        :arg ncfile_pattern: A file name pattern for reading the atmospheric</span>
-<span class="sd">            model output files. E.g. &#39;forcings/nam_air.local.2006_*.nc&#39;</span>
-<span class="sd">        :arg init_date: A :class:`datetime` object that indicates the start</span>
-<span class="sd">            date/time of the Thetis simulation. Must contain time zone. E.g.</span>
-<span class="sd">            &#39;datetime(2006, 5, 1, tzinfo=pytz.utc)&#39;</span>
-<span class="sd">        :kwarg vect_rotator: function that rotates vectors from ENU coordinates</span>
-<span class="sd">            to target function space (optional).</span>
-<span class="sd">        :kwarg east_wind_var_name, north_wind_var_name, pressure_var_name:</span>
-<span class="sd">            wind component and pressure field names in netCDF file.</span>
-<span class="sd">        :kwarg fill_mode: Determines how points outside the source grid will be</span>
-<span class="sd">            treated. If &#39;nearest&#39;, value of the nearest source point will be</span>
-<span class="sd">            used. Otherwise a constant fill value will be used (default).</span>
-<span class="sd">        :kwarg float fill_value: Set the fill value (default: NaN)</span>
-<span class="sd">        :kwarg bool verbose: Se True to print debug information.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span> <span class="o">=</span> <span class="n">function_space</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span> <span class="o">=</span> <span class="n">wind_stress_field</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">atm_pressure_field</span> <span class="o">=</span> <span class="n">atm_pressure_field</span>
 
-        <span class="c1"># construct interpolators</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFLatLonInterpolator2d</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span> <span class="n">fill_mode</span><span class="o">=</span><span class="n">fill_mode</span><span class="p">,</span>
-            <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span><span class="p">)</span>
-        <span class="n">var_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">east_wind_var_name</span><span class="p">,</span> <span class="n">north_wind_var_name</span><span class="p">,</span> <span class="n">pressure_var_name</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFSpatialInterpolator</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="p">,</span> <span class="n">var_list</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timesearch_obj</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">NetCDFTimeSearch</span><span class="p">(</span>
-            <span class="n">ncfile_pattern</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span> <span class="n">ATMNetCDFTime</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">time_variable_name</span><span class="o">=</span><span class="n">time_variable_name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">LinearTimeInterpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timesearch_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">)</span>
-        <span class="n">lon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="o">.</span><span class="n">mesh_lonlat</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span><span class="o">.</span><span class="n">mesh_lonlat</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">vect_rotator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">get_vector_rotator</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span> <span class="o">=</span> <span class="n">vect_rotator</span>
-
-<div class="viewcode-block" id="ATMInterpolator.set_fields">
-<a class="viewcode-back" href="../../thetis.html#thetis.forcing.ATMInterpolator.set_fields">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ATMInterpolator.set_fields&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Evaluates forcing fields at the given time.</span>
-
-<span class="sd">        Performs interpolation and updates the output wind stress and</span>
-<span class="sd">        atmospheric pressure fields in place.</span>
-
-<span class="sd">        :arg float time: Thetis simulation time in seconds.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">east_wind</span><span class="p">,</span> <span class="n">north_wind</span><span class="p">,</span> <span class="n">prmsl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
-        <span class="n">east_strs</span><span class="p">,</span> <span class="n">north_strs</span> <span class="o">=</span> <span class="n">compute_wind_stress</span><span class="p">(</span><span class="n">east_wind</span><span class="p">,</span> <span class="n">north_wind</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">ufl_shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">3</span><span class="p">,):</span>
-            <span class="n">u_strs</span><span class="p">,</span> <span class="n">v_strs</span><span class="p">,</span> <span class="n">z_strs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span><span class="p">(</span><span class="n">east_strs</span><span class="p">,</span> <span class="n">north_strs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">u_strs</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_strs</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_strs</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">u_strs</span><span class="p">,</span> <span class="n">v_strs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vect_rotator</span><span class="p">(</span><span class="n">east_strs</span><span class="p">,</span> <span class="n">north_strs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">u_strs</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">wind_stress_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_strs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">atm_pressure_field</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data_with_halos</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">prmsl</span></div>
-</div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">wind_stress_field</span><span class="p">,</span>
+                         <span class="n">atm_pressure_field</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span>
+                         <span class="n">ncfile</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span>
+                         <span class="n">vect_rotator</span><span class="p">,</span>
+                         <span class="n">east_wind_var_name</span><span class="o">=</span><span class="s2">&quot;uwind&quot;</span><span class="p">,</span> <span class="n">north_wind_var_name</span><span class="o">=</span><span class="s2">&quot;vwind&quot;</span><span class="p">,</span>
+                         <span class="n">pressure_var_name</span><span class="o">=</span><span class="s2">&quot;prmsl&quot;</span><span class="p">,</span>
+                         <span class="n">temporal_interpolator</span><span class="o">=</span><span class="n">ATMNetCDFTime</span><span class="p">,</span>
+                         <span class="n">fill_mode</span><span class="o">=</span><span class="n">fill_mode</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span><span class="p">,</span>
+                         <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
 
 
 
@@ -1037,7 +1125,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_empty_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
 
         <span class="c1"># construct local coordinates</span>
-        <span class="n">on_sphere</span> <span class="o">=</span> <span class="n">function_space</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="n">on_sphere</span> <span class="o">=</span> <span class="n">function_space</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">geometric_dimension</span> <span class="o">==</span> <span class="mi">3</span>
 
         <span class="k">if</span> <span class="n">on_sphere</span><span class="p">:</span>
             <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">SpatialCoordinate</span><span class="p">(</span><span class="n">function_space</span><span class="o">.</span><span class="n">mesh</span><span class="p">())</span>
@@ -1210,7 +1298,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2016-2025, Tuomas Kärnä et al..
+    &#169; Copyright 2016-2026, Tuomas Kärnä et al..
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
