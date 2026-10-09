@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.inversion_tools &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>thetis.inversion_tools &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../../_static/documentation_options.js?v=a725081d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -75,18 +75,18 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">CostFunctionCallback</span><span class="p">(</span><span class="n">DiagnosticCallback</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">cost_function</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># Disable logging and HDF5 export</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;append_to_log&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;export_to_hdf5&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'append_to_log'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'export_to_hdf5'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cost_function</span> <span class="o">=</span> <span class="n">cost_function</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;cost_function_callback&#39;</span>
+        <span class="k">return</span> <span class="s1">'cost_function_callback'</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">variable_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;cost_function&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">'cost_function'</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Evaluate the cost function</span>
@@ -97,7 +97,7 @@
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.CostFunctionCallback.message_str">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cost_value</span><span class="p">):</span>
         <span class="c1"># Return a string representation of the cost function value</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Cost function value: </span><span class="si">{</span><span class="n">cost_value</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Cost function value: </span><span class="si">{</span><span class="n">cost_value</span><span class="si">}</span><span class="s2">"</span></div>
 </div>
 
 
@@ -105,10 +105,10 @@
 <div class="viewcode-block" id="ControlManager">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.ControlManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ControlManager</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Handles an individual control (spatially varying Function, masked combination of Functions,</span>
 <span class="sd">    or uniform value Function) and its export logic, used internally in InversionManager.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">no_exports</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mappings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
@@ -130,19 +130,19 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_masked_combination</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All masked combination controls must be Functions&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"All masked combination controls must be Functions"</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">projection_space</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;equispaced&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">projection_space</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">"CG"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s2">"equispaced"</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_field</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Real&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"Real"</span><span class="p">:</span>
             <span class="c1"># domain_constant (uniform value Function in the real space)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">projection_space</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;equispaced&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">projection_space</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">"CG"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s2">"equispaced"</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_field</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Spatially varying field</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Control must be a Firedrake Function&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Control must be a Firedrake Function"</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">projection_space</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_field</span> <span class="o">=</span> <span class="kc">True</span>
@@ -150,16 +150,16 @@
         <span class="c1"># Initialize exporters if needed</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">no_exports</span><span class="p">:</span>
             <span class="n">fs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection_space</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_field</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">vtk_file</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">VTKFile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">/control_progress_</span><span class="si">{</span><span class="n">index</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.pvd&quot;</span><span class="p">)</span>
-            <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;control_</span><span class="si">{</span><span class="n">index</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">hdf5_exporter</span> <span class="o">=</span> <span class="n">HDF5Exporter</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">+</span> <span class="s2">&quot;/hdf5&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">gradient_vtk_file</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">VTKFile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">/gradient_progress_</span><span class="si">{</span><span class="n">index</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.pvd&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vtk_file</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">VTKFile</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">/control_progress_</span><span class="si">{</span><span class="n">index</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.pvd"</span><span class="p">)</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"control_</span><span class="si">{</span><span class="n">index</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">"</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hdf5_exporter</span> <span class="o">=</span> <span class="n">HDF5Exporter</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">+</span> <span class="s2">"/hdf5"</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gradient_vtk_file</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">VTKFile</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">/gradient_progress_</span><span class="si">{</span><span class="n">index</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.pvd"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ControlManager.project_control">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.ControlManager.project_control">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">project_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">updated_controls</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Project masked combination or domain_constant to CG1 field for export.&quot;&quot;&quot;</span>
-        <span class="n">field</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projection_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;control&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Project masked combination or domain_constant to CG1 field for export."""</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projection_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"control"</span><span class="p">)</span>
         <span class="n">field</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_masked_combination</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">m_</span><span class="p">,</span> <span class="n">mask_</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">updated_controls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mappings</span><span class="p">):</span>
@@ -172,13 +172,13 @@
 <div class="viewcode-block" id="ControlManager.export">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.ControlManager.export">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">updated_control</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export control to VTK/HDF5 files.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Export control to VTK/HDF5 files."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_exports</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_field</span><span class="p">:</span>
             <span class="c1"># spatially varying field written directly</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">updated_control</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">updated_control</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Field export got multiple controls!&quot;</span>
+                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">updated_control</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Field export got multiple controls!"</span>
                 <span class="n">updated_control</span> <span class="o">=</span> <span class="n">updated_control</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">updated_control</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
             <span class="n">field</span> <span class="o">=</span> <span class="n">updated_control</span>
@@ -194,20 +194,20 @@
 <div class="viewcode-block" id="ControlManager.export_gradient">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.ControlManager.export_gradient">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">export_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">updated_gradient</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export gradient to VTK/HDF5 files.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Export gradient to VTK/HDF5 files."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_exports</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_field</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">updated_gradient</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">updated_gradient</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Field export got multiple controls!&quot;</span>
+                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">updated_gradient</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Field export got multiple controls!"</span>
                 <span class="n">updated_gradient</span> <span class="o">=</span> <span class="n">updated_gradient</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">updated_gradient</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;Gradient&quot;</span><span class="p">)</span>
+            <span class="n">updated_gradient</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">"Gradient"</span><span class="p">)</span>
             <span class="n">gradient</span> <span class="o">=</span> <span class="n">updated_gradient</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">updated_gradient</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="n">updated_gradient</span> <span class="o">=</span> <span class="p">[</span><span class="n">updated_gradient</span><span class="p">]</span>
-            <span class="n">gradient</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projection_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Gradient&quot;</span><span class="p">)</span>
+            <span class="n">gradient</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projection_space</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"Gradient"</span><span class="p">)</span>
             <span class="n">gradient</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_masked_combination</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">g_</span><span class="p">,</span> <span class="n">mask_</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">updated_gradient</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mappings</span><span class="p">):</span>
@@ -223,15 +223,15 @@
 <div class="viewcode-block" id="InversionManager">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.InversionManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">InversionManager</span><span class="p">(</span><span class="n">FrozenHasTraits</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class for handling inversion problems and stashing</span>
 <span class="sd">    the progress of the associated optimization routines.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="nd">@unfrozen</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sta_manager</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;outputs&#39;</span><span class="p">,</span> <span class="n">no_exports</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sta_manager</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">'outputs'</span><span class="p">,</span> <span class="n">no_exports</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">penalty_parameters</span><span class="o">=</span><span class="p">[],</span> <span class="n">test_consistency</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">test_gradient</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg sta_manager: the :class:`StationObservationManagerBase` instance</span>
 <span class="sd">        :kwarg output_dir: model output directory</span>
 <span class="sd">        :kwarg no_exports: if True, nothing will be written to disk</span>
@@ -242,7 +242,7 @@
 <span class="sd">            which the :class:`ReducedFunctional` can recompute values</span>
 <span class="sd">        :kwarg test_gradient: toggle testing the correctness with</span>
 <span class="sd">            which the :class:`ReducedFunctional` can recompute gradients</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sta_manager</span><span class="p">,</span> <span class="n">StationObservationManagerBase</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sta_manager</span> <span class="o">=</span> <span class="n">sta_manager</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reg_manager</span> <span class="o">=</span> <span class="kc">None</span>
@@ -276,16 +276,16 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_exports</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">real</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Exports are not supported in Real mode.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Exports are not supported in Real mode."</span><span class="p">)</span>
             <span class="n">create_directory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
-            <span class="n">create_directory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">+</span> <span class="s1">&#39;/hdf5&#39;</span><span class="p">)</span>
+            <span class="n">create_directory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">+</span> <span class="s1">'/hdf5'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="InversionManager.add_control">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.InversionManager.add_control">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controls</span><span class="p">,</span> <span class="n">mappings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Add control(s).</span>
 
 <span class="sd">        Can be called multiple times in case of multiparameter optimization.</span>
@@ -307,12 +307,12 @@
 <span class="sd">          but changing it mid-solve may lead to incorrect gradients or mis-evaluation</span>
 <span class="sd">          of the ReducedFunctional.</span>
 <span class="sd">        - Masked combinations are supported via lists of Functions combined with masks.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">controls</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="n">controls</span> <span class="o">=</span> <span class="p">[</span><span class="n">controls</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">controls</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Control </span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2"> is not a Firedrake Function&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Control </span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2"> is not a Firedrake Function"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">mappings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control_managers</span><span class="p">)</span>
             <span class="n">cm</span> <span class="o">=</span> <span class="n">ControlManager</span><span class="p">(</span><span class="n">controls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">no_exports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">no_exports</span><span class="p">,</span> <span class="n">mappings</span><span class="o">=</span><span class="n">mappings</span><span class="p">)</span>
@@ -330,10 +330,10 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">control_coeff_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a flat list of the underlying Firedrake Functions</span>
 <span class="sd">        used as controls, in the order they were added.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">cm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_managers</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cm</span><span class="o">.</span><span class="n">controls</span><span class="p">]</span>
 
     <span class="nd">@property</span>
@@ -349,7 +349,7 @@
 <div class="viewcode-block" id="InversionManager.set_control_state">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.InversionManager.set_control_state">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_control_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">djdm_list</span><span class="p">,</span> <span class="n">m_list</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Stores optimization state.</span>
 
 <span class="sd">        To call whenever variables are updated.</span>
@@ -357,7 +357,7 @@
 <span class="sd">        :arg j: error functional value</span>
 <span class="sd">        :arg djdm_list: list of gradient functions</span>
 <span class="sd">        :arg m_list: list of control coefficents</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">J</span> <span class="o">=</span> <span class="n">j</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dJdm_list</span> <span class="o">=</span> <span class="n">djdm_list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">m_list</span> <span class="o">=</span> <span class="n">m_list</span></div>
@@ -386,17 +386,17 @@
 <div class="viewcode-block" id="InversionManager.update_progress">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.InversionManager.update_progress">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Updates optimization progress and stores variables to disk.</span>
 
 <span class="sd">        To call after successful line searches.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">toc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_clock</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_coeff_list</span><span class="p">:</span>
-                <span class="n">print_function_value_range</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;Initial&#39;</span><span class="p">)</span>
+                <span class="n">print_function_value_range</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">'Initial'</span><span class="p">)</span>
 
-        <span class="n">elapsed</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tic</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">toc</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">tic</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> s&#39;</span>
+        <span class="n">elapsed</span> <span class="o">=</span> <span class="s1">'-'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tic</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">toc</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">tic</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> s'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tic</span> <span class="o">=</span> <span class="n">toc</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
@@ -414,18 +414,18 @@
         <span class="n">comm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dJdm_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">comm</span>
         <span class="k">if</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_exports</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">real</span><span class="p">:</span>
-                <span class="n">numpy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="si">}</span><span class="s1">/m_progress&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_progress</span><span class="p">)</span>
-            <span class="n">numpy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="si">}</span><span class="s1">/J_progress&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J_progress</span><span class="p">)</span>
-            <span class="n">numpy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="si">}</span><span class="s1">/J_reg_progress&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J_reg_progress</span><span class="p">)</span>
-            <span class="n">numpy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="si">}</span><span class="s1">/J_misfit_progress&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J_misfit_progress</span><span class="p">)</span>
-            <span class="n">numpy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="si">}</span><span class="s1">/dJdm_progress&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dJdm_progress</span><span class="p">)</span>
+                <span class="n">numpy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="si">}</span><span class="s1">/m_progress'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_progress</span><span class="p">)</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="si">}</span><span class="s1">/J_progress'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J_progress</span><span class="p">)</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="si">}</span><span class="s1">/J_reg_progress'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J_reg_progress</span><span class="p">)</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="si">}</span><span class="s1">/J_misfit_progress'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J_misfit_progress</span><span class="p">)</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="si">}</span><span class="s1">/dJdm_progress'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dJdm_progress</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">djdm</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
-            <span class="n">djdm</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">numpy</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">djdm</span><span class="p">)</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> .. </span><span class="si">{</span><span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">djdm</span><span class="p">)</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">]&quot;</span>
+            <span class="n">djdm</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">numpy</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">djdm</span><span class="p">)</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> .. </span><span class="si">{</span><span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">djdm</span><span class="p">)</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">]"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">djdm</span> <span class="o">=</span> <span class="s2">&quot;[&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dj</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">dj</span> <span class="ow">in</span> <span class="n">djdm</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;line search </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="si">:</span><span class="s1">2d</span><span class="si">}</span><span class="s1">: &#39;</span>
-                     <span class="sa">f</span><span class="s1">&#39;J=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="si">:</span><span class="s1">.3e</span><span class="si">}</span><span class="s1">, dJdm=</span><span class="si">{</span><span class="n">djdm</span><span class="si">}</span><span class="s1">, &#39;</span>
-                     <span class="sa">f</span><span class="s1">&#39;grad_ev=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_grad_evals</span><span class="si">}</span><span class="s1">, duration </span><span class="si">{</span><span class="n">elapsed</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">djdm</span> <span class="o">=</span> <span class="s2">"["</span> <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dj</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">dj</span> <span class="ow">in</span> <span class="n">djdm</span><span class="p">])</span> <span class="o">+</span> <span class="s2">"]"</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">'line search </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="si">:</span><span class="s1">2d</span><span class="si">}</span><span class="s1">: '</span>
+                     <span class="sa">f</span><span class="s1">'J=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="si">:</span><span class="s1">.3e</span><span class="si">}</span><span class="s1">, dJdm=</span><span class="si">{</span><span class="n">djdm</span><span class="si">}</span><span class="s1">, '</span>
+                     <span class="sa">f</span><span class="s1">'grad_ev=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_grad_evals</span><span class="si">}</span><span class="s1">, duration </span><span class="si">{</span><span class="n">elapsed</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_exports</span><span class="p">:</span>
             <span class="n">ref_index</span> <span class="o">=</span> <span class="mi">0</span>
@@ -443,40 +443,40 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rf_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Default keyword arguments to pass to the</span>
 <span class="sd">        :class:`ReducedFunctional` class.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">functional_eval_cb</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Called after functional evaluation&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""Called after functional evaluation"""</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">J</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
             <span class="c1"># collect additional data we want before it is discarded if we have garbage collection</span>
             <span class="n">tape</span> <span class="o">=</span> <span class="n">get_working_tape</span><span class="p">()</span>
-            <span class="n">reg_blocks</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">get_blocks</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">&quot;reg_eval&quot;</span><span class="p">)</span>
+            <span class="n">reg_blocks</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">get_blocks</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">"reg_eval"</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">J_reg</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">b</span><span class="o">.</span><span class="n">get_outputs</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">saved_output</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">reg_blocks</span><span class="p">])</span>
-            <span class="n">misfit_blocks</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">get_blocks</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">&quot;misfit_eval&quot;</span><span class="p">)</span>
+            <span class="n">misfit_blocks</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">get_blocks</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">"misfit_eval"</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">J_misfit</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">b</span><span class="o">.</span><span class="n">get_outputs</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">saved_output</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">misfit_blocks</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sta_manager</span><span class="o">.</span><span class="n">collect_time_series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">j</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">gradient_eval_cb</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">djdm</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Called after gradient evaluation&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""Called after gradient evaluation"""</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_control_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="n">djdm</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>  <span class="c1"># must be self.J as j is reset by garbage collection</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nb_grad_evals</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">return</span> <span class="n">djdm</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;eval_cb_post&#39;</span><span class="p">:</span> <span class="n">functional_eval_cb</span><span class="p">,</span>
-            <span class="s1">&#39;derivative_cb_post&#39;</span><span class="p">:</span> <span class="n">gradient_eval_cb</span><span class="p">,</span>
+            <span class="s1">'eval_cb_post'</span><span class="p">:</span> <span class="n">functional_eval_cb</span><span class="p">,</span>
+            <span class="s1">'derivative_cb_post'</span><span class="p">:</span> <span class="n">gradient_eval_cb</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">params</span>
 
 <div class="viewcode-block" id="InversionManager.get_cost_function">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.InversionManager.get_cost_function">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_cost_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">weight_by_variance</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">regularisation_manager</span><span class="o">=</span><span class="s2">&quot;Hessian&quot;</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cost_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="n">weight_by_variance</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">regularisation_manager</span><span class="o">=</span><span class="s2">"Hessian"</span><span class="p">,</span>
                           <span class="n">use_local_element_size</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">regularisation_scaling_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Get a sum of square errors cost function for the inverse problem.</span>
 
 <span class="sd">        .. math::</span>
@@ -508,7 +508,7 @@
 <span class="sd">        :kwarg weight_by_variance: whether to weight each station by the inverse</span>
 <span class="sd">            of its data variance to balance different magnitude signals</span>
 <span class="sd">        :kwarg regularisation_manager: which regularisation to apply</span>
-<span class="sd">            (``&quot;Hessian&quot;`` or ``&quot;Gradient&quot;``; ``&quot;R-space&quot;`` is used automatically</span>
+<span class="sd">            (``"Hessian"`` or ``"Gradient"``; ``"R-space"`` is used automatically</span>
 <span class="sd">            for real-valued controls)</span>
 <span class="sd">        :kwarg use_local_element_size: whether to use local (spatially varying)</span>
 <span class="sd">            element size to normalise regularisation units</span>
@@ -517,26 +517,26 @@
 
 <span class="sd">        :returns: a callable ``cost_fn`` that accumulates the misfit term at each</span>
 <span class="sd">            timestep during the forward model run</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">solver_obj</span><span class="p">,</span> <span class="n">FlowSolver2d</span><span class="p">)</span>
 
         <span class="c1"># --- Regularisation setup ---</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">real</span><span class="p">:</span>
             <span class="n">calculator</span> <span class="o">=</span> <span class="n">RSpaceRegularizationCalculator</span>
             <span class="n">calculator_kwargs</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;R-space regularisation being applied (real case).&quot;</span><span class="p">)</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s2">"R-space regularisation being applied (real case)."</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">calculator_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;use_local_element_size&quot;</span><span class="p">:</span> <span class="n">use_local_element_size</span><span class="p">}</span>
-            <span class="k">if</span> <span class="n">regularisation_manager</span> <span class="o">==</span> <span class="s2">&quot;Hessian&quot;</span><span class="p">:</span>
+            <span class="n">calculator_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"use_local_element_size"</span><span class="p">:</span> <span class="n">use_local_element_size</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">regularisation_manager</span> <span class="o">==</span> <span class="s2">"Hessian"</span><span class="p">:</span>
                 <span class="n">calculator</span> <span class="o">=</span> <span class="n">HessianRegularizationCalculator</span>
-                <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Hessian regularisation being applied.&quot;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">regularisation_manager</span> <span class="o">==</span> <span class="s2">&quot;Gradient&quot;</span><span class="p">:</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s2">"Hessian regularisation being applied."</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">regularisation_manager</span> <span class="o">==</span> <span class="s2">"Gradient"</span><span class="p">:</span>
                 <span class="n">calculator</span> <span class="o">=</span> <span class="n">GradientRegularizationCalculator</span>
-                <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Gradient regularisation being applied.&quot;</span><span class="p">)</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s2">"Gradient regularisation being applied."</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Unsupported regularisation_manager: &#39;</span><span class="si">{</span><span class="n">regularisation_manager</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
-                    <span class="s2">&quot;Must be one of: &#39;Hessian&#39;, &#39;Gradient&#39;.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Unsupported regularisation_manager: '</span><span class="si">{</span><span class="n">regularisation_manager</span><span class="si">}</span><span class="s2">'. "</span>
+                    <span class="s2">"Must be one of: 'Hessian', 'Gradient'."</span>
                 <span class="p">)</span>
 
         <span class="c1"># --- Build regularisation manager ---</span>
@@ -561,8 +561,8 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sta_manager</span><span class="p">,</span> <span class="n">MultiStationObservationManager</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">weight_by_variance</span><span class="p">:</span>
             <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sta_manager</span><span class="o">.</span><span class="n">observation_managers</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;You are using a MultiStationObservationManager with weight_by_variance=False. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Consider enabling weight_by_variance to avoid magnitude bias between observation types: </span><span class="si">{</span><span class="n">names</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"You are using a MultiStationObservationManager with weight_by_variance=False. "</span>
+                <span class="sa">f</span><span class="s2">"Consider enabling weight_by_variance to avoid magnitude bias between observation types: </span><span class="si">{</span><span class="n">names</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">weight_by_variance</span><span class="p">:</span>
             <span class="k">def</span><span class="w"> </span><span class="nf">apply_weighting</span><span class="p">(</span><span class="n">sta_mgr</span><span class="p">):</span>
@@ -580,8 +580,8 @@
                             <span class="n">magnitude</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">v</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
                             <span class="n">var</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">magnitude</span><span class="p">)</span>
                     <span class="k">assert</span> <span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:])),</span> \
-                        <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">fd</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">] ERROR: Check for NaNs. Found non-finite variances of &quot;</span>
-                         <span class="sa">f</span><span class="s2">&quot;observation data: </span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="p">(</span><span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">fd</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">] ERROR: Check for NaNs. Found non-finite variances of "</span>
+                         <span class="sa">f</span><span class="s2">"observation data: </span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="n">sta_mgr</span><span class="o">.</span><span class="n">station_weight_0d</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">var</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sta_manager</span><span class="p">,</span> <span class="n">MultiStationObservationManager</span><span class="p">):</span>
@@ -602,9 +602,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">reduced_functional</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create a Pyadjoint :class:`ReducedFunctional` for the optimization.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Jhat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Jhat</span> <span class="o">=</span> <span class="n">ReducedFunctional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_list</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">rf_kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Jhat</span>
@@ -612,12 +612,12 @@
 <div class="viewcode-block" id="InversionManager.stop_annotating">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.InversionManager.stop_annotating">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">stop_annotating</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Stop recording operations for the adjoint solver.</span>
 
 <span class="sd">        This method should be called after the :meth:`iterate`</span>
 <span class="sd">        method of :class:`FlowSolver2d`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduced_functional</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_consistency</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">consistency_test</span><span class="p">()</span>
@@ -629,10 +629,10 @@
 <div class="viewcode-block" id="InversionManager.get_optimization_callback">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.InversionManager.get_optimization_callback">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_optimization_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get a callback for stashing optimization progress</span>
 <span class="sd">        after successful line search.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">optimization_callback</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_progress</span><span class="p">()</span>
@@ -644,15 +644,15 @@
 
 <div class="viewcode-block" id="InversionManager.minimize">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.InversionManager.minimize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">minimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt_method</span><span class="o">=</span><span class="s2">&quot;BFGS&quot;</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">opt_options</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">minimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt_method</span><span class="o">=</span><span class="s2">"BFGS"</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">opt_options</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Minimize the reduced functional using a given optimization routine.</span>
 
 <span class="sd">        :kwarg opt_method: the optimization routine</span>
 <span class="sd">        :kwarg bounds: a list of bounds to pass to the optimization routine</span>
 <span class="sd">        :kwarg opt_options: other optimization parameters to pass</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Running </span><span class="si">{</span><span class="n">opt_method</span><span class="si">}</span><span class="s1"> optimization&#39;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Running </span><span class="si">{</span><span class="n">opt_method</span><span class="si">}</span><span class="s1"> optimization'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_counters</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_clock</span><span class="p">()</span>
         <span class="n">J</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reduced_functional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control_coeff_list</span><span class="p">))</span>
@@ -665,8 +665,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">reduced_functional</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">opt_method</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
                 <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_optimization_callback</span><span class="p">(),</span> <span class="n">options</span><span class="o">=</span><span class="n">opt_options</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">SciPyConvergenceError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;TOTAL NO. OF ITERATIONS REACHED LIMIT&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-                <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Optimization stopped: reached iteration limit.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"TOTAL NO. OF ITERATIONS REACHED LIMIT"</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s2">"Optimization stopped: reached iteration limit."</span><span class="p">)</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_list</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span></div>
@@ -675,35 +675,35 @@
 <div class="viewcode-block" id="InversionManager.consistency_test">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.InversionManager.consistency_test">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">consistency_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Test that :attr:`reduced_functional` can correctly recompute the</span>
 <span class="sd">        objective value, assuming that none of the controls have changed</span>
 <span class="sd">        since it was created.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Running consistency test&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s2">"Running consistency test"</span><span class="p">)</span>
         <span class="n">J</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduced_functional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control_coeff_list</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Consistency test failed (expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">J</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Consistency test passed!&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Consistency test failed (expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">J</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s2">"Consistency test passed!"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="InversionManager.taylor_test">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.InversionManager.taylor_test">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">taylor_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Run a Taylor test to check that the :attr:`reduced_functional` can</span>
 <span class="sd">        correctly compute consistent gradients.</span>
 
 <span class="sd">        Note that the Taylor test is applied on the current control values.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">func_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_coeff_list</span><span class="p">:</span>
             <span class="n">dc</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">func_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dc</span><span class="p">)</span>
         <span class="n">minconv</span> <span class="o">=</span> <span class="n">taylor_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reduced_functional</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_coeff_list</span><span class="p">,</span> <span class="n">func_list</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">minconv</span> <span class="o">&lt;</span> <span class="mf">1.9</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Taylor test failed&quot;</span><span class="p">)</span>  <span class="c1"># NOTE: Pyadjoint already prints the testing</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Taylor test passed!&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Taylor test failed"</span><span class="p">)</span>  <span class="c1"># NOTE: Pyadjoint already prints the testing</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s2">"Taylor test passed!"</span><span class="p">)</span></div>
 </div>
 
 
@@ -711,7 +711,7 @@
 <div class="viewcode-block" id="StationObservationManagerBase">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManagerBase">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StationObservationManagerBase</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Abstract base class defining the interface for station observation managers.</span>
 
 <span class="sd">    A station observation manager is responsible for evaluating the misfit</span>
@@ -724,13 +724,13 @@
 <span class="sd">    (:class:`MultiStationObservationManager`). Both expose the same</span>
 <span class="sd">    interface so that :class:`InversionManager` can use either without</span>
 <span class="sd">    special-casing.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="StationObservationManagerBase.eval_cost_function">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManagerBase.eval_cost_function">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">eval_cost_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Evaluate the misfit cost function at time `t`.</span>
 
 <span class="sd">        Should be called at every export of the forward model. Implementations</span>
@@ -739,14 +739,14 @@
 
 <span class="sd">        :arg t: model simulation time</span>
 <span class="sd">        :returns: scalar misfit value at this timestep</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        """</span></div>
 
 
 <div class="viewcode-block" id="StationObservationManagerBase.collect_time_series">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManagerBase.collect_time_series">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect_time_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Collect model time series from the current forward solve.</span>
 
 <span class="sd">        Should be called after the forward solve completes, before the</span>
@@ -755,19 +755,19 @@
 <span class="sd">        should be updated in-place rather than appended.</span>
 
 <span class="sd">        :arg current_iteration: current optimisation iteration index</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        """</span></div>
 
 
 <div class="viewcode-block" id="StationObservationManagerBase.dump_time_series">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManagerBase.dump_time_series">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">dump_time_series</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Write collected model time series to disk.</span>
 
 <span class="sd">        :meth:`collect_time_series` must have been called at least once</span>
 <span class="sd">        before this method is invoked.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        """</span></div>
 </div>
 
 
@@ -775,7 +775,7 @@
 <div class="viewcode-block" id="StationObservationManager">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StationObservationManager</span><span class="p">(</span><span class="n">StationObservationManagerBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Implements error functional based on observation time series.</span>
 
 <span class="sd">    The functional is the squared sum of error between the model and</span>
@@ -783,18 +783,18 @@
 
 <span class="sd">    This object evaluates the model fields at the station locations,</span>
 <span class="sd">    interpolates the observations time series to the model time, computes the</span>
-<span class="sd">    error functional, and also stores the model&#39;s time series data to disk.</span>
+<span class="sd">    error functional, and also stores the model's time series data to disk.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">output_directory</span><span class="o">=</span><span class="s1">&#39;outputs&#39;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">output_directory</span><span class="o">=</span><span class="s1">'outputs'</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg mesh: the 2D mesh object.</span>
 <span class="sd">        :kwarg output_directory: directory where model time series are stored.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="n">mesh</span>
         <span class="n">on_sphere</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">geometric_dimension</span> <span class="o">==</span> <span class="mi">3</span>
         <span class="k">if</span> <span class="n">on_sphere</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Sphere meshes are not supported yet.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">'Sphere meshes are not supported yet.'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cost_function_scaling</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span> <span class="o">=</span> <span class="n">output_directory</span>
         <span class="c1"># keep observation time series in memory</span>
@@ -811,7 +811,7 @@
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManager.register_observation_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">register_observation_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station_names</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span>
                                   <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_times</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Add station time series data to the object.</span>
 
 <span class="sd">        The `x`, and `y` coordinates must be such that</span>
@@ -820,7 +820,7 @@
 <span class="sd">        Supports arbitrary scalar or 2D vector data for observation data.</span>
 
 <span class="sd">        :arg list station_names: list of station names</span>
-<span class="sd">        :arg str variable: canonical variable name, e.g. &#39;elev&#39;, &#39;uv&#39;</span>
+<span class="sd">        :arg str variable: canonical variable name, e.g. 'elev', 'uv'</span>
 <span class="sd">        :arg list time: array of time stamps, one for each station</span>
 <span class="sd">        :arg list data:</span>
 <span class="sd">            - scalar: list of arrays, one per station</span>
@@ -829,21 +829,21 @@
 <span class="sd">        :arg list y: list of station y coordinates</span>
 <span class="sd">        :kwarg list start_times: optional start times for the observation periods</span>
 <span class="sd">        :kwarg list end_times: optional end times for the observation periods</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must provide observation data.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Must provide observation data."</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">data</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For vector data, &#39;data&#39; must be a tuple/list of two lists.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"For vector data, 'data' must be a tuple/list of two lists."</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">observed_quantity_is_scalar</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="c1"># always treat as scalar</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">observed_quantity_is_scalar</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid data format. Must be list (scalar) or tuple (vector).&quot;</span><span class="p">)</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data registered as </span><span class="si">{</span><span class="s1">&#39;scalar&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">observed_quantity_is_scalar</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;vector&#39;</span><span class="si">}</span><span class="s2"> for variable &quot;</span>
-                     <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s2">&#39; with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">station_names</span><span class="p">)</span><span class="si">}</span><span class="s2"> station(s).&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid data format. Must be list (scalar) or tuple (vector)."</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Data registered as </span><span class="si">{</span><span class="s1">'scalar'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">observed_quantity_is_scalar</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'vector'</span><span class="si">}</span><span class="s2"> for variable "</span>
+                     <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s2">' with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">station_names</span><span class="p">)</span><span class="si">}</span><span class="s2"> station(s)."</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">station_names</span> <span class="o">=</span> <span class="n">station_names</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variable</span> <span class="o">=</span> <span class="n">variable</span>
@@ -859,9 +859,9 @@
 <div class="viewcode-block" id="StationObservationManager.set_model_field">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManager.set_model_field">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_model_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Set the model field that will be evaluated.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_observation_field</span> <span class="o">=</span> <span class="n">function</span></div>
 
 
@@ -869,7 +869,7 @@
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManager.load_scalar_observation_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_scalar_observation_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation_data_dir</span><span class="p">,</span> <span class="n">station_names</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span>
                                      <span class="n">start_times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_times</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Load scalar observation data (e.g. elevation) from disk.</span>
 
 <span class="sd">        This assumes the data was stored with `TimeSeriesCallback2D` during the</span>
@@ -878,13 +878,13 @@
 
 <span class="sd">        :arg str observation_data_dir: directory where observation data is stored</span>
 <span class="sd">        :arg list station_names: list of station names</span>
-<span class="sd">        :arg str variable: canonical variable name, e.g. &#39;elev&#39;</span>
+<span class="sd">        :arg str variable: canonical variable name, e.g. 'elev'</span>
 <span class="sd">        :kwarg list start_times: optional start times for the observation periods</span>
 <span class="sd">        :kwarg list end_times: optional end times for the observation periods</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">file_list</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">observation_data_dir</span><span class="si">}</span><span class="s1">/&#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;diagnostic_timeseries_</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s1">.hdf5&#39;</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">observation_data_dir</span><span class="si">}</span><span class="s1">/'</span>
+            <span class="sa">f</span><span class="s1">'diagnostic_timeseries_</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s1">.hdf5'</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span>
             <span class="n">station_names</span>
         <span class="p">]</span>
         <span class="c1"># arrays of time stamps and values for each station</span>
@@ -892,11 +892,11 @@
         <span class="n">observation_values</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">observation_coords</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
-                <span class="n">t</span> <span class="o">=</span> <span class="n">h5file</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="n">h5file</span><span class="p">[</span><span class="s1">'time'</span><span class="p">][:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
                 <span class="n">v</span> <span class="o">=</span> <span class="n">h5file</span><span class="p">[</span><span class="n">variable</span><span class="p">][:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
-                <span class="n">y</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'x'</span><span class="p">]</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'y'</span><span class="p">]</span>
                 <span class="n">observation_coords</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
                 <span class="n">observation_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
                 <span class="n">observation_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
@@ -913,12 +913,12 @@
 <div class="viewcode-block" id="StationObservationManager.update_stations_in_use">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManager.update_stations_in_use">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_stations_in_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Indicate which stations are in use at the current time.</span>
 
 <span class="sd">        An entry of unity indicates use, whereas zero indicates disuse.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;obs_start_times&#39;</span><span class="p">):</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'obs_start_times'</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">construct_evaluator</span><span class="p">()</span>
         <span class="n">in_use</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d_scalar</span><span class="p">)</span>
         <span class="n">in_use</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
@@ -931,28 +931,28 @@
 <div class="viewcode-block" id="StationObservationManager.construct_evaluator">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManager.construct_evaluator">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">construct_evaluator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Builds evaluators needed to compute the error functional.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Create 0D mesh for station evaluation</span>
         <span class="n">xy</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">observation_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_y</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
         <span class="n">mesh0d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">VertexOnlyMesh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">xy</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d_scalar</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh0d</span><span class="p">,</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d_scalar</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh0d</span><span class="p">,</span> <span class="s1">'DG'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_quantity_is_scalar</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d_scalar</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh0d</span><span class="p">,</span> <span class="s1">&#39;DG&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obs_values_0d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;observations&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mod_values_0d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;model values&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">indicator_0d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d_scalar</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;station use indicator&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">VectorFunctionSpace</span><span class="p">(</span><span class="n">mesh0d</span><span class="p">,</span> <span class="s1">'DG'</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obs_values_0d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'observations'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mod_values_0d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'model values'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indicator_0d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d_scalar</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'station use indicator'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">indicator_0d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cost_function_scaling_0d</span> <span class="o">=</span> <span class="n">domain_constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">mesh0d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cost_function_scaling_0d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost_function_scaling</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">station_weight_0d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d_scalar</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;station-wise weighting&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">station_weight_0d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs_points_0d_scalar</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'station-wise weighting'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">station_weight_0d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
         <span class="n">interp_kw</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_times</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_end_times</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="n">interp_kw</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;bounds_error&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;fill_value&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">})</span>
+            <span class="n">interp_kw</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">'bounds_error'</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">'fill_value'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">})</span>
 
         <span class="c1"># Construct timeseries interpolator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">station_interpolators</span> <span class="o">=</span> <span class="p">[]</span>
@@ -972,8 +972,8 @@
                 <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_time</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
                 <span class="n">x_mesh</span><span class="p">,</span> <span class="n">y_mesh</span> <span class="o">=</span> <span class="n">mesh0d</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span>
 
-                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;bad station location &#39;</span> \
-                      <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">x_mesh</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">y_mesh</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">x_mesh</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">y</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">y_mesh</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">'bad station location '</span> \
+                      <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">x_mesh</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">y_mesh</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">x_mesh</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">y</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">y_mesh</span><span class="si">}</span><span class="s1">'</span>
                 <span class="k">assert</span> <span class="n">numpy</span><span class="o">.</span><span class="n">allclose</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="p">[</span><span class="n">x_mesh</span><span class="p">,</span> <span class="n">y_mesh</span><span class="p">]),</span> <span class="n">msg</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_quantity_is_scalar</span><span class="p">:</span>
                     <span class="n">ip</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_data</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="o">**</span><span class="n">interp_kw</span><span class="p">)</span>
@@ -1004,12 +1004,12 @@
 <div class="viewcode-block" id="StationObservationManager.eval_observation_at_time">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManager.eval_observation_at_time">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">eval_observation_at_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Evaluate observation time series at the given time.</span>
 
 <span class="sd">        :arg t: model simulation time</span>
 <span class="sd">        :returns: list of observation time series values at time `t`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_stations_in_use</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_quantity_is_scalar</span><span class="p">:</span>
             <span class="n">ip</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">ip</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_interpolators</span><span class="p">]</span>
@@ -1023,16 +1023,16 @@
 <div class="viewcode-block" id="StationObservationManager.eval_cost_function">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManager.eval_cost_function">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">eval_cost_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Evaluate the cost function.</span>
 
 <span class="sd">        Should be called at every export of the forward model.</span>
 
 <span class="sd">        :arg t: model simulation time</span>
 <span class="sd">        :returns: scalar misfit cost function value</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">,</span> <span class="s1">&#39;Not initialized, call construct_evaluator first.&#39;</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_observation_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;Model field not set.&#39;</span>
+<span class="sd">        """</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">,</span> <span class="s1">'Not initialized, call construct_evaluator first.'</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_observation_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">'Model field not set.'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 
         <span class="c1"># observed data</span>
@@ -1049,23 +1049,23 @@
 
         <span class="c1"># modelled data</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_quantity_is_scalar</span><span class="p">:</span>
-            <span class="n">P1_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;CG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">P1_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">'CG'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">mod_func</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">variable</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">P1_2vd</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;CG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">P1_2vd</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">'CG'</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">mod_func</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">P1_2vd</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">variable</span><span class="p">)</span>
         <span class="n">mod_func</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_observation_field</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mod_values_0d</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">mod_func</span><span class="p">,</span> <span class="n">ad_block_tag</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variable</span><span class="si">}</span><span class="s1"> observation&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mod_values_0d</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">mod_func</span><span class="p">,</span> <span class="n">ad_block_tag</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variable</span><span class="si">}</span><span class="s1"> observation'</span><span class="p">)</span>
         <span class="c1"># compute square error</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_function_scaling_0d</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">indicator_0d</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_weight_0d</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">J_misfit</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">s</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">misfit_expr</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">fd</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span> <span class="n">ad_block_tag</span><span class="o">=</span><span class="s1">&#39;misfit_eval&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">J_misfit</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">s</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">misfit_expr</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">fd</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span> <span class="n">ad_block_tag</span><span class="o">=</span><span class="s1">'misfit_eval'</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">J_misfit</span></div>
 
 
 <div class="viewcode-block" id="StationObservationManager.collect_time_series">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManager.collect_time_series">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect_time_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_iteration</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Collect the model time-series from the current forward solve.</span>
 
 <span class="sd">        This extracts the saved station-observation values from the PyAdjoint</span>
@@ -1075,11 +1075,11 @@
 <span class="sd">        (e.g. due to a line search), the time-series for that iteration is</span>
 <span class="sd">        *updated* rather than appended — ensuring that only the final accepted</span>
 <span class="sd">        forward model state is stored.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">tape</span> <span class="o">=</span> <span class="n">get_working_tape</span><span class="p">()</span>
 
-        <span class="n">blocks</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">get_blocks</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variable</span><span class="si">}</span><span class="s1"> observation&#39;</span><span class="p">)</span>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">get_blocks</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variable</span><span class="si">}</span><span class="s1"> observation'</span><span class="p">)</span>
         <span class="n">ts_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">get_outputs</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">saved_output</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">]</span>  <span class="c1"># .copy()?</span>
         <span class="n">ts_data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ts_data</span><span class="p">)</span>  <span class="c1"># shape (ntimesteps, nstations, ndims) ndims = 2 for vector</span>
         <span class="k">if</span> <span class="n">current_iteration</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_recorded_iteration</span><span class="p">:</span>
@@ -1092,7 +1092,7 @@
 <div class="viewcode-block" id="StationObservationManager.dump_time_series">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.StationObservationManager.dump_time_series">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">dump_time_series</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Write the collected model time-series to disk.</span>
 
 <span class="sd">        Station time series should be obtained from the last optimization</span>
@@ -1105,12 +1105,12 @@
 <span class="sd">        station name and coordinates as attributes. The time series data is</span>
 <span class="sd">        stored as a rank 2 (n_iterations, n_time_steps) array for scalar,</span>
 <span class="sd">        or rank 3 (n_iterations, n_time_steps, 2) for vector quantities.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_recorded_iteration</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span>
-            <span class="s2">&quot;dump_time_series() called before any time-series were collected. &quot;</span>
-            <span class="s2">&quot;Ensure collect_time_series() is called at least once (e.g. via &quot;</span>
-            <span class="s2">&quot;the functional post-evaluation callback).&quot;</span>
+            <span class="s2">"dump_time_series() called before any time-series were collected. "</span>
+            <span class="s2">"Ensure collect_time_series() is called at least once (e.g. via "</span>
+            <span class="s2">"the functional post-evaluation callback)."</span>
         <span class="p">)</span>
 
         <span class="n">create_directory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">)</span>
@@ -1121,20 +1121,20 @@
             <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_names</span><span class="p">[</span><span class="n">iglobal</span><span class="p">]</span>
             <span class="n">ts</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">s</span><span class="p">[:,</span> <span class="n">ilocal</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_value_progress</span><span class="p">])</span>  <span class="c1"># shape (niters, ntimesteps, ?)</span>
 
-            <span class="n">fn</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;diagnostic_timeseries_progress_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">.hdf5&#39;</span>
+            <span class="n">fn</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'diagnostic_timeseries_progress_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">.hdf5'</span>
             <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
 
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdf5file</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdf5file</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_quantity_is_scalar</span><span class="p">:</span>
                     <span class="n">hdf5file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">ts</span><span class="p">)</span>  <span class="c1"># scalar data</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">hdf5file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">_u_component&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">ts</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">])</span>
-                    <span class="n">hdf5file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">_v_component&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">ts</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">])</span>
-                <span class="n">hdf5file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span><span class="p">))</span>
+                    <span class="n">hdf5file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">_u_component'</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">ts</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">])</span>
+                    <span class="n">hdf5file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">_v_component'</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">ts</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="n">hdf5file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'time'</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span><span class="p">))</span>
                 <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_x</span><span class="p">[</span><span class="n">iglobal</span><span class="p">],</span>
-                    <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_y</span><span class="p">[</span><span class="n">iglobal</span><span class="p">],</span>
-                    <span class="s1">&#39;location_name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                    <span class="s1">'x'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_x</span><span class="p">[</span><span class="n">iglobal</span><span class="p">],</span>
+                    <span class="s1">'y'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_y</span><span class="p">[</span><span class="n">iglobal</span><span class="p">],</span>
+                    <span class="s1">'location_name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
                 <span class="p">}</span>
                 <span class="n">hdf5file</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span></div>
 </div>
@@ -1144,61 +1144,61 @@
 <div class="viewcode-block" id="MultiStationObservationManager">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.MultiStationObservationManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MultiStationObservationManager</span><span class="p">(</span><span class="n">StationObservationManagerBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Manage multiple StationObservationManager instances (e.g. elevation + velocity).</span>
 <span class="sd">    Combines their cost functions into a single scalar J.</span>
 
 <span class="sd">    NOTE: It is recommended that `weight_by_variance=True` for each manager to</span>
 <span class="sd">    avoid magnitude bias between observation types.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">managers</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :param managers: dict {name: StationObservationManager}</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observation_managers</span> <span class="o">=</span> <span class="n">managers</span>
 
         <span class="c1"># --- Diagnostic checks on scaling factors ---</span>
         <span class="n">scalings</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Initialising MultiStationObservationManager with station managers:&quot;</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s2">"Initialising MultiStationObservationManager with station managers:"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">som</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_managers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">som</span><span class="p">,</span> <span class="s2">&quot;cost_function_scaling&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">som</span><span class="p">,</span> <span class="s2">"cost_function_scaling"</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">scal</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">som</span><span class="o">.</span><span class="n">cost_function_scaling</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="n">scal</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">scalings</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">scal</span>
-                <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: cost_function_scaling = </span><span class="si">{</span><span class="n">scal</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  - </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: cost_function_scaling = </span><span class="si">{</span><span class="n">scal</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: missing cost_function_scaling attribute&quot;</span><span class="p">)</span>
+                <span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  - </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: missing cost_function_scaling attribute"</span><span class="p">)</span>
 
         <span class="c1"># --- Check for uninitialised or inconsistent scaling ---</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">scalings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
                 <span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Station manager &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; has cost_function_scaling=1.0 &quot;</span>
-                    <span class="s2">&quot;(default value). Did you set it before construct_evaluator()?&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Station manager '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' has cost_function_scaling=1.0 "</span>
+                    <span class="s2">"(default value). Did you set it before construct_evaluator()?"</span>
                 <span class="p">)</span>
 
         <span class="n">unique_vals</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">scalings</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_vals</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">diff_list</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">scalings</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+            <span class="n">diff_list</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">scalings</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
             <span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Detected differing cost_function_scaling values between managers: </span><span class="si">{</span><span class="n">diff_list</span><span class="si">}</span><span class="s2">. &quot;</span>
-                <span class="s2">&quot;Ensure these reflect your intended relative weighting.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Detected differing cost_function_scaling values between managers: </span><span class="si">{</span><span class="n">diff_list</span><span class="si">}</span><span class="s2">. "</span>
+                <span class="s2">"Ensure these reflect your intended relative weighting."</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">info</span><span class="p">(</span><span class="s2">&quot;All station managers share consistent cost_function_scaling values.&quot;</span><span class="p">)</span>
+            <span class="n">info</span><span class="p">(</span><span class="s2">"All station managers share consistent cost_function_scaling values."</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MultiStationObservationManager.eval_cost_function">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.MultiStationObservationManager.eval_cost_function">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">eval_cost_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Evaluate combined cost function for all registered observation sets.</span>
 
 <span class="sd">        :arg t: model simulation time</span>
 <span class="sd">        :returns: scalar total cost function value (sum over all managers)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">J_total</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">for</span> <span class="n">som</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_managers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">J_total</span> <span class="o">+=</span> <span class="n">som</span><span class="o">.</span><span class="n">eval_cost_function</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -1208,9 +1208,9 @@
 <div class="viewcode-block" id="MultiStationObservationManager.collect_time_series">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.MultiStationObservationManager.collect_time_series">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect_time_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_iteration</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Forward the collect_time_series call to each station manager.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">som</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_managers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">som</span><span class="o">.</span><span class="n">collect_time_series</span><span class="p">(</span><span class="n">current_iteration</span><span class="p">)</span></div>
 
@@ -1218,9 +1218,9 @@
 <div class="viewcode-block" id="MultiStationObservationManager.dump_time_series">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.MultiStationObservationManager.dump_time_series">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">dump_time_series</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Forward the dump_time_series call to each station manager.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">som</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_managers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">som</span><span class="o">.</span><span class="n">dump_time_series</span><span class="p">()</span></div>
 </div>
@@ -1230,19 +1230,19 @@
 <div class="viewcode-block" id="RegularizationCalculator">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.RegularizationCalculator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RegularizationCalculator</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base class for computing regularization terms.</span>
 
 <span class="sd">    A derived class should set :attr:`regularization_expr` in</span>
 <span class="sd">    :meth:`__init__`. Whenever the cost function is evaluated,</span>
 <span class="sd">    the ratio of this expression and the total mesh area will</span>
 <span class="sd">    be added.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function: Control :class:`Function`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scaling</span> <span class="o">=</span> <span class="n">scaling</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">regularization_expr</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
@@ -1254,7 +1254,7 @@
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.RegularizationCalculator.eval_cost_function">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">eval_cost_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaling</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">regularization_expr</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_area</span> <span class="o">*</span> <span class="n">fd</span><span class="o">.</span><span class="n">dx</span>
-        <span class="k">return</span> <span class="n">fd</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">ad_block_tag</span><span class="o">=</span><span class="s2">&quot;reg_eval&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">fd</span><span class="o">.</span><span class="n">assemble</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">ad_block_tag</span><span class="o">=</span><span class="s2">"reg_eval"</span><span class="p">)</span></div>
 </div>
 
 
@@ -1262,7 +1262,7 @@
 <div class="viewcode-block" id="GradientRegularizationCalculator">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.GradientRegularizationCalculator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GradientRegularizationCalculator</span><span class="p">(</span><span class="n">RegularizationCalculator</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Computes the following regularization term for a control Function `f`:</span>
 
 <span class="sd">    .. math::</span>
@@ -1277,18 +1277,18 @@
 <span class="sd">    The element size defaults to varying spatially with the mesh,</span>
 <span class="sd">    but can be set constant with the smallest element size by specifying</span>
 <span class="sd">    the `use_local_element_size` flag to be False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">gradient_penalty</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">use_local_element_size</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function: Control :class:`Function`</span>
 <span class="sd">        :arg gradient_penalty: Gradient penalty coefficient</span>
 <span class="sd">        :kwarg scaling: Optional global scaling for the regularization term</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="n">scaling</span><span class="p">)</span>
 
         <span class="c1"># Setup continuous vector function space</span>
-        <span class="n">P1v_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_2d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">P1v_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> gradient&quot;</span><span class="p">)</span>
+        <span class="n">P1v_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">"CG"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_2d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">P1v_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> gradient"</span><span class="p">)</span>
 
         <span class="c1"># Recover gradient using projection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient_recoverer</span> <span class="o">=</span> <span class="n">GradientRecoverer2D</span><span class="p">(</span>
@@ -1296,7 +1296,7 @@
 
         <span class="n">h</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">CellSize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">use_local_element_size</span><span class="p">:</span>
-            <span class="n">V</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">"DG"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
             <span class="n">h_</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
             <span class="n">h_</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
             <span class="n">local_min</span> <span class="o">=</span> <span class="n">h_</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
@@ -1318,7 +1318,7 @@
 <div class="viewcode-block" id="HessianRegularizationCalculator">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.HessianRegularizationCalculator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HessianRegularizationCalculator</span><span class="p">(</span><span class="n">RegularizationCalculator</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Computes the following regularization term for a cost function</span>
 <span class="sd">    involving a control :class:`Function` :math:`f`:</span>
 
@@ -1334,24 +1334,24 @@
 <span class="sd">    The element size defaults to varying spatially with the mesh,</span>
 <span class="sd">    but can be set constant with the smallest element size by specifying</span>
 <span class="sd">    the `use_local_element_size` flag to be False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">hessian_penalty</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">use_local_element_size</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function: Control :class:`Function`</span>
 <span class="sd">        :arg hessian_penalty: Hessian penalty coefficient</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="n">scaling</span><span class="p">)</span>
         <span class="c1"># solvers to evaluate the gradient of the control</span>
-        <span class="n">P1v_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">P1t_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tensor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">gradient_2d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">P1v_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> gradient&quot;</span><span class="p">)</span>
-        <span class="n">hessian_2d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">P1t_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> hessian&quot;</span><span class="p">)</span>
+        <span class="n">P1v_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">"CG"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">P1t_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">"CG"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tensor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">gradient_2d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">P1v_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> gradient"</span><span class="p">)</span>
+        <span class="n">hessian_2d</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">P1t_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> hessian"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hessian_calculator</span> <span class="o">=</span> <span class="n">HessianRecoverer2D</span><span class="p">(</span>
             <span class="n">function</span><span class="p">,</span> <span class="n">hessian_2d</span><span class="p">,</span> <span class="n">gradient_2d</span><span class="p">)</span>
 
         <span class="n">h</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">CellSize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">use_local_element_size</span><span class="p">:</span>
-            <span class="n">V</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s2">"DG"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
             <span class="n">h_</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
             <span class="n">h_</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
             <span class="n">local_min</span> <span class="o">=</span> <span class="n">h_</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
@@ -1374,7 +1374,7 @@
 <div class="viewcode-block" id="RSpaceRegularizationCalculator">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.RSpaceRegularizationCalculator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RSpaceRegularizationCalculator</span><span class="p">(</span><span class="n">RegularizationCalculator</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Computes the following regularization term for a cost function</span>
 <span class="sd">    involving a control :class:`Function` :math:`f` from an R-space:</span>
 
@@ -1383,18 +1383,18 @@
 
 <span class="sd">    where :math:`f_0` is a prior, taken to be the initial value of</span>
 <span class="sd">    :math:`f`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1.0e-03</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function: Control :class:`Function`</span>
 <span class="sd">        :arg gamma: penalty coefficient</span>
 <span class="sd">        :kwarg eps: tolerance for normalising by near-zero priors</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="n">scaling</span><span class="p">)</span>
         <span class="n">R</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">R</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;Real&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;function must live in R-space&quot;</span><span class="p">)</span>
-        <span class="n">prior</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> prior&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">R</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">()</span><span class="o">.</span><span class="n">family</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">"Real"</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"function must live in R-space"</span><span class="p">)</span>
+        <span class="n">prior</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> prior"</span><span class="p">)</span>
         <span class="n">prior</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Set the prior to the initial value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">regularization_expr</span> <span class="o">=</span> <span class="n">gamma</span> <span class="o">*</span> <span class="p">(</span><span class="n">function</span> <span class="o">-</span> <span class="n">prior</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">ufl</span><span class="o">.</span><span class="n">max_value</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">prior</span><span class="p">),</span> <span class="n">eps</span><span class="p">)</span></div>
 
@@ -1405,22 +1405,22 @@
 <div class="viewcode-block" id="ControlRegularizationManager">
 <a class="viewcode-back" href="../../thetis.html#thetis.inversion_tools.ControlRegularizationManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ControlRegularizationManager</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Handles regularization of multiple control fields</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_list</span><span class="p">,</span> <span class="n">gamma_list</span><span class="p">,</span> <span class="n">penalty_term_scaling</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">calculator</span><span class="o">=</span><span class="n">HessianRegularizationCalculator</span><span class="p">,</span> <span class="n">calculator_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function_list: list of control functions</span>
 <span class="sd">        :arg gamma_list: list of penalty parameters</span>
 <span class="sd">        :kwarg penalty_term_scaling: Penalty term scaling factor</span>
 <span class="sd">        :kwarg calculator: class used for obtaining regularization</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">calculator_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">calculator_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reg_calculators</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">function_list</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">gamma_list</span><span class="p">),</span> \
-            <span class="s1">&#39;Number of control functions and parameters must match&#39;</span>
+            <span class="s1">'Number of control functions and parameters must match'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reg_calculators</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">calculator</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="n">penalty_term_scaling</span><span class="p">,</span> <span class="o">**</span><span class="n">calculator_kwargs</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">function_list</span><span class="p">,</span> <span class="n">gamma_list</span><span class="p">)</span>

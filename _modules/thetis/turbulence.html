@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.turbulence &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>thetis.turbulence &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../../_static/documentation_options.js?v=a725081d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -50,7 +50,7 @@
           <div class="body" role="main">
             
   <h1>Source code for thetis.turbulence</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">Generic Length Scale Turbulence Closure model</span>
 <span class="sd">=============================================</span>
 
@@ -123,10 +123,10 @@
 <span class="sd">.. code-block:: python</span>
 
 <span class="sd">    solver = FlowSolver(...)</span>
-<span class="sd">    solver.options.turbulence_model_type = &#39;gls&#39;  # activate GLS model (default)</span>
+<span class="sd">    solver.options.turbulence_model_type = 'gls'  # activate GLS model (default)</span>
 <span class="sd">    turbulence_model_options = solver.options.turbulence_model_options</span>
-<span class="sd">    turbulence_model_options.closure_name = &#39;k-omega&#39;</span>
-<span class="sd">    turbulence_model_options.stability_function_name = &#39;CB&#39;</span>
+<span class="sd">    turbulence_model_options.closure_name = 'k-omega'</span>
+<span class="sd">    turbulence_model_options.stability_function_name = 'CB'</span>
 <span class="sd">    turbulence_model_options.compute_c3_minus = True</span>
 
 <span class="sd">Currently the following closures have been implemented:</span>
@@ -189,7 +189,7 @@
 <span class="sd">    environment - a comparative study of two-equation turbulence models.</span>
 <span class="sd">    Journal of Marine Systems, 21(1-4):29-53.</span>
 <span class="sd">    http://dx.doi.org/10.1016/S0924-7963(99)00004-4</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utility</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.equation</span><span class="w"> </span><span class="kn">import</span> <span class="n">Equation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.tracer_eq</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
@@ -204,9 +204,9 @@
 <div class="viewcode-block" id="set_func_min_val">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.set_func_min_val">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_func_min_val</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">minval</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Sets a minimum value to a :class:`Function`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">f</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span> <span class="o">&lt;</span> <span class="n">minval</span><span class="p">]</span> <span class="o">=</span> <span class="n">minval</span></div>
 
 
@@ -214,9 +214,9 @@
 <div class="viewcode-block" id="set_func_max_val">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.set_func_max_val">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_func_max_val</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">maxval</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Sets a minimum value to a :class:`Function`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">f</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;</span> <span class="n">maxval</span><span class="p">]</span> <span class="o">=</span> <span class="n">maxval</span></div>
 
 
@@ -224,25 +224,25 @@
 <div class="viewcode-block" id="VerticalGradSolver">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.VerticalGradSolver">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">VerticalGradSolver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Computes vertical gradient in the weak sense.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VerticalGradSolver.__init__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.VerticalGradSolver.__init__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solver_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg source: A :class:`Function` or expression to differentiate.</span>
 <span class="sd">        :arg solution: A :class:`Function` where the solution will be stored.</span>
 <span class="sd">            Must be in P0 space.</span>
 <span class="sd">        :kwarg dict solver_parameters: PETSc solver options</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">solver_parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">solver_parameters</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;snes_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ksponly&#39;</span><span class="p">)</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;ksp_type&#39;</span><span class="p">,</span> <span class="s1">&#39;preonly&#39;</span><span class="p">)</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;pc_type&#39;</span><span class="p">,</span> <span class="s1">&#39;bjacobi&#39;</span><span class="p">)</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;sub_ksp_type&#39;</span><span class="p">,</span> <span class="s1">&#39;preonly&#39;</span><span class="p">)</span>
-        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;sub_pc_type&#39;</span><span class="p">,</span> <span class="s1">&#39;ilu&#39;</span><span class="p">)</span>
+        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'snes_type'</span><span class="p">,</span> <span class="s1">'ksponly'</span><span class="p">)</span>
+        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'ksp_type'</span><span class="p">,</span> <span class="s1">'preonly'</span><span class="p">)</span>
+        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'pc_type'</span><span class="p">,</span> <span class="s1">'bjacobi'</span><span class="p">)</span>
+        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'sub_ksp_type'</span><span class="p">,</span> <span class="s1">'preonly'</span><span class="p">)</span>
+        <span class="n">solver_parameters</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'sub_pc_type'</span><span class="p">,</span> <span class="s1">'ilu'</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solution</span> <span class="o">=</span> <span class="n">solution</span>
@@ -264,9 +264,9 @@
 
 <div class="viewcode-block" id="VerticalGradSolver.solve">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.VerticalGradSolver.solve">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VerticalGradSolver.solve&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.VerticalGradSolver.solve"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes the gradient&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Computes the gradient"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">weak_grad_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span></div>
 </div>
 
@@ -275,17 +275,17 @@
 <div class="viewcode-block" id="ShearFrequencySolver">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.ShearFrequencySolver">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ShearFrequencySolver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Computes vertical shear frequency squared form the given horizontal</span>
 <span class="sd">    velocity field.</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        M^2 = \left(\frac{\partial u}{\partial z}\right)^2</span>
 <span class="sd">            + \left(\frac{\partial v}{\partial z}\right)^2</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ShearFrequencySolver.__init__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.ShearFrequencySolver.__init__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">mv</span><span class="p">,</span> <span class="n">mu_tmp</span><span class="p">,</span> <span class="n">relaxation</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">minval</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg uv: horizontal velocity field</span>
 <span class="sd">        :type uv: :class:`Function`</span>
 <span class="sd">        :arg m2: :math:`M^2` field</span>
@@ -299,7 +299,7 @@
 <span class="sd">        :kwarg float relaxation: relaxation coefficient for mixing old and new values</span>
 <span class="sd">            M2 = relaxation*M2_new + (1-relaxation)*M2_old</span>
 <span class="sd">        :kwarg float minval: minimum value for :math:`M^2`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">mu</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mv</span> <span class="o">=</span> <span class="n">mv</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">m2</span> <span class="o">=</span> <span class="n">m2</span>
@@ -313,15 +313,15 @@
 
 <div class="viewcode-block" id="ShearFrequencySolver.solve">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.ShearFrequencySolver.solve">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ShearFrequencySolver.solve&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.ShearFrequencySolver.solve"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solve</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Computes buoyancy frequency</span>
 
 <span class="sd">        :kwarg bool init_solve: Set to True if solving for the first time, skips</span>
 <span class="sd">            relaxation</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;shear_freq_solv&#39;</span><span class="p">):</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">'shear_freq_solv'</span><span class="p">):</span>
             <span class="n">mu_comp</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mv</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i_comp</span><span class="p">,</span> <span class="n">solver</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">var_solvers</span><span class="p">):</span>
@@ -339,16 +339,16 @@
 <div class="viewcode-block" id="BuoyFrequencySolver">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.BuoyFrequencySolver">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BuoyFrequencySolver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Computes buoyancy frequency squared form the given horizontal</span>
 <span class="sd">    velocity field.</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        N^2 = -\frac{g}{\rho_0}\frac{\partial \rho}{\partial z}</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.BuoyFrequencySolver.__init__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.BuoyFrequencySolver.__init__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n2_tmp</span><span class="p">,</span> <span class="n">relaxation</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">minval</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg rho: water density field</span>
 <span class="sd">        :type rho: :class:`Function`</span>
 <span class="sd">        :arg n2: :math:`N^2` field</span>
@@ -358,7 +358,7 @@
 <span class="sd">        :kwarg float relaxation: relaxation coefficient for mixing old and new</span>
 <span class="sd">            values N2 = relaxation*N2_new + (1-relaxation)*N2_old</span>
 <span class="sd">        :kwarg float minval: minimum value for :math:`N^2`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_no_op</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">rho</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_no_op</span> <span class="o">=</span> <span class="kc">True</span>
@@ -369,23 +369,23 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">n2_tmp</span> <span class="o">=</span> <span class="n">n2_tmp</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">relaxation</span> <span class="o">=</span> <span class="n">relaxation</span>
 
-            <span class="n">g</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;g_grav&#39;</span><span class="p">]</span>
-            <span class="n">rho0</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;rho0&#39;</span><span class="p">]</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">'g_grav'</span><span class="p">]</span>
+            <span class="n">rho0</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">'rho0'</span><span class="p">]</span>
             <span class="n">p</span> <span class="o">=</span> <span class="o">-</span><span class="n">g</span><span class="o">/</span><span class="n">rho0</span> <span class="o">*</span> <span class="n">rho</span>
             <span class="n">solver</span> <span class="o">=</span> <span class="n">VerticalGradSolver</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2_tmp</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">var_solver</span> <span class="o">=</span> <span class="n">solver</span>
 
 <div class="viewcode-block" id="BuoyFrequencySolver.solve">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.BuoyFrequencySolver.solve">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.BuoyFrequencySolver.solve&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.BuoyFrequencySolver.solve"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solve</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Computes buoyancy frequency</span>
 
 <span class="sd">        :kwarg bool init_solve: Set to True if solving for the first time, skips</span>
 <span class="sd">            relaxation</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;buoy_freq_solv&#39;</span><span class="p">):</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">'buoy_freq_solv'</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_no_op</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">var_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
                 <span class="n">gamma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relaxation</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">init_solve</span> <span class="k">else</span> <span class="mf">1.0</span>
@@ -398,13 +398,13 @@
 <div class="viewcode-block" id="TurbulenceModel">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.TurbulenceModel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TurbulenceModel</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all vertical turbulence models&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Base class for all vertical turbulence models"""</span>
 
 <div class="viewcode-block" id="TurbulenceModel.initialize">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.TurbulenceModel.initialize">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize all turbulence fields&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initialize all turbulence fields"""</span>
         <span class="k">pass</span></div>
 
 
@@ -412,12 +412,12 @@
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.TurbulenceModel.preprocess">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solve</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Computes all diagnostic variables that depend on the mean flow model</span>
 <span class="sd">        variables.</span>
 
 <span class="sd">        To be called before updating the turbulence PDEs.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 
 
@@ -425,12 +425,12 @@
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.TurbulenceModel.postprocess">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Updates all diagnostic variables that depend on the turbulence state</span>
 <span class="sd">        variables.</span>
 
 <span class="sd">        To be called after updating the turbulence PDEs.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 </div>
 
@@ -439,15 +439,15 @@
 <div class="viewcode-block" id="GenericLengthScaleModel">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GenericLengthScaleModel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GenericLengthScaleModel</span><span class="p">(</span><span class="n">TurbulenceModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generic Length Scale turbulence closure model implementation</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GenericLengthScaleModel.__init__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.GenericLengthScaleModel.__init__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="n">k_field</span><span class="p">,</span> <span class="n">psi_field</span><span class="p">,</span> <span class="n">uv_field</span><span class="p">,</span> <span class="n">rho_field</span><span class="p">,</span>
                  <span class="n">l_field</span><span class="p">,</span> <span class="n">epsilon_field</span><span class="p">,</span>
                  <span class="n">eddy_diffusivity</span><span class="p">,</span> <span class="n">eddy_viscosity</span><span class="p">,</span>
                  <span class="n">n2</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg solver: FlowSolver object</span>
 <span class="sd">        :arg k_field: turbulent kinetic energy (TKE) field</span>
 <span class="sd">        :type k_field: :class:`Function`</span>
@@ -470,7 +470,7 @@
 <span class="sd">        :arg m2: field for vertical shear frequency squared</span>
 <span class="sd">        :type m2: :class:`Function`</span>
 <span class="sd">        :kwarg options: GLS model options</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">solver</span>
         <span class="c1"># 3d model fields</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uv</span> <span class="o">=</span> <span class="n">uv_field</span>
@@ -487,15 +487,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n2</span> <span class="o">=</span> <span class="n">n2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">m2</span> <span class="o">=</span> <span class="n">m2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mu_tmp</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span>
-                               <span class="n">name</span><span class="o">=</span><span class="s1">&#39;tmp Shear frequency&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Shear frequency X&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mv</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Shear frequency Y&#39;</span><span class="p">)</span>
+                               <span class="n">name</span><span class="o">=</span><span class="s1">'tmp Shear frequency'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">'Shear frequency X'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mv</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">'Shear frequency Y'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n2_tmp</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span>
-                               <span class="n">name</span><span class="o">=</span><span class="s1">&#39;tmp buoyancy frequency&#39;</span><span class="p">)</span>
+                               <span class="n">name</span><span class="o">=</span><span class="s1">'tmp buoyancy frequency'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n2_pos</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span>
-                               <span class="n">name</span><span class="o">=</span><span class="s1">&#39;positive buoyancy frequency&#39;</span><span class="p">)</span>
+                               <span class="n">name</span><span class="o">=</span><span class="s1">'positive buoyancy frequency'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n2_neg</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span>
-                               <span class="n">name</span><span class="o">=</span><span class="s1">&#39;negative buoyancy frequency&#39;</span><span class="p">)</span>
+                               <span class="n">name</span><span class="o">=</span><span class="s1">'negative buoyancy frequency'</span><span class="p">)</span>
 
         <span class="c1"># parameter to mix old and new viscosity values (1 =&gt; new only)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">relaxation</span> <span class="o">=</span> <span class="mf">1.0</span>
@@ -507,19 +507,19 @@
 
         <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
         <span class="n">stability_function_name</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">stability_function_name</span>
-        <span class="n">stab_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;lim_alpha_shear&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                     <span class="s1">&#39;lim_alpha_buoy&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                     <span class="s1">&#39;smooth_alpha_buoy_lim&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
-        <span class="k">if</span> <span class="n">stability_function_name</span> <span class="o">==</span> <span class="s1">&#39;Kantha-Clayson&#39;</span><span class="p">:</span>
+        <span class="n">stab_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'lim_alpha_shear'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                     <span class="s1">'lim_alpha_buoy'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                     <span class="s1">'smooth_alpha_buoy_lim'</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">stability_function_name</span> <span class="o">==</span> <span class="s1">'Kantha-Clayson'</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stability_func</span> <span class="o">=</span> <span class="n">StabilityFunctionKanthaClayson</span><span class="p">(</span><span class="o">**</span><span class="n">stab_args</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">stability_function_name</span> <span class="o">==</span> <span class="s1">&#39;Canuto A&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">stability_function_name</span> <span class="o">==</span> <span class="s1">'Canuto A'</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stability_func</span> <span class="o">=</span> <span class="n">StabilityFunctionCanutoA</span><span class="p">(</span><span class="o">**</span><span class="n">stab_args</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">stability_function_name</span> <span class="o">==</span> <span class="s1">&#39;Canuto B&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">stability_function_name</span> <span class="o">==</span> <span class="s1">'Canuto B'</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stability_func</span> <span class="o">=</span> <span class="n">StabilityFunctionCanutoB</span><span class="p">(</span><span class="o">**</span><span class="n">stab_args</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">stability_function_name</span> <span class="o">==</span> <span class="s1">&#39;Cheng&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">stability_function_name</span> <span class="o">==</span> <span class="s1">'Cheng'</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stability_func</span> <span class="o">=</span> <span class="n">StabilityFunctionCheng</span><span class="p">(</span><span class="o">**</span><span class="n">stab_args</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unknown stability function type: &#39;</span> <span class="o">+</span> <span class="n">stability_function_name</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Unknown stability function type: '</span> <span class="o">+</span> <span class="n">stability_function_name</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">compute_cmu0</span><span class="p">:</span>
             <span class="n">o</span><span class="o">.</span><span class="n">cmu0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stability_func</span><span class="o">.</span><span class="n">compute_cmu0</span><span class="p">()</span>
@@ -527,7 +527,7 @@
             <span class="n">kappa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stability_func</span><span class="o">.</span><span class="n">compute_kappa</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">schmidt_nb_psi</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">cmu0</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">c2</span><span class="p">)</span>
             <span class="n">o</span><span class="o">.</span><span class="n">kappa</span> <span class="o">=</span> <span class="n">kappa</span>
             <span class="c1"># update mean flow model value as well</span>
-            <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;von_karman&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">kappa</span><span class="p">)</span>
+            <span class="n">physical_constants</span><span class="p">[</span><span class="s1">'von_karman'</span><span class="p">]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">kappa</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">o</span><span class="o">.</span><span class="n">compute_schmidt_nb_psi</span><span class="p">:</span>
             <span class="n">o</span><span class="o">.</span><span class="n">schmidt_nb_psi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stability_func</span><span class="o">.</span><span class="n">compute_sigma_psi</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">kappa</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">cmu0</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">c2</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">compute_c3_minus</span><span class="p">:</span>
@@ -551,16 +551,16 @@
 
 <div class="viewcode-block" id="GenericLengthScaleModel.initialize">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GenericLengthScaleModel.initialize">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GenericLengthScaleModel.initialize&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.GenericLengthScaleModel.initialize"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l_init</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initialize turbulent fields.</span>
 
 <span class="sd">        k is set to k_min value. epsilon and psi are set to a value that</span>
 <span class="sd">        corresponds to l_init length scale.</span>
 
 <span class="sd">        :arg l_init: initial value for turbulent length scale.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">_simulation_continued</span><span class="p">:</span>
             <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
             <span class="n">eps_init</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">cmu0</span><span class="o">**</span><span class="mf">3.0</span> <span class="o">*</span> <span class="n">o</span><span class="o">.</span><span class="n">k_min</span><span class="o">**</span><span class="p">(</span><span class="mf">3.0</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">l_init</span>
@@ -578,14 +578,14 @@
 
 <div class="viewcode-block" id="GenericLengthScaleModel.preprocess">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GenericLengthScaleModel.preprocess">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GenericLengthScaleModel.preprocess&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.GenericLengthScaleModel.preprocess"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solve</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Computes all diagnostic variables that depend on the mean flow model</span>
 <span class="sd">        variables.</span>
 
 <span class="sd">        To be called before updating the turbulence PDEs.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
@@ -604,15 +604,15 @@
 
 <div class="viewcode-block" id="GenericLengthScaleModel.postprocess">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GenericLengthScaleModel.postprocess">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GenericLengthScaleModel.postprocess&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.GenericLengthScaleModel.postprocess"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Updates all diagnostic variables that depend on the turbulence state</span>
 <span class="sd">        variables :math:`k,\psi`.</span>
 
 <span class="sd">        To be called after updating the turbulence PDEs.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">&#39;turb_postproc&#39;</span><span class="p">):</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">timed_stage</span><span class="p">(</span><span class="s1">'turb_postproc'</span><span class="p">):</span>
             <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
             <span class="n">cmu0</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">cmu0</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">p</span>
@@ -656,7 +656,7 @@
                 <span class="n">len_max</span> <span class="o">=</span> <span class="n">galp_clim</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">k_arr</span><span class="o">/</span><span class="p">(</span><span class="n">n2_pos</span> <span class="o">+</span> <span class="n">n2_pos_eps</span><span class="p">))</span>
                 <span class="n">numpy</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">len_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">10.0</span><span class="p">:</span>
-                <span class="n">warning</span><span class="p">(</span><span class="s1">&#39; * large L: </span><span class="si">{:f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+                <span class="n">warning</span><span class="p">(</span><span class="s1">' * large L: </span><span class="si">{:f}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
 
             <span class="c1"># update stability functions</span>
             <span class="n">s_m</span><span class="p">,</span> <span class="n">s_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stability_func</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
@@ -678,23 +678,23 @@
 <div class="viewcode-block" id="GenericLengthScaleModel.print_debug">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GenericLengthScaleModel.print_debug">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">print_debug</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Print diagnostic field values for debugging.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:8s}</span><span class="s1"> </span><span class="si">{:10.3e}</span><span class="s1"> </span><span class="si">{:10.3e}</span><span class="s1">&#39;</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39; -----&#39;</span><span class="p">)</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;psi&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;eps&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;M2&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;N2&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;N2+&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2_pos</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2_pos</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;N2-&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2_neg</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2_neg</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;s_h&#39;</span><span class="p">,</span> <span class="n">s_h</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">s_h</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;s_m&#39;</span><span class="p">,</span> <span class="n">s_m</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">s_m</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;nuv&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">viscosity</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">viscosity</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;muv&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusivity</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusivity</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span></div>
+<span class="sd">        """</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{:8s}</span><span class="s1"> </span><span class="si">{:10.3e}</span><span class="s1"> </span><span class="si">{:10.3e}</span><span class="s1">'</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">' -----'</span><span class="p">)</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'k'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'psi'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'eps'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'L'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'M2'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'N2'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'N2+'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2_pos</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2_pos</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'N2-'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2_neg</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2_neg</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'s_h'</span><span class="p">,</span> <span class="n">s_h</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">s_h</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'s_m'</span><span class="p">,</span> <span class="n">s_m</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">s_m</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'nuv'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">viscosity</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">viscosity</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'muv'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusivity</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusivity</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span></div>
 </div>
 
 
@@ -702,7 +702,7 @@
 <div class="viewcode-block" id="TKESourceTerm">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.TKESourceTerm">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TKESourceTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Production and destruction terms of the TKE equation :eq:`turb_tke_eq`</span>
 
 <span class="sd">    .. math::</span>
@@ -716,10 +716,10 @@
 <span class="sd">        F_k = P + B_{source} + \frac{k^{n+1}}{k^n}(B_{sink} - \varepsilon)</span>
 
 <span class="sd">    with :math:`B_{source} \ge 0` and :math:`B_{sink} &lt; 0`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">gls_model</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
 <span class="sd">        :arg gls_model: :class:`.GenericLengthScaleModel` object</span>
 <span class="sd">        :kwarg bathymetry: bathymetry of the domain</span>
@@ -728,7 +728,7 @@
 <span class="sd">            element size</span>
 <span class="sd">        :kwarg h_elem_size: scalar :class:`Function` that defines the horizontal</span>
 <span class="sd">            element size</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TKESourceTerm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span>
                                             <span class="n">bathymetry</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gls_model</span> <span class="o">=</span> <span class="n">gls_model</span>
@@ -743,12 +743,12 @@
         <span class="c1"># N**2 = -g\rho_0 (drho/dz)      (buoyancy frequency)</span>
         <span class="c1"># eps = (cmu0)**(3+p/n)*tke**(3/2+m/n)*psi**(-1/n)</span>
         <span class="c1">#                                (tke dissipation rate)</span>
-        <span class="n">eddy_viscosity</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;viscosity_v&#39;</span><span class="p">]</span>
-        <span class="n">eddy_diffusivity</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;diffusivity_v&#39;</span><span class="p">]</span>
-        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;epsilon&#39;</span><span class="p">]</span>
-        <span class="n">shear_freq2</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;shear_freq2&#39;</span><span class="p">]</span>
-        <span class="n">buoy_freq2_neg</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;buoy_freq2_neg&#39;</span><span class="p">]</span>
-        <span class="n">buoy_freq2_pos</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;buoy_freq2_pos&#39;</span><span class="p">]</span>
+        <span class="n">eddy_viscosity</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'viscosity_v'</span><span class="p">]</span>
+        <span class="n">eddy_diffusivity</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'diffusivity_v'</span><span class="p">]</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'epsilon'</span><span class="p">]</span>
+        <span class="n">shear_freq2</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'shear_freq2'</span><span class="p">]</span>
+        <span class="n">buoy_freq2_neg</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'buoy_freq2_neg'</span><span class="p">]</span>
+        <span class="n">buoy_freq2_pos</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'buoy_freq2_pos'</span><span class="p">]</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">eddy_viscosity</span> <span class="o">*</span> <span class="n">shear_freq2</span>
         <span class="n">b_source</span> <span class="o">=</span> <span class="o">-</span> <span class="n">eddy_diffusivity</span> <span class="o">*</span> <span class="n">buoy_freq2_neg</span>
         <span class="n">b_sink</span> <span class="o">=</span> <span class="o">-</span> <span class="n">eddy_diffusivity</span> <span class="o">*</span> <span class="n">buoy_freq2_pos</span>
@@ -763,7 +763,7 @@
 <div class="viewcode-block" id="PsiSourceTerm">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.PsiSourceTerm">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PsiSourceTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Production and destruction terms of the Psi equation :eq:`turb_psi_eq`</span>
 
 <span class="sd">    .. math::</span>
@@ -787,10 +787,10 @@
 
 <span class="sd">    where :math:`z_b` is the distance from boundary, and :math:`z_0` is the</span>
 <span class="sd">    roughness length.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">gls_model</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
 <span class="sd">        :arg gls_model: :class:`.GenericLengthScaleModel` object</span>
 <span class="sd">        :kwarg bathymetry: bathymetry of the domain</span>
@@ -799,7 +799,7 @@
 <span class="sd">            element size</span>
 <span class="sd">        :kwarg h_elem_size: scalar :class:`Function` that defines the horizontal</span>
 <span class="sd">            element size</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PsiSourceTerm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span>
                                             <span class="n">bathymetry</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gls_model</span> <span class="o">=</span> <span class="n">gls_model</span>
@@ -814,21 +814,21 @@
         <span class="c1"># N**2 = -g\rho_0 (drho/dz)      (buoyancy frequency)</span>
         <span class="c1"># eps = (cmu0)**(3+p/n)*tke**(3/2+m/n)*psi**(-1/n)</span>
         <span class="c1">#                                (tke dissipation rate)</span>
-        <span class="n">eddy_viscosity</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;viscosity_v&#39;</span><span class="p">]</span>
-        <span class="n">eddy_diffusivity</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;diffusivity_v&#39;</span><span class="p">]</span>
+        <span class="n">eddy_viscosity</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'viscosity_v'</span><span class="p">]</span>
+        <span class="n">eddy_diffusivity</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'diffusivity_v'</span><span class="p">]</span>
         <span class="n">diffusivity_v</span> <span class="o">=</span> <span class="n">eddy_viscosity</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">gls_model</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">schmidt_nb_psi</span>
-        <span class="n">k</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">]</span>
-        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;epsilon&#39;</span><span class="p">]</span>
-        <span class="n">shear_freq2</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;shear_freq2&#39;</span><span class="p">]</span>
-        <span class="n">buoy_freq2_neg</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;buoy_freq2_neg&#39;</span><span class="p">]</span>
-        <span class="n">buoy_freq2_pos</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;buoy_freq2_pos&#39;</span><span class="p">]</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'k'</span><span class="p">]</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'epsilon'</span><span class="p">]</span>
+        <span class="n">shear_freq2</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'shear_freq2'</span><span class="p">]</span>
+        <span class="n">buoy_freq2_neg</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'buoy_freq2_neg'</span><span class="p">]</span>
+        <span class="n">buoy_freq2_pos</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'buoy_freq2_pos'</span><span class="p">]</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">eddy_viscosity</span> <span class="o">*</span> <span class="n">shear_freq2</span>
         <span class="n">c1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gls_model</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">c1</span>
         <span class="n">c2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gls_model</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">c2</span>
         <span class="c1"># c3 switch: c3 = c3_minus if n2 &gt; 0 else c3_plus</span>
         <span class="n">c3_minus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gls_model</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">c3_minus</span>
         <span class="n">c3_plus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gls_model</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">c3_plus</span>  <span class="c1"># &gt; 0</span>
-        <span class="k">assert</span> <span class="n">c3_plus</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;c3_plus has unexpected sign&#39;</span>
+        <span class="k">assert</span> <span class="n">c3_plus</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'c3_plus has unexpected sign'</span>
         <span class="n">b_shear</span> <span class="o">=</span> <span class="n">c3_plus</span> <span class="o">*</span> <span class="o">-</span><span class="n">eddy_diffusivity</span> <span class="o">*</span> <span class="n">buoy_freq2_neg</span>
         <span class="n">b_buoy</span> <span class="o">=</span> <span class="n">c3_minus</span> <span class="o">*</span> <span class="o">-</span><span class="n">eddy_diffusivity</span> <span class="o">*</span> <span class="n">buoy_freq2_pos</span>
         <span class="k">if</span> <span class="n">c3_minus</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -848,12 +848,12 @@
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gls_model</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">p</span>
         <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gls_model</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">m</span>
         <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gls_model</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">n</span>
-        <span class="n">bfr_roughness</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;bottom_roughness&#39;</span><span class="p">)</span>
+        <span class="n">bfr_roughness</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'bottom_roughness'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">bfr_roughness</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">bfr_roughness</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">kappa</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;von_karman&#39;</span><span class="p">]</span>
+        <span class="n">kappa</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">'von_karman'</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_elem_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;v_elem_size required&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'v_elem_size required'</span><span class="p">)</span>
         <span class="c1"># bottom condition</span>
         <span class="n">elem_frac</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
         <span class="n">z_b</span> <span class="o">=</span> <span class="n">elem_frac</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">v_elem_size</span> <span class="o">+</span> <span class="n">bfr_roughness</span>
@@ -876,14 +876,14 @@
 <div class="viewcode-block" id="GLSVerticalDiffusionTerm">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GLSVerticalDiffusionTerm">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GLSVerticalDiffusionTerm</span><span class="p">(</span><span class="n">VerticalDiffusionTerm</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Vertical diffusion term where the diffusivity is replaced by</span>
 <span class="sd">    viscosity/Schmidt number.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">schmidt_nb</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">sipg_factor</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
 <span class="sd">        :arg schmidt_nb: the Schmidt number of TKE or Psi</span>
 <span class="sd">        :kwarg bathymetry: bathymetry of the domain</span>
@@ -894,7 +894,7 @@
 <span class="sd">            element size</span>
 <span class="sd">        :kwarg sipg_factor: :class: `Constant` or :class: `Function` vertical SIPG penalty scaling factor</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">GLSVerticalDiffusionTerm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span>
                                                        <span class="n">bathymetry</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="p">,</span>
                                                        <span class="n">sipg_factor_vertical</span><span class="o">=</span><span class="n">sipg_factor</span><span class="p">)</span>
@@ -903,7 +903,7 @@
 <div class="viewcode-block" id="GLSVerticalDiffusionTerm.residual">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.GLSVerticalDiffusionTerm.residual">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;diffusivity_v&#39;</span><span class="p">:</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;viscosity_v&#39;</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">schmidt_nb</span><span class="p">}</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'diffusivity_v'</span><span class="p">:</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'viscosity_v'</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">schmidt_nb</span><span class="p">}</span>
         <span class="n">f</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">GLSVerticalDiffusionTerm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span>
                                                            <span class="n">d</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">f</span></div>
@@ -914,14 +914,14 @@
 <div class="viewcode-block" id="TKEEquation">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.TKEEquation">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TKEEquation</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Turbulent kinetic energy equation :eq:`turb_tke_eq` without advection terms.</span>
 
 <span class="sd">    Advection of TKE is implemented using the standard tracer equation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">gls_model</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
 <span class="sd">        :arg gls_model: :class:`.GenericLengthScaleModel` object</span>
 <span class="sd">        :kwarg bathymetry: bathymetry of the domain</span>
@@ -930,7 +930,7 @@
 <span class="sd">            element size</span>
 <span class="sd">        :kwarg h_elem_size: scalar :class:`Function` that defines the horizontal</span>
 <span class="sd">            element size</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TKEEquation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
 
         <span class="n">diff</span> <span class="o">=</span> <span class="n">GLSVerticalDiffusionTerm</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span>
@@ -939,22 +939,22 @@
         <span class="n">source</span> <span class="o">=</span> <span class="n">TKESourceTerm</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span>
                                <span class="n">gls_model</span><span class="p">,</span>
                                <span class="n">bathymetry</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s1">&#39;implicit&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="s1">&#39;implicit&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s1">'implicit'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="s1">'implicit'</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="PsiEquation">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.PsiEquation">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PsiEquation</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Generic length scale equation :eq:`turb_psi_eq` without advection terms.</span>
 
 <span class="sd">    Advection of :math:`\psi` is implemented using the standard tracer equation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">gls_model</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
 <span class="sd">        :arg gls_model: :class:`.GenericLengthScaleModel` object</span>
 <span class="sd">        :kwarg bathymetry: bathymetry of the domain</span>
@@ -963,7 +963,7 @@
 <span class="sd">            element size</span>
 <span class="sd">        :kwarg h_elem_size: scalar :class:`Function` that defines the horizontal</span>
 <span class="sd">            element size</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PsiEquation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
 
         <span class="n">diff</span> <span class="o">=</span> <span class="n">GLSVerticalDiffusionTerm</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span>
@@ -972,15 +972,15 @@
         <span class="n">source</span> <span class="o">=</span> <span class="n">PsiSourceTerm</span><span class="p">(</span><span class="n">function_space</span><span class="p">,</span>
                                <span class="n">gls_model</span><span class="p">,</span>
                                <span class="n">bathymetry</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="s1">&#39;implicit&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s1">&#39;implicit&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="s1">'implicit'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s1">'implicit'</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="PacanowskiPhilanderModel">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.PacanowskiPhilanderModel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PacanowskiPhilanderModel</span><span class="p">(</span><span class="n">TurbulenceModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Gradient Richardson number based model by Pacanowski and Philander (1981).</span>
 
 <span class="sd">    Given the gradient Richardson number :math:`Ri` the eddy viscosity and</span>
@@ -997,12 +997,12 @@
 <span class="sd">    numerical models of tropical oceans. Journal of Physical Oceanography,</span>
 <span class="sd">    11(11):1443-1451.</span>
 <span class="sd">    http://dx.doi.org/10.1175/1520-0485(1981)011%3C1443:POVMIN%3E2.0.CO;2</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.PacanowskiPhilanderModel.__init__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.PacanowskiPhilanderModel.__init__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="n">uv_field</span><span class="p">,</span> <span class="n">rho_field</span><span class="p">,</span>
                  <span class="n">eddy_diffusivity</span><span class="p">,</span> <span class="n">eddy_viscosity</span><span class="p">,</span>
                  <span class="n">n2</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg solver: FlowSolver object</span>
 <span class="sd">        :arg uv_field: horizontal velocity field</span>
 <span class="sd">        :type uv_field: :class:`Function`</span>
@@ -1017,7 +1017,7 @@
 <span class="sd">        :arg m2: field for vertical shear frequency squared</span>
 <span class="sd">        :type m2: :class:`Function`</span>
 <span class="sd">        :kwarg options: model options</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">solver</span>
         <span class="c1"># 3d model fields</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uv</span> <span class="o">=</span> <span class="n">uv_field</span>
@@ -1028,13 +1028,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n2</span> <span class="o">=</span> <span class="n">n2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">m2</span> <span class="o">=</span> <span class="n">m2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mu_tmp</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span>
-                               <span class="n">name</span><span class="o">=</span><span class="s1">&#39;tmp Shear frequency&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Shear frequency X&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mv</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Shear frequency Y&#39;</span><span class="p">)</span>
+                               <span class="n">name</span><span class="o">=</span><span class="s1">'tmp Shear frequency'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">'Shear frequency X'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mv</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">'Shear frequency Y'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n2_tmp</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span>
-                               <span class="n">name</span><span class="o">=</span><span class="s1">&#39;tmp buoyancy frequency&#39;</span><span class="p">)</span>
+                               <span class="n">name</span><span class="o">=</span><span class="s1">'tmp buoyancy frequency'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n2_pos</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">function_space</span><span class="p">(),</span>
-                               <span class="n">name</span><span class="o">=</span><span class="s1">&#39;positive buoyancy frequency&#39;</span><span class="p">)</span>
+                               <span class="n">name</span><span class="o">=</span><span class="s1">'positive buoyancy frequency'</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">PacanowskiPhilanderModelOptions</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1052,9 +1052,9 @@
 
 <div class="viewcode-block" id="PacanowskiPhilanderModel.initialize">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.PacanowskiPhilanderModel.initialize">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.PacanowskiPhilanderModel.initialize&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.PacanowskiPhilanderModel.initialize"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes fields&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initializes fields"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">1e-12</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n2_pos</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">1e-12</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">init_solve</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1063,14 +1063,14 @@
 
 <div class="viewcode-block" id="PacanowskiPhilanderModel.preprocess">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.PacanowskiPhilanderModel.preprocess">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.PacanowskiPhilanderModel.preprocess&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.PacanowskiPhilanderModel.preprocess"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_solve</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Computes all diagnostic variables that depend on the mean flow model</span>
 <span class="sd">        variables.</span>
 
 <span class="sd">        To be called before updating the turbulence PDEs.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shear_frequency_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">init_solve</span><span class="o">=</span><span class="n">init_solve</span><span class="p">)</span>
 
@@ -1084,14 +1084,14 @@
 
 <div class="viewcode-block" id="PacanowskiPhilanderModel.postprocess">
 <a class="viewcode-back" href="../../thetis.html#thetis.turbulence.PacanowskiPhilanderModel.postprocess">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.PacanowskiPhilanderModel.postprocess&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.PacanowskiPhilanderModel.postprocess"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Updates all diagnostic variables that depend on the turbulence state</span>
 <span class="sd">        variables.</span>
 
 <span class="sd">        To be called after evaluating the equations.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">ri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2_pos</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">m2</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span>
         <span class="n">denom</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">alpha</span><span class="o">*</span><span class="n">ri</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">viscosity</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">max_viscosity</span><span class="o">/</span><span class="n">denom</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">exponent</span>

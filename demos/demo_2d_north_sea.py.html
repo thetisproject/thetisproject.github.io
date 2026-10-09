@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>North Sea example &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>North Sea example &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/thetis.css?v=0f3339d6" />
-    <script src="../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../_static/documentation_options.js?v=a725081d"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -98,9 +98,9 @@ Firedrake documentation for interpolating data</a>.
 However, the NetCDF file cannot be included here for
 copyright reasons, so we insteady provide a HDF5 file containing the data already
 interpolated onto the mesh.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">CheckpointFile</span><span class="p">(</span><span class="s2">&quot;runfiles/north_sea_bathymetry.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">mesh2d</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">load_mesh</span><span class="p">(</span><span class="s2">&quot;firedrake_default&quot;</span><span class="p">)</span>
-    <span class="n">bathymetry_2d</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">load_function</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">&quot;Bathymetry&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">CheckpointFile</span><span class="p">(</span><span class="s2">"runfiles/north_sea_bathymetry.h5"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">mesh2d</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">load_mesh</span><span class="p">(</span><span class="s2">"firedrake_default"</span><span class="p">)</span>
+    <span class="n">bathymetry_2d</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">load_function</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">"Bathymetry"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The resulting bathymetry field is plotted below.</p>
@@ -114,22 +114,22 @@ details on obtaining such data, we refer to the
 in the source code. For the purposes of this demo, we have included a CSV file
 named <cite>stations_elev.csv</cite> containing the gauge locations. We can read it as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">read_station_data</span><span class="p">():</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;runfiles/stations_elev.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"runfiles/stations_elev.csv"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
         <span class="n">stations</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;latitude&quot;</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;longitude&quot;</span><span class="p">]))</span>
-            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">skipinitialspace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]:</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">"latitude"</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">"longitude"</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">,</span> <span class="n">skipinitialspace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="k">return</span> <span class="n">stations</span>
 </pre></div>
 </div>
 <p>We also require fields for the Manning friction coefficient and the Coriolis forcing.
 These can be set up as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P1_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">manning_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Manning coefficient&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P1_2d</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">"CG"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">manning_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"Manning coefficient"</span><span class="p">)</span>
 <span class="n">manning_2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">3.0e-02</span><span class="p">)</span>
 
 <span class="n">omega</span> <span class="o">=</span> <span class="mf">7.292e-05</span>
-<span class="n">coriolis_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Coriolis forcing&quot;</span><span class="p">)</span>
+<span class="n">coriolis_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"Coriolis forcing"</span><span class="p">)</span>
 <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">get_mesh_lonlat_function</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">)</span>
 <span class="n">coriolis_2d</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">omega</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">lat</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">))</span>
 </pre></div>
@@ -145,7 +145,7 @@ one hour.</p>
 <span class="n">t_export</span> <span class="o">=</span> <span class="mf">3600.0</span>
 </pre></div>
 </div>
-<!-- in the CI we only run two timesteps; commented out in html for the web version<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;THETIS_REGRESSION_TEST&#39;</span><span class="p">):</span>
+<!-- in the CI we only run two timesteps; commented out in html for the web version<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'THETIS_REGRESSION_TEST'</span><span class="p">):</span>
     <span class="n">end_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2022</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">sim_tz</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -155,7 +155,7 @@ because it is more suitable than the default Crank-Nicolson integrator in the ca
 where we take large timesteps. (Crank-Nicolson is asymptotically unstable.)</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span> <span class="o">=</span> <span class="n">solver2d</span><span class="o">.</span><span class="n">FlowSolver2d</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">)</span>
 <span class="n">options</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span>
-<span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="o">=</span> <span class="s2">&quot;dg-dg&quot;</span>
+<span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="o">=</span> <span class="s2">"dg-dg"</span>
 <span class="n">options</span><span class="o">.</span><span class="n">polynomial_degree</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">options</span><span class="o">.</span><span class="n">coriolis_frequency</span> <span class="o">=</span> <span class="n">coriolis_2d</span>
 <span class="n">options</span><span class="o">.</span><span class="n">manning_drag_coefficient</span> <span class="o">=</span> <span class="n">manning_2d</span>
@@ -164,10 +164,10 @@ where we take large timesteps. (Crank-Nicolson is asymptotically unstable.)</p>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span> <span class="o">=</span> <span class="n">t_export</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_initial_date</span> <span class="o">=</span> <span class="n">start_date</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_end_date</span> <span class="o">=</span> <span class="n">end_date</span>
-<span class="n">options</span><span class="o">.</span><span class="n">swe_timestepper_type</span> <span class="o">=</span> <span class="s2">&quot;DIRK22&quot;</span>
+<span class="n">options</span><span class="o">.</span><span class="n">swe_timestepper_type</span> <span class="o">=</span> <span class="s2">"DIRK22"</span>
 <span class="n">options</span><span class="o">.</span><span class="n">swe_timestepper_options</span><span class="o">.</span><span class="n">use_semi_implicit_linearization</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">options</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="n">dt</span>
-<span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;elev_2d&quot;</span><span class="p">,</span> <span class="s2">&quot;uv_2d&quot;</span><span class="p">]</span>
+<span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"elev_2d"</span><span class="p">,</span> <span class="s2">"uv_2d"</span><span class="p">]</span>
 <span class="n">options</span><span class="o">.</span><span class="n">fields_to_export_hdf5</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">solver_obj</span><span class="o">.</span><span class="n">create_equations</span><span class="p">()</span>
 </pre></div>
@@ -180,7 +180,7 @@ name of each tide gauge.</p>
     <span class="n">sta_x</span><span class="p">,</span> <span class="n">sta_y</span> <span class="o">=</span> <span class="n">coord_system</span><span class="o">.</span><span class="n">to_xy</span><span class="p">(</span><span class="n">sta_lon</span><span class="p">,</span> <span class="n">sta_lat</span><span class="p">)</span>
     <span class="n">cb</span> <span class="o">=</span> <span class="n">TimeSeriesCallback2D</span><span class="p">(</span>
         <span class="n">solver_obj</span><span class="p">,</span>
-        <span class="p">[</span><span class="s2">&quot;elev_2d&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">"elev_2d"</span><span class="p">],</span>
         <span class="n">sta_x</span><span class="p">,</span>
         <span class="n">sta_y</span><span class="p">,</span>
         <span class="n">name</span><span class="p">,</span>
@@ -201,11 +201,11 @@ variable <cite>$DATA</cite>.</p>
 <p>With the data in place, we can set up a Firedrake <code class="xref py py-class docutils literal notranslate"><span class="pre">Function</span></code> to control
 the elevation forcings on ocean boundaries and pass them into a
 <code class="xref py py-class docutils literal notranslate"><span class="pre">TPXOTidalBoundaryForcing</span></code> instance.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DATA&quot;</span><span class="p">,</span> <span class="s2">&quot;./data&quot;</span><span class="p">),</span> <span class="s2">&quot;tpxo&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"DATA"</span><span class="p">,</span> <span class="s2">"./data"</span><span class="p">),</span> <span class="s2">"tpxo"</span><span class="p">)</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_dir</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Forcing data directory </span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s2"> does not exist&quot;</span><span class="p">)</span>
-<span class="n">forcing_constituents</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Q1&quot;</span><span class="p">,</span> <span class="s2">&quot;O1&quot;</span><span class="p">,</span> <span class="s2">&quot;P1&quot;</span><span class="p">,</span> <span class="s2">&quot;K1&quot;</span><span class="p">,</span> <span class="s2">&quot;N2&quot;</span><span class="p">,</span> <span class="s2">&quot;M2&quot;</span><span class="p">,</span> <span class="s2">&quot;S2&quot;</span><span class="p">,</span> <span class="s2">&quot;K2&quot;</span><span class="p">]</span>
-<span class="n">elev_tide_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Tidal elevation&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Forcing data directory </span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s2"> does not exist"</span><span class="p">)</span>
+<span class="n">forcing_constituents</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Q1"</span><span class="p">,</span> <span class="s2">"O1"</span><span class="p">,</span> <span class="s2">"P1"</span><span class="p">,</span> <span class="s2">"K1"</span><span class="p">,</span> <span class="s2">"N2"</span><span class="p">,</span> <span class="s2">"M2"</span><span class="p">,</span> <span class="s2">"S2"</span><span class="p">,</span> <span class="s2">"K2"</span><span class="p">]</span>
+<span class="n">elev_tide_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"Tidal elevation"</span><span class="p">)</span>
 <span class="n">tbnd</span> <span class="o">=</span> <span class="n">forcing</span><span class="o">.</span><span class="n">TPXOTidalBoundaryForcing</span><span class="p">(</span>
     <span class="n">elev_tide_2d</span><span class="p">,</span>
     <span class="n">start_date</span><span class="p">,</span>
@@ -224,8 +224,8 @@ boundary segments with tag 100. For open ocean boundaries in sufficiently deep
 open water, it is usually sufficient to use a zero boundary condition for the
 velocity because its magnitude is not significant. We pass this information to
 the solver object as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s2">&quot;shallow_water&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="mi">100</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;elev&quot;</span><span class="p">:</span> <span class="n">elev_tide_2d</span><span class="p">,</span> <span class="s2">&quot;uv&quot;</span><span class="p">:</span> <span class="n">Constant</span><span class="p">(</span><span class="n">as_vector</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))},</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s2">"shallow_water"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">100</span><span class="p">:</span> <span class="p">{</span><span class="s2">"elev"</span><span class="p">:</span> <span class="n">elev_tide_2d</span><span class="p">,</span> <span class="s2">"uv"</span><span class="p">:</span> <span class="n">Constant</span><span class="p">(</span><span class="n">as_vector</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))},</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -242,7 +242,7 @@ the following free surface elevation field (as well as a velocity field).</p>
 elevation and velocity fields in the <cite>outputs_spinup</cite> directory. These can be
 used to initialise the model as follows. The spun-up HDF5 data were
 generated by a serial run, so this demo will not work in parallel.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">load_state</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="s2">&quot;outputs_spinup&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">iteration</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">load_state</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="s2">"outputs_spinup"</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">iteration</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The spin-up run was exported to HDF5 at daily intervals, so the first argument

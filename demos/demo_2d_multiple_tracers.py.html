@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>2D setup with muliple tracers &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>2D setup with muliple tracers &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/thetis.css?v=0f3339d6" />
-    <script src="../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../_static/documentation_options.js?v=a725081d"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +60,7 @@ three advected quantities as separate tracer fields.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">thetis</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">mesh2d</span> <span class="o">=</span> <span class="n">UnitSquareMesh</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="n">quadrilateral</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">P1_2d</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">P1_2d</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">"CG"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">bathymetry2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">)</span>
 <span class="n">bathymetry2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
 
@@ -73,13 +73,13 @@ used, with the default name <cite>tracer_2d</cite>. It is also
 possible to specify separate tracers, provided we provide
 labels, names and filenames for each, as well as any source
 terms, diffusion coefficients and boundary conditions.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;bell_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;cone_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;slot_cyl_2d&#39;</span><span class="p">]</span>
-<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Gaussian bell&#39;</span><span class="p">,</span> <span class="s1">&#39;Cone&#39;</span><span class="p">,</span> <span class="s1">&#39;Slotted cylinder&#39;</span><span class="p">]</span>
-<span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GaussianBell2d&#39;</span><span class="p">,</span> <span class="s1">&#39;Cone2d&#39;</span><span class="p">,</span> <span class="s1">&#39;SlottedCylinder2d&#39;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'bell_2d'</span><span class="p">,</span> <span class="s1">'cone_2d'</span><span class="p">,</span> <span class="s1">'slot_cyl_2d'</span><span class="p">]</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Gaussian bell'</span><span class="p">,</span> <span class="s1">'Cone'</span><span class="p">,</span> <span class="s1">'Slotted cylinder'</span><span class="p">]</span>
+<span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'GaussianBell2d'</span><span class="p">,</span> <span class="s1">'Cone2d'</span><span class="p">,</span> <span class="s1">'SlottedCylinder2d'</span><span class="p">]</span>
 <span class="n">options</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span>
 <span class="n">options</span><span class="o">.</span><span class="n">tracer_only</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="n">labels</span>
-<span class="n">bc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;on_boundary&#39;</span><span class="p">:</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)}}</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'value'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'on_boundary'</span><span class="p">:</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)}}</span>
 <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">filenames</span><span class="p">):</span>
     <span class="n">options</span><span class="o">.</span><span class="n">add_tracer_2d</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">diffusivity</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">bc</span>
@@ -88,7 +88,7 @@ terms, diffusion coefficients and boundary conditions.</p>
 <p>Note that tracer equations will be solved in the order
 in which they were added using <cite>add_tracer_2d</cite>. Most of
 the remaining model setup is as before.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">tracer_timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;SSPRK33&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">.</span><span class="n">tracer_timestepper_type</span> <span class="o">=</span> <span class="s1">'SSPRK33'</span>
 <span class="n">options</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">300.0</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">15.0</span>
@@ -130,7 +130,7 @@ the normalised <span class="math notranslate nohighlight">\(L^2\)</span> error.<
     <span class="n">q</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
     <span class="n">L2_err</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">assemble</span><span class="p">((</span><span class="n">q</span> <span class="o">-</span> <span class="n">init</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="n">init</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span><span class="p">))</span>
     <span class="n">L2_init</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">assemble</span><span class="p">(</span><span class="n">init</span><span class="o">*</span><span class="n">init</span><span class="o">*</span><span class="n">dx</span><span class="p">))</span>
-    <span class="n">print_output</span><span class="p">(</span><span class="s2">&quot;Relative error </span><span class="si">{:8s}</span><span class="s2">: </span><span class="si">{:.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">L2_err</span><span class="o">/</span><span class="n">L2_init</span><span class="p">))</span>
+    <span class="n">print_output</span><span class="p">(</span><span class="s2">"Relative error </span><span class="si">{:8s}</span><span class="s2">: </span><span class="si">{:.2f}</span><span class="s2">%"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">L2_err</span><span class="o">/</span><span class="n">L2_init</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>This tutorial can be dowloaded as a Python script <a class="reference external" href="demo_2d_multiple_tracers.py">here</a>.</p>

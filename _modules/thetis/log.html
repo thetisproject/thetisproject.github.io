@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.log &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>thetis.log &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../../_static/documentation_options.js?v=a725081d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -50,7 +50,7 @@
           <div class="body" role="main">
             
   <h1>Source code for thetis.log</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Loggers for Thetis</span>
 
 <span class="sd">Creates two logger instances, one for general model output and one for debug,</span>
@@ -60,27 +60,27 @@
 
 <span class="sd">Debug, warning etc. messages are issued with :func:`~.debug`, :func:`~.info`,</span>
 <span class="sd">:func:`~.warning`, :func:`~.error`, :func:`~.critical` methods.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">thetis.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">COMM_WORLD</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">CRITICAL</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">,</span> <span class="s1">&#39;output_logger&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">,</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;CRITICAL&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="s1">&#39;warning&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;critical&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;print_output&#39;</span><span class="p">,</span> <span class="s1">&#39;set_thetis_loggers&#39;</span><span class="p">,</span> <span class="s1">&#39;thetis_log_level&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;set_log_directory&#39;</span><span class="p">)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'logger'</span><span class="p">,</span> <span class="s1">'output_logger'</span><span class="p">,</span>
+           <span class="s1">'DEBUG'</span><span class="p">,</span> <span class="s1">'INFO'</span><span class="p">,</span> <span class="s1">'WARNING'</span><span class="p">,</span> <span class="s1">'ERROR'</span><span class="p">,</span> <span class="s1">'CRITICAL'</span><span class="p">,</span>
+           <span class="s1">'log'</span><span class="p">,</span> <span class="s1">'debug'</span><span class="p">,</span> <span class="s1">'info'</span><span class="p">,</span> <span class="s1">'warning'</span><span class="p">,</span> <span class="s1">'error'</span><span class="p">,</span> <span class="s1">'critical'</span><span class="p">,</span>
+           <span class="s1">'print_output'</span><span class="p">,</span> <span class="s1">'set_thetis_loggers'</span><span class="p">,</span> <span class="s1">'thetis_log_level'</span><span class="p">,</span>
+           <span class="s1">'set_log_directory'</span><span class="p">)</span>
 
 <span class="n">logger_format</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;thetis&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%(name)s</span><span class="s1">:</span><span class="si">%(levelname)s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;thetis_output&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="s1">'thetis'</span><span class="p">:</span> <span class="s1">'</span><span class="si">%(name)s</span><span class="s1">:</span><span class="si">%(levelname)s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">'</span><span class="p">,</span>
+    <span class="s1">'thetis_output'</span><span class="p">:</span> <span class="s1">'</span><span class="si">%(message)s</span><span class="s1">'</span><span class="p">,</span>
 <span class="p">}</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ThetisLogConfig</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Module-wide config object&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Module-wide config object"""</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">mem_buffer</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -95,12 +95,12 @@
 <div class="viewcode-block" id="set_thetis_loggers">
 <a class="viewcode-back" href="../../thetis.html#thetis.log.set_thetis_loggers">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_thetis_loggers</span><span class="p">(</span><span class="n">comm</span><span class="o">=</span><span class="n">COMM_WORLD</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set stream handlers for log messages.</span>
+<span class="w">    </span><span class="sd">"""Set stream handlers for log messages.</span>
 
 <span class="sd">    :kwarg comm: The communicator the handler should be collective</span>
 <span class="sd">         over. Only rank-0 on that communicator will write to the log, other</span>
 <span class="sd">         ranks will use a :class:`logging.NullHandler`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_stream_handler</span><span class="p">(</span><span class="n">buffered</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">comm</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">buffered</span><span class="p">:</span>
@@ -129,8 +129,8 @@
 
 <div class="viewcode-block" id="set_log_directory">
 <a class="viewcode-back" href="../../thetis.html#thetis.log.set_log_directory">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">set_log_directory</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">COMM_WORLD</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_log_directory</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">COMM_WORLD</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'w'</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Forward all log output to `output_directory/log` file.</span>
 
 <span class="sd">    When called, a new empty log file is created.</span>
@@ -143,14 +143,14 @@
 <span class="sd">    :kwarg comm: The communicator the handler should be collective</span>
 <span class="sd">         over. Only rank-0 on that communicator will write to the log, other</span>
 <span class="sd">         ranks will use a :class:`logging.NullHandler`.</span>
-<span class="sd">    :kwarg mode: write mode, &#39;w&#39; removes previous log file (if any), otherwise</span>
-<span class="sd">        appends to it. Default: &#39;w&#39;.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    :kwarg mode: write mode, 'w' removes previous log file (if any), otherwise</span>
+<span class="sd">        appends to it. Default: 'w'.</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_directory</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;file with same name exists&#39;</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">'file with same name exists'</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
 
@@ -172,13 +172,13 @@
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="n">logger_format</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">new_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+                <span class="n">new_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'a'</span><span class="p">)</span>
                 <span class="n">new_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">new_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">()</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">new_handler</span><span class="p">)</span>
 
-    <span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">)</span>
+    <span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="s1">'log'</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">thetis_log_config</span><span class="o">.</span><span class="n">filename</span> <span class="o">==</span> <span class="n">logfile</span><span class="p">:</span>
         <span class="c1"># no change</span>
         <span class="k">return</span>
@@ -186,21 +186,21 @@
     <span class="k">if</span> <span class="n">different_file</span><span class="p">:</span>
         <span class="n">old_file</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">thetis_log_config</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
         <span class="n">rm_file_handlers</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;w&#39;</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">logfile</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">'w'</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">logfile</span><span class="p">):</span>
         <span class="c1"># silently remove previous log</span>
         <span class="k">if</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
     <span class="n">create_directory</span><span class="p">(</span><span class="n">output_directory</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">buffer_content</span> <span class="o">=</span> <span class="n">thetis_log_config</span><span class="o">.</span><span class="n">mem_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">buffer_content</span><span class="p">)</span>
     <span class="n">rm_buf_handlers</span><span class="p">()</span>
     <span class="n">thetis_log_config</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">logfile</span>
     <span class="n">assign_file_handler</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">different_file</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Setting a log file &quot;</span><span class="si">{</span><span class="n">logfile</span><span class="si">}</span><span class="s1">&quot; that differs from previous &#39;</span>
-               <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">old_file</span><span class="si">}</span><span class="s1">&quot;, removing old handler&#39;</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">'Setting a log file "</span><span class="si">{</span><span class="n">logfile</span><span class="si">}</span><span class="s1">" that differs from previous '</span>
+               <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">old_file</span><span class="si">}</span><span class="s1">", removing old handler'</span><span class="p">)</span>
         <span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># to new log</span></div>
 
 
@@ -208,21 +208,21 @@
 <div class="viewcode-block" id="thetis_log_level">
 <a class="viewcode-back" href="../../thetis.html#thetis.log.thetis_log_level">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">thetis_log_level</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the log level for Thetis logger.</span>
+<span class="w">    </span><span class="sd">"""Set the log level for Thetis logger.</span>
 
 <span class="sd">    This controls what level of logging messages are printed to</span>
 <span class="sd">    stderr. The higher the level, the fewer the number of messages.</span>
 
-<span class="sd">    :arg level: The level to use, one of &#39;DEBUG&#39;, &#39;INFO&#39;, &#39;WARNING&#39;, &#39;ERROR&#39;,</span>
-<span class="sd">        &#39;CRITICAL&#39;.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;thetis&#39;</span><span class="p">)</span>
+<span class="sd">    :arg level: The level to use, one of 'DEBUG', 'INFO', 'WARNING', 'ERROR',</span>
+<span class="sd">        'CRITICAL'.</span>
+<span class="sd">    """</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">'thetis'</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span></div>
 
 
 
 <span class="c1"># logger for error, warning etc messages</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;thetis&#39;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">'thetis'</span><span class="p">)</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">log</span>
 <span class="n">debug</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">debug</span>
 <span class="n">info</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">info</span>
@@ -231,7 +231,7 @@
 <span class="n">critical</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">critical</span>
 
 <span class="c1"># logger for model output messages with no prefix, used with print_output</span>
-<span class="n">output_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;thetis_output&#39;</span><span class="p">)</span>
+<span class="n">output_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">'thetis_output'</span><span class="p">)</span>
 <span class="n">output_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">INFO</span><span class="p">)</span>
 <span class="n">print_output</span> <span class="o">=</span> <span class="n">output_logger</span><span class="o">.</span><span class="n">info</span>
 </pre></div>

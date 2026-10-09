@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.timezone &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>thetis.timezone &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../../_static/documentation_options.js?v=a725081d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -50,9 +50,9 @@
           <div class="body" role="main">
             
   <h1>Source code for thetis.timezone</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Timezone definitions and conversion methods</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pytz</span>
 
@@ -62,14 +62,14 @@
 <div class="viewcode-block" id="FixedTimeZone">
 <a class="viewcode-back" href="../../thetis.html#thetis.timezone.FixedTimeZone">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FixedTimeZone</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">_FixedOffset</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class that represents a fixed time zone defined by UTC offset in hours.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        arg int offset: timezone UTC offset in hours</span>
 <span class="sd">        arg str name: timezone name</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_offset_hours</span> <span class="o">=</span> <span class="n">offset</span>
         <span class="n">offset_minutes</span> <span class="o">=</span> <span class="n">offset</span><span class="o">*</span><span class="mi">60</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FixedTimeZone</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">offset_minutes</span><span class="p">)</span>
@@ -82,16 +82,16 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;FixedTimeZone(</span><span class="si">{:}</span><span class="s1">, </span><span class="si">{:}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_offset_hours</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zone</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s1">'FixedTimeZone(</span><span class="si">{:}</span><span class="s1">, </span><span class="si">{:}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_offset_hours</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zone</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="datetime_to_epoch">
 <a class="viewcode-back" href="../../thetis.html#thetis.timezone.datetime_to_epoch">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">datetime_to_epoch</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert python datetime object to epoch time stamp.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">epoch</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span></div>
 
 
@@ -99,9 +99,9 @@
 <div class="viewcode-block" id="epoch_to_datetime">
 <a class="viewcode-back" href="../../thetis.html#thetis.timezone.epoch_to_datetime">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">epoch_to_datetime</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert python datetime object to epoch time stamp.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">epoch</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">t</span><span class="p">)</span></div>
 
 </pre></div>

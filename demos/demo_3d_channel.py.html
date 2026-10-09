@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>3D tidal channel demo &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>3D tidal channel demo &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/thetis.css?v=0f3339d6" />
-    <script src="../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../_static/documentation_options.js?v=a725081d"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -71,8 +71,8 @@ The bathymetry function is defined as an
 <a class="reference external" href="http://fenics-ufl.readthedocs.io/en/latest/">UFL</a> expression making use of the
 coordinates of the 2D mesh.
 The expression is interpolated on the P1 bathymetry field:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P1_2d</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s1">&#39;CG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">bathymetry_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Bathymetry&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P1_2d</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s1">'CG'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">bathymetry_2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'Bathymetry'</span><span class="p">)</span>
 <span class="n">depth_oce</span> <span class="o">=</span> <span class="mf">20.0</span>
 <span class="n">depth_riv</span> <span class="o">=</span> <span class="mf">7.0</span>
 <span class="n">xy</span> <span class="o">=</span> <span class="n">SpatialCoordinate</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">)</span>
@@ -88,20 +88,20 @@ direction using a constant number of layers:</p>
 </div>
 <p>We then set some options (see <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelOptions</span></code> for more information):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">options</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span>
-<span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="o">=</span> <span class="s1">&#39;dg-dg&#39;</span>
-<span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;SSPRK22&#39;</span>
+<span class="n">options</span><span class="o">.</span><span class="n">element_family</span> <span class="o">=</span> <span class="s1">'dg-dg'</span>
+<span class="n">options</span><span class="o">.</span><span class="n">timestepper_type</span> <span class="o">=</span> <span class="s1">'SSPRK22'</span>
 <span class="n">options</span><span class="o">.</span><span class="n">use_implicit_vertical_diffusion</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">options</span><span class="o">.</span><span class="n">use_bottom_friction</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">options</span><span class="o">.</span><span class="n">use_ale_moving_mesh</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">options</span><span class="o">.</span><span class="n">use_limiter_for_tracers</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span> <span class="o">=</span> <span class="mf">900.0</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span>
-<span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;uv_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;elev_2d&#39;</span><span class="p">,</span> <span class="s1">&#39;elev_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;uv_3d&#39;</span><span class="p">,</span>
-                            <span class="s1">&#39;w_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;w_mesh_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;salt_3d&#39;</span><span class="p">,</span> <span class="s1">&#39;baroc_head_3d&#39;</span><span class="p">,</span>
-                            <span class="s1">&#39;uv_dav_2d&#39;</span><span class="p">]</span>
+<span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'uv_2d'</span><span class="p">,</span> <span class="s1">'elev_2d'</span><span class="p">,</span> <span class="s1">'elev_3d'</span><span class="p">,</span> <span class="s1">'uv_3d'</span><span class="p">,</span>
+                            <span class="s1">'w_3d'</span><span class="p">,</span> <span class="s1">'w_mesh_3d'</span><span class="p">,</span> <span class="s1">'salt_3d'</span><span class="p">,</span> <span class="s1">'baroc_head_3d'</span><span class="p">,</span>
+                            <span class="s1">'uv_dav_2d'</span><span class="p">]</span>
 </pre></div>
 </div>
-<!-- in the CI we only run one timestep; commented out in html for the web version<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;THETIS_REGRESSION_TEST&#39;</span><span class="p">):</span>
+<!-- in the CI we only run one timestep; commented out in html for the web version<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'THETIS_REGRESSION_TEST'</span><span class="p">):</span>
     <span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">=</span> <span class="mf">900.</span>
 </pre></div>
 </div>
@@ -154,35 +154,35 @@ both boundaries:</p>
     <span class="k">return</span> <span class="n">flux_river</span><span class="o">*</span><span class="nb">min</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">t_ramp</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>We then define <a class="reference external" href="https://www.firedrakeproject.org/firedrake.html#firedrake.constant.Constant" title="(in Firedrake v2026.4.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constant</span></code></a> objects for the fluxes and
+<p>We then define <a class="reference external" href="https://www.firedrakeproject.org/firedrake.html#firedrake.constant.Constant" title="(in Firedrake v2026.10.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constant</span></code></a> objects for the fluxes and
 use them as boundary conditions for the 2D shallow water model:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ocean_flux</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">ocean_flux_func</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 <span class="n">river_flux</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">river_flux_func</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 
-<span class="n">ocean_funcs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;flux&#39;</span><span class="p">:</span> <span class="n">ocean_flux</span><span class="p">}</span>
-<span class="n">river_funcs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;flux&#39;</span><span class="p">:</span> <span class="n">river_flux</span><span class="p">}</span>
+<span class="n">ocean_funcs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'flux'</span><span class="p">:</span> <span class="n">ocean_flux</span><span class="p">}</span>
+<span class="n">river_funcs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'flux'</span><span class="p">:</span> <span class="n">river_flux</span><span class="p">}</span>
 
-<span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;shallow_water&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ocean_bnd_id</span><span class="p">:</span> <span class="n">ocean_funcs</span><span class="p">,</span>
+<span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">'shallow_water'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ocean_bnd_id</span><span class="p">:</span> <span class="n">ocean_funcs</span><span class="p">,</span>
                                              <span class="n">river_bnd_id</span><span class="p">:</span> <span class="n">river_funcs</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>The volume fluxes are now defined in the 2D mode, so there’s no need to impose
 anything in the 3D momentum equation. We therefore only use symmetry condition
 for 3D horizontal velocity:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ocean_funcs_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;symm&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
-<span class="n">river_funcs_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;symm&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ocean_funcs_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'symm'</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+<span class="n">river_funcs_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'symm'</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
 
-<span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;momentum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ocean_bnd_id</span><span class="p">:</span> <span class="n">ocean_funcs_3d</span><span class="p">,</span>
+<span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">'momentum'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ocean_bnd_id</span><span class="p">:</span> <span class="n">ocean_funcs_3d</span><span class="p">,</span>
                                         <span class="n">river_bnd_id</span><span class="p">:</span> <span class="n">river_funcs_3d</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>For the salinity, we define a constant value and apply as inflow conditions
 at the open boundaries:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">salt_init3d</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">4.5</span><span class="p">)</span>
-<span class="n">ocean_salt_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">salt_init3d</span><span class="p">}</span>
-<span class="n">river_salt_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">salt_init3d</span><span class="p">}</span>
+<span class="n">ocean_salt_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'value'</span><span class="p">:</span> <span class="n">salt_init3d</span><span class="p">}</span>
+<span class="n">river_salt_3d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'value'</span><span class="p">:</span> <span class="n">salt_init3d</span><span class="p">}</span>
 
-<span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;salt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ocean_bnd_id</span><span class="p">:</span> <span class="n">ocean_salt_3d</span><span class="p">,</span>
+<span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">'salt'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ocean_bnd_id</span><span class="p">:</span> <span class="n">ocean_salt_3d</span><span class="p">,</span>
                                     <span class="n">river_bnd_id</span><span class="p">:</span> <span class="n">river_salt_3d</span><span class="p">}</span>
 </pre></div>
 </div>
@@ -192,15 +192,15 @@ assumed to be impermeable land boundaries.</p>
 forcing fields. As the 2D and 3D modes may be treated separately in the time
 integrator we create a different call back for the two modes:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">update_forcings_2d</span><span class="p">(</span><span class="n">t_new</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback function that updates all time dependent forcing fields</span>
-<span class="sd">    for the 2D mode&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Callback function that updates all time dependent forcing fields</span>
+<span class="sd">    for the 2D mode"""</span>
     <span class="n">ocean_flux</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">ocean_flux_func</span><span class="p">(</span><span class="n">t_new</span><span class="p">))</span>
     <span class="n">river_flux</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">river_flux_func</span><span class="p">(</span><span class="n">t_new</span><span class="p">))</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">update_forcings_3d</span><span class="p">(</span><span class="n">t_new</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback function that updates all time dependent forcing fields</span>
-<span class="sd">    for the 3D mode&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Callback function that updates all time dependent forcing fields</span>
+<span class="sd">    for the 3D mode"""</span>
     <span class="k">pass</span>
 </pre></div>
 </div>

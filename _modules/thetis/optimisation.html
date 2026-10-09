@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.optimisation &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>thetis.optimisation &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../../_static/documentation_options.js?v=a725081d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -50,7 +50,7 @@
           <div class="body" role="main">
             
   <h1>Source code for thetis.optimisation</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Some classes to help optimisation problems formulated with thetis_adjoint.</span>
 
 <span class="sd">In particular this module contains some OptimisationCallbacks that can be used</span>
@@ -62,7 +62,7 @@
 <span class="sd">OptimisationCallbacks that (can) use controls, functional and derivative information, work out</span>
 <span class="sd">what is provided by the number of arguments: current control values are always in the last argument;</span>
 <span class="sd">if more than 2 arguments are provided, the first is the latest evaluated functional value.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">firedrake</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.callback</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiagnosticCallback</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.exporter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExportManager</span>
@@ -74,7 +74,7 @@
 <div class="viewcode-block" id="OptimisationCallback">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.OptimisationCallback">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OptimisationCallback</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for callback that can be used as callbacks of a :class:`ReducedFunctional`</span>
+<span class="w">    </span><span class="sd">"""Base class for callback that can be used as callbacks of a :class:`ReducedFunctional`</span>
 
 <span class="sd">    Called at various stages during the optimisation process:</span>
 <span class="sd">    - eval_cb_pre(controls) and eval_cb_post(functional, controls)                    called before and after (re)evaluation of the forward model</span>
@@ -83,7 +83,7 @@
 <span class="sd">    OptimisationCallbacks that (can) use controls, functional and derivative information, work out</span>
 <span class="sd">    what is provided by the number of arguments: current control values are always in the last argument;</span>
 <span class="sd">    if more than 2 arguments are provided, the first is the latest evaluated functional value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 <div class="viewcode-block" id="OptimisationCallback.callback">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.OptimisationCallback.callback">[docs]</a>
     <span class="nd">@abstractmethod</span>
@@ -95,7 +95,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
         <span class="c1"># if used as derivative callback, we need to return the derivatives (args[1]) or the controls (args[0]) for resp. the post or pre callback</span>
-        <span class="c1"># for other callbacks it doesn&#39;t matter what we return</span>
+        <span class="c1"># for other callbacks it doesn't matter what we return</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -106,7 +106,7 @@
 <div class="viewcode-block" id="UserExportManager">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.UserExportManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserExportManager</span><span class="p">(</span><span class="n">ExportManager</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    ExportManager for user provided functions (not necessarily known to Thetis)</span>
 
 <span class="sd">    In the standard :class:`.ExportManager` all provided functions need to have standard names</span>
@@ -114,11 +114,11 @@
 <span class="sd">    :py:data:`.field_metadata`, the standard filename and shortname  are used.</span>
 <span class="sd">    If the function.name() is unknown, both are based on function.name()</span>
 <span class="sd">    directly (with an optional additional filename_prefix). Filenames and</span>
-<span class="sd">    shortnames can be overruled by the shortnames and filenames arguments.&quot;&quot;&quot;</span>
+<span class="sd">    shortnames can be overruled by the shortnames and filenames arguments."""</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj_or_outputdir</span><span class="p">,</span> <span class="n">functions_to_export</span><span class="p">,</span>
-                 <span class="n">filenames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename_prefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                 <span class="n">filenames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename_prefix</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span>
                  <span class="n">shortnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg solver_obj_or_outputdir: a :class:`.FlowSolver2d` object, used to determine the output directory. Alternatively, the</span>
 <span class="sd">              outputdir can be specified with a string as the first argument.</span>
 <span class="sd">        :arg functions_to_export: a list of :class:`Function` s</span>
@@ -127,7 +127,7 @@
 <span class="sd">        :arg filename_prefix: a string prefixed to each filename</span>
 <span class="sd">        :arg shortnames: a list of strings with the shortnames used for each provided function. If not provided,</span>
 <span class="sd">              shortnames are based on function.name().</span>
-<span class="sd">        :arg kwargs: any further keyword arguments are passed on to :class:`.ExportManager`&quot;&quot;&quot;</span>
+<span class="sd">        :arg kwargs: any further keyword arguments are passed on to :class:`.ExportManager`"""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">outputdir</span> <span class="o">=</span> <span class="n">solver_obj_or_outputdir</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">output_directory</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
@@ -143,19 +143,19 @@
         <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">function</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">field_name_list</span><span class="p">,</span> <span class="n">functions_to_export</span><span class="p">):</span>
             <span class="n">field_dict</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">function</span>
             <span class="k">if</span> <span class="n">shortnames</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">field_defs</span><span class="o">.</span><span class="n">field_metadata</span><span class="p">:</span>
-                <span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;shortname&#39;</span><span class="p">:</span> <span class="n">field_defs</span><span class="o">.</span><span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">][</span><span class="s1">&#39;shortname&#39;</span><span class="p">]}</span>
+                <span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'shortname'</span><span class="p">:</span> <span class="n">field_defs</span><span class="o">.</span><span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">][</span><span class="s1">'shortname'</span><span class="p">]}</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;shortname&#39;</span><span class="p">:</span> <span class="n">field_name</span><span class="p">}</span>
+                <span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'shortname'</span><span class="p">:</span> <span class="n">field_name</span><span class="p">}</span>
 
         <span class="k">if</span> <span class="n">filenames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">field_name_list</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">field_defs</span><span class="o">.</span><span class="n">field_metadata</span><span class="p">:</span>
-                    <span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">][</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename_prefix</span> <span class="o">+</span> <span class="n">field_defs</span><span class="o">.</span><span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">][</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
+                    <span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">][</span><span class="s1">'filename'</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename_prefix</span> <span class="o">+</span> <span class="n">field_defs</span><span class="o">.</span><span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">][</span><span class="s1">'filename'</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">][</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename_prefix</span> <span class="o">+</span> <span class="n">field_name</span>
+                    <span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">][</span><span class="s1">'filename'</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename_prefix</span> <span class="o">+</span> <span class="n">field_name</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">field_name_list</span><span class="p">,</span> <span class="n">filenames</span><span class="p">):</span>
-                <span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">][</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename</span>
+                <span class="n">field_metadata</span><span class="p">[</span><span class="n">field_name</span><span class="p">][</span><span class="s1">'filename'</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">field_name_list</span><span class="p">,</span> <span class="n">field_dict</span><span class="p">,</span> <span class="n">field_metadata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -164,18 +164,18 @@
 <div class="viewcode-block" id="DeferredExportManager">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.DeferredExportManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DeferredExportManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A wrapper around a UserExportManager that is only created on the first export() call.</span>
 
 <span class="sd">    In addition the functions provided in the export call are copied into a fixed set of functions,</span>
 <span class="sd">    where the functions provided in subsequent calls may be different (they need to be in the same</span>
 <span class="sd">    function space). This is used in the :class:`.ControlsExportOptimisationCallback`</span>
-<span class="sd">    and :class:`.DerivativesExportOptimisationCallback`.&quot;&quot;&quot;</span>
+<span class="sd">    and :class:`.DerivativesExportOptimisationCallback`."""</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj_or_outputdir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg solver_obj_or_outputdir: a :class:`.FlowSolver2d` object, used to determine the output directory. Alternatively, the</span>
 <span class="sd">              outputdir can be specified with a string as the first argument.</span>
-<span class="sd">        :arg kwargs: any further keyword arguments are passed on to :class:`.UserExportManager`&quot;&quot;&quot;</span>
+<span class="sd">        :arg kwargs: any further keyword arguments are passed on to :class:`.UserExportManager`"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_obj_or_outputdir</span> <span class="o">=</span> <span class="n">solver_obj_or_outputdir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_manager</span> <span class="o">=</span> <span class="kc">None</span>
@@ -183,13 +183,13 @@
 <div class="viewcode-block" id="DeferredExportManager.export">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.DeferredExportManager.export">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">functions</span><span class="p">,</span> <span class="n">suggested_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create the :class:`.UserExportManager` (first call only), and call its export() method.</span>
 
 <span class="sd">        :arg functions: a list of :class:`Function` s that the :class:`.UserExportManager` will be based on. Their values</span>
 <span class="sd">              are first copied. The list may contain different functions in subsequent calls,</span>
 <span class="sd">              but their function space should remain the same.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">functions</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">NotImplementedError</span><span class="p">):</span>
@@ -212,29 +212,29 @@
 <div class="viewcode-block" id="UserExportOptimisationCallback">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.UserExportOptimisationCallback">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserExportOptimisationCallback</span><span class="p">(</span><span class="n">UserExportManager</span><span class="p">,</span> <span class="n">OptimisationCallback</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A :class:`.UserExportManager` that can be used as a :class:`ReducedFunctional` callback</span>
+<span class="w">    </span><span class="sd">"""A :class:`.UserExportManager` that can be used as a :class:`ReducedFunctional` callback</span>
 
-<span class="sd">    Any callback arguments (functional value, derivatives, controls) are ignored&quot;&quot;&quot;</span>
+<span class="sd">    Any callback arguments (functional value, derivatives, controls) are ignored"""</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj_or_outputdir</span><span class="p">,</span> <span class="n">functions_to_export</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg solver_obj_or_outputdir: a :class:`.FlowSolver2d` object, used to determine the output directory. Alternatively, the</span>
 <span class="sd">              outputdir can be specified with a string as the first argument.</span>
 <span class="sd">        :arg functions_to_export: a list of :class:`Function` s</span>
-<span class="sd">        :arg kwargs: any further keyword arguments are passed on to :class:`.UserExportManager`&quot;&quot;&quot;</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;filename_prefix&#39;</span><span class="p">,</span> <span class="s1">&#39;optimisation_&#39;</span><span class="p">)</span>  <span class="c1"># use prefix to avoid overwriting forward model output</span>
+<span class="sd">        :arg kwargs: any further keyword arguments are passed on to :class:`.UserExportManager`"""</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'filename_prefix'</span><span class="p">,</span> <span class="s1">'optimisation_'</span><span class="p">)</span>  <span class="c1"># use prefix to avoid overwriting forward model output</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver_obj_or_outputdir</span><span class="p">,</span> <span class="n">functions_to_export</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># we need to maintain the original functions in the dict as it</span>
-        <span class="c1"># is their block_variables (representing the current &quot;end&quot;-state)</span>
+        <span class="c1"># is their block_variables (representing the current "end"-state)</span>
         <span class="c1"># that determine what will be written</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orig_functions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
 <div class="viewcode-block" id="UserExportOptimisationCallback.callback">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.UserExportOptimisationCallback.callback">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Ensure the :class:`.UserExportManager` uses the checkpointed values and call its export().</span>
 
-<span class="sd">        :args: these are ignored&quot;&quot;&quot;</span>
+<span class="sd">        :args: these are ignored"""</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields_to_export</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_functions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">block_variable</span><span class="o">.</span><span class="n">saved_output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="p">()</span></div>
@@ -245,15 +245,15 @@
 <div class="viewcode-block" id="ControlsExportOptimisationCallback">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.ControlsExportOptimisationCallback">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ControlsExportOptimisationCallback</span><span class="p">(</span><span class="n">DeferredExportManager</span><span class="p">,</span> <span class="n">OptimisationCallback</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A callback that exports the current control values (assumed to all be :class:`Function` s)</span>
+<span class="w">    </span><span class="sd">"""A callback that exports the current control values (assumed to all be :class:`Function` s)</span>
 
-<span class="sd">    The control values are assumed to be the last argument in the callback (as for all :class:`ReducedFunctional` callbacks).&quot;&quot;&quot;</span>
+<span class="sd">    The control values are assumed to be the last argument in the callback (as for all :class:`ReducedFunctional` callbacks)."""</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj_or_outputdir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg solver_obj_or_outputdir: a :class:`.FlowSolver2d` object, used to determine the output directory. Alternatively, the</span>
 <span class="sd">              outputdir can be specified with a string as the first argument.</span>
-<span class="sd">        :arg kwargs: any further keyword arguments are passed on to :class:`.UserExportManager`&quot;&quot;&quot;</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;filename_prefix&#39;</span><span class="p">,</span> <span class="s1">&#39;control_&#39;</span><span class="p">)</span>
+<span class="sd">        :arg kwargs: any further keyword arguments are passed on to :class:`.UserExportManager`"""</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'filename_prefix'</span><span class="p">,</span> <span class="s1">'control_'</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver_obj_or_outputdir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ControlsExportOptimisationCallback.callback">
@@ -267,23 +267,23 @@
 <div class="viewcode-block" id="DerivativesExportOptimisationCallback">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.DerivativesExportOptimisationCallback">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DerivativesExportOptimisationCallback</span><span class="p">(</span><span class="n">DeferredExportManager</span><span class="p">,</span> <span class="n">OptimisationCallback</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A callback that exports the derivatives calculated by the adjoint.</span>
+<span class="w">    </span><span class="sd">"""A callback that exports the derivatives calculated by the adjoint.</span>
 
 <span class="sd">    The derivatives are assumed to be the second argument in the callback. This can therefore</span>
-<span class="sd">    be used as a derivative_cb_post callback in a :class:`ReducedFunctional`&quot;&quot;&quot;</span>
+<span class="sd">    be used as a derivative_cb_post callback in a :class:`ReducedFunctional`"""</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj_or_outputdir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg solver_obj_or_outputdir: a :class:`.FlowSolver2d` object, used to determine the output directory. Alternatively, the</span>
 <span class="sd">              outputdir can be specified with a string as the first argument.</span>
-<span class="sd">        :arg kwargs: any further keyword arguments are passed on to :class:`.UserExportManager`&quot;&quot;&quot;</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;filename_prefix&#39;</span><span class="p">,</span> <span class="s1">&#39;derivative_&#39;</span><span class="p">)</span>
+<span class="sd">        :arg kwargs: any further keyword arguments are passed on to :class:`.UserExportManager`"""</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'filename_prefix'</span><span class="p">,</span> <span class="s1">'derivative_'</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver_obj_or_outputdir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DerivativesExportOptimisationCallback.callback">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.DerivativesExportOptimisationCallback.callback">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;DerivativesExportOptimisationCallback called with wrong number of arguments: should be used for derivative_cb_post callback only.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"DerivativesExportOptimisationCallback called with wrong number of arguments: should be used for derivative_cb_post callback only."</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># get name from controls args[-1]</span>
             <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="k">for</span> <span class="n">function</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
@@ -298,10 +298,10 @@
 <div class="viewcode-block" id="OptimisationCallbackList">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.OptimisationCallbackList">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OptimisationCallbackList</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">OptimisationCallback</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A list of callbacks that can be used as a single callback itself.</span>
 
-<span class="sd">    Calls all callbacks in order.&quot;&quot;&quot;</span>
+<span class="sd">    Calls all callbacks in order."""</span>
 <div class="viewcode-block" id="OptimisationCallbackList.callback">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.OptimisationCallbackList.callback">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -314,42 +314,42 @@
 <div class="viewcode-block" id="DiagnosticOptimisationCallback">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.DiagnosticOptimisationCallback">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DiagnosticOptimisationCallback</span><span class="p">(</span><span class="n">OptimisationCallback</span><span class="p">,</span> <span class="n">DiagnosticCallback</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An OptimisationCallback similar to :class:`.DiagnosticCallback` that can be used as callback in a :class:`ReducedFunctional`.</span>
 
 <span class="sd">    Note that in this case the computing of the values needs to be defined in the compute_values method,</span>
 <span class="sd">    not in the __call__ method (as this one is directly called from the :class:`ReducedFunctional`). In addition,</span>
 <span class="sd">    like any :class:`.DiagnosticCallback`, the name and variable_names properties and a message_str method need to be defined.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg solver_obj: Thetis solver object</span>
 <span class="sd">        :arg kwargs: keyword arguments passed to :class:`.DiagnosticCallback`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;include_time&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'include_time'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">solver_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DiagnosticOptimisationCallback.compute_values">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.DiagnosticOptimisationCallback.compute_values">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Compute diagnostic values.</span>
 
 <span class="sd">        This method is to be implemented in concrete subclasses of a :class:`.DiagnosticOptimisationCallback`.</span>
 <span class="sd">        The number of arguments varies depending on which of the 6 [eval|derivative|hessian]_cb_[pre|post] callbacks</span>
-<span class="sd">        this is used as. The last argument always contains the current controls. In the &quot;pre&quot; callbacks this is</span>
-<span class="sd">        the only argument. In all &quot;post&quot; callbacks the 0th argument is the current functional value. eval_cb_post</span>
+<span class="sd">        this is used as. The last argument always contains the current controls. In the "pre" callbacks this is</span>
+<span class="sd">        the only argument. In all "post" callbacks the 0th argument is the current functional value. eval_cb_post</span>
 <span class="sd">        is given two arguments: functional and controls. derivative_cb_post and hessian_cb_post are given three</span>
-<span class="sd">        arguments with args[1] being the derivative/hessian just calculated.&quot;&quot;&quot;</span>
+<span class="sd">        arguments with args[1] being the derivative/hessian just calculated."""</span>
         <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="DiagnosticOptimisationCallback.evaluate">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.DiagnosticOptimisationCallback.evaluate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluates callback and pushes values to log and hdf file (if enabled)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Evaluates callback and pushes values to log and hdf file (if enabled)"""</span>
         <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_values</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">functional</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -373,23 +373,23 @@
 <div class="viewcode-block" id="FunctionalOptimisationCallback">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.FunctionalOptimisationCallback">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FunctionalOptimisationCallback</span><span class="p">(</span><span class="n">DiagnosticOptimisationCallback</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A simple OptimisationCallback that records the functional value in the log and/or hdf5 file.&quot;&quot;&quot;</span>
-    <span class="n">variable_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;functional&#39;</span><span class="p">]</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;functional&#39;</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    A simple OptimisationCallback that records the functional value in the log and/or hdf5 file."""</span>
+    <span class="n">variable_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'functional'</span><span class="p">]</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">'functional'</span>
 
 <div class="viewcode-block" id="FunctionalOptimisationCallback.compute_values">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.FunctionalOptimisationCallback.compute_values">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;FunctionalOptimisationCallback can be used as _post callback only.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">'FunctionalOptimisationCallback can be used as _post callback only.'</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span></div>
 
 
 <div class="viewcode-block" id="FunctionalOptimisationCallback.message_str">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.FunctionalOptimisationCallback.message_str">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">functional</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;Functional value: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">functional</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s1">'Functional value: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">functional</span><span class="p">)</span></div>
 </div>
 
 
@@ -397,24 +397,24 @@
 <div class="viewcode-block" id="ConstantControlOptimisationCallback">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.ConstantControlOptimisationCallback">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ConstantControlOptimisationCallback</span><span class="p">(</span><span class="n">DiagnosticOptimisationCallback</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    OptimisationCallback that records the control values (which are assumed to be a list of Constants) in the log and/or hdf5 file.&quot;&quot;&quot;</span>
-    <span class="n">variable_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;controls&#39;</span><span class="p">]</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;controls&#39;</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    OptimisationCallback that records the control values (which are assumed to be a list of Constants) in the log and/or hdf5 file."""</span>
+    <span class="n">variable_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'controls'</span><span class="p">]</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">'controls'</span>
 
 <div class="viewcode-block" id="ConstantControlOptimisationCallback.compute_values">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.ConstantControlOptimisationCallback.compute_values">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="n">controls</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_dim</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">controls</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Need array_dim argument in ConstantControlOptimisationCallback set to the number of controls&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Need array_dim argument in ConstantControlOptimisationCallback set to the number of controls"</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[[</span><span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">controls</span><span class="p">]]</span></div>
 
 
 <div class="viewcode-block" id="ConstantControlOptimisationCallback.message_str">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.ConstantControlOptimisationCallback.message_str">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">controls</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;Controls value: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">controls</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s1">'Controls value: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">controls</span><span class="p">)</span></div>
 </div>
 
 
@@ -422,26 +422,26 @@
 <div class="viewcode-block" id="DerivativeConstantControlOptimisationCallback">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.DerivativeConstantControlOptimisationCallback">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DerivativeConstantControlOptimisationCallback</span><span class="p">(</span><span class="n">DiagnosticOptimisationCallback</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    OptimisationCallback that records the derivatives with respect to the controls, assumed to be a list of Constants, in the log and/or hdf5 file.&quot;&quot;&quot;</span>
-    <span class="n">variable_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;derivatives&#39;</span><span class="p">]</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;derivatives&#39;</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    OptimisationCallback that records the derivatives with respect to the controls, assumed to be a list of Constants, in the log and/or hdf5 file."""</span>
+    <span class="n">variable_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'derivatives'</span><span class="p">]</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">'derivatives'</span>
 
 <div class="viewcode-block" id="DerivativeConstantControlOptimisationCallback.compute_values">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.DerivativeConstantControlOptimisationCallback.compute_values">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;DerivativesExportOptimisationCallback called with wrong number of arguments: should be used for derivative_cb_post callback only.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"DerivativesExportOptimisationCallback called with wrong number of arguments: should be used for derivative_cb_post callback only."</span><span class="p">)</span>
         <span class="n">derivatives</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_dim</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">derivatives</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Need array_dim argument in ConstantControlOptimisationCallback set to the number of controls&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Need array_dim argument in ConstantControlOptimisationCallback set to the number of controls"</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[[</span><span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">derivatives</span><span class="p">]]</span></div>
 
 
 <div class="viewcode-block" id="DerivativeConstantControlOptimisationCallback.message_str">
 <a class="viewcode-back" href="../../thetis.html#thetis.optimisation.DerivativeConstantControlOptimisationCallback.message_str">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">message_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">derivatives</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;Derivatives: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">derivatives</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s1">'Derivatives: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">derivatives</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

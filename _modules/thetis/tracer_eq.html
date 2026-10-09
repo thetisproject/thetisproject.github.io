@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.tracer_eq &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>thetis.tracer_eq &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../../_static/documentation_options.js?v=a725081d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -50,7 +50,7 @@
           <div class="body" role="main">
             
   <h1>Source code for thetis.tracer_eq</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">3D advection diffusion equation for tracers.</span>
 
 <span class="sd">The advection-diffusion equation of tracer :math:`T` in conservative form reads</span>
@@ -66,34 +66,34 @@
 <span class="sd">where :math:`\nabla_h` denotes horizontal gradient, :math:`\textbf{u}` and</span>
 <span class="sd">:math:`w` are the horizontal and vertical velocities, respectively, and</span>
 <span class="sd">:math:`\mu_h` and :math:`\mu` denote horizontal and vertical diffusivity.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utility</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.equation</span><span class="w"> </span><span class="kn">import</span> <span class="n">Term</span><span class="p">,</span> <span class="n">Equation</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;TracerEquation&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;TracerTerm&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;HorizontalAdvectionTerm&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;VerticalAdvectionTerm&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;HorizontalDiffusionTerm&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;VerticalDiffusionTerm&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;SourceTerm&#39;</span><span class="p">,</span>
+    <span class="s1">'TracerEquation'</span><span class="p">,</span>
+    <span class="s1">'TracerTerm'</span><span class="p">,</span>
+    <span class="s1">'HorizontalAdvectionTerm'</span><span class="p">,</span>
+    <span class="s1">'VerticalAdvectionTerm'</span><span class="p">,</span>
+    <span class="s1">'HorizontalDiffusionTerm'</span><span class="p">,</span>
+    <span class="s1">'VerticalDiffusionTerm'</span><span class="p">,</span>
+    <span class="s1">'SourceTerm'</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="TracerTerm">
 <a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.TracerTerm">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TracerTerm</span><span class="p">(</span><span class="n">Term</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generic tracer term that provides commonly used members and mapping for</span>
 <span class="sd">    boundary functions.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">use_symmetric_surf_bnd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_lax_friedrichs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">sipg_factor</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span>
                  <span class="n">sipg_factor_vertical</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
 <span class="sd">        :kwarg bathymetry: bathymetry of the domain</span>
 <span class="sd">        :type bathymetry: 3D :class:`Function` or :class:`Constant`</span>
@@ -105,14 +105,14 @@
 <span class="sd">            condition in the horizontal advection term</span>
 <span class="sd">        :kwarg sipg_factor: :class: `Constant` or :class: `Function` horizontal SIPG penalty scaling factor</span>
 <span class="sd">        :kwarg sipg_factor_vertical: :class: `Constant` or :class: `Function` vertical SIPG penalty scaling factor</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bathymetry</span> <span class="o">=</span> <span class="n">bathymetry</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">h_elem_size</span> <span class="o">=</span> <span class="n">h_elem_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">v_elem_size</span> <span class="o">=</span> <span class="n">v_elem_size</span>
         <span class="n">continuity</span> <span class="o">=</span> <span class="n">element_continuity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">ufl_element</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_dg</span> <span class="o">=</span> <span class="n">continuity</span><span class="o">.</span><span class="n">horizontal</span> <span class="o">==</span> <span class="s1">&#39;dg&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">vertical_dg</span> <span class="o">=</span> <span class="n">continuity</span><span class="o">.</span><span class="n">vertical</span> <span class="o">==</span> <span class="s1">&#39;dg&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_dg</span> <span class="o">=</span> <span class="n">continuity</span><span class="o">.</span><span class="n">horizontal</span> <span class="o">==</span> <span class="s1">'dg'</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertical_dg</span> <span class="o">=</span> <span class="n">continuity</span><span class="o">.</span><span class="n">vertical</span> <span class="o">==</span> <span class="s1">'dg'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_symmetric_surf_bnd</span> <span class="o">=</span> <span class="n">use_symmetric_surf_bnd</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_lax_friedrichs</span> <span class="o">=</span> <span class="n">use_lax_friedrichs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sipg_factor</span> <span class="o">=</span> <span class="n">sipg_factor</span>
@@ -131,7 +131,7 @@
 <div class="viewcode-block" id="TracerTerm.get_bnd_functions">
 <a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.TracerTerm.get_bnd_functions">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_bnd_functions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c_in</span><span class="p">,</span> <span class="n">uv_in</span><span class="p">,</span> <span class="n">elev_in</span><span class="p">,</span> <span class="n">bnd_id</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns external values of tracer and uv for all supported</span>
 <span class="sd">        boundary conditions.</span>
 
@@ -145,26 +145,26 @@
 <span class="sd">        :type bnd_id: int</span>
 <span class="sd">        :arg bnd_conditions: dict of boundary conditions:</span>
 <span class="sd">            ``{bnd_id: {field: value, ...}, ...}``</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">funcs</span> <span class="o">=</span> <span class="n">bnd_conditions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bnd_id</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;elev&#39;</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
-            <span class="n">elev_ext</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="s1">&#39;elev&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'elev'</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+            <span class="n">elev_ext</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="s1">'elev'</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">elev_ext</span> <span class="o">=</span> <span class="n">elev_in</span>
-        <span class="k">if</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
-            <span class="n">c_ext</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'value'</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+            <span class="n">c_ext</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="s1">'value'</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">c_ext</span> <span class="o">=</span> <span class="n">c_in</span>
-        <span class="k">if</span> <span class="s1">&#39;uv&#39;</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
-            <span class="n">uv_ext</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="s1">&#39;uv&#39;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="s1">&#39;flux&#39;</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">'uv'</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+            <span class="n">uv_ext</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="s1">'uv'</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s1">'flux'</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
             <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">bathymetry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="n">h_ext</span> <span class="o">=</span> <span class="n">elev_ext</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bathymetry</span>
             <span class="n">area</span> <span class="o">=</span> <span class="n">h_ext</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">boundary_len</span>  <span class="c1"># NOTE using external data only</span>
-            <span class="n">uv_ext</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="s1">&#39;flux&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">area</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span>
-        <span class="k">elif</span> <span class="s1">&#39;un&#39;</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
-            <span class="n">uv_ext</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="s1">&#39;un&#39;</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span>
+            <span class="n">uv_ext</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="s1">'flux'</span><span class="p">]</span><span class="o">/</span><span class="n">area</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span>
+        <span class="k">elif</span> <span class="s1">'un'</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+            <span class="n">uv_ext</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="s1">'un'</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">uv_ext</span> <span class="o">=</span> <span class="n">uv_in</span>
 
@@ -176,7 +176,7 @@
 <div class="viewcode-block" id="HorizontalAdvectionTerm">
 <a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.HorizontalAdvectionTerm">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HorizontalAdvectionTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Horizontal advection term :math:`\nabla_h \cdot (\textbf{u} T)`</span>
 
 <span class="sd">    The weak formulation reads</span>
@@ -195,30 +195,30 @@
 <span class="sd">    :math:`T^{\text{up}}` is the upwind value, and :math:`\text{jump}` and</span>
 <span class="sd">    :math:`\text{avg}` denote the jump and average operators across the</span>
 <span class="sd">    interface.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 <div class="viewcode-block" id="HorizontalAdvectionTerm.residual">
 <a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.HorizontalAdvectionTerm.residual">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uv_3d&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'uv_3d'</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
-        <span class="n">elev</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;elev_3d&#39;</span><span class="p">]</span>
-        <span class="n">uv</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;uv_3d&#39;</span><span class="p">]</span>
-        <span class="n">uv_depth_av</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;uv_depth_av&#39;</span><span class="p">]</span>
+        <span class="n">elev</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'elev_3d'</span><span class="p">]</span>
+        <span class="n">uv</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'uv_3d'</span><span class="p">]</span>
+        <span class="n">uv_depth_av</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'uv_depth_av'</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">uv_depth_av</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">uv</span> <span class="o">=</span> <span class="n">uv</span> <span class="o">+</span> <span class="n">uv_depth_av</span>
 
         <span class="c1"># FIXME is this an option?</span>
-        <span class="n">lax_friedrichs_factor</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lax_friedrichs_tracer_scaling_factor&#39;</span><span class="p">)</span>
+        <span class="n">lax_friedrichs_factor</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'lax_friedrichs_tracer_scaling_factor'</span><span class="p">)</span>
 
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">f</span> <span class="o">+=</span> <span class="o">-</span><span class="n">solution</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="n">nabla_grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_dg</span><span class="p">:</span>
             <span class="c1"># add interface term</span>
             <span class="n">uv_av</span> <span class="o">=</span> <span class="n">avg</span><span class="p">(</span><span class="n">uv</span><span class="p">)</span>
-            <span class="n">un_av</span> <span class="o">=</span> <span class="p">(</span><span class="n">uv_av</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                     <span class="o">+</span> <span class="n">uv_av</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">un_av</span> <span class="o">=</span> <span class="p">(</span><span class="n">uv_av</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="s1">'-'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                     <span class="o">+</span> <span class="n">uv_av</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="s1">'-'</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
             <span class="n">s</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">sign</span><span class="p">(</span><span class="n">un_av</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
-            <span class="n">c_up</span> <span class="o">=</span> <span class="n">solution</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">*</span><span class="n">s</span> <span class="o">+</span> <span class="n">solution</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">)</span>
+            <span class="n">c_up</span> <span class="o">=</span> <span class="n">solution</span><span class="p">(</span><span class="s1">'-'</span><span class="p">)</span><span class="o">*</span><span class="n">s</span> <span class="o">+</span> <span class="n">solution</span><span class="p">(</span><span class="s1">'+'</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">)</span>
             <span class="n">f</span> <span class="o">+=</span> <span class="n">c_up</span><span class="o">*</span><span class="p">(</span><span class="n">uv_av</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                        <span class="o">+</span> <span class="n">uv_av</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                        <span class="o">+</span> <span class="n">uv_av</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dS_v</span><span class="p">)</span>
@@ -256,7 +256,7 @@
 <div class="viewcode-block" id="VerticalAdvectionTerm">
 <a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.VerticalAdvectionTerm">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">VerticalAdvectionTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Vertical advection term :math:`\partial (w T)/(\partial z)`</span>
 
 <span class="sd">    The weak form reads</span>
@@ -275,15 +275,15 @@
 
 <span class="sd">    In the case of ALE moving mesh we substitute :math:`w` with :math:`w - w_m`,</span>
 <span class="sd">    :math:`w_m` being the mesh velocity.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 <div class="viewcode-block" id="VerticalAdvectionTerm.residual">
 <a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.VerticalAdvectionTerm.residual">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-        <span class="n">w</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'w'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
-        <span class="n">w_mesh</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;w_mesh&#39;</span><span class="p">)</span>
-        <span class="n">lax_friedrichs_factor</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lax_friedrichs_tracer_scaling_factor&#39;</span><span class="p">)</span>
+        <span class="n">w_mesh</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'w_mesh'</span><span class="p">)</span>
+        <span class="n">lax_friedrichs_factor</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'lax_friedrichs_tracer_scaling_factor'</span><span class="p">)</span>
 
         <span class="n">vertvelo</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">w_mesh</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -292,12 +292,12 @@
         <span class="n">f</span> <span class="o">+=</span> <span class="o">-</span><span class="n">solution</span><span class="o">*</span><span class="n">vertvelo</span><span class="o">*</span><span class="n">Dx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertical_dg</span><span class="p">:</span>
             <span class="n">w_av</span> <span class="o">=</span> <span class="n">avg</span><span class="p">(</span><span class="n">vertvelo</span><span class="p">)</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">sign</span><span class="p">(</span><span class="n">w_av</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">](</span><span class="s1">&#39;-&#39;</span><span class="p">))</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
-            <span class="n">c_up</span> <span class="o">=</span> <span class="n">solution</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">*</span><span class="n">s</span> <span class="o">+</span> <span class="n">solution</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">sign</span><span class="p">(</span><span class="n">w_av</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">](</span><span class="s1">'-'</span><span class="p">))</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">c_up</span> <span class="o">=</span> <span class="n">solution</span><span class="p">(</span><span class="s1">'-'</span><span class="p">)</span><span class="o">*</span><span class="n">s</span> <span class="o">+</span> <span class="n">solution</span><span class="p">(</span><span class="s1">'+'</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">)</span>
             <span class="n">f</span> <span class="o">+=</span> <span class="n">c_up</span><span class="o">*</span><span class="n">w_av</span><span class="o">*</span><span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS_h</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_lax_friedrichs</span><span class="p">:</span>
                 <span class="c1"># Lax-Friedrichs</span>
-                <span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">w_av</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="n">lax_friedrichs_factor</span>
+                <span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">w_av</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="s1">'-'</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="n">lax_friedrichs_factor</span>
                 <span class="n">f</span> <span class="o">+=</span> <span class="n">gamma</span><span class="o">*</span><span class="n">dot</span><span class="p">(</span><span class="n">jump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">),</span> <span class="n">jump</span><span class="p">(</span><span class="n">solution</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dS_h</span>
 
         <span class="c1"># NOTE Bottom impermeability condition is naturally satisfied by the definition of w</span>
@@ -311,7 +311,7 @@
 <div class="viewcode-block" id="HorizontalDiffusionTerm">
 <a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.HorizontalDiffusionTerm">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HorizontalDiffusionTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Horizontal diffusion term :math:`-\nabla_h \cdot (\mu_h \nabla_h T)`</span>
 
 <span class="sd">    Using the symmetric interior penalty method the weak form becomes</span>
@@ -332,13 +332,13 @@
 <span class="sd">    for high-resolution, large scale CFD and acoustics in industrial</span>
 <span class="sd">    geometries. PhD Thesis. Université catholique de Louvain.</span>
 <span class="sd">    https://dial.uclouvain.be/pr/boreal/object/boreal:128254/</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 <div class="viewcode-block" id="HorizontalDiffusionTerm.residual">
 <a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.HorizontalDiffusionTerm.residual">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;diffusivity_h&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'diffusivity_h'</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
-        <span class="n">diffusivity_h</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;diffusivity_h&#39;</span><span class="p">]</span>
+        <span class="n">diffusivity_h</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'diffusivity_h'</span><span class="p">]</span>
         <span class="n">sipg_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sipg_factor</span>
         <span class="n">diff_tensor</span> <span class="o">=</span> <span class="n">as_matrix</span><span class="p">([[</span><span class="n">diffusivity_h</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
                                  <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">diffusivity_h</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
@@ -355,8 +355,8 @@
             <span class="n">cp</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">h_cell</span> <span class="o">==</span> <span class="n">triangle</span> <span class="k">else</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
             <span class="c1"># by default the factor is multiplied by 2 to ensure convergence</span>
             <span class="n">sigma</span> <span class="o">=</span> <span class="n">cp</span> <span class="o">*</span> <span class="n">FacetArea</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span> <span class="o">/</span> <span class="n">CellVolume</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
-            <span class="n">sp</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)</span>
-            <span class="n">sm</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+            <span class="n">sp</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">(</span><span class="s1">'+'</span><span class="p">)</span>
+            <span class="n">sm</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">(</span><span class="s1">'-'</span><span class="p">)</span>
             <span class="n">sigma_max</span> <span class="o">=</span> <span class="n">sipg_factor</span> <span class="o">*</span> <span class="n">conditional</span><span class="p">(</span><span class="n">sp</span> <span class="o">&gt;</span> <span class="n">sm</span><span class="p">,</span> <span class="n">sp</span><span class="p">,</span> <span class="n">sm</span><span class="p">)</span>
             <span class="n">ds_interior</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dS_h</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dS_v</span><span class="p">)</span>
             <span class="n">f</span> <span class="o">+=</span> <span class="n">sigma_max</span> <span class="o">*</span> <span class="n">inner</span><span class="p">(</span>
@@ -381,7 +381,7 @@
 <div class="viewcode-block" id="VerticalDiffusionTerm">
 <a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.VerticalDiffusionTerm">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">VerticalDiffusionTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Vertical diffusion term :math:`-\frac{\partial}{\partial z} \Big(\mu \frac{T}{\partial z}\Big)`</span>
 
 <span class="sd">    Using the symmetric interior penalty method the weak form becomes</span>
@@ -400,14 +400,14 @@
 <span class="sd">    for high-resolution, large scale CFD and acoustics in industrial</span>
 <span class="sd">    geometries. PhD Thesis. Université catholique de Louvain.</span>
 <span class="sd">    https://dial.uclouvain.be/pr/boreal/object/boreal:128254/</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 <div class="viewcode-block" id="VerticalDiffusionTerm.residual">
 <a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.VerticalDiffusionTerm.residual">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;diffusivity_v&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'diffusivity_v'</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
 
-        <span class="n">diffusivity_v</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">&#39;diffusivity_v&#39;</span><span class="p">]</span>
+        <span class="n">diffusivity_v</span> <span class="o">=</span> <span class="n">fields_old</span><span class="p">[</span><span class="s1">'diffusivity_v'</span><span class="p">]</span>
         <span class="n">sipg_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sipg_factor_vertical</span>
 
         <span class="n">grad_test</span> <span class="o">=</span> <span class="n">Dx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -422,8 +422,8 @@
             <span class="n">l_normal</span> <span class="o">=</span> <span class="n">CellVolume</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span> <span class="o">/</span> <span class="n">FacetArea</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
             <span class="c1"># by default the factor is multiplied by 2 to ensure convergence</span>
             <span class="n">sigma</span> <span class="o">=</span> <span class="n">sipg_factor</span> <span class="o">*</span> <span class="n">cp</span> <span class="o">/</span> <span class="n">l_normal</span>
-            <span class="n">sp</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)</span>
-            <span class="n">sm</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+            <span class="n">sp</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">(</span><span class="s1">'+'</span><span class="p">)</span>
+            <span class="n">sm</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">(</span><span class="s1">'-'</span><span class="p">)</span>
             <span class="n">sigma_max</span> <span class="o">=</span> <span class="n">conditional</span><span class="p">(</span><span class="n">sp</span> <span class="o">&gt;</span> <span class="n">sm</span><span class="p">,</span> <span class="n">sp</span><span class="p">,</span> <span class="n">sm</span><span class="p">)</span>
             <span class="n">ds_interior</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dS_h</span><span class="p">)</span>
             <span class="n">f</span> <span class="o">+=</span> <span class="n">sigma_max</span><span class="o">*</span><span class="n">inner</span><span class="p">(</span>
@@ -443,7 +443,7 @@
 <div class="viewcode-block" id="SourceTerm">
 <a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.SourceTerm">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SourceTerm</span><span class="p">(</span><span class="n">TracerTerm</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Generic source term</span>
 
 <span class="sd">    The weak form reads</span>
@@ -452,12 +452,12 @@
 <span class="sd">        F_s = \int_\Omega \sigma \phi dx</span>
 
 <span class="sd">    where :math:`\sigma` is a user defined scalar :class:`Function`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 <div class="viewcode-block" id="SourceTerm.residual">
 <a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.SourceTerm.residual">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">source</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;source&#39;</span><span class="p">)</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">fields_old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'source'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">f</span> <span class="o">+=</span> <span class="n">inner</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
         <span class="k">return</span> <span class="n">f</span></div>
@@ -468,15 +468,15 @@
 <div class="viewcode-block" id="TracerEquation">
 <a class="viewcode-back" href="../../thetis.html#thetis.tracer_eq.TracerEquation">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TracerEquation</span><span class="p">(</span><span class="n">Equation</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    3D tracer advection-diffusion equation :eq:`tracer_eq` in conservative form</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span>
                  <span class="n">bathymetry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">use_symmetric_surf_bnd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_lax_friedrichs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">sipg_factor</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span>
                  <span class="n">sipg_factor_vertical</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">10.0</span><span class="p">)):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function_space: :class:`FunctionSpace` where the solution belongs</span>
 <span class="sd">        :kwarg bathymetry: bathymetry of the domain</span>
 <span class="sd">        :type bathymetry: 3D :class:`Function` or :class:`Constant`</span>
@@ -488,17 +488,17 @@
 <span class="sd">            condition in the horizontal advection term</span>
 <span class="sd">        :kwarg sipg_factor: :class: `Constant` or :class: `Function` horizontal SIPG penalty scaling factor</span>
 <span class="sd">        :kwarg sipg_factor_vertical: :class: `Constant` or :class: `Function` vertical SIPG penalty scaling factor</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TracerEquation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">function_space</span><span class="p">)</span>
 
         <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">function_space</span><span class="p">,</span> <span class="n">bathymetry</span><span class="p">,</span>
                 <span class="n">v_elem_size</span><span class="p">,</span> <span class="n">h_elem_size</span><span class="p">,</span> <span class="n">use_symmetric_surf_bnd</span><span class="p">,</span> <span class="n">use_lax_friedrichs</span><span class="p">,</span>
                 <span class="n">sipg_factor</span><span class="p">,</span> <span class="n">sipg_factor_vertical</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">VerticalAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalDiffusionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">VerticalDiffusionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">SourceTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">'explicit'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">VerticalAdvectionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">'explicit'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">HorizontalDiffusionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">'explicit'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">VerticalDiffusionTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">'explicit'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_term</span><span class="p">(</span><span class="n">SourceTerm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="s1">'source'</span><span class="p">)</span></div>
 
 </pre></div>
 

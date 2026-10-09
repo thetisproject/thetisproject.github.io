@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.exporter &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>thetis.exporter &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../../_static/documentation_options.js?v=a725081d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -50,9 +50,9 @@
           <div class="body" role="main">
             
   <h1>Source code for thetis.exporter</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Routines for handling file exports.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utility</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">firedrake.output.vtk_output</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_cg</span><span class="p">,</span> <span class="n">VTKFile</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
@@ -63,23 +63,23 @@
 <div class="viewcode-block" id="is_2d">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.is_2d">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_2d</span><span class="p">(</span><span class="n">fs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests whether a function space is 2D or 3D&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Tests whether a function space is 2D or 3D"""</span>
     <span class="k">return</span> <span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span><span class="o">.</span><span class="n">geometric_dimension</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span></div>
 
 
 
 <div class="viewcode-block" id="get_visu_space">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.get_visu_space">[docs]</a>
-<span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.get_visu_space&quot;</span><span class="p">)</span>
+<span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.get_visu_space"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_visu_space</span><span class="p">(</span><span class="n">fs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns an appropriate VTK visualization space for a function space</span>
 
 <span class="sd">    :arg fs: function space</span>
 <span class="sd">    :return: function space for VTK visualization</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">mesh</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
-    <span class="n">family</span> <span class="o">=</span> <span class="s1">&#39;Lagrange&#39;</span> <span class="k">if</span> <span class="n">is_cg</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;Discontinuous Lagrange&#39;</span>
+    <span class="n">family</span> <span class="o">=</span> <span class="s1">'Lagrange'</span> <span class="k">if</span> <span class="n">is_cg</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span> <span class="k">else</span> <span class="s1">'Discontinuous Lagrange'</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">value_shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">dim</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">value_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">visu_fs</span> <span class="o">=</span> <span class="n">get_functionspace</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
@@ -96,16 +96,16 @@
 <div class="viewcode-block" id="ExporterBase">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExporterBase">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExporterBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base class for exporter objects.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg string filename: output file name (without directory)</span>
 <span class="sd">        :arg string outputdir: directory where file is stored</span>
 <span class="sd">        :kwarg int next_export_ix: set the index for next output</span>
 <span class="sd">        :kwarg bool verbose: print debug info to stdout</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="n">create_directory</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
@@ -115,15 +115,15 @@
 <div class="viewcode-block" id="ExporterBase.set_next_export_ix">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExporterBase.set_next_export_ix">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the index of next export&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets the index of next export"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span> <span class="o">=</span> <span class="n">next_export_ix</span></div>
 
 
 <div class="viewcode-block" id="ExporterBase.export">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExporterBase.export">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Exports given function to disk&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;This method must be implemented in the derived class&#39;</span><span class="p">)</span></div>
+<span class="w">        </span><span class="sd">"""Exports given function to disk"""</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">'This method must be implemented in the derived class'</span><span class="p">)</span></div>
 </div>
 
 
@@ -131,13 +131,13 @@
 <div class="viewcode-block" id="VTKExporter">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">VTKExporter</span><span class="p">(</span><span class="n">ExporterBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class that handles Paraview VTK file exports</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VTKExporter.__init__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.VTKExporter.__init__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fs_visu</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span>
                  <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">project_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg fs_visu: function space where input function will be cast</span>
 <span class="sd">            before exporting</span>
 <span class="sd">        :arg func_name: name of the function</span>
@@ -147,13 +147,13 @@
 <span class="sd">        :kwarg bool project_output: project function to output space instead of</span>
 <span class="sd">            interpolating</span>
 <span class="sd">        :kwarg bool verbose: print debug info to stdout</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">VTKExporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">,</span>
                                           <span class="n">verbose</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fs_visu</span> <span class="o">=</span> <span class="n">fs_visu</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">func_name</span> <span class="o">=</span> <span class="n">func_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project_output</span> <span class="o">=</span> <span class="n">project_output</span>
-        <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;.pvd&#39;</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s1">'.pvd'</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
         <span class="c1"># append suffix if missing</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">filename</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">suffix</span><span class="p">)]</span> <span class="o">!=</span> <span class="n">suffix</span><span class="p">):</span>
@@ -165,7 +165,7 @@
 <div class="viewcode-block" id="VTKExporter.set_next_export_ix">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter.set_next_export_ix">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the index of next export&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets the index of next export"""</span>
         <span class="c1"># NOTE vtk io objects store current export index not next</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">VTKExporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_next_export_ix</span><span class="p">(</span><span class="n">next_export_ix</span><span class="p">)</span>
         <span class="c1"># FIXME hack to change correct output file count</span>
@@ -174,9 +174,9 @@
 
 <div class="viewcode-block" id="VTKExporter.export">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.VTKExporter.export">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.VTKExporter.export&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.VTKExporter.export"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Exports given function to disk&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Exports given function to disk"""</span>
         <span class="n">op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cast_operators</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_output</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">op</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -199,14 +199,14 @@
 <div class="viewcode-block" id="HDF5Exporter">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HDF5Exporter</span><span class="p">(</span><span class="n">ExporterBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Stores fields in disk in native discretization using HDF5 containers</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HDF5Exporter.__init__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.HDF5Exporter.__init__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">filename_prefix</span><span class="p">,</span>
                  <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">legacy_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">include_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create exporter object for given function.</span>
 
 <span class="sd">        :arg function_space: space where the exported functions belong</span>
@@ -217,7 +217,7 @@
 <span class="sd">        :kwarg int next_export_ix: index for next export (default 0)</span>
 <span class="sd">        :kwarg bool legacy_mode: use legacy DumbCheckpoint format</span>
 <span class="sd">        :kwarg bool verbose: print debug info to stdout</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">HDF5Exporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename_prefix</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span>
                                            <span class="n">next_export_ix</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span> <span class="o">=</span> <span class="n">function_space</span>
@@ -228,46 +228,46 @@
 <div class="viewcode-block" id="HDF5Exporter.gen_filename">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.gen_filename">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">gen_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate file name &#39;prefix_nnnnn.h5&#39; for i-th export</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Generate file name 'prefix_nnnnn.h5' for i-th export</span>
 
 <span class="sd">        :arg int iexport: export index &gt;= 0</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1">_</span><span class="si">{1:05d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">iexport</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{0:s}</span><span class="s1">_</span><span class="si">{1:05d}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">iexport</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dumb_checkpoint</span><span class="p">:</span>
-            <span class="n">filename</span> <span class="o">+=</span> <span class="s1">&#39;.h5&#39;</span>
+            <span class="n">filename</span> <span class="o">+=</span> <span class="s1">'.h5'</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HDF5Exporter.export_as_index">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.export_as_index">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">export_as_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Export function to disk using the specified export index number</span>
 
 <span class="sd">        :arg int iexport: export index &gt;= 0</span>
 <span class="sd">        :arg function: :class:`Function` to export</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="n">function</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span> \
-            <span class="s1">&#39;Function space does not match&#39;</span>
+            <span class="s1">'Function space does not match'</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_filename</span><span class="p">(</span><span class="n">iexport</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;saving </span><span class="si">{:}</span><span class="s1"> state to </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span> <span class="n">filename</span><span class="p">))</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">'saving </span><span class="si">{:}</span><span class="s1"> state to </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span> <span class="n">filename</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dumb_checkpoint</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">DumbCheckpoint</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">FILE_CREATE</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">comm</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">CheckpointFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">CheckpointFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">mesh</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">save_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
 
                 <span class="c1"># include timestepping info if requested</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_time</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;time must be provided when include_time=True&quot;</span><span class="p">)</span>
-                    <span class="n">f</span><span class="o">.</span><span class="n">set_attr</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">time</span><span class="p">))</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"time must be provided when include_time=True"</span><span class="p">)</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">set_attr</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="s2">"time"</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">time</span><span class="p">))</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">f</span><span class="o">.</span><span class="n">set_attr</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;initial_time_iso&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">set_attr</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="s2">"initial_time_iso"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
 
                 <span class="n">f</span><span class="o">.</span><span class="n">save_function</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
 
@@ -276,57 +276,57 @@
 
 <div class="viewcode-block" id="HDF5Exporter.export">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.export">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HDF5Exporter.export&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.HDF5Exporter.export"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Export function to disk.</span>
 
 <span class="sd">        Increments export index by 1.</span>
 
 <span class="sd">        :arg function: :class:`Function` to export</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_as_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_export_ix</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HDF5Exporter.load">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.HDF5Exporter.load">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.HDF5Exporter.load&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.HDF5Exporter.load"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iexport</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Loads nodal values from disk and assigns to the given function.</span>
 <span class="sd">        Returns a dict of metadata (time, initial_time) if available.</span>
 
 <span class="sd">        :arg int iexport: export index &gt;= 0</span>
 <span class="sd">        :arg function: target :class:`Function`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="n">function</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="p">,</span> \
-            <span class="s1">&#39;Function space does not match&#39;</span>
+            <span class="s1">'Function space does not match'</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_filename</span><span class="p">(</span><span class="n">iexport</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;loading </span><span class="si">{:}</span><span class="s1"> state from </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span> <span class="n">filename</span><span class="p">))</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">'loading </span><span class="si">{:}</span><span class="s1"> state from </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span> <span class="n">filename</span><span class="p">))</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dumb_checkpoint</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">DumbCheckpoint</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">FILE_READ</span><span class="p">,</span> <span class="n">comm</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">comm</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">CheckpointFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">CheckpointFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">mesh</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;sfXC&#39;</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;When loading fields from hdf5 checkpoint files, you should also read the mesh from checkpoint. See the documentation for `read_mesh_from_checkpoint()`&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">'sfXC'</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">'When loading fields from hdf5 checkpoint files, you should also read the mesh from checkpoint. See the documentation for `read_mesh_from_checkpoint()`'</span><span class="p">)</span>
                 <span class="n">g</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">load_function</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
                 <span class="n">function</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
 
                 <span class="c1"># Read time and initial_time_iso from file attributes</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span>
+                    <span class="n">metadata</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="s2">"time"</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                    <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">metadata</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">initial_time_iso</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;initial_time_iso&quot;</span><span class="p">)</span>
-                    <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;initial_time_iso&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">initial_time_iso</span><span class="p">)</span>
+                    <span class="n">initial_time_iso</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="s2">"initial_time_iso"</span><span class="p">)</span>
+                    <span class="n">metadata</span><span class="p">[</span><span class="s1">'initial_time_iso'</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">initial_time_iso</span><span class="p">)</span>
                 <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-                    <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;initial_time_iso&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">metadata</span><span class="p">[</span><span class="s1">'initial_time_iso'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">return</span> <span class="n">metadata</span></div>
 </div>
@@ -336,39 +336,39 @@
 <div class="viewcode-block" id="ExportManager">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExportManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Helper object for exporting multiple fields simultaneously</span>
 
 <span class="sd">    .. code-block:: python</span>
 
 <span class="sd">        from .field_defs import field_metadata</span>
-<span class="sd">        field_dict = {&#39;elev_2d&#39;: Function(...), &#39;uv_3d&#39;: Function(...), ...}</span>
-<span class="sd">        e = exporter.ExportManager(&#39;mydirectory&#39;,</span>
-<span class="sd">                                   [&#39;elev_2d&#39;, &#39;uv_3d&#39;, salt_3d&#39;],</span>
+<span class="sd">        field_dict = {'elev_2d': Function(...), 'uv_3d': Function(...), ...}</span>
+<span class="sd">        e = exporter.ExportManager('mydirectory',</span>
+<span class="sd">                                   ['elev_2d', 'uv_3d', salt_3d'],</span>
 <span class="sd">                                   field_dict,</span>
 <span class="sd">                                   field_metadata,</span>
-<span class="sd">                                   export_type=&#39;vtk&#39;)</span>
+<span class="sd">                                   export_type='vtk')</span>
 <span class="sd">        e.export()</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">fields_to_export</span><span class="p">,</span> <span class="n">functions</span><span class="p">,</span> <span class="n">field_metadata</span><span class="p">,</span>
-                 <span class="n">export_type</span><span class="o">=</span><span class="s1">&#39;vtk&#39;</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">export_type</span><span class="o">=</span><span class="s1">'vtk'</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">legacy_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">preproc_funcs</span><span class="o">=</span><span class="p">{},</span>
                  <span class="n">include_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg string outputdir: directory where files are stored</span>
 <span class="sd">        :arg fields_to_export: list of fields to export</span>
 <span class="sd">        :type fields_to_export: list of strings</span>
 <span class="sd">        :arg functions: dict that contains all existing :class:`Function` s</span>
 <span class="sd">        :arg field_metadata: dict of all field metadata.</span>
 <span class="sd">            See :mod:`.field_defs`</span>
-<span class="sd">        :kwarg str export_type: export format, either &#39;vtk&#39; or &#39;hdf5&#39;</span>
+<span class="sd">        :kwarg str export_type: export format, either 'vtk' or 'hdf5'</span>
 <span class="sd">        :kwarg int next_export_ix: index for next export (default 0)</span>
 <span class="sd">        :kwarg bool verbose: print debug info to stdout</span>
 <span class="sd">        :kwarg bool legacy_mode: use legacy `DumbCheckpoint` hdf5 format</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="n">outputdir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="n">fields_to_export</span>
         <span class="c1"># functions dict must be mutable for custom exports</span>
@@ -391,10 +391,10 @@
 <div class="viewcode-block" id="ExportManager.add_export">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.add_export">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span>
-                   <span class="n">export_type</span><span class="o">=</span><span class="s1">&#39;vtk&#39;</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">export_type</span><span class="o">=</span><span class="s1">'vtk'</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">shortname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">legacy_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                    <span class="n">preproc_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Adds a new field exporter in the manager.</span>
 
 <span class="sd">        This method allows exporting both default Thetis fields and user</span>
@@ -403,7 +403,7 @@
 
 <span class="sd">        :arg string fieldname: canonical field name</span>
 <span class="sd">        :arg function: Firedrake function to export</span>
-<span class="sd">        :kwarg str export_type: export format, either &#39;vtk&#39; or &#39;hdf5&#39;</span>
+<span class="sd">        :kwarg str export_type: export format, either 'vtk' or 'hdf5'</span>
 <span class="sd">        :kwarg int next_export_ix: index for next export (default 0)</span>
 <span class="sd">        :kwarg string outputdir: optional directory where files are stored</span>
 <span class="sd">        :kwarg string shortname: override shortname defined in field_metadata</span>
@@ -411,28 +411,28 @@
 <span class="sd">        :kwarg bool legacy_mode: use legacy `DumbCheckpoint` hdf5 format</span>
 <span class="sd">        :kwarg preproc_func: optional function that will be called prior to</span>
 <span class="sd">            exporting. E.g. for computing diagnostic fields.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">outputdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">outputdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="p">[</span><span class="n">fieldname</span><span class="p">]</span> <span class="o">=</span> <span class="n">function</span>
         <span class="k">if</span> <span class="n">shortname</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">fieldname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_metadata</span><span class="p">,</span> \
-                <span class="s1">&#39;Unknown field &quot;</span><span class="si">{:}</span><span class="s1">&quot;. For custom fields shortname and filename must be defined.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fieldname</span><span class="p">)</span>
+                <span class="s1">'Unknown field "</span><span class="si">{:}</span><span class="s1">". For custom fields shortname and filename must be defined.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fieldname</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">shortname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">shortname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_metadata</span><span class="p">[</span><span class="n">fieldname</span><span class="p">][</span><span class="s1">&#39;shortname&#39;</span><span class="p">]</span>
+            <span class="n">shortname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_metadata</span><span class="p">[</span><span class="n">fieldname</span><span class="p">][</span><span class="s1">'shortname'</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_metadata</span><span class="p">[</span><span class="n">fieldname</span><span class="p">][</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_metadata</span><span class="p">[</span><span class="n">fieldname</span><span class="p">][</span><span class="s1">'filename'</span><span class="p">]</span>
         <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fieldname</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">preproc_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">preproc_callbacks</span><span class="p">[</span><span class="n">fieldname</span><span class="p">]</span> <span class="o">=</span> <span class="n">preproc_func</span>
         <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">Function</span><span class="p">):</span>
             <span class="n">native_space</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">function_space</span><span class="p">()</span>
             <span class="n">visu_space</span> <span class="o">=</span> <span class="n">get_visu_space</span><span class="p">(</span><span class="n">native_space</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">export_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;vtk&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">export_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'vtk'</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">fieldname</span><span class="p">]</span> <span class="o">=</span> <span class="n">VTKExporter</span><span class="p">(</span><span class="n">visu_space</span><span class="p">,</span> <span class="n">shortname</span><span class="p">,</span>
                                                         <span class="n">outputdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span>
                                                         <span class="n">next_export_ix</span><span class="o">=</span><span class="n">next_export_ix</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">export_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">export_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'hdf5'</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">fieldname</span><span class="p">]</span> <span class="o">=</span> <span class="n">HDF5Exporter</span><span class="p">(</span><span class="n">native_space</span><span class="p">,</span>
                                                          <span class="n">outputdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span>
                                                          <span class="n">legacy_mode</span><span class="o">=</span><span class="n">legacy_mode</span><span class="p">,</span>
@@ -444,7 +444,7 @@
 <div class="viewcode-block" id="ExportManager.set_next_export_ix">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.set_next_export_ix">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_next_export_ix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_export_ix</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set export index to all child exporters&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set export index to all child exporters"""</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_next_export_ix</span><span class="p">(</span><span class="n">next_export_ix</span><span class="p">)</span></div>
 
@@ -452,18 +452,18 @@
 <div class="viewcode-block" id="ExportManager.export">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.export">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Export all designated functions to disk</span>
 
 <span class="sd">        Increments export index by 1.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Exporting: &#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'Exporting: '</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">:</span>
             <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s1">' '</span><span class="p">)</span>
                     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">preproc_callbacks</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">preproc_callbacks</span><span class="p">[</span><span class="n">key</span><span class="p">]()</span>
@@ -472,20 +472,20 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">exporters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="ExportManager.export_bathymetry">
 <a class="viewcode-back" href="../../thetis.html#thetis.exporter.ExportManager.export_bathymetry">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.ExportManager.export_bathymetry&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.ExportManager.export_bathymetry"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">export_bathymetry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bathymetry_2d</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Special function to export 2D bathymetry data to disk</span>
 
 <span class="sd">        :arg bathymetry_2d: 2D bathymetry :class:`Function`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">bathfile</span> <span class="o">=</span> <span class="n">VTKFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="s1">&#39;init_bathymetry_2d/init_bathymetry_2d.pvd&#39;</span><span class="p">))</span>
+<span class="sd">        """</span>
+        <span class="n">bathfile</span> <span class="o">=</span> <span class="n">VTKFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="s1">'init_bathymetry_2d/init_bathymetry_2d.pvd'</span><span class="p">))</span>
 
         <span class="n">bathfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bathymetry_2d</span><span class="p">)</span></div>
 </div>

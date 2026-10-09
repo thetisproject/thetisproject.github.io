@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.equation &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>thetis.equation &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../../_static/documentation_options.js?v=a725081d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -50,10 +50,10 @@
           <div class="body" role="main">
             
   <h1>Source code for thetis.equation</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Implements Equation and Term classes.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utility</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
 
@@ -61,18 +61,18 @@
 <div class="viewcode-block" id="Term">
 <a class="viewcode-back" href="../../thetis.html#thetis.equation.Term">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Term</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Implements a single term of an equation.</span>
 
 <span class="sd">    .. note::</span>
 <span class="sd">        Sign convention: all terms are assumed to be on the right hand side of the equation: d(u)/dt = term.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">test_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trial_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function_space: the :class:`FunctionSpace` the solution belongs to</span>
 <span class="sd">        :kwarg test_function: custom :class:`TestFunction`.</span>
 <span class="sd">        :kwarg trial_function: custom :class:`TrialFunction`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># define bunch of members needed to construct forms</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span> <span class="o">=</span> <span class="n">function_space</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span><span class="o">.</span><span class="n">mesh</span><span class="p">()</span>
@@ -86,7 +86,7 @@
 <div class="viewcode-block" id="Term.residual">
 <a class="viewcode-back" href="../../thetis.html#thetis.equation.Term.residual">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns an UFL form of the term.</span>
 
 <span class="sd">        :arg solution: solution :class:`.Function` of the corresponding equation</span>
@@ -95,15 +95,15 @@
 <span class="sd">            The keys of the dictionary should standard field names in `field_metadata`</span>
 <span class="sd">        :arg fields_old: Time lagged dictionary of fields</span>
 <span class="sd">        :arg bnd_conditions: A dictionary describing boundary conditions.</span>
-<span class="sd">            E.g. {3: {&#39;elev_2d&#39;: Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Must be implemented in the derived class&#39;</span><span class="p">)</span></div>
+<span class="sd">            E.g. {3: {'elev_2d': Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">'Must be implemented in the derived class'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Term.jacobian">
 <a class="viewcode-back" href="../../thetis.html#thetis.equation.Term.jacobian">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns an UFL form of the Jacobian of the term.</span>
 
 <span class="sd">        :arg solution: solution :class:`.Function` of the corresponding equation</span>
@@ -112,10 +112,10 @@
 <span class="sd">            The keys of the dictionary should standard field names in `field_metadata`</span>
 <span class="sd">        :arg fields_old: Time lagged dictionary of fields</span>
 <span class="sd">        :arg bnd_conditions: A dictionary describing boundary conditions.</span>
-<span class="sd">            E.g. {3: {&#39;elev_2d&#39;: Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            E.g. {3: {'elev_2d': Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</span>
+<span class="sd">        """</span>
         <span class="c1"># TODO default behavior: symbolic expression, or implement only if user-defined?</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Must be implemented in the derived class&#39;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">'Must be implemented in the derived class'</span><span class="p">)</span></div>
 </div>
 
 
@@ -123,11 +123,11 @@
 <div class="viewcode-block" id="Equation">
 <a class="viewcode-back" href="../../thetis.html#thetis.equation.Equation">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Equation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Implements an equation, made out of terms.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">SUPPORTED_LABELS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;explicit&#39;</span><span class="p">,</span> <span class="s1">&#39;implicit&#39;</span><span class="p">,</span> <span class="s1">&#39;nonlinear&#39;</span><span class="p">])</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">SUPPORTED_LABELS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s1">'source'</span><span class="p">,</span> <span class="s1">'explicit'</span><span class="p">,</span> <span class="s1">'implicit'</span><span class="p">,</span> <span class="s1">'nonlinear'</span><span class="p">])</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Valid labels for terms, indicating how they should be treated in the time</span>
 <span class="sd">    integrator.</span>
 
@@ -142,12 +142,12 @@
 
 <span class="sd">    nonlinear</span>
 <span class="sd">        The term is nonlinear and should be treated fully implicitly</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.Equation.__init__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.Equation.__init__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function_space: the :class:`FunctionSpace` the solution belongs to</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">terms</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_space</span> <span class="o">=</span> <span class="n">function_space</span>
@@ -162,28 +162,28 @@
 <div class="viewcode-block" id="Equation.mass_term">
 <a class="viewcode-back" href="../../thetis.html#thetis.equation.Equation.mass_term">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mass_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns default mass matrix term for the solution function space.</span>
 
 <span class="sd">        :returns: UFL form of the mass term</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">inner</span><span class="p">(</span><span class="n">solution</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span></div>
 
 
 <div class="viewcode-block" id="Equation.add_term">
 <a class="viewcode-back" href="../../thetis.html#thetis.equation.Equation.add_term">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Adds a term in the equation</span>
 
 <span class="sd">        :arg term: :class:`.Term` object to add_term</span>
 <span class="sd">        :arg string label: Assign a label to the term. Valid labels are given by</span>
 <span class="sd">            :attr:`.SUPPORTED_LABELS`.</span>
 <span class="sd">        :arg suffix: optional custom key suffix</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="k">if</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">key</span><span class="p">,</span> <span class="n">suffix</span><span class="p">])</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="s1">'_'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">key</span><span class="p">,</span> <span class="n">suffix</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">term</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">label_term</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span></div>
 
@@ -191,15 +191,15 @@
 <div class="viewcode-block" id="Equation.label_term">
 <a class="viewcode-back" href="../../thetis.html#thetis.equation.Equation.label_term">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">label_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Assings a label to the given term(s).</span>
 
 <span class="sd">        :arg term: :class:`.Term` object, or a tuple of terms</span>
 <span class="sd">        :arg label: string label to assign</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">assert</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="p">,</span> <span class="s1">&#39;Unknown term, add it to the equation&#39;</span>
-            <span class="k">assert</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">SUPPORTED_LABELS</span><span class="p">,</span> <span class="s1">&#39;bad label: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="p">,</span> <span class="s1">'Unknown term, add it to the equation'</span>
+            <span class="k">assert</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">SUPPORTED_LABELS</span><span class="p">,</span> <span class="s1">'bad label: </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">term</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">term</span><span class="p">):</span>
@@ -209,14 +209,14 @@
 <div class="viewcode-block" id="Equation.select_terms">
 <a class="viewcode-back" href="../../thetis.html#thetis.equation.Equation.select_terms">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">select_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Generator function that selects terms by label(s).</span>
 
-<span class="sd">        label can be a single label (e.g. &#39;explicit&#39;), &#39;all&#39; or a tuple of</span>
+<span class="sd">        label can be a single label (e.g. 'explicit'), 'all' or a tuple of</span>
 <span class="sd">        labels.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="s1">'all'</span><span class="p">:</span>
                 <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SUPPORTED_LABELS</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">labels</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">label</span><span class="p">])</span>
@@ -229,15 +229,15 @@
 
 <div class="viewcode-block" id="Equation.residual">
 <a class="viewcode-back" href="../../thetis.html#thetis.equation.Equation.residual">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.Equation.residual&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.Equation.residual"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns an UFL form of the residual by summing up all the terms with the desired label.</span>
 
 <span class="sd">        Sign convention: all terms are assumed to be on the right hand side of the equation: d(u)/dt = term.</span>
 
 <span class="sd">        :arg label: string defining the type of terms to sum up. Currently one of</span>
-<span class="sd">            &#39;source&#39;|&#39;explicit&#39;|&#39;implicit&#39;|&#39;nonlinear&#39;. Can be a list of multiple labels, or &#39;all&#39; in which</span>
+<span class="sd">            'source'|'explicit'|'implicit'|'nonlinear'. Can be a list of multiple labels, or 'all' in which</span>
 <span class="sd">            case all defined terms are summed.</span>
 <span class="sd">        :arg solution: solution :class:`.Function` of the corresponding equation</span>
 <span class="sd">        :arg solution_old: a time lagged solution :class:`.Function`</span>
@@ -245,8 +245,8 @@
 <span class="sd">            The keys of the dictionary should standard field names in `field_metadata`</span>
 <span class="sd">        :arg fields_old: Time lagged dictionary of fields</span>
 <span class="sd">        :arg bnd_conditions: A dictionary describing boundary conditions.</span>
-<span class="sd">            E.g. {3: {&#39;elev_2d&#39;: Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            E.g. {3: {'elev_2d': Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</span>
+<span class="sd">        """</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_terms</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
             <span class="n">f</span> <span class="o">+=</span> <span class="n">term</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">)</span>
@@ -255,15 +255,15 @@
 
 <div class="viewcode-block" id="Equation.jacobian">
 <a class="viewcode-back" href="../../thetis.html#thetis.equation.Equation.jacobian">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.Equation.jacobian&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.Equation.jacobian"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="n">solution_old</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">fields_old</span><span class="p">,</span> <span class="n">bnd_conditions</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns an UFL form of the Jacobian by summing up all the Jacobians of the terms.</span>
 
 <span class="sd">        Sign convention: all terms are assumed to be on the right hand side of the equation: d(u)/dt = term.</span>
 
 <span class="sd">        :arg label: string defining the type of terms to sum up. Currently one of</span>
-<span class="sd">            &#39;source&#39;|&#39;explicit&#39;|&#39;implicit&#39;|&#39;nonlinear&#39;. Can be a list of multiple labels, or &#39;all&#39; in which</span>
+<span class="sd">            'source'|'explicit'|'implicit'|'nonlinear'. Can be a list of multiple labels, or 'all' in which</span>
 <span class="sd">            case all defined terms are summed.</span>
 <span class="sd">        :arg solution: solution :class:`.Function` of the corresponding equation</span>
 <span class="sd">        :arg solution_old: a time lagged solution :class:`.Function`</span>
@@ -271,8 +271,8 @@
 <span class="sd">            The keys of the dictionary should standard field names in `field_metadata`</span>
 <span class="sd">        :arg fields_old: Time lagged dictionary of fields</span>
 <span class="sd">        :arg bnd_conditions: A dictionary describing boundary conditions.</span>
-<span class="sd">            E.g. {3: {&#39;elev_2d&#39;: Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            E.g. {3: {'elev_2d': Constant(1.0)}} replaces elev_2d function by a constant on boundary ID 3.</span>
+<span class="sd">        """</span>
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_terms</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
             <span class="c1"># FIXME check if jacobian exists?</span>

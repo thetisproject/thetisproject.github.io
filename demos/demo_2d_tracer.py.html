@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>2D tracer transport &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>2D tracer transport &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/thetis.css?v=0f3339d6" />
-    <script src="../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../_static/documentation_options.js?v=a725081d"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -72,7 +72,7 @@ solid body rotation <span class="math notranslate nohighlight">\(\vec{u} = (0.5 
 with no hydrodynamics. Therefore, bathymetry is not actually
 important. We set an arbitrary postive value, as this is required
 by Thetis to construct the solver object.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">P1_2d</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">P1_2d</span> <span class="o">=</span> <span class="n">FunctionSpace</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="s2">"CG"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">bathymetry2d</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">P1_2d</span><span class="p">)</span>
 <span class="n">bathymetry2d</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
 <span class="n">solver_obj</span> <span class="o">=</span> <span class="n">solver2d</span><span class="o">.</span><span class="n">FlowSolver2d</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">,</span> <span class="n">bathymetry2d</span><span class="p">)</span>
@@ -95,9 +95,9 @@ through this interface. We have a pure advection problem with no
 diffusivity or source terms. However, such terms can be specified
 by replacing the <code class="docutils literal notranslate"><span class="pre">None</span></code> values below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">options</span> <span class="o">=</span> <span class="n">solver_obj</span><span class="o">.</span><span class="n">options</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tracer_2d&#39;</span><span class="p">]</span>
-<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Depth averaged tracer&#39;</span><span class="p">]</span>
-<span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Tracer2d&#39;</span><span class="p">]</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'tracer_2d'</span><span class="p">]</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Depth averaged tracer'</span><span class="p">]</span>
+<span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Tracer2d'</span><span class="p">]</span>
 <span class="n">options</span><span class="o">.</span><span class="n">fields_to_export</span> <span class="o">=</span> <span class="n">labels</span>
 <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">filenames</span><span class="p">):</span>
     <span class="n">options</span><span class="o">.</span><span class="n">add_tracer_2d</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">diffusivity</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -115,7 +115,7 @@ computation functionality is switched off and the simulation time is
 split into 600 steps, giving a timestep close to the CFL limit.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">t_end</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span>
 <span class="n">timestep</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">300.0</span>
-<span class="n">options</span><span class="o">.</span><span class="n">tracer_timestepper_type</span> <span class="o">=</span> <span class="s1">&#39;SSPRK33&#39;</span>
+<span class="n">options</span><span class="o">.</span><span class="n">tracer_timestepper_type</span> <span class="o">=</span> <span class="s1">'SSPRK33'</span>
 <span class="n">options</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="n">timestep</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_end_time</span> <span class="o">=</span> <span class="n">t_end</span>
 <span class="n">options</span><span class="o">.</span><span class="n">simulation_export_time</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">15.0</span>
@@ -132,7 +132,7 @@ to obtain non-oscillatory solutions.</p>
 <p>The background tracer value is imposed as an upwind inflow condition.
 In general, this would be a <code class="docutils literal notranslate"><span class="pre">Function</span></code>, but here we just use a <code class="docutils literal notranslate"><span class="pre">Constant</span></code>
 value.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">&#39;tracer_2d&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;on_boundary&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)}}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">solver_obj</span><span class="o">.</span><span class="n">bnd_functions</span><span class="p">[</span><span class="s1">'tracer_2d'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'on_boundary'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'value'</span><span class="p">:</span> <span class="n">Constant</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)}}</span>
 </pre></div>
 </div>
 <p>The velocity field is set up using a simple analytic expression.</p>

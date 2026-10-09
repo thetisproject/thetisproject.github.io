@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.interpolation &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>thetis.interpolation &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../../_static/documentation_options.js?v=a725081d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -50,7 +50,7 @@
           <div class="body" role="main">
             
   <h1>Source code for thetis.interpolation</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Methods for interpolating data from structured data sets on Thetis fields.</span>
 
 
@@ -66,7 +66,7 @@
 <span class="sd">            # object that interpolates forcing data from structured grid on the local mesh</span>
 <span class="sd">            self.grid_interpolator = NetCDFLatLonInterpolator2d(function_space, coord_system)</span>
 <span class="sd">            # reader object that can read fields from netCDF files, applies spatial interpolation</span>
-<span class="sd">            self.reader = NetCDFSpatialInterpolator(self.grid_interpolator, [&#39;prmsl&#39;])</span>
+<span class="sd">            self.reader = NetCDFSpatialInterpolator(self.grid_interpolator, ['prmsl'])</span>
 <span class="sd">            # object that can find previous/next time stamps in a collection of netCDF files</span>
 <span class="sd">            self.timesearch_obj = NetCDFTimeSearch(ncfile_pattern, init_date, NetCDFTimeParser)</span>
 <span class="sd">            # finally a linear intepolator class that performs linar interpolation in time</span>
@@ -82,14 +82,14 @@
 
 <span class="sd">.. code-block:: python</span>
 
-<span class="sd">    atm_pressure_2d = Function(solver_obj.function_spaces.P1_2d, name=&#39;atm pressure&#39;)</span>
-<span class="sd">    wrf_pattern = &#39;forcings/atm/wrf/wrf_air.2016_*_*.nc&#39;</span>
+<span class="sd">    atm_pressure_2d = Function(solver_obj.function_spaces.P1_2d, name='atm pressure')</span>
+<span class="sd">    wrf_pattern = 'forcings/atm/wrf/wrf_air.2016_*_*.nc'</span>
 <span class="sd">    wrf_atm = WRFInterpolator(</span>
 <span class="sd">        solver_obj.function_spaces.P1_2d,</span>
 <span class="sd">        wind_stress_2d, atm_pressure_2d, wrf_pattern, init_date)</span>
 <span class="sd">    simulation_time = 3600.</span>
 <span class="sd">    wrf_atm.set_fields(simulation_time)</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.timezone</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
@@ -110,7 +110,7 @@
 <div class="viewcode-block" id="get_ncvar_name">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.get_ncvar_name">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_ncvar_name</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span> <span class="n">standard_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">long_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Look for variables that match either CF standard_name or long_name</span>
 <span class="sd">    attributes.</span>
 
@@ -123,9 +123,9 @@
 <span class="sd">    :kwarg standard_name: a target standard_name, or a list of them</span>
 <span class="sd">    :kwarg long_name: a target long_name, or a list of them</span>
 <span class="sd">    :kwarg var_name: a target netCDF variable name, or a list of them</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">assert</span> <span class="n">standard_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">long_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> \
-        <span class="s1">&#39;Either standard_name or long_name must be defined&#39;</span>
+        <span class="s1">'Either standard_name or long_name must be defined'</span>
     <span class="c1"># convert to list</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">listify</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
@@ -139,11 +139,11 @@
     <span class="n">var_name</span> <span class="o">=</span> <span class="n">listify</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
     <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="s1">&#39;standard_name&#39;</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">'standard_name'</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">standard_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">standard_name</span><span class="p">:</span>
                 <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">break</span>
-        <span class="k">if</span> <span class="s1">&#39;long_name&#39;</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">'long_name'</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">long_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">long_name</span><span class="p">:</span>
                 <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">break</span>
@@ -154,12 +154,12 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
         <span class="n">filter_str</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">standard_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">filter_str</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;standard_name=</span><span class="si">{</span><span class="n">standard_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">filter_str</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'standard_name=</span><span class="si">{</span><span class="n">standard_name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">long_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">filter_str</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;long_name=</span><span class="si">{</span><span class="n">long_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">filter_str</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filter_str</span><span class="p">)</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Variable matching </span><span class="si">{</span><span class="n">filter_str</span><span class="si">}</span><span class="s1"> not found &#39;</span> \
-            <span class="sa">f</span><span class="s1">&#39;in </span><span class="si">{</span><span class="n">ncfile</span><span class="o">.</span><span class="n">filepath</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">filter_str</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'long_name=</span><span class="si">{</span><span class="n">long_name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">filter_str</span> <span class="o">=</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filter_str</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'Variable matching </span><span class="si">{</span><span class="n">filter_str</span><span class="si">}</span><span class="s1"> not found '</span> \
+            <span class="sa">f</span><span class="s1">'in </span><span class="si">{</span><span class="n">ncfile</span><span class="o">.</span><span class="n">filepath</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">name</span></div>
 
@@ -168,7 +168,7 @@
 <div class="viewcode-block" id="GridInterpolator">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.GridInterpolator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GridInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A reuseable griddata interpolator object.</span>
 
 <span class="sd">    Usage:</span>
@@ -194,17 +194,17 @@
 
 <span class="sd">    Based on</span>
 <span class="sd">    http://stackoverflow.com/questions/20915502/speedup-scipy-griddata-for-multiple-interpolations-between-two-irregular-grids</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GridInterpolator.__init__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.GridInterpolator.__init__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_xyz</span><span class="p">,</span> <span class="n">target_xyz</span><span class="p">,</span> <span class="n">fill_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
                  <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dont_raise</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg grid_xyz: Array of source grid coordinates, shape (npoints, 2) or</span>
 <span class="sd">            (npoints, 3)</span>
 <span class="sd">        :arg target_xyz: Array of target grid coordinates, shape (n, 2) or</span>
 <span class="sd">            (n, 3)</span>
 <span class="sd">        :kwarg fill_mode: Determines how points outside the source grid will be</span>
-<span class="sd">            treated. If &#39;nearest&#39;, value of the nearest source point will be</span>
+<span class="sd">            treated. If 'nearest', value of the nearest source point will be</span>
 <span class="sd">            used. Otherwise a constant fill value will be used (default).</span>
 <span class="sd">        :kwarg float fill_value: Set the fill value (default: NaN)</span>
 <span class="sd">        :kwarg bool normalize: If true the data is scaled to unit cube before</span>
@@ -212,15 +212,15 @@
 <span class="sd">        :kwarg bool dont_raise: Do not raise a Qhull error if triangulation</span>
 <span class="sd">            fails. In this case the data will be set to fill value or nearest</span>
 <span class="sd">            neighbor value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fill_value</span> <span class="o">=</span> <span class="n">fill_value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fill_mode</span> <span class="o">=</span> <span class="n">fill_mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span> <span class="o">=</span> <span class="n">normalize</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fill_nearest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_mode</span> <span class="o">==</span> <span class="s1">&#39;nearest&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fill_nearest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_mode</span> <span class="o">==</span> <span class="s1">'nearest'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">target_xyz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">)</span>
         <span class="n">ngrid_points</span> <span class="o">=</span> <span class="n">grid_xyz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_nearest</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">ngrid_points</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;at least one source point is needed&#39;</span>
+            <span class="k">assert</span> <span class="n">ngrid_points</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'at least one source point is needed'</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="p">:</span>
 
             <span class="k">def</span><span class="w"> </span><span class="nf">get_norm_params</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -253,7 +253,7 @@
             <span class="n">vertices</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">tri</span><span class="o">.</span><span class="n">simplices</span><span class="p">,</span> <span class="n">simplex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">temp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">tri</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">simplex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">delta</span> <span class="o">=</span> <span class="n">ntarget_xyz</span> <span class="o">-</span> <span class="n">temp</span><span class="p">[:,</span> <span class="n">d</span><span class="p">]</span>
-            <span class="n">bary</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;njk,nk-&gt;nj&#39;</span><span class="p">,</span> <span class="n">temp</span><span class="p">[:,</span> <span class="p">:</span><span class="n">d</span><span class="p">,</span> <span class="p">:],</span> <span class="n">delta</span><span class="p">)</span>
+            <span class="n">bary</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">'njk,nk-&gt;nj'</span><span class="p">,</span> <span class="n">temp</span><span class="p">[:,</span> <span class="p">:</span><span class="n">d</span><span class="p">,</span> <span class="p">:],</span> <span class="n">delta</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">vtx</span> <span class="o">=</span> <span class="n">vertices</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wts</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">bary</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">bary</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">outside</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wts</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -275,21 +275,21 @@
                 <span class="n">dist</span><span class="p">,</span> <span class="n">ix</span> <span class="o">=</span> <span class="n">cKDTree</span><span class="p">(</span><span class="n">ngrid_xyz</span><span class="p">)</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">ntarget_xyz</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">outside_to_nearest</span> <span class="o">=</span> <span class="n">ix</span>
 
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.GridInterpolator.__call__&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.GridInterpolator.__call__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Interpolate values defined on grid_xyz to target_xyz.</span>
 
 <span class="sd">        :arg values: Array of source values to interpolate, shape (npoints, )</span>
 <span class="sd">        :kwarg float fill_value: Fill value to use outside the source grid (default: NaN)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cannot_interpolate</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_nearest</span><span class="p">:</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outside_to_nearest</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fill_value</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">ret</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;nj,nj-&gt;n&#39;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vtx</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">wts</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">'nj,nj-&gt;n'</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vtx</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">wts</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_nearest</span><span class="p">:</span>
                 <span class="n">ret</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outside</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outside_to_nearest</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
@@ -301,18 +301,18 @@
 <div class="viewcode-block" id="FileTreeReader">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.FileTreeReader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FileTreeReader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Abstract base class of file tree reader object</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">time_index</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reads a data for one time step from the file</span>
 
 <span class="sd">        :arg str filename: a filename where to find the data (e.g. filename)</span>
 <span class="sd">        :arg int time_index: time index to read</span>
 <span class="sd">        :return: a list of floats or numpy.array_like objects</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 
 
@@ -320,13 +320,13 @@
 <div class="viewcode-block" id="NetCDFTimeSeriesReader">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFTimeSeriesReader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NetCDFTimeSeriesReader</span><span class="p">(</span><span class="n">FileTreeReader</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A simple netCDF reader that returns a time slice of the given variable.</span>
 
 <span class="sd">    This class does not interpolate the data in any way. Useful for</span>
 <span class="sd">    interpolating time series.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">time_variable_name</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">):</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">time_variable_name</span><span class="o">=</span><span class="s1">'time'</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variable_list</span> <span class="o">=</span> <span class="n">variable_list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_variable_name</span> <span class="o">=</span> <span class="n">time_variable_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_dim</span> <span class="o">=</span> <span class="kc">None</span>
@@ -340,9 +340,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nc_var</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_index</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns a slice object that extracts a single time index</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">time_index</span>
         <span class="n">slice_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ndims</span>
@@ -350,14 +350,14 @@
         <span class="k">return</span> <span class="n">slice_list</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">time_index</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reads a time_index from the data base</span>
 
 <span class="sd">        :arg str filename: netcdf file where to find the data</span>
 <span class="sd">        :arg int time_index: time index to read</span>
 <span class="sd">        :return: a float or numpy.array_like value</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="s1">&#39;File not found: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="s1">'File not found: </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">ncfile</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_dim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_detect_time_dim</span><span class="p">(</span><span class="n">ncfile</span><span class="p">)</span>
@@ -370,9 +370,9 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_subset_nodes</span><span class="p">(</span><span class="n">grid_x</span><span class="p">,</span> <span class="n">grid_y</span><span class="p">,</span> <span class="n">target_x</span><span class="p">,</span> <span class="n">target_y</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Retuns grid nodes that are necessary for intepolating onto target_x,y</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">orig_shape</span> <span class="o">=</span> <span class="n">grid_x</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">grid_xy</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">grid_x</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">grid_y</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span><span class="o">.</span><span class="n">T</span>
     <span class="n">target_xy</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">target_x</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">target_y</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span><span class="o">.</span><span class="n">T</span>
@@ -392,24 +392,24 @@
 <div class="viewcode-block" id="SpatialInterpolator">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.SpatialInterpolator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpatialInterpolator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Abstract base class for spatial interpolators that read data from disk</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function_space: target Firedrake FunctionSpace</span>
 <span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="SpatialInterpolator.interpolate">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.SpatialInterpolator.interpolate">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">itime</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Interpolates data from the given file at given time step</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 </div>
 
@@ -418,20 +418,20 @@
 <div class="viewcode-block" id="SpatialInterpolator2d">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.SpatialInterpolator2d">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpatialInterpolator2d</span><span class="p">(</span><span class="n">SpatialInterpolator</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Abstract spatial interpolator class that can interpolate onto a 2D Function</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolator2d.__init__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.SpatialInterpolator2d.__init__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_space</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">,</span> <span class="n">fill_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">fill_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg function_space: target Firedrake FunctionSpace</span>
 <span class="sd">        :arg coord_system: :class:`CoordinateSystem` object</span>
 <span class="sd">        :kwarg fill_mode: Determines how points outside the source grid will be</span>
-<span class="sd">            treated. If &#39;nearest&#39;, value of the nearest source point will be</span>
+<span class="sd">            treated. If 'nearest', value of the nearest source point will be</span>
 <span class="sd">            used. Otherwise a constant fill value will be used (default).</span>
 <span class="sd">        :kwarg float fill_value: Set the fill value (default: NaN)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="n">function_space</span><span class="o">.</span><span class="n">value_shape</span> <span class="o">==</span> <span class="p">()</span>
 
         <span class="c1"># construct local coordinates</span>
@@ -456,13 +456,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fill_value</span> <span class="o">=</span> <span class="n">fill_value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.SpatialInterpolator2d._create_interpolator&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.SpatialInterpolator2d._create_interpolator"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lat_array</span><span class="p">,</span> <span class="n">lon_array</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create compact interpolator by finding the minimal necessary support</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">lat_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Latitude must be two dimensional array.&#39;</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">lon_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;longitude must be two dimensional array.&#39;</span>
+<span class="sd">        """</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">lat_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'Latitude must be two dimensional array.'</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">lon_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'longitude must be two dimensional array.'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span> <span class="o">=</span> <span class="n">_get_subset_nodes</span><span class="p">(</span>
             <span class="n">lon_array</span><span class="p">,</span>
             <span class="n">lat_array</span><span class="p">,</span>
@@ -480,18 +480,18 @@
 
         <span class="c1"># debug: plot subsets</span>
         <span class="c1"># import matplotlib.pyplot as plt</span>
-        <span class="c1"># plt.plot(grid_lon_full, grid_lat_full, &#39;k.&#39;)</span>
-        <span class="c1"># plt.plot(grid_lonlat[:, 0], grid_lonlat[:, 1], &#39;b.&#39;)</span>
-        <span class="c1"># plt.plot(self.mesh_lonlat[:, 0], self.mesh_lonlat[:, 1], &#39;r.&#39;)</span>
+        <span class="c1"># plt.plot(grid_lon_full, grid_lat_full, 'k.')</span>
+        <span class="c1"># plt.plot(grid_lonlat[:, 0], grid_lonlat[:, 1], 'b.')</span>
+        <span class="c1"># plt.plot(self.mesh_lonlat[:, 0], self.mesh_lonlat[:, 1], 'r.')</span>
         <span class="c1"># plt.show()</span>
 
 <div class="viewcode-block" id="SpatialInterpolator2d.interpolate">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.SpatialInterpolator2d.interpolate">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Calls the interpolator object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 </div>
 
@@ -500,7 +500,7 @@
 <div class="viewcode-block" id="NetCDFLatLonInterpolator2d">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFLatLonInterpolator2d">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NetCDFLatLonInterpolator2d</span><span class="p">(</span><span class="n">SpatialInterpolator2d</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Interpolates netCDF data on a local 2D unstructured mesh</span>
 
 <span class="sd">    The intepolator is constructed for a single netCDF file that defines the</span>
@@ -516,39 +516,39 @@
 <span class="sd">        fs = FunctionSpace(...)</span>
 <span class="sd">        myfunc = Function(fs, ...)</span>
 <span class="sd">        ncinterp2d = NetCDFLatLonInterpolator2d(fs, coord_system, nc_filename)</span>
-<span class="sd">        val1, val2 = ncinterp2d.interpolate(nc_filename, [&#39;var1&#39;, &#39;var2&#39;], 10)</span>
+<span class="sd">        val1, val2 = ncinterp2d.interpolate(nc_filename, ['var1', 'var2'], 10)</span>
 <span class="sd">        myfunc.dat.data_with_halos[:] = val1 + val2</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 <div class="viewcode-block" id="NetCDFLatLonInterpolator2d.interpolate">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFLatLonInterpolator2d.interpolate">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.NetCDFLatLonInterpolator2d.interpolate&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.NetCDFLatLonInterpolator2d.interpolate"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nc_filename</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">itime</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Interpolates data from a netCDF file onto Firedrake function space.</span>
 
 <span class="sd">        :arg str nc_filename: netCDF file to read</span>
 <span class="sd">        :arg variable_list: list of netCDF variable names to read</span>
 <span class="sd">        :arg int itime: time index to read</span>
 <span class="sd">        :returns: list of numpy.arrays corresponding to variable_list</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">nc_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ncfile</span><span class="p">:</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">nc_filename</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ncfile</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
                 <span class="n">name_lat</span> <span class="o">=</span> <span class="n">get_ncvar_name</span><span class="p">(</span>
-                    <span class="n">ncfile</span><span class="p">,</span> <span class="s1">&#39;latitude&#39;</span><span class="p">,</span> <span class="s1">&#39;latitude&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">])</span>
+                    <span class="n">ncfile</span><span class="p">,</span> <span class="s1">'latitude'</span><span class="p">,</span> <span class="s1">'latitude'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'latitude'</span><span class="p">,</span> <span class="s1">'lat'</span><span class="p">])</span>
                 <span class="n">name_lon</span> <span class="o">=</span> <span class="n">get_ncvar_name</span><span class="p">(</span>
-                    <span class="n">ncfile</span><span class="p">,</span> <span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">])</span>
+                    <span class="n">ncfile</span><span class="p">,</span> <span class="s1">'longitude'</span><span class="p">,</span> <span class="s1">'longitude'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'longitude'</span><span class="p">,</span> <span class="s1">'lon'</span><span class="p">])</span>
                 <span class="n">grid_lat</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="n">name_lat</span><span class="p">][:]</span>
                 <span class="n">grid_lon</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="n">name_lon</span><span class="p">][:]</span>
                 <span class="n">lat_is_1d</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grid_lat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
                 <span class="n">lon_is_1d</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grid_lat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-                <span class="k">assert</span> <span class="n">lat_is_1d</span> <span class="o">==</span> <span class="n">lon_is_1d</span><span class="p">,</span> <span class="s1">&#39;Unsupported lat lon grid&#39;</span>
+                <span class="k">assert</span> <span class="n">lat_is_1d</span> <span class="o">==</span> <span class="n">lon_is_1d</span><span class="p">,</span> <span class="s1">'Unsupported lat lon grid'</span>
                 <span class="k">if</span> <span class="n">lat_is_1d</span> <span class="ow">and</span> <span class="n">lon_is_1d</span><span class="p">:</span>
                     <span class="n">grid_lon</span><span class="p">,</span> <span class="n">grid_lat</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">grid_lon</span><span class="p">,</span> <span class="n">grid_lat</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_create_interpolator</span><span class="p">(</span><span class="n">grid_lat</span><span class="p">,</span> <span class="n">grid_lon</span><span class="p">)</span>
             <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variable_list</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Variable </span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1"> not found: </span><span class="si">{</span><span class="n">nc_filename</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'Variable </span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1"> not found: </span><span class="si">{</span><span class="n">nc_filename</span><span class="si">}</span><span class="s1">'</span>
                 <span class="k">assert</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">variables</span><span class="p">,</span> <span class="n">msg</span>
                 <span class="c1"># TODO generalize data dimensions, sniff from netcdf file</span>
                 <span class="n">grid_data</span> <span class="o">=</span> <span class="n">ncfile</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">itime</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_lat</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
@@ -562,9 +562,9 @@
 <div class="viewcode-block" id="NetCDFSpatialInterpolator">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFSpatialInterpolator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NetCDFSpatialInterpolator</span><span class="p">(</span><span class="n">FileTreeReader</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Wrapper class that provides FileTreeReader API for grid interpolators</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_interpolator</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">grid_interpolator</span> <span class="o">=</span> <span class="n">grid_interpolator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variable_list</span> <span class="o">=</span> <span class="n">variable_list</span>
@@ -577,17 +577,17 @@
 <div class="viewcode-block" id="TimeParser">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.TimeParser">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TimeParser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Abstract base class for time definition objects.</span>
 
 <span class="sd">    Defines the time span that a file (or data set) covers and provides a time</span>
 <span class="sd">    index search routine.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 <div class="viewcode-block" id="TimeParser.get_start_time">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.TimeParser.get_start_time">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the first time stamp in the file/data set&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the first time stamp in the file/data set"""</span>
         <span class="k">pass</span></div>
 
 
@@ -595,7 +595,7 @@
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.TimeParser.get_end_time">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the last time stamp in the file/data set&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the last time stamp in the file/data set"""</span>
         <span class="k">pass</span></div>
 
 
@@ -603,12 +603,12 @@
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.TimeParser.find_time_stamp">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">find_time_stamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">previous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Given time t, returns index of the next (previous) time stamp</span>
 
 <span class="sd">        raises IndexError if t is out of range, i.e.</span>
 <span class="sd">        t &gt; self.get_end_time() or t &lt; self.get_start_time()</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 </div>
 
@@ -617,27 +617,27 @@
 <div class="viewcode-block" id="NetCDFTimeParser">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFTimeParser">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NetCDFTimeParser</span><span class="p">(</span><span class="n">TimeParser</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Describes the time stamps stored in a netCDF file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">time_variable_name</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">allow_gaps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">time_variable_name</span><span class="o">=</span><span class="s1">'time'</span><span class="p">,</span> <span class="n">allow_gaps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Construct a new object by scraping data from the given netcdf file.</span>
 
 <span class="sd">        :arg str filename: name of the netCDF file to read</span>
 <span class="sd">        :kwarg str time_variable_name: name of the time variable in the netCDF</span>
-<span class="sd">            file (default: &#39;time&#39;)</span>
+<span class="sd">            file (default: 'time')</span>
 <span class="sd">        :kwarg bool allow_gaps: if False, an error is raised if time step is</span>
 <span class="sd">            not constant.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_variable_name</span> <span class="o">=</span> <span class="n">time_variable_name</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">get_datetime</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">calendar</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""</span>
 <span class="sd">            Convert netcdf time value to datetime.</span>
-<span class="sd">            &quot;&quot;&quot;</span>
+<span class="sd">            """</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">cftime</span><span class="o">.</span><span class="n">num2pydate</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">calendar</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>  <span class="c1"># assume UTC</span>
@@ -645,10 +645,10 @@
 
         <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">d</span><span class="p">:</span>
             <span class="n">time_var</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time_variable_name</span><span class="p">]</span>
-            <span class="k">assert</span> <span class="s1">&#39;units&#39;</span> <span class="ow">in</span> <span class="n">time_var</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">(),</span> \
-                <span class="sa">f</span><span class="s1">&#39;Time units not defined: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="k">assert</span> <span class="s1">&#39;calendar&#39;</span> <span class="ow">in</span> <span class="n">time_var</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">(),</span> \
-                <span class="sa">f</span><span class="s1">&#39;Time calendar not defined: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">assert</span> <span class="s1">'units'</span> <span class="ow">in</span> <span class="n">time_var</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">(),</span> \
+                <span class="sa">f</span><span class="s1">'Time units not defined: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s1">'</span>
+            <span class="k">assert</span> <span class="s1">'calendar'</span> <span class="ow">in</span> <span class="n">time_var</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">(),</span> \
+                <span class="sa">f</span><span class="s1">'Time calendar not defined: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s1">'</span>
             <span class="n">units</span> <span class="o">=</span> <span class="n">time_var</span><span class="o">.</span><span class="n">units</span>
             <span class="n">calendar</span> <span class="o">=</span> <span class="n">time_var</span><span class="o">.</span><span class="n">calendar</span>
 
@@ -659,11 +659,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nb_steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;Parsed file </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
-                <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Time span: </span><span class="si">{:}</span><span class="s1"> -&gt; </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">))</span>
-                <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Number of time steps: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_steps</span><span class="p">))</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s1">'Parsed file </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s1">'  Time span: </span><span class="si">{:}</span><span class="s1"> -&gt; </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">))</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s1">'  Number of time steps: </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_steps</span><span class="p">))</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_steps</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  Time step: </span><span class="si">{:}</span><span class="s1"> h&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_step</span><span class="o">/</span><span class="mf">3600.</span><span class="p">))</span>
+                    <span class="n">print_output</span><span class="p">(</span><span class="s1">'  Time step: </span><span class="si">{:}</span><span class="s1"> h'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_step</span><span class="o">/</span><span class="mf">3600.</span><span class="p">))</span>
 
 <div class="viewcode-block" id="NetCDFTimeParser.get_start_time">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFTimeParser.get_start_time">[docs]</a>
@@ -686,9 +686,9 @@
         <span class="k">if</span> <span class="n">previous</span><span class="p">:</span>
             <span class="n">itime</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">itime</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;Requested time out of bounds </span><span class="si">{:}</span><span class="s1"> &lt; </span><span class="si">{:}</span><span class="s1"> in </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t_epoch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">'Requested time out of bounds </span><span class="si">{:}</span><span class="s1"> &lt; </span><span class="si">{:}</span><span class="s1"> in </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t_epoch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">itime</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;Requested time out of bounds </span><span class="si">{:}</span><span class="s1"> &gt; </span><span class="si">{:}</span><span class="s1"> in </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t_epoch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">'Requested time out of bounds </span><span class="si">{:}</span><span class="s1"> &gt; </span><span class="si">{:}</span><span class="s1"> in </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t_epoch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_array</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">itime</span></div>
 </div>
 
@@ -697,21 +697,21 @@
 <div class="viewcode-block" id="TimeSearch">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.TimeSearch">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TimeSearch</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base class for searching nearest time steps in a file tree or database</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 <div class="viewcode-block" id="TimeSearch.find">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.TimeSearch.find">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">previous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Find a next (previous) time stamp from a given time</span>
 
 <span class="sd">        :arg float time: input time stamp</span>
 <span class="sd">        :arg bool previous: if True, look for last time stamp before requested</span>
 <span class="sd">            time. Otherwise returns next time stamp.</span>
 <span class="sd">        :return: a (filename, time_index, time) tuple</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 </div>
 
@@ -720,18 +720,18 @@
 <div class="viewcode-block" id="NetCDFTimeSearch">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFTimeSearch">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NetCDFTimeSearch</span><span class="p">(</span><span class="n">TimeSearch</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Finds a nearest time stamp in a collection of netCDF files.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.NetCDFTimeSearch.__init__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.NetCDFTimeSearch.__init__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_pattern</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span> <span class="n">netcdf_class</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">all_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">file_pattern</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;No files found: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_pattern</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'No files found: </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_pattern</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">netcdf_class</span> <span class="o">=</span> <span class="n">netcdf_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_date</span> <span class="o">=</span> <span class="n">init_date</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_start_time</span> <span class="o">=</span> <span class="n">datetime_to_epoch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">init_date</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;verbose&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'verbose'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="n">dates</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">ncfiles</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">all_files</span><span class="p">:</span>
@@ -745,15 +745,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">start_times</span> <span class="o">=</span> <span class="p">[(</span><span class="n">s</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_date</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_datetime</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_times</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_times</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:}</span><span class="s1">: Found time index:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">'</span><span class="si">{:}</span><span class="s1">: Found time index:'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">)):</span>
-                <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:}</span><span class="s1"> </span><span class="si">{:}</span><span class="s1"> </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_times</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s1">'</span><span class="si">{:}</span><span class="s1"> </span><span class="si">{:}</span><span class="s1"> </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_times</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
                 <span class="n">nc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncfiles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">{:}</span><span class="s1"> -&gt; </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nc</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="n">nc</span><span class="o">.</span><span class="n">end_time</span><span class="p">))</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s1">'  </span><span class="si">{:}</span><span class="s1"> -&gt; </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nc</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="n">nc</span><span class="o">.</span><span class="n">end_time</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">nc</span><span class="o">.</span><span class="n">nb_steps</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">{:}</span><span class="s1"> time steps, dt = </span><span class="si">{:}</span><span class="s1"> s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nc</span><span class="o">.</span><span class="n">nb_steps</span><span class="p">,</span> <span class="n">nc</span><span class="o">.</span><span class="n">time_step</span><span class="p">))</span>
+                    <span class="n">print_output</span><span class="p">(</span><span class="s1">'  </span><span class="si">{:}</span><span class="s1"> time steps, dt = </span><span class="si">{:}</span><span class="s1"> s'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nc</span><span class="o">.</span><span class="n">nb_steps</span><span class="p">,</span> <span class="n">nc</span><span class="o">.</span><span class="n">time_step</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">{:}</span><span class="s1"> time steps&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nc</span><span class="o">.</span><span class="n">nb_steps</span><span class="p">))</span>
+                    <span class="n">print_output</span><span class="p">(</span><span class="s1">'  </span><span class="si">{:}</span><span class="s1"> time steps'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nc</span><span class="o">.</span><span class="n">nb_steps</span><span class="p">))</span>
 
 <div class="viewcode-block" id="NetCDFTimeSearch.simulation_time_to_datetime">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFTimeSearch.simulation_time_to_datetime">[docs]</a>
@@ -763,17 +763,17 @@
 
 <div class="viewcode-block" id="NetCDFTimeSearch.find">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFTimeSearch.find">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.NetCDFTimeSearch.find&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.NetCDFTimeSearch.find"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation_time</span><span class="p">,</span> <span class="n">previous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Find file that contains the given simulation time</span>
 
 <span class="sd">        :arg float simulation_time: simulation time in seconds</span>
 <span class="sd">        :kwarg bool previous: if True finds previous existing time stamp instead</span>
 <span class="sd">            of next (default False).</span>
 <span class="sd">        :return: (filename, time index, simulation time) of found data</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">&#39;No file found for time </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_time_to_datetime</span><span class="p">(</span><span class="n">simulation_time</span><span class="p">))</span>
+<span class="sd">        """</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">'No file found for time </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_time_to_datetime</span><span class="p">(</span><span class="n">simulation_time</span><span class="p">))</span>
         <span class="n">ix</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_times</span><span class="p">,</span> <span class="n">simulation_time</span> <span class="o">+</span> <span class="n">TIMESEARCH_TOL</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ix</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">ix</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ix</span><span class="p">]</span>
@@ -800,22 +800,22 @@
 <div class="viewcode-block" id="DailyFileTimeSearch">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.DailyFileTimeSearch">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DailyFileTimeSearch</span><span class="p">(</span><span class="n">TimeSearch</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Treats a list of daily files as a time series.</span>
 
 <span class="sd">    File name pattern must be given as a string where the 4-digit year is</span>
-<span class="sd">    tagged with &quot;{year:04d}&quot;, and 2-digit zero-padded month and year are tagged</span>
-<span class="sd">    with &quot;{month:02d}&quot; and &quot;{day:02d}&quot;, respectively. The tags can be used</span>
+<span class="sd">    tagged with "{year:04d}", and 2-digit zero-padded month and year are tagged</span>
+<span class="sd">    with "{month:02d}" and "{day:02d}", respectively. The tags can be used</span>
 <span class="sd">    multiple times.</span>
 
 <span class="sd">    Example pattern:</span>
-<span class="sd">        &#39;ncom/{year:04d}/s3d.glb8_2f_{year:04d}{month:02d}{day:02d}00.nc&#39;</span>
+<span class="sd">        'ncom/{year:04d}/s3d.glb8_2f_{year:04d}{month:02d}{day:02d}00.nc'</span>
 
 <span class="sd">    In this time search method the time stamps are parsed solely from the</span>
 <span class="sd">    filename, no other metadata is used. By default the data is assumed to be</span>
 <span class="sd">    centered at 12:00 UTC every day.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DailyFileTimeSearch.__init__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.DailyFileTimeSearch.__init__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_pattern</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">center_hour</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">center_timezone</span><span class="o">=</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_pattern</span> <span class="o">=</span> <span class="n">file_pattern</span>
@@ -828,7 +828,7 @@
         <span class="n">dates</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">all_files</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_date</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;day&#39;</span><span class="p">],</span>
+            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">'year'</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="s1">'month'</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="s1">'day'</span><span class="p">],</span>
                                           <span class="n">center_hour</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">center_timezone</span><span class="p">)</span>
             <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span>
         <span class="n">sort_ix</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
@@ -837,31 +837,31 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">start_times</span> <span class="o">=</span> <span class="p">[(</span><span class="n">s</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_date</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_datetime</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_times</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_times</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:}</span><span class="s1">: Found time index:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+            <span class="n">print_output</span><span class="p">(</span><span class="s1">'</span><span class="si">{:}</span><span class="s1">: Found time index:'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">)):</span>
-                <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:}</span><span class="s1"> </span><span class="si">{:}</span><span class="s1"> </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_times</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
-                <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_datetime</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s1">'</span><span class="si">{:}</span><span class="s1"> </span><span class="si">{:}</span><span class="s1"> </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_times</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">print_output</span><span class="p">(</span><span class="s1">'  </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_datetime</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_find_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Finds all files that match the given pattern.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Finds all files that match the given pattern."""</span>
         <span class="n">search_pattern</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_pattern</span><span class="p">)</span>
-        <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;:02d}&#39;</span><span class="p">,</span> <span class="s1">&#39;:}&#39;</span><span class="p">)</span>
-        <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;:04d}&#39;</span><span class="p">,</span> <span class="s1">&#39;:}&#39;</span><span class="p">)</span>
-        <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">)</span>
+        <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">':02d}'</span><span class="p">,</span> <span class="s1">':}'</span><span class="p">)</span>
+        <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">':04d}'</span><span class="p">,</span> <span class="s1">':}'</span><span class="p">)</span>
+        <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">search_pattern</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="s1">'*'</span><span class="p">)</span>
         <span class="n">all_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;No files found: </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'No files found: </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">all_files</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parse year, month, day from filename using the given pattern.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">re_pattern</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_pattern</span><span class="p">)</span>
-        <span class="n">re_pattern</span> <span class="o">=</span> <span class="n">re_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{year:04d}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;(\d{4,4})&#39;</span><span class="p">)</span>
-        <span class="n">re_pattern</span> <span class="o">=</span> <span class="n">re_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{month:02d}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;(\d{2,2})&#39;</span><span class="p">)</span>
-        <span class="n">re_pattern</span> <span class="o">=</span> <span class="n">re_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{day:02d}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;(\d{2,2})&#39;</span><span class="p">)</span>
+        <span class="n">re_pattern</span> <span class="o">=</span> <span class="n">re_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="si">{year:04d}</span><span class="s1">'</span><span class="p">,</span> <span class="sa">r</span><span class="s1">'(\d{4,4})'</span><span class="p">)</span>
+        <span class="n">re_pattern</span> <span class="o">=</span> <span class="n">re_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="si">{month:02d}</span><span class="s1">'</span><span class="p">,</span> <span class="sa">r</span><span class="s1">'(\d{2,2})'</span><span class="p">)</span>
+        <span class="n">re_pattern</span> <span class="o">=</span> <span class="n">re_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="si">{day:02d}</span><span class="s1">'</span><span class="p">,</span> <span class="sa">r</span><span class="s1">'(\d{2,2})'</span><span class="p">)</span>
         <span class="n">o</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">re_pattern</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;parsing date from filename failed</span><span class="se">\n</span><span class="s1">  </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'parsing date from filename failed</span><span class="se">\n</span><span class="s1">  </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
         <span class="n">fmt</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">Formatter</span><span class="p">()</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">fmt</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_pattern</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
@@ -875,17 +875,17 @@
 
 <div class="viewcode-block" id="DailyFileTimeSearch.find">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.DailyFileTimeSearch.find">[docs]</a>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.DailyFileTimeSearch.find&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.DailyFileTimeSearch.find"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation_time</span><span class="p">,</span> <span class="n">previous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Find file that contains the given simulation time</span>
 
 <span class="sd">        :arg float simulation_time: simulation time in seconds</span>
 <span class="sd">        :kwarg bool previous: if True finds previous existing time stamp instead</span>
 <span class="sd">            of next (default False).</span>
 <span class="sd">        :return: (filename, time index, simulation time) of found data</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">&#39;No file found for time </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_time_to_datetime</span><span class="p">(</span><span class="n">simulation_time</span><span class="p">))</span>
+<span class="sd">        """</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">'No file found for time </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_time_to_datetime</span><span class="p">(</span><span class="n">simulation_time</span><span class="p">))</span>
         <span class="n">ix</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_times</span><span class="p">,</span> <span class="n">simulation_time</span> <span class="o">+</span> <span class="n">TIMESEARCH_TOL</span><span class="p">)</span>
         <span class="n">i</span> <span class="o">=</span> <span class="n">ix</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">previous</span> <span class="k">else</span> <span class="n">ix</span>
         <span class="k">assert</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">err_msg</span>
@@ -900,7 +900,7 @@
 <div class="viewcode-block" id="LinearTimeInterpolator">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.LinearTimeInterpolator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LinearTimeInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Interpolates time series in time</span>
 
 <span class="sd">    User must provide timesearch_obj that finds time stamps from</span>
@@ -908,38 +908,38 @@
 
 <span class="sd">    Previous/next data sets are cached in memory to avoid hitting disk every</span>
 <span class="sd">    time.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timesearch_obj</span><span class="p">,</span> <span class="n">reader</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :arg timesearch_obj: TimeSearch object</span>
 <span class="sd">        :arg reader: FileTreeReader object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timesearch</span> <span class="o">=</span> <span class="n">timesearch_obj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">reader</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Fetch data set from cache, read if not present</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_clean_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys_to_keep</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Remove cached data sets that are no longer needed</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys_to_keep</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Interpolate at time t</span>
 
 <span class="sd">        :retuns: list of numpy arrays</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">prev_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timesearch</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">previous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">next_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timesearch</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">previous</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -953,7 +953,7 @@
         <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">t_prev</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">t_next</span> <span class="o">-</span> <span class="n">t_prev</span><span class="p">)</span>
         <span class="n">RELTOL</span> <span class="o">=</span> <span class="mf">1e-6</span>
         <span class="k">assert</span> <span class="n">alpha</span> <span class="o">&gt;=</span> <span class="mf">0.0</span> <span class="o">-</span> <span class="n">RELTOL</span> <span class="ow">and</span> <span class="n">alpha</span> <span class="o">&lt;=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">RELTOL</span><span class="p">,</span> \
-            <span class="s1">&#39;Value </span><span class="si">{:}</span><span class="s1"> out of range </span><span class="si">{:}</span><span class="s1"> .. </span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t_prev</span><span class="p">,</span> <span class="n">t_next</span><span class="p">)</span>
+            <span class="s1">'Value </span><span class="si">{:}</span><span class="s1"> out of range </span><span class="si">{:}</span><span class="s1"> .. </span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t_prev</span><span class="p">,</span> <span class="n">t_next</span><span class="p">)</span>
 
         <span class="n">val</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span><span class="o">*</span><span class="n">p</span> <span class="o">+</span> <span class="n">alpha</span><span class="o">*</span><span class="n">n</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="nb">next</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">val</span></div>
@@ -963,14 +963,14 @@
 <div class="viewcode-block" id="NetCDFTimeSeriesInterpolator">
 <a class="viewcode-back" href="../../thetis.html#thetis.interpolation.NetCDFTimeSeriesInterpolator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NetCDFTimeSeriesInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Reads and interpolates scalar time series from a sequence of netCDF files.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.NetCDFTimeSeriesInterpolator.__init__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.NetCDFTimeSeriesInterpolator.__init__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncfile_pattern</span><span class="p">,</span> <span class="n">variable_list</span><span class="p">,</span> <span class="n">init_date</span><span class="p">,</span>
-                 <span class="n">time_variable_name</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">scalars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_gaps</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :arg str ncfile_pattern: file search pattern, e.g. &quot;mydir/foo_*.nc&quot;</span>
+                 <span class="n">time_variable_name</span><span class="o">=</span><span class="s1">'time'</span><span class="p">,</span> <span class="n">scalars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_gaps</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        :arg str ncfile_pattern: file search pattern, e.g. "mydir/foo_*.nc"</span>
 <span class="sd">        :arg variable_list: list if netCDF variable names to read</span>
 <span class="sd">        :arg datetime.datetime init_date: simulation start time</span>
 <span class="sd">        :kwarg scalars: (optional) list of scalars; scale output variables by</span>
@@ -980,7 +980,7 @@
 
 <span class="sd">            All the variables must have the same dimensions in the netCDF files.</span>
 <span class="sd">            If the shapes differ, create separate interpolator instances.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">NetCDFTimeSeriesReader</span><span class="p">(</span>
             <span class="n">variable_list</span><span class="p">,</span> <span class="n">time_variable_name</span><span class="o">=</span><span class="n">time_variable_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timesearch_obj</span> <span class="o">=</span> <span class="n">NetCDFTimeSearch</span><span class="p">(</span>
@@ -991,13 +991,13 @@
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalars</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">variable_list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scalars</span> <span class="o">=</span> <span class="n">scalars</span>
 
-    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">&quot;thetis.NetCDFTimeSeriesInterpolator.__call__&quot;</span><span class="p">)</span>
+    <span class="nd">@PETSc</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">EventDecorator</span><span class="p">(</span><span class="s2">"thetis.NetCDFTimeSeriesInterpolator.__call__"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Time series at the given time</span>
 
 <span class="sd">        :returns: list of scalars or numpy.arrays</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_interpolator</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalars</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)):</span>

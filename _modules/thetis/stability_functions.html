@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>thetis.stability_functions &#8212; Thetis 2026.7.dev8 documentation</title>
+    <title>thetis.stability_functions &#8212; Thetis 2026.10.post0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/thetis.css?v=0f3339d6" />
-    <script src="../../_static/documentation_options.js?v=3dc2f53e"></script>
+    <script src="../../_static/documentation_options.js?v=a725081d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -50,7 +50,7 @@
           <div class="body" role="main">
             
   <h1>Source code for thetis.stability_functions</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">Implements turbulence closure model stability functions.</span>
 
 <span class="sd">.. math::</span>
@@ -85,7 +85,7 @@
 <span class="sd">geophysical turbulence models. Journal of Marine Research, 61:235--265(31).</span>
 <span class="sd">http://dx.doi.org/10.1357/002224003322005087</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
@@ -93,22 +93,22 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;StabilityFunctionBase&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;StabilityFunctionCanutoA&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;StabilityFunctionCanutoB&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;StabilityFunctionCheng&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;GOTMStabilityFunctionCanutoA&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;GOTMStabilityFunctionCanutoB&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;GOTMStabilityFunctionCheng&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;GOTMStabilityFunctionKanthaClayson&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;compute_normalized_frequencies&#39;</span>
+    <span class="s1">'StabilityFunctionBase'</span><span class="p">,</span>
+    <span class="s1">'StabilityFunctionCanutoA'</span><span class="p">,</span>
+    <span class="s1">'StabilityFunctionCanutoB'</span><span class="p">,</span>
+    <span class="s1">'StabilityFunctionCheng'</span><span class="p">,</span>
+    <span class="s1">'GOTMStabilityFunctionCanutoA'</span><span class="p">,</span>
+    <span class="s1">'GOTMStabilityFunctionCanutoB'</span><span class="p">,</span>
+    <span class="s1">'GOTMStabilityFunctionCheng'</span><span class="p">,</span>
+    <span class="s1">'GOTMStabilityFunctionKanthaClayson'</span><span class="p">,</span>
+    <span class="s1">'compute_normalized_frequencies'</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="compute_normalized_frequencies">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.compute_normalized_frequencies">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_normalized_frequencies</span><span class="p">(</span><span class="n">shear2</span><span class="p">,</span> <span class="n">buoy2</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Computes normalized buoyancy and shear frequency squared.</span>
 
 <span class="sd">    .. math::</span>
@@ -121,14 +121,14 @@
 <span class="sd">    :arg buoy2: :math:`N^2`</span>
 <span class="sd">    :arg k: turbulent kinetic energy</span>
 <span class="sd">    :arg eps: TKE dissipation rate</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">alpha_buoy</span> <span class="o">=</span> <span class="n">k</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">eps</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">buoy2</span>
     <span class="n">alpha_shear</span> <span class="o">=</span> <span class="n">k</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">eps</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">shear2</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:8s}</span><span class="s1"> </span><span class="si">{:8.3e}</span><span class="s1"> </span><span class="si">{:8.3e}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;M2&#39;</span><span class="p">,</span> <span class="n">shear2</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">shear2</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:8s}</span><span class="s1"> </span><span class="si">{:8.3e}</span><span class="s1"> </span><span class="si">{:8.3e}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;N2&#39;</span><span class="p">,</span> <span class="n">buoy2</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">buoy2</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:8s}</span><span class="s1"> </span><span class="si">{:10.3e}</span><span class="s1"> </span><span class="si">{:10.3e}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;a_buoy&#39;</span><span class="p">,</span> <span class="n">alpha_buoy</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">alpha_buoy</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
-        <span class="n">print_output</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:8s}</span><span class="s1"> </span><span class="si">{:10.3e}</span><span class="s1"> </span><span class="si">{:10.3e}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;a_shear&#39;</span><span class="p">,</span> <span class="n">alpha_shear</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">alpha_shear</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">'</span><span class="si">{:8s}</span><span class="s1"> </span><span class="si">{:8.3e}</span><span class="s1"> </span><span class="si">{:8.3e}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'M2'</span><span class="p">,</span> <span class="n">shear2</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">shear2</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">'</span><span class="si">{:8s}</span><span class="s1"> </span><span class="si">{:8.3e}</span><span class="s1"> </span><span class="si">{:8.3e}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'N2'</span><span class="p">,</span> <span class="n">buoy2</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">buoy2</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">'</span><span class="si">{:8s}</span><span class="s1"> </span><span class="si">{:10.3e}</span><span class="s1"> </span><span class="si">{:10.3e}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'a_buoy'</span><span class="p">,</span> <span class="n">alpha_buoy</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">alpha_buoy</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">print_output</span><span class="p">(</span><span class="s1">'</span><span class="si">{:8s}</span><span class="s1"> </span><span class="si">{:10.3e}</span><span class="s1"> </span><span class="si">{:10.3e}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'a_shear'</span><span class="p">,</span> <span class="n">alpha_shear</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">alpha_shear</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
     <span class="k">return</span> <span class="n">alpha_buoy</span><span class="p">,</span> <span class="n">alpha_shear</span></div>
 
 
@@ -136,9 +136,9 @@
 <div class="viewcode-block" id="StabilityFunctionBase">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionBase">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StabilityFunctionBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base class for all stability functions</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -146,7 +146,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lim_alpha_shear</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">smooth_alpha_buoy_lim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="o">=-</span><span class="mf">1.2</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        :kwarg bool lim_alpha_shear: limit maximum :math:`\alpha_M` values</span>
 <span class="sd">            (see Umlauf and Burchard (2005) eq. 44)</span>
 <span class="sd">        :kwarg bool lim_alpha_buoy: limit minimum (negative) :math:`\alpha_N` values</span>
@@ -155,7 +155,7 @@
 <span class="sd">            smooth limiter (see Burchard and Bolding (2001) eq. 19). Otherwise</span>
 <span class="sd">            :math:`\alpha_N` is clipped at minimum value.</span>
 <span class="sd">        :kwarg float alpha_buoy_crit: parameter for :math:`\alpha_N` smooth limiter</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lim_alpha_shear</span> <span class="o">=</span> <span class="n">lim_alpha_shear</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lim_alpha_buoy</span> <span class="o">=</span> <span class="n">lim_alpha_buoy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">smooth_alpha_buoy_lim</span> <span class="o">=</span> <span class="n">smooth_alpha_buoy_lim</span>
@@ -163,13 +163,13 @@
         <span class="c1"># for plotting and such</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lim_alpha_shear</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;lim&#39;</span><span class="p">,</span> <span class="s1">&#39;shear&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">'lim'</span><span class="p">,</span> <span class="s1">'shear'</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lim_alpha_buoy</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;lim&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">'lim'</span><span class="p">,</span> <span class="s1">'alpha'</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">smooth_alpha_buoy_lim</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;smooth&#39;</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;ac&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_buoy_crit</span><span class="p">)]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">'smooth'</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">'ac'</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_buoy_crit</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
 
         <span class="c1"># denominator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">d0</span> <span class="o">=</span> <span class="mf">1.0</span>
@@ -192,7 +192,7 @@
 <div class="viewcode-block" id="StabilityFunctionBase.compute_alpha_shear_steady">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionBase.compute_alpha_shear_steady">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_alpha_shear_steady</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ri_st</span><span class="p">,</span> <span class="n">analytical</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Compute the steady-state :math:`\alpha_M`.</span>
 
 <span class="sd">        Under steady-state conditions, the stability functions satisfy:</span>
@@ -207,7 +207,7 @@
 <span class="sd">        :kwarg bool analytical: If True (default), solve analytically using the</span>
 <span class="sd">            coefficients of the stability function. Otherwise, solve</span>
 <span class="sd">            :math:`\alpha_M` numerically from the equilibrium condition.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">analytical</span><span class="p">:</span>
             <span class="c1"># A) solve numerically</span>
             <span class="c1"># use equilibrium equation (Umlauf and Buchard, 2005, eq A.15)</span>
@@ -221,7 +221,7 @@
                 <span class="n">res</span> <span class="o">=</span> <span class="n">s_m</span><span class="o">*</span><span class="n">a_shear</span> <span class="o">-</span> <span class="n">s_h</span><span class="o">*</span><span class="n">a_buoy</span> <span class="o">-</span> <span class="mf">1.0</span>
                 <span class="k">return</span> <span class="n">res</span><span class="o">**</span><span class="mi">2</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
-            <span class="k">assert</span> <span class="n">p</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="s1">&#39;solving alpha_shear failed, Ri_st=</span><span class="si">{:}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ri_st</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">p</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="s1">'solving alpha_shear failed, Ri_st=</span><span class="si">{:}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ri_st</span><span class="p">)</span>
             <span class="n">a_shear</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># B) solve analytically</span>
@@ -239,7 +239,7 @@
 <div class="viewcode-block" id="StabilityFunctionBase.compute_c3_minus">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionBase.compute_c3_minus">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_c3_minus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">ri_st</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Compute c3_minus parameter from c1 and c2 parameters.</span>
 
 <span class="sd">        c3_minus is solved from equation</span>
@@ -249,7 +249,7 @@
 
 <span class="sd">        where :math:`Ri_{st}` is the steady state gradient Richardson number.</span>
 <span class="sd">        (see Burchard and Bolding, 2001, eq 32)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">a_shear</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_alpha_shear_steady</span><span class="p">(</span><span class="n">ri_st</span><span class="p">,</span> <span class="n">analytical</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># compute aN from Ri_st and aM, Ri_st = aN/aM</span>
@@ -263,7 +263,7 @@
 
         <span class="c1"># check error in ri_st</span>
         <span class="n">err</span> <span class="o">=</span> <span class="n">s_m</span><span class="o">/</span><span class="n">s_h</span><span class="o">*</span><span class="p">(</span><span class="n">c2</span> <span class="o">-</span> <span class="n">c1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">c2</span> <span class="o">-</span> <span class="n">c3_minus</span><span class="p">)</span> <span class="o">-</span> <span class="n">ri_st</span>
-        <span class="k">assert</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="s1">&#39;steady state gradient Richardson number does not match&#39;</span>
+        <span class="k">assert</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="s1">'steady state gradient Richardson number does not match'</span>
 
         <span class="k">return</span> <span class="n">c3_minus</span></div>
 
@@ -271,7 +271,7 @@
 <div class="viewcode-block" id="StabilityFunctionBase.compute_cmu0">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionBase.compute_cmu0">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_cmu0</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">analytical</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Compute parameter :math:`c_\mu^0`</span>
 
 <span class="sd">        See: Umlauf and Buchard (2005) eq A.22</span>
@@ -279,7 +279,7 @@
 <span class="sd">        :kwarg bool analytical: If True (default), solve analytically using the</span>
 <span class="sd">            coefficients of the stability function. Otherwise, solve</span>
 <span class="sd">            :math:`\alpha_M` numerically from the equilibrium condition.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">a_buoy</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">if</span> <span class="n">analytical</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d5</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2</span>
@@ -295,7 +295,7 @@
                 <span class="n">res</span> <span class="o">=</span> <span class="n">s_m</span><span class="o">*</span><span class="n">a_shear</span> <span class="o">-</span> <span class="mf">1.0</span>
                 <span class="k">return</span> <span class="n">res</span><span class="o">**</span><span class="mi">2</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
-            <span class="k">assert</span> <span class="n">p</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="s1">&#39;solving alpha_shear failed&#39;</span>
+            <span class="k">assert</span> <span class="n">p</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="s1">'solving alpha_shear failed'</span>
             <span class="n">a_shear</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">s_m</span><span class="p">,</span> <span class="n">s_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_funcs</span><span class="p">(</span><span class="n">a_buoy</span><span class="p">,</span> <span class="n">a_shear</span><span class="p">)</span>
             <span class="n">cm0</span> <span class="o">=</span> <span class="n">s_m</span><span class="o">**</span><span class="mf">0.25</span>
@@ -305,40 +305,40 @@
 <div class="viewcode-block" id="StabilityFunctionBase.compute_kappa">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionBase.compute_kappa">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_kappa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigma_psi</span><span class="p">,</span> <span class="n">cmu0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Computes von Karman constant from the Psi Schmidt number.</span>
 
 <span class="sd">        See: Umlauf and Burchard (2003) eq (14)</span>
 
 <span class="sd">        :arg sigma_psi: Psi Schmidt number</span>
 <span class="sd">        :arg cmu0, n, c1, c2: GLS model parameters</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cmu0</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sigma_psi</span> <span class="o">*</span> <span class="p">(</span><span class="n">c2</span> <span class="o">-</span> <span class="n">c1</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="StabilityFunctionBase.compute_sigma_psi">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionBase.compute_sigma_psi">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_sigma_psi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kappa</span><span class="p">,</span> <span class="n">cmu0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Computes the Psi Schmidt number from von Karman constant.</span>
 
 <span class="sd">        See: Umlauf and Burchard (2003) eq (14)</span>
 
 <span class="sd">        :arg kappa: von Karman constant</span>
 <span class="sd">        :arg cmu0, n, c1, c2: GLS model parameters</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">kappa</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">cmu0</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">c2</span> <span class="o">-</span> <span class="n">c1</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="StabilityFunctionBase.compute_length_clim">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionBase.compute_length_clim">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_length_clim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmu0</span><span class="p">,</span> <span class="n">ri_st</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Computes the Galpering length scale limit.</span>
 
 <span class="sd">        :arg cmu0: parameter :math:`c_\mu^0`</span>
 <span class="sd">        :arg ri_st: gradient Richardson number</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">a_shear</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_alpha_shear_steady</span><span class="p">(</span><span class="n">ri_st</span><span class="p">)</span>
 
         <span class="c1"># compute aN from Ri_st and aM, Ri_st = aN/aM</span>
@@ -351,11 +351,11 @@
 <div class="viewcode-block" id="StabilityFunctionBase.get_alpha_buoy_min">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionBase.get_alpha_buoy_min">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_alpha_buoy_min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Compute minimum normalized buoyancy frequency :math:`\alpha_N`</span>
 
 <span class="sd">        See: Umlauf and Buchard (2005), Table 3</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># G = epsilon case, this is used in GOTM</span>
         <span class="n">an_min</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">d1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb0</span><span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="o">-</span> <span class="mf">4.</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">d0</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d4</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb1</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb0</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d4</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb1</span><span class="p">)</span>
         <span class="c1"># eq. (47)</span>
@@ -366,14 +366,14 @@
 <div class="viewcode-block" id="StabilityFunctionBase.get_alpha_shear_max">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionBase.get_alpha_shear_max">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_alpha_shear_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha_buoy</span><span class="p">,</span> <span class="n">alpha_shear</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Compute maximum normalized shear frequency :math:`\alpha_M`</span>
 
 <span class="sd">        from Umlauf and Buchard (2005) eq (44)</span>
 
 <span class="sd">        :arg alpha_buoy: normalized buoyancy frequency :math:`\alpha_N`</span>
 <span class="sd">        :arg alpha_shear: normalized shear frequency :math:`\alpha_M`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">as_max_n</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span>
                     <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span><span class="p">)</span><span class="o">*</span><span class="n">alpha_buoy</span>
                     <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d4</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span><span class="p">)</span><span class="o">*</span><span class="n">alpha_buoy</span><span class="o">**</span><span class="mi">2</span>
@@ -387,20 +387,20 @@
 <div class="viewcode-block" id="StabilityFunctionBase.get_alpha_buoy_smooth_min">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionBase.get_alpha_buoy_smooth_min">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_alpha_buoy_smooth_min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha_buoy</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Compute smoothed minimum for normalized buoyancy frequency</span>
 
 <span class="sd">        See: Burchard and Petersen (1999), eq (19)</span>
 
 <span class="sd">        :arg alpha_buoy: normalized buoyancy frequency :math:`\alpha_N`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">alpha_buoy</span> <span class="o">-</span> <span class="p">(</span><span class="n">alpha_buoy</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_buoy_crit</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">alpha_buoy</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_alpha_buoy_min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_buoy_crit</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="StabilityFunctionBase.eval_funcs">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionBase.eval_funcs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">eval_funcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha_buoy</span><span class="p">,</span> <span class="n">alpha_shear</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Evaluate (unlimited) stability functions</span>
 
 <span class="sd">        See: Burchard and Petersen (1999) eqns (30) and (31)</span>
@@ -408,7 +408,7 @@
 <span class="sd">        :arg alpha_buoy: normalized buoyancy frequency :math:`\alpha_N`</span>
 <span class="sd">        :arg alpha_shear: normalized shear frequency :math:`\alpha_M`</span>
 <span class="sd">        :returns: :math:`S_m`, :math:`S_\rho`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">den</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d1</span><span class="o">*</span><span class="n">alpha_buoy</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d2</span><span class="o">*</span><span class="n">alpha_shear</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d3</span><span class="o">*</span><span class="n">alpha_buoy</span><span class="o">*</span><span class="n">alpha_shear</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d4</span><span class="o">*</span><span class="n">alpha_buoy</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d5</span><span class="o">*</span><span class="n">alpha_shear</span><span class="o">**</span><span class="mi">2</span>
         <span class="n">c_mu</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n1</span><span class="o">*</span><span class="n">alpha_buoy</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2</span><span class="o">*</span><span class="n">alpha_shear</span><span class="p">)</span> <span class="o">/</span> <span class="n">den</span>
         <span class="n">c_mu_p</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb1</span><span class="o">*</span><span class="n">alpha_buoy</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb2</span><span class="o">*</span><span class="n">alpha_shear</span><span class="p">)</span> <span class="o">/</span> <span class="n">den</span>
@@ -418,7 +418,7 @@
 <div class="viewcode-block" id="StabilityFunctionBase.evaluate">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionBase.evaluate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shear2</span><span class="p">,</span> <span class="n">buoy2</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Evaluate stability functions from dimensional variables.</span>
 
 <span class="sd">        Applies limiters on :math:`\alpha_N` and :math:`\alpha_M`.</span>
@@ -427,7 +427,7 @@
 <span class="sd">        :arg buoy2: buoyancy frequency squared,:math:`N^2`</span>
 <span class="sd">        :arg k: turbulent kinetic energy, :math:`k`</span>
 <span class="sd">        :arg eps: TKE dissipation rate, :math:`\varepsilon`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">alpha_buoy</span><span class="p">,</span> <span class="n">alpha_shear</span> <span class="o">=</span> <span class="n">compute_normalized_frequencies</span><span class="p">(</span><span class="n">shear2</span><span class="p">,</span> <span class="n">buoy2</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lim_alpha_buoy</span><span class="p">:</span>
             <span class="c1"># limit min (negative) alpha_buoy (Umlauf and Burchard, 2005)</span>
@@ -452,9 +452,9 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">GOTMStabilityFunctionBase</span><span class="p">(</span><span class="n">StabilityFunctionBase</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base class for stability functions defined in Umlauf and Buchard (2005)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">cc1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -517,7 +517,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lim_alpha_shear</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">smooth_alpha_buoy_lim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="o">=-</span><span class="mf">1.2</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        :kwarg bool lim_alpha_shear: limit maximum :math:`\alpha_M` values</span>
 <span class="sd">            (see Umlauf and Burchard (2005) eq. 44)</span>
 <span class="sd">        :kwarg bool lim_alpha_buoy: limit minimum (negative) :math:`\alpha_N` values</span>
@@ -526,7 +526,7 @@
 <span class="sd">            smooth limiter (see Burchard and Bolding (2001) eq. 19). Otherwise</span>
 <span class="sd">            :math:`\alpha_N` is clipped at minimum value.</span>
 <span class="sd">        :kwarg float alpha_buoy_crit: parameter for :math:`\alpha_N` smooth limiter</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">lim_alpha_shear</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="p">,</span>
                          <span class="n">smooth_alpha_buoy_lim</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="p">)</span>
 
@@ -568,9 +568,9 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CanutoStabilityFunctionBase</span><span class="p">(</span><span class="n">StabilityFunctionBase</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base class for original Canuto stability function.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">l1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -613,7 +613,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lim_alpha_shear</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">smooth_alpha_buoy_lim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="o">=-</span><span class="mf">1.2</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        :kwarg bool lim_alpha_shear: limit maximum :math:`\alpha_M` values</span>
 <span class="sd">            (see Umlauf and Burchard (2005) eq. 44)</span>
 <span class="sd">        :kwarg bool lim_alpha_buoy: limit minimum (negative) :math:`\alpha_N` values</span>
@@ -622,7 +622,7 @@
 <span class="sd">            smooth limiter (see Burchard and Bolding (2001) eq. 19). Otherwise</span>
 <span class="sd">            :math:`\alpha_N` is clipped at minimum value.</span>
 <span class="sd">        :kwarg float alpha_buoy_crit: parameter for :math:`\alpha_N` smooth limiter</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">lim_alpha_shear</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="p">,</span>
                          <span class="n">smooth_alpha_buoy_lim</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="p">)</span>
 
@@ -658,14 +658,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">nb2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cu_scalar</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_scalar</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">s6</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">eval_funcs_new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha_buoy</span><span class="p">,</span> <span class="n">alpha_shear</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Evaluate (unlimited) stability functions</span>
 
 <span class="sd">        From Canuto et al (2001)</span>
 
 <span class="sd">        :arg alpha_buoy: normalized buoyancy frequency :math:`\alpha_N`</span>
 <span class="sd">        :arg alpha_shear: normalized shear frequency :math:`\alpha_M`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">tN2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_scalar</span><span class="o">*</span><span class="n">alpha_buoy</span>
         <span class="n">tS2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_scalar</span><span class="o">*</span><span class="n">alpha_shear</span>
         <span class="n">dsm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">s1</span><span class="o">*</span><span class="n">tN2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">s2</span><span class="o">*</span><span class="n">tS2</span>
@@ -677,9 +677,9 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ChengStabilityFunctionBase</span><span class="p">(</span><span class="n">StabilityFunctionBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base class for original Cheng stability function.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">l1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -722,7 +722,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lim_alpha_shear</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">smooth_alpha_buoy_lim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="o">=-</span><span class="mf">1.2</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        :kwarg bool lim_alpha_shear: limit maximum :math:`\alpha_M` values</span>
 <span class="sd">            (see Umlauf and Burchard (2005) eq. 44)</span>
 <span class="sd">        :kwarg bool lim_alpha_buoy: limit minimum (negative) :math:`\alpha_N` values</span>
@@ -731,7 +731,7 @@
 <span class="sd">            smooth limiter (see Burchard and Bolding (2001) eq. 19). Otherwise</span>
 <span class="sd">            :math:`\alpha_N` is clipped at minimum value.</span>
 <span class="sd">        :kwarg float alpha_buoy_crit: parameter for :math:`\alpha_N` smooth limiter</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">lim_alpha_shear</span><span class="p">,</span> <span class="n">lim_alpha_buoy</span><span class="p">,</span>
                          <span class="n">smooth_alpha_buoy_lim</span><span class="p">,</span> <span class="n">alpha_buoy_crit</span><span class="p">)</span>
 
@@ -767,14 +767,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">nb2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cu_scalar</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_scalar</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">s6</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">eval_funcs_new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha_buoy</span><span class="p">,</span> <span class="n">alpha_shear</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Evaluate (unlimited) stability functions</span>
 
 <span class="sd">        From Canuto et al (2001)</span>
 
 <span class="sd">        :arg alpha_buoy: normalized buoyancy frequency :math:`\alpha_N`</span>
 <span class="sd">        :arg alpha_shear: normalized shear frequency :math:`\alpha_M`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">tN2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_scalar</span><span class="o">*</span><span class="n">alpha_buoy</span>
         <span class="n">tS2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_scalar</span><span class="o">*</span><span class="n">alpha_shear</span>
         <span class="n">dsm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">s1</span><span class="o">*</span><span class="n">tN2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">s2</span><span class="o">*</span><span class="n">tS2</span>
@@ -788,9 +788,9 @@
 <div class="viewcode-block" id="StabilityFunctionCanutoA">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionCanutoA">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StabilityFunctionCanutoA</span><span class="p">(</span><span class="n">CanutoStabilityFunctionBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Canuto A stability function as defined in the Canuto (2001) paper.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">l1</span> <span class="o">=</span> <span class="mf">0.107</span>
     <span class="n">l2</span> <span class="o">=</span> <span class="mf">0.0032</span>
     <span class="n">l3</span> <span class="o">=</span> <span class="mf">0.0864</span>
@@ -799,16 +799,16 @@
     <span class="n">l6</span> <span class="o">=</span> <span class="mf">0.4</span>
     <span class="n">l7</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">l8</span> <span class="o">=</span> <span class="mf">0.48</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Canuto A&#39;</span></div>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">'Canuto A'</span></div>
 
 
 
 <div class="viewcode-block" id="StabilityFunctionCanutoB">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionCanutoB">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StabilityFunctionCanutoB</span><span class="p">(</span><span class="n">CanutoStabilityFunctionBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Canuto B stability function as defined in the Canuto (2001) paper.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">l1</span> <span class="o">=</span> <span class="mf">0.127</span>
     <span class="n">l2</span> <span class="o">=</span> <span class="mf">0.00336</span>
     <span class="n">l3</span> <span class="o">=</span> <span class="mf">0.0906</span>
@@ -817,16 +817,16 @@
     <span class="n">l6</span> <span class="o">=</span> <span class="mf">0.4</span>
     <span class="n">l7</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">l8</span> <span class="o">=</span> <span class="mf">0.318</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Canuto B&#39;</span></div>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">'Canuto B'</span></div>
 
 
 
 <div class="viewcode-block" id="StabilityFunctionCheng">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.StabilityFunctionCheng">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StabilityFunctionCheng</span><span class="p">(</span><span class="n">ChengStabilityFunctionBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Cheng stability function as defined in the Cheng et al (2002) paper.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">l1</span> <span class="o">=</span> <span class="mf">0.107</span>
     <span class="n">l2</span> <span class="o">=</span> <span class="mf">0.0032</span>
     <span class="n">l3</span> <span class="o">=</span> <span class="mf">0.0864</span>
@@ -835,18 +835,18 @@
     <span class="n">l6</span> <span class="o">=</span> <span class="mf">0.786</span>
     <span class="n">l7</span> <span class="o">=</span> <span class="mf">0.643</span>
     <span class="n">l8</span> <span class="o">=</span> <span class="mf">0.547</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Cheng&#39;</span></div>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">'Cheng'</span></div>
 
 
 
 <div class="viewcode-block" id="GOTMStabilityFunctionCanutoA">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.GOTMStabilityFunctionCanutoA">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GOTMStabilityFunctionCanutoA</span><span class="p">(</span><span class="n">GOTMStabilityFunctionBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Canuto et al. (2001) version A stability functions</span>
 
 <span class="sd">    Parameters are from Umlauf and Buchard (2005), Table 1</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">cc1</span> <span class="o">=</span> <span class="mf">5.0000</span>
     <span class="n">cc2</span> <span class="o">=</span> <span class="mf">0.8000</span>
     <span class="n">cc3</span> <span class="o">=</span> <span class="mf">1.9680</span>
@@ -859,18 +859,18 @@
     <span class="n">cb4</span> <span class="o">=</span> <span class="mf">0.0000</span>
     <span class="n">cb5</span> <span class="o">=</span> <span class="mf">0.3333</span>
     <span class="n">cbb</span> <span class="o">=</span> <span class="mf">0.7200</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Canuto A&#39;</span></div>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">'Canuto A'</span></div>
 
 
 
 <div class="viewcode-block" id="GOTMStabilityFunctionCanutoB">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.GOTMStabilityFunctionCanutoB">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GOTMStabilityFunctionCanutoB</span><span class="p">(</span><span class="n">GOTMStabilityFunctionBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Canuto et al. (2001) version B stability functions</span>
 
 <span class="sd">    Parameters are from Umlauf and Buchard (2005), Table 1</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">cc1</span> <span class="o">=</span> <span class="mf">5.0000</span>
     <span class="n">cc2</span> <span class="o">=</span> <span class="mf">0.6983</span>
     <span class="n">cc3</span> <span class="o">=</span> <span class="mf">1.9664</span>
@@ -883,18 +883,18 @@
     <span class="n">cb4</span> <span class="o">=</span> <span class="mf">0.0000</span>
     <span class="n">cb5</span> <span class="o">=</span> <span class="mf">0.3333</span>
     <span class="n">cbb</span> <span class="o">=</span> <span class="mf">0.4770</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Canuto B&#39;</span></div>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">'Canuto B'</span></div>
 
 
 
 <div class="viewcode-block" id="GOTMStabilityFunctionKanthaClayson">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.GOTMStabilityFunctionKanthaClayson">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GOTMStabilityFunctionKanthaClayson</span><span class="p">(</span><span class="n">GOTMStabilityFunctionBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Kantha and Clayson (1994) quasi-equilibrium stability functions</span>
 
 <span class="sd">    Parameters are from Umlauf and Buchard (2005), Table 1</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">cc1</span> <span class="o">=</span> <span class="mf">6.0000</span>
     <span class="n">cc2</span> <span class="o">=</span> <span class="mf">0.3200</span>
     <span class="n">cc3</span> <span class="o">=</span> <span class="mf">0.0000</span>
@@ -907,18 +907,18 @@
     <span class="n">cb4</span> <span class="o">=</span> <span class="mf">0.0000</span>
     <span class="n">cb5</span> <span class="o">=</span> <span class="mf">0.2000</span>
     <span class="n">cbb</span> <span class="o">=</span> <span class="mf">0.6102</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Kantha Clayson&#39;</span></div>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">'Kantha Clayson'</span></div>
 
 
 
 <div class="viewcode-block" id="GOTMStabilityFunctionCheng">
 <a class="viewcode-back" href="../../thetis.html#thetis.stability_functions.GOTMStabilityFunctionCheng">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GOTMStabilityFunctionCheng</span><span class="p">(</span><span class="n">GOTMStabilityFunctionBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Cheng et al. (2002) quasi-equilibrium stability functions</span>
 
 <span class="sd">    Parameters are from Umlauf and Buchard (2005), Table 1</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">cc1</span> <span class="o">=</span> <span class="mf">5.0000</span>
     <span class="n">cc2</span> <span class="o">=</span> <span class="mf">0.7983</span>
     <span class="n">cc3</span> <span class="o">=</span> <span class="mf">1.9680</span>
@@ -931,7 +931,7 @@
     <span class="n">cb4</span> <span class="o">=</span> <span class="mf">0.0000</span>
     <span class="n">cb5</span> <span class="o">=</span> <span class="mf">0.3333</span>
     <span class="n">cbb</span> <span class="o">=</span> <span class="mf">0.8200</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Cheng&#39;</span></div>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">'Cheng'</span></div>
 
 </pre></div>
 
